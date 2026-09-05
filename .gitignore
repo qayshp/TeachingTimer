@@ -1,0 +1,39 @@
+# macOS metadata
+.DS_Store
+._*
+
+# Xcode user-specific state (keep project files and shared schemes)
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+
+# Generated builds, archives, symbols, and test results
+build/
+DerivedData*/
+.build/
+*.app
+*.ipa
+*.xcarchive
+*.dSYM
+*.dSYM.zip
+*.xcresult
+
+# Local simulator captures, build logs, and scratch outputs
+/work/
+/outputs/
+*.log
+
+# Signing credentials and local secrets
+*.p12
+*.p8
+*.mobileprovision
+*.provisionprofile
+*.keychain
+*.keychain-db
+.env
+.env.*
+!.env.example
+
+# Keep asset catalogs, Info.plist, entitlements, shared workspace settings,
+# shared schemes, and Package.resolved in source control when present.
