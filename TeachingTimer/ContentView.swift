@@ -4,12 +4,14 @@ import WatchKit
 struct ContentView: View {
     enum Page: Hashable {
         case squircleIntersection
-        case squircleClipped
-        case circular
+        case classProgress
         case nowPlaying
     }
 
     @ObservedObject var session: ExtendedRuntimeController
+    @StateObject private var classStore = ClassStore()
+    @StateObject private var metronome = MetronomeController()
+    @Environment(\.scenePhase) private var scenePhase
     @State private var page: Page = .squircleIntersection
 
     init(session: ExtendedRuntimeController) {
@@ -17,10 +19,8 @@ struct ContentView: View {
 #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         let initialPage: Page
-        if arguments.contains("--show-clipped") {
-            initialPage = .squircleClipped
-        } else if arguments.contains("--show-circular") {
-            initialPage = .circular
+        if arguments.contains("--show-progress") {
+            initialPage = .classProgress
         } else if arguments.contains("--show-now-playing") {
             initialPage = .nowPlaying
         } else {
@@ -37,31 +37,31 @@ struct ContentView: View {
                     date: context.date,
                     face: .squircleIntersection,
                     session: session,
+                    classStore: classStore,
+                    metronome: metronome,
                     crownIsActive: page == .squircleIntersection
                 )
                 .tag(Page.squircleIntersection)
 
                 SharedClockPage(
                     date: context.date,
-                    face: .squircleClipped,
+                    face: .squircleIntersection,
                     session: session,
-                    crownIsActive: page == .squircleClipped
+                    classStore: classStore,
+                    metronome: metronome,
+                    crownIsActive: page == .classProgress,
+                    showsClassProgress: true
                 )
-                .tag(Page.squircleClipped)
-
-                SharedClockPage(
-                    date: context.date,
-                    face: .circular,
-                    session: session,
-                    crownIsActive: page == .circular
-                )
-                .tag(Page.circular)
+                .tag(Page.classProgress)
 
                 NowPlayingView()
                     .containerBackground(.black, for: .tabView)
                     .tag(Page.nowPlaying)
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { session.applicationBecameActive() }
         }
     }
 

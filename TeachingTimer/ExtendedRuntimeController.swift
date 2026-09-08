@@ -1,90 +1,95 @@
 import Foundation
 import WatchKit
+import OSLog
 
 @MainActor
 final class ExtendedRuntimeController: NSObject, ObservableObject {
-    enum Phase: Equatable {
-        case idle
-        case starting
-        case running
-        case ending
-        case ended(String)
-    }
-
+    enum Phase: Equatable { case idle, starting, running, expiring, expired, stopped, failed(String) }
+    enum RenewalPolicy { case automatic, userInitiated }
     @Published private(set) var phase: Phase = .idle
+    @Published private(set) var needsRestart = false
     @Published private(set) var startedAt: Date?
-
+    var renewalPolicy: RenewalPolicy = .automatic
     private var runtimeSession: WKExtendedRuntimeSession?
-
+    private var renewalPending = false
+    private var stopRequested = false
+    private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "Runtime")
     var isActive: Bool {
-        switch phase {
-        case .starting, .running, .ending:
-            true
-        case .idle, .ended:
-            false
-        }
+        switch phase { case .starting, .running, .expiring: true; default: false }
     }
-
     func start() {
-        guard !isActive else { return }
-
-        // A WKExtendedRuntimeSession can't be restarted after invalidation.
-        let newSession = WKExtendedRuntimeSession()
-        newSession.delegate = self
-        runtimeSession = newSession
+        guard !isActive, runtimeSession == nil else { return }
+        guard WKApplication.shared().applicationState == .active else {
+            needsRestart = true
+            phase = .failed("Raise wrist, then restart runtime")
+            log.error("Runtime start deferred: application is not active")
+            return
+        }
+        stopRequested = false
+        renewalPending = false
+        needsRestart = false
         startedAt = nil
+        let replacement = WKExtendedRuntimeSession()
+        replacement.delegate = self
+        runtimeSession = replacement
         phase = .starting
-        newSession.start()
+        log.notice("Requesting runtime; awaiting delegate confirmation")
+        replacement.start()
     }
-
     func stop() {
-        guard isActive else { return }
-        phase = .ending
-        runtimeSession?.invalidate()
+        stopRequested = true
+        renewalPending = false
+        needsRestart = false
+        // A start in flight is invalidated only after didStart confirms it.
+        if runtimeSession?.state == .running { runtimeSession?.invalidate() }
+        if runtimeSession == nil { phase = .stopped }
+    }
+    func applicationBecameActive() {
+        guard renewalPending, renewalPolicy == .automatic, runtimeSession == nil, !stopRequested else { return }
+        start()
     }
 }
 
 extension ExtendedRuntimeController: WKExtendedRuntimeSessionDelegate {
-    nonisolated func extendedRuntimeSessionDidStart(_ extendedRuntimeSession: WKExtendedRuntimeSession) {
+    nonisolated func extendedRuntimeSessionDidStart(_ session: WKExtendedRuntimeSession) {
         Task { @MainActor in
-            guard extendedRuntimeSession === runtimeSession else { return }
-            // Elapsed time is anchored to the delegate-confirmed runtime start.
+            guard session === runtimeSession else { return }
+            if stopRequested { session.invalidate(); return }
             startedAt = Date()
             phase = .running
+            needsRestart = false
+            log.notice("Runtime confirmed running")
         }
     }
-
-    nonisolated func extendedRuntimeSessionWillExpire(_ extendedRuntimeSession: WKExtendedRuntimeSession) {
+    nonisolated func extendedRuntimeSessionWillExpire(_ session: WKExtendedRuntimeSession) {
         Task { @MainActor in
-            guard extendedRuntimeSession === runtimeSession else { return }
-            phase = .ending
+            guard session === runtimeSession, !stopRequested else { return }
+            phase = .expiring
+            renewalPending = renewalPolicy == .automatic
+            log.notice("Runtime expiring; replacement waits for invalidation")
         }
     }
-
-    nonisolated func extendedRuntimeSession(
-        _ extendedRuntimeSession: WKExtendedRuntimeSession,
-        didInvalidateWith reason: WKExtendedRuntimeSessionInvalidationReason,
-        error: (any Error)?
-    ) {
+    nonisolated func extendedRuntimeSession(_ session: WKExtendedRuntimeSession,
+        didInvalidateWith reason: WKExtendedRuntimeSessionInvalidationReason, error: (any Error)?) {
         Task { @MainActor in
-            guard extendedRuntimeSession === runtimeSession else { return }
-            let detail = error?.localizedDescription ?? Self.description(for: reason)
-            phase = .ended(detail)
+            guard session === runtimeSession else { return }
             runtimeSession = nil
-        }
-    }
-
-    nonisolated private static func description(
-        for reason: WKExtendedRuntimeSessionInvalidationReason
-    ) -> String {
-        switch reason {
-        case .none: "Stopped"
-        case .sessionInProgress: "Another session is already running"
-        case .expired: "One-hour session limit reached"
-        case .resignedFrontmost: "App left the foreground"
-        case .suppressedBySystem: "Stopped by the system"
-        case .error: "Runtime session error"
-        @unknown default: "Runtime session ended"
+            if stopRequested { phase = .stopped; return }
+            needsRestart = true
+            if reason == .expired {
+                phase = .expired
+                renewalPending = renewalPolicy == .automatic
+                log.notice("Runtime expired; evaluating renewal")
+                if renewalPending {
+                    if WKApplication.shared().applicationState == .active { start() }
+                    else { log.error("Renewal deferred while inactive; Restart fallback available") }
+                }
+            } else {
+                renewalPending = false
+                let message = error?.localizedDescription ?? "Runtime ended (reason \(reason.rawValue))"
+                phase = .failed(message)
+                log.error("Runtime or renewal failed: \(message, privacy: .public)")
+            }
         }
     }
 }
