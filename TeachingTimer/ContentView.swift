@@ -3,7 +3,6 @@ import WatchKit
 
 struct ContentView: View {
     enum Page: Hashable {
-        case squircleIntersection
         case classProgress
         case nowPlaying
     }
@@ -12,7 +11,7 @@ struct ContentView: View {
     @StateObject private var classStore = ClassStore()
     @StateObject private var metronome = MetronomeController()
     @Environment(\.scenePhase) private var scenePhase
-    @State private var page: Page = .squircleIntersection
+    @State private var page: Page = .classProgress
 
     init(session: ExtendedRuntimeController) {
         self.session = session
@@ -24,7 +23,7 @@ struct ContentView: View {
         } else if arguments.contains("--show-now-playing") {
             initialPage = .nowPlaying
         } else {
-            initialPage = .squircleIntersection
+            initialPage = .classProgress
         }
         _page = State(initialValue: initialPage)
 #endif
@@ -33,16 +32,6 @@ struct ContentView: View {
     var body: some View {
         TimelineView(.periodic(from: nextWholeSecond, by: 1)) { context in
             TabView(selection: $page) {
-                SharedClockPage(
-                    date: context.date,
-                    face: .squircleIntersection,
-                    session: session,
-                    classStore: classStore,
-                    metronome: metronome,
-                    crownIsActive: page == .squircleIntersection
-                )
-                .tag(Page.squircleIntersection)
-
                 SharedClockPage(
                     date: context.date,
                     face: .squircleIntersection,

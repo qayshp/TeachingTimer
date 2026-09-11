@@ -8,11 +8,14 @@ final class MetronomeController: ObservableObject {
         var intervalSeconds: Double = 5
         var beatCount: Int = 8
         var acknowledgement: WKHapticType = .start
-        var beat: WKHapticType = .click
+        // Physical-device trial: a more distinctive beat than the faint click.
+        var beat: WKHapticType = .directionUp
     }
     @Published private(set) var isActive = false
-    @Published private(set) var beatsDelivered = 0
-    @Published private(set) var nextScheduledBeat: Date?
+    // Diagnostic bookkeeping is not displayed. Avoid invalidating all clock
+    // pages twice per beat; only active/inactive changes need UI publication.
+    private(set) var beatsDelivered = 0
+    private(set) var nextScheduledBeat: Date?
     private(set) var configuration = Configuration()
     private var task: Task<Void, Never>?
     private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "Metronome")

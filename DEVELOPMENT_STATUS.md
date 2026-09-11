@@ -1,5 +1,26 @@
 # Teaching Timer development checkpoint — 2026-09-11
 
+## PoC version 2
+
+The commit titled `PoC version 2: progress face and perceptible metronome`
+supersedes the historical three-page checkpoint below. It has two pages:
+the squircle class-progress face (default) and native Now Playing. Only the
+baseline comparison page was removed from navigation.
+
+Repeating metronome haptics now use `.directionUp`, with `.start` retained for
+activation. The five-second interval and eight-beat limit are unchanged.
+Beat-count and next-deadline bookkeeping no longer publish redundant UI changes.
+The user reported on their physical SE 3 that this update resolved both the
+faint pulses and the seconds-hand hiccup. Because both changes were tested
+together, the precise cause of the smoother rendering is not isolated.
+
+Version 2 retains the class snapping, persistent context, scheduled-end wedge,
+progress perimeter, runtime renewal/fallback, and visible native Crown-volume
+control. The later two-page navigation change still requires device validation;
+the long-duration renewal checks listed below remain outstanding.
+
+## Historical checkpoint
+
 This document accompanies the second Git snapshot. It records the implementation
 independently of chat history, after the user reported that the iPhone client's
 conversation view omitted messages about work following the original POC commit.

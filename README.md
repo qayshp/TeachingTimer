@@ -1,4 +1,4 @@
-# Teaching Timer watchOS proof of concept
+# Teaching Timer watchOS proof of concept — version 2
 
 A watchOS-only app for Apple Watch SE 3 / watchOS 26. It tests a one-hour
 mindfulness extended-runtime session, a wall-clock-derived teaching timer,
@@ -30,11 +30,10 @@ degrees and is shorter, thicker, and square-ended for monochrome readability.
 ## Build and simulator
 
 Open `TeachingTimer.xcodeproj`, select an Apple Watch SE 3 simulator, and Run.
-The default page is the ray-intersection squircle baseline. Swipe horizontally
-to the identical squircle with a class-progress perimeter, then Apple's native
-full-screen `NowPlayingView` on Page 3. There are exactly three pages. Both clock
-pages share class context, runtime and metronome controllers, current date, and
-Crown-volume behavior.
+The default page is the ray-intersection squircle with its class-progress
+perimeter. Swipe horizontally to Apple's native full-screen `NowPlayingView`
+on Page 2. There are exactly two pages. The former baseline comparison page
+has been removed; class context, runtime, metronome, and Crown behavior remain.
 
 ## Physical Apple Watch validation (not proven by Simulator)
 
@@ -73,9 +72,13 @@ It persists until Reset,
 including beyond the scheduled end and across process relaunches.
 
 `MetronomeController` is independent of the runtime and class. The large button
-plays an immediate `.start` acknowledgement, then eight `.click` beats at
+plays an immediate `.start` acknowledgement, then eight `.directionUp` beats at
 5, 10, 15, 20, 25, 30, 35, and 40 seconds. Tap again to cancel. Configuration
-exposes interval, count, and haptic types. Each deadline is calculated from one
+exposes interval, count, and haptic types. The `.directionUp` beat is a physical-device trial after the
+user found `.click` too faint. Beat-count and next-deadline bookkeeping no longer
+publish UI changes each beat; only active/inactive state does. Whether this
+reduces the observed seconds-hand hesitation still requires physical testing.
+Each deadline is calculated from one
 `ContinuousClock` activation anchor; callback delays never accumulate. A delay
 of a whole interval cancels the run rather than replaying missed beats in a burst.
 No service grants background execution by itself: wrist-down haptics need device
@@ -99,9 +102,9 @@ remains mounted before Start. Its asynchronous focus/resign sequence is preserve
 the previous `setHidden(true)` call has been removed. Recheck immediate Crown
 response and native feedback on the physical SE 3.
 
-## Class-progress perimeter experiment
+## Class-progress perimeter
 
-Page 2 differs from Page 1 only by a perimeter treatment for 60-minute classes.
+The default timer page includes a perimeter treatment for 60-minute classes.
 The remaining clockwise segment from the wall-clock minute-hand angle to the
 scheduled-end wedge is solid, 2.5 points wide. The elapsed segment is 0.75 points
 wide and dashed. This geometric contrast works without color. Both use the same
@@ -112,7 +115,7 @@ Progress is sampled at whole seconds and clamped to the scheduled interval:
 before scheduled start the future track is full; at/after scheduled end only
 the subdued past track remains. It never wraps into another hour. No context or
 a 75-minute duration means no progress track. Hands, snapping, class state,
-runtime, metronome, and both pages' control layouts are shared and unchanged.
+runtime, metronome, and the timer controls retain their existing behavior.
 
 ## Iteration 2 physical SE 3 checklist
 
