@@ -50,6 +50,7 @@ struct ContentView: View {
             .tabViewStyle(.page(indexDisplayMode: .automatic))
         }
         .onChange(of: scenePhase) { _, phase in
+            session.applicationStateChanged(String(describing: phase))
             if phase == .active { session.applicationBecameActive() }
         }
     }

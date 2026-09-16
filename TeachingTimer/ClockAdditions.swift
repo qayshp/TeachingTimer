@@ -6,10 +6,28 @@ struct ClockAdditions: View {
     let face: ClockFaceKind
     let context: ClassContext?
     var showsClassProgress = false
+    var landmarkStartAngle: Double?
+    var landmarkProgress: Double = 0
 
     var body: some View {
         Canvas { graphics, size in
             let center = CGPoint(x: size.width / 2, y: size.height / 2)
+            if let start = landmarkStartAngle {
+                // An inset, dashed squircle is distinct from the solid outer
+                // class perimeter even when all colors become monochrome.
+                let inset: CGFloat = 23
+                let end = start + min(1, max(0, landmarkProgress)) * 2 * .pi
+                graphics.stroke(perimeterPath(from: start, to: end, size: size, inset: inset),
+                    with: .color(.white),
+                    style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 3]))
+                let direction = CGVector(dx: sin(start), dy: -cos(start))
+                let vector = SquircleRayGeometry.intersection(size: size,
+                    cornerRadius: max(0, SquircleClockTuning.cornerRadius - inset),
+                    edgeInset: SquircleClockTuning.edgeInset + inset, direction: direction)
+                let point = CGPoint(x: center.x + vector.dx, y: center.y + vector.dy)
+                graphics.fill(Path(ellipseIn: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6)),
+                              with: .color(.white))
+            }
             if showsClassProgress, let context, context.durationMinutes == 60 {
                 // Sample at the hands' whole-second cadence; clamp at either end
                 // so an overdue class never wraps into another full hour.
@@ -68,7 +86,7 @@ struct ClockAdditions: View {
 
     /// Uses the same ray/perimeter geometry as the ticks and end marker.
     /// One-degree subdivisions follow the rounded corners without a new animation.
-    private func perimeterPath(from start: Double, to end: Double, size: CGSize) -> Path {
+    private func perimeterPath(from start: Double, to end: Double, size: CGSize, inset: CGFloat = 3) -> Path {
         var path = Path()
         guard end > start else { return path }
         let steps = max(1, Int(ceil((end - start) * 180 / .pi)))
@@ -76,8 +94,8 @@ struct ClockAdditions: View {
             let angle = start + (end - start) * Double(index) / Double(steps)
             let direction = CGVector(dx: sin(angle), dy: -cos(angle))
             let vector = SquircleRayGeometry.intersection(size: size,
-                cornerRadius: SquircleClockTuning.cornerRadius,
-                edgeInset: SquircleClockTuning.edgeInset + 3, direction: direction)
+                cornerRadius: inset == 3 ? SquircleClockTuning.cornerRadius : max(0, SquircleClockTuning.cornerRadius - inset),
+                edgeInset: SquircleClockTuning.edgeInset + inset, direction: direction)
             let point = CGPoint(x: size.width / 2 + vector.dx, y: size.height / 2 + vector.dy)
             if index == 0 { path.move(to: point) } else { path.addLine(to: point) }
         }

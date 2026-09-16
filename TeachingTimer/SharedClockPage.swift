@@ -24,10 +24,12 @@ struct SharedClockPage: View {
             ZStack {
                 clockFace
                 ClockAdditions(date: date, face: face, context: classStore.context,
-                               showsClassProgress: showsClassProgress)
+                               showsClassProgress: showsClassProgress,
+                               landmarkStartAngle: metronome.isActive ? metronome.startAngle : nil,
+                               landmarkProgress: metronome.progress)
                     .allowsHitTesting(false)
                 controls
-                    .offset(y: 24)
+                    .offset(y: 34)
                 CompanionVolumeControl(isFocused: crownIsActive && !confirmReset)
                     .frame(width: 64, height: 28)
                     .offset(y: -48)
@@ -38,13 +40,13 @@ struct SharedClockPage: View {
         .containerBackground(.black, for: .tabView)
         .alert("Reset for a new class?", isPresented: $confirmReset) {
             Button("Reset", role: .destructive) {
-                session.stop()
+                session.stop(source: "new_class_reset")
                 metronome.cancel()
                 classStore.reset()
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Clears the class end marker and stops runtime and metronome.")
+            Text("Clears the class end marker and stops runtime and landmarks.")
         }
     }
 
@@ -66,7 +68,7 @@ struct SharedClockPage: View {
             Button {
                 if metronome.isActive { metronome.cancel() } else { metronome.start() }
             } label: {
-                Label(metronome.isActive ? "Stop beats" : "Metronome",
+                Label(metronome.isActive ? "Stop count" : "Landmarks",
                       systemImage: metronome.isActive ? "stop.fill" : "metronome")
                     .font(.system(size: 13, weight: .bold))
                     .frame(width: 128, height: 52)
@@ -76,6 +78,8 @@ struct SharedClockPage: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("metronome-toggle")
+            .accessibilityValue(metronome.isActive ? "Active" : "Inactive")
+            .accessibilityHint("Counts one through six at ten-second intervals. Tap again to cancel.")
             HStack(spacing: 4) {
                 Button {
                     if session.isActive { session.stop() }
@@ -83,25 +87,32 @@ struct SharedClockPage: View {
                 } label: {
                     Text(session.isActive ? "Stop runtime" : (classStore.context == nil ? "Start class" : "Restart runtime"))
                         .font(.system(size: 10, weight: .semibold))
-                        .frame(width: 98, height: 36)
+                        .multilineTextAlignment(.center)
+                        .frame(width: 88, height: 44)
                         .background(.black.opacity(0.35), in: Capsule())
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .disabled(session.phase == .starting)
                 .accessibilityIdentifier("runtime-toggle")
                 Button { confirmReset = true } label: {
-                    Image(systemName: "ellipsis").frame(width: 30, height: 36)
+                    Image(systemName: "ellipsis")
+                        .frame(width: 44, height: 44)
+                        .background(.black.opacity(0.35), in: Circle())
+                        .overlay(Circle().stroke(.white.opacity(0.6), lineWidth: 1))
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("New class or reset")
+                .accessibilityIdentifier("class-reset")
             }
-            if session.needsRestart {
-                Text("Runtime ended · tap Restart").font(.system(size: 9)).foregroundStyle(.white)
-            } else if session.phase == .starting {
-                Text("Starting runtime…").font(.system(size: 9))
-            } else if session.phase == .expiring {
-                Text("Runtime expiring").font(.system(size: 9))
-            }
+            // Reserve the space so status transitions don't move the tap targets.
+            Text(session.statusText)
+                .font(.system(size: 9))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .frame(width: 136, height: 16)
+                .accessibilityIdentifier("runtime-status")
         }
     }
 }

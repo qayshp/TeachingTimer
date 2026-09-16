@@ -16,6 +16,7 @@
 		000000000000000000000900 = {isa = PBXBuildFile; fileRef = 000000000000000000000950; };
 		000000000000000000000901 = {isa = PBXBuildFile; fileRef = 000000000000000000000951; };
 		000000000000000000000902 = {isa = PBXBuildFile; fileRef = 000000000000000000000952; };
+		000000000000000000000903 = {isa = PBXBuildFile; fileRef = 000000000000000000000953; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		000000000000000000000950 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassContext.swift; sourceTree = "<group>"; };
 		000000000000000000000951 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeController.swift; sourceTree = "<group>"; };
 		000000000000000000000952 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockAdditions.swift; sourceTree = "<group>"; };
+		000000000000000000000953 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeDiagnostics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				000000000000000000000950,
 				000000000000000000000951,
 				000000000000000000000952,
+				000000000000000000000953,
 				200000000000000000000004 /* Info.plist */,
 			);
 			path = TeachingTimer;
@@ -147,6 +150,7 @@
 				000000000000000000000900,
 				000000000000000000000901,
 				000000000000000000000902,
+				000000000000000000000903,
 				100000000000000000000001 /* TeachingTimerApp.swift in Sources */,
 				100000000000000000000002 /* ContentView.swift in Sources */,
 				100000000000000000000003 /* ExtendedRuntimeController.swift in Sources */,

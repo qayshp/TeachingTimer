@@ -46,7 +46,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "500000000000000000000001"
             BuildableName = "TeachingTimer.app"
-            BlueprintName = "TeachingTimer"
             ReferencedContainer = "container:TeachingTimer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -63,7 +62,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "500000000000000000000001"
             BuildableName = "TeachingTimer.app"
-            BlueprintName = "TeachingTimer"
             ReferencedContainer = "container:TeachingTimer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
