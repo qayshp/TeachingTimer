@@ -181,11 +181,29 @@ swiftc TeachingTimer/RuntimeDiagnostics.swift Tests/RuntimeDiagnosticsChecks.swi
 
 Runtime renewal defaults to `.automatic`; `.userInitiated` is also available.
 `willExpire` records renewal intent. Replacement starts only after expiration
-invalidation, preventing overlap. If inactive, renewal is logged as deferred,
+or `resignedFrontmost` invalidation, preventing overlap. If inactive, renewal is logged as deferred,
 the Restart control remains available, and the next active scene transition
 attempts it. A rejected replacement logs its error and requires manual restart;
 there is no unbounded retry loop. Running is shown only after `didStart`.
 Explicit Stop cancels renewal intent. Class context is never owned by the runtime.
+Returning to an active TeachingTimer scene after losing frontmost status attempts
+a replacement automatically; this does not reset class context or landmarks.
+If the active transition arrives before invalidation, the invalidation handler
+also checks current application state so the restart is not missed. Restart
+evaluation and automatic attempts are journaled. Other invalidation reasons retain
+the manual fallback. This intent is in-memory only, not restored after process
+termination.
+
+Physical SE 3 validation on September 16, 2026 confirmed four automatic restart
+attempts, all followed by delegate-confirmed starts approximately 107–128 ms
+after the recorded active-scene transition. Each followed `resignedFrontmost`
+invalidation and deferred while inactive; ordinary inactive/active transitions
+did not replace a still-running session. No rejected starts were recorded in
+that test. The user confirmed this resolves having to remember to press Start
+after returning from a media app that took focus; the journal does not identify
+which app took foreground. Explicit Stop/Reset followed by leaving/returning
+was not exercised in this updated-build log, and hour-boundary renewal remains
+unvalidated. The separate wrist-down landmark-arc refresh report is unchanged.
 
 Apple requires active application state for starting extended runtime:
 [Using extended runtime sessions](https://developer.apple.com/documentation/watchkit/using-extended-runtime-sessions).

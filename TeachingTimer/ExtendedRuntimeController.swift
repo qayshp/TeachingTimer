@@ -4,7 +4,7 @@ import OSLog
 
 @MainActor
 final class ExtendedRuntimeController: NSObject, ObservableObject {
-    enum Phase: Equatable { case idle, starting, running, expiring, expired, stopped, failed(String) }
+    enum Phase: Equatable { case idle, starting, running, expiring, expired, interrupted, stopped, failed(String) }
     enum RenewalPolicy { case automatic, userInitiated }
     @Published private(set) var phase: Phase = .idle
     @Published private(set) var needsRestart = false
@@ -68,6 +68,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         case .running: "Runtime active"
         case .expiring: "Runtime expiring"
         case .expired: "Runtime expired · tap Restart"
+        case .interrupted: "Runtime ended · tap Restart"
         case .stopped: "Runtime stopped"
         case .failed(let message):
             message == "Raise wrist, then restart runtime"
@@ -109,6 +110,11 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     }
     func applicationBecameActive() {
         guard renewalPending, renewalPolicy == .automatic, runtimeSession == nil, !stopRequested else { return }
+        guard WKApplication.shared().applicationState == .active else { return }
+        record("automatic_restart_attempt")
+        // Consume the intent before trying: a rejected start keeps the manual
+        // fallback rather than retrying on every later scene transition.
+        renewalPending = false
         start()
     }
 }
@@ -166,12 +172,15 @@ extension ExtendedRuntimeController: WKExtendedRuntimeSessionDelegate {
             runtimeSession = nil
             if stopRequested { phase = .stopped; return }
             needsRestart = true
-            if reason == .expired {
-                phase = .expired
+            if reason == .expired || reason == .resignedFrontmost {
+                phase = reason == .expired ? .expired : .interrupted
                 renewalPending = renewalPolicy == .automatic
-                log.notice("Runtime expired; evaluating renewal")
+                record("runtime_restart_evaluated", extra: ["trigger": reasonName])
+                log.notice("Runtime ended with renewable reason; evaluating restart")
                 if renewalPending {
-                    if WKApplication.shared().applicationState == .active { start() }
+                    // The active-scene callback may precede this invalidation
+                    // callback. Handle that ordering here as well as on return.
+                    if WKApplication.shared().applicationState == .active { applicationBecameActive() }
                     else {
                         record("renewal_deferred_inactive")
                         log.error("Renewal deferred while inactive; Restart fallback available")
