@@ -26,6 +26,26 @@ struct LandmarkChecks {
         assert(!LandmarkSchedule(intervalSeconds: 0).isValid)
         assert(!LandmarkSchedule(landmarkCount: 0).isValid)
         assert(!LandmarkSchedule(pulseSpacing: 2).isValid)
+        // Simulate a batch of Always-On frames evaluated at one clock instant.
+        let wallNow = Date(timeIntervalSince1970: 59)
+        let frames = [0.0, 10, 20, 40].map {
+            schedule.frame(at: wallNow.addingTimeInterval($0), wallNow: wallNow, elapsedNow: 10)
+        }
+        assert(zip(frames, frames.dropFirst()).allSatisfy { $0.progress < $1.progress })
+        assert(abs(frames[2].progress - 0.5) < 0.00001)
+        // Forward/back clock corrections do not change the monotonic position
+        // of the current or a future frame, and don't change the snapped angle.
+        for correction in [-3600.0, -60, 60, 3600] {
+            let corrected = wallNow.addingTimeInterval(correction)
+            let frame = schedule.frame(at: corrected.addingTimeInterval(20), wallNow: corrected, elapsedNow: 10)
+            assert(frame.progress == frames[2].progress && frame.isVisible)
+        }
+        assert(schedule.frame(at: wallNow.addingTimeInterval(50), wallNow: wallNow, elapsedNow: 10).progress == 1)
+        assert(schedule.frame(at: wallNow.addingTimeInterval(54), wallNow: wallNow, elapsedNow: 10).isVisible)
+        assert(!schedule.frame(at: wallNow.addingTimeInterval(55), wallNow: wallNow, elapsedNow: 10).isVisible)
+        assert(!schedule.frame(at: wallNow.addingTimeInterval(300), wallNow: wallNow, elapsedNow: 10).isVisible)
+        assert(!schedule.frame(at: wallNow.addingTimeInterval(-20), wallNow: wallNow, elapsedNow: 10).isVisible)
         print("PASS: six groups, 21 pulses, absolute 10–60s landmarks, spacing, clamped arc and snapped start angle")
+        print("PASS: future frame batching, minute rollover, forward/back clock corrections, original 60/64.8s visual lifetime")
     }
 }

@@ -20,13 +20,14 @@ struct SharedClockPage: View {
     @Environment(\.isLuminanceReduced) private var isLuminanceReduced
 
     var body: some View {
+        let landmarkFrame = metronome.frame(at: date)
         GeometryReader { geometry in
             ZStack {
                 clockFace
                 ClockAdditions(date: date, face: face, context: classStore.context,
                                showsClassProgress: showsClassProgress,
-                               landmarkStartAngle: metronome.isActive ? metronome.startAngle : nil,
-                               landmarkProgress: metronome.progress)
+                               landmarkStartAngle: landmarkFrame.isVisible ? metronome.startAngle : nil,
+                               landmarkProgress: landmarkFrame.progress)
                     .allowsHitTesting(false)
                 controls
                     .offset(y: 34)
@@ -41,7 +42,7 @@ struct SharedClockPage: View {
         .alert("Reset for a new class?", isPresented: $confirmReset) {
             Button("Reset", role: .destructive) {
                 session.stop(source: "new_class_reset")
-                metronome.cancel()
+                metronome.cancel(reason: "new_class_reset")
                 classStore.reset()
             }
             Button("Cancel", role: .cancel) {}
@@ -107,12 +108,20 @@ struct SharedClockPage: View {
                 .accessibilityIdentifier("class-reset")
             }
             // Reserve the space so status transitions don't move the tap targets.
-            Text(session.statusText)
-                .font(.system(size: 9))
+            VStack(spacing: 0) {
+                Text(session.statusText)
+                    .font(.system(size: 9))
+                    .accessibilityIdentifier("runtime-status")
+                Text(metronome.lastResult)
+                    .font(.system(size: 8))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .accessibilityIdentifier("landmark-result")
+            }
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
-                .frame(width: 136, height: 16)
-                .accessibilityIdentifier("runtime-status")
+                .frame(width: 150, height: 16)
+                .allowsHitTesting(false)
         }
     }
 }

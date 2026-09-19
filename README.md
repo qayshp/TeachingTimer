@@ -159,9 +159,10 @@ to OSLog. An unreadable journal is left intact rather than silently overwritten.
 Uninstalling the app deletes its container, so collect diagnostics before doing
 that. Reinstalling an update normally preserves app data; do not uninstall first.
 
-After class, connect/unlock the development Watch and retrieve the file using
-Xcode's device container facilities or `devicectl` (physical transfer still needs
-verification on the paired SE 3):
+After class, connect the development Watch and retrieve the file using
+Xcode's device container facilities or `devicectl`. Transfer succeeded from the
+locked, charging physical SE 3 on September 19; unlock only if the connection
+requires it, and do not launch or reinstall just to collect the journal:
 
 ```sh
 xcrun devicectl device copy from --device WATCH_DEVICE_ID \
@@ -180,8 +181,23 @@ swiftc TeachingTimer/RuntimeDiagnostics.swift Tests/RuntimeDiagnosticsChecks.swi
 ```
 
 Runtime renewal defaults to `.automatic`; `.userInitiated` is also available.
-`willExpire` records renewal intent. Replacement starts only after expiration
-or `resignedFrontmost` invalidation, preventing overlap. If inactive, renewal is logged as deferred,
+`willExpire` records renewal intent. While active, within the last 20 seconds of
+the known expiration and after that warning, the app may request an early handoff:
+invalidate the old session, wait for its normal-end callback, then start a new one.
+It never starts overlapping sessions or changes class context/landmarks. There
+may be a gap and the replacement can fail; chaining is experimental.
+
+Normal expiration and `resignedFrontmost` remain renewable. A narrowly qualified
+expiration-associated error is also eligible: the same running session must have
+received the warning, and `RBSAssertionErrorDomain` code 1 must arrive between
+2 seconds before and 30 seconds after its known expiration. The original error
+name/raw values are retained; internal assertion reason 4 is not interpreted.
+This addresses the September 18 physical log: expiration warning at 19:47:12 PDT,
+expiration at 19:47:27, then error invalidation at 19:47:28 rather than `.expired`.
+Other errors retain the manual fallback. No warning or no confirmed start means
+this special recovery is not eligible.
+
+If inactive, renewal is logged as deferred,
 the Restart control remains available, and the next active scene transition
 attempts it. A rejected replacement logs its error and requires manual restart;
 there is no unbounded retry loop. Running is shown only after `didStart`.
@@ -194,6 +210,105 @@ evaluation and automatic attempts are journaled. Other invalidation reasons reta
 the manual fallback. This intent is in-memory only, not restored after process
 termination.
 
+Early-handoff requests, eligibility decisions, parent/replacement runtime IDs,
+deferred starts, confirmed successes and rejected starts are journaled. Stop/Reset
+wins even during a handoff or an in-flight start. Failed replacements do not
+automatically retry. The new paths have deterministic controller tests using
+WatchKit boundary doubles; they still require an actual hour-boundary Watch test.
+
+## Landmark diagnostics (September 19, physically exercised)
+
+`Documents/LandmarkDiagnostics.json` is a separate 2,000-event bounded journal.
+It records run IDs, configuration, acknowledgement and timed haptic submissions,
+scheduled/actual monotonic elapsed time, lateness, haptic name/raw value, and
+explicit visual-run end reasons: `completed`, `user_cancelled`, or `new_class_reset`.
+A missed deadline now records a separate `landmark_haptics_stopped` event with
+reason `missed_deadline`; it does not end the visual run. Runtime ID/phase, scene state and application state are captured
+for correlation. A submission is not proof of physical vibration delivery.
+
+Loading, batching (250 ms), JSON encoding and atomic writes run on a utility serial
+queue, not the haptic submission actor. End events request an immediate queued
+flush. A sudden process kill/suspension can still lose the newest unwritten
+events; a missing end event means unknown outcome, not a diagnosed cancellation.
+Unreadable existing history is preserved and the write failure is logged.
+
+The small secondary status area keeps runtime status and adds the last count
+result, retained across relaunch and cleared on the next activation. There is no
+new haptic, countdown, Crown binding, or touch target. The original `.directionUp`
+pattern, 0.8-second spacing, absolute deadlines, >=0.4-second cutoff for further
+haptics, 21 pulses in a successful run, and 64.8-second completion remain unchanged.
+After a missed deadline the original arc continues with `Stop count` still usable
+and `Haptics stopped · arc continues` in the secondary status area. It reaches full
+extent at 60s and clears at 64.8s even when haptics stopped earlier. Stop/Reset
+immediately cancels both. Completion preserves the fact that haptics stopped.
+Tests cover cancellation during groups 5 and 6 followed by immediate restart:
+not-yet-submitted old-generation pulses must never leak into the new run.
+
+### Landmark frame projection (Always-On fix)
+
+The former arc getter sampled `ContinuousClock.now` while evaluating a view, so
+future frames prepared in the same batch could all receive almost the same arc
+progress. The hands instead used the requested timeline date. Apple's
+[watchOS timeline guidance](https://developer.apple.com/documentation/watchos-apps/updating-watchos-apps-with-timelines)
+explicitly requires using that date and notes future batching in Always-On.
+
+The arc now projects each requested frame from a freshly paired wall/monotonic
+sample: `frameElapsed = monotonicElapsedNow + (frameDate - wallNow)`. It never
+derives elapsed time from the initial wall-clock start. Clock corrections affect
+both wall dates equally; the original monotonic anchor and snapped starting angle
+remain unchanged. Future frames also hide the arc after the original 64.8-second
+finish even if the completion task has not yet run. System-clock-change and visual
+run state changes invalidate cached timeline content. No extra repeating timer,
+high-frequency animation, or change to the clock hands is introduced.
+
+Deterministic tests cover future frame batches, minute rollover, positive/negative
+clock corrections, haptic-failure visual continuation, and explicit Stop/Reset.
+The updated app builds/launches on SE 3 40mm / watchOS 27 Simulator. On September
+19, the user manually tested Device Hub Lock and reported that the arc continued
+while locked, including when haptics stopped. The same build was installed on the
+physical SE 3 without assistant-initiated launch; the user then confirmed that the
+wrist-down arc worked while haptics stopped. These are user-observed visual
+results, not an independently measured display cadence or proof of the original
+rendering mechanism. Device Hub automation remains unreliable after the bounded
+quit/reopen investigation; assisted testing supplied the practical validation.
+
+Physical journals from the 12:11:25 PDT run confirm the first timed pulse was
+submitted at 10.380 seconds. At the next landmark, the deadline check was about
+0.457 seconds late, beyond the unchanged 0.4-second cutoff: that pulse was not
+submitted and remaining haptics stopped. The visual run remained active until
+the user cancelled at 40.082 seconds. The mindfulness runtime stayed running
+throughout and was explicitly stopped afterward. This verifies separate haptic
+and visual lifecycles; it does not establish that watchOS physically delivered
+every submitted haptic.
+
+The arc-reliability goal was accepted as complete by the user on September 19.
+Remaining follow-up validation: observe an entire wrist-down run after haptic
+failure through the 60-second full arc and 64.8-second completion, and explicitly
+check for any corrective jump on unlock. Those endpoints and clock-correction
+behavior are covered deterministically, but not yet by a full physical run.
+Whether to relax the haptic lateness policy is a separate product decision;
+this change intentionally preserves the existing cutoff and haptic pattern.
+
+Retrieve this journal using the runtime copy command with
+`--source Documents/LandmarkDiagnostics.json` and a separate destination.
+
+Additional deterministic checks (macOS; no real Watch/haptics):
+
+```sh
+swiftc -D CONTROLLER_CHECKS TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/RuntimeRenewalRules.swift TeachingTimer/ExtendedRuntimeController.swift Tests/RuntimeRenewalChecks.swift -o /tmp/RuntimeRenewalChecks
+/tmp/RuntimeRenewalChecks
+swiftc -D CONTROLLER_CHECKS TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/MetronomeController.swift Tests/LandmarkControllerChecks.swift -o /tmp/LandmarkControllerChecks
+/tmp/LandmarkControllerChecks
+swiftc TeachingTimer/LandmarkDiagnostics.swift Tests/LandmarkDiagnosticsChecks.swift -o /tmp/LandmarkDiagnosticsChecks
+/tmp/LandmarkDiagnosticsChecks
+```
+
+Follow-up physical checks include readability of the two-line status area on
+SE 3 40 mm; early warning while active and inactive; lowering the wrist
+during handoff; Stop/Reset suppressing restart; manual fallback after rejection;
+class-context and landmark continuity; journal readability after class; Crown
+response after landmark/runtime controls and Now Playing.
+
 Physical SE 3 validation on September 16, 2026 confirmed four automatic restart
 attempts, all followed by delegate-confirmed starts approximately 107–128 ms
 after the recorded active-scene transition. Each followed `resignedFrontmost`
@@ -203,7 +318,8 @@ that test. The user confirmed this resolves having to remember to press Start
 after returning from a media app that took focus; the journal does not identify
 which app took foreground. Explicit Stop/Reset followed by leaving/returning
 was not exercised in this updated-build log, and hour-boundary renewal remains
-unvalidated. The separate wrist-down landmark-arc refresh report is unchanged.
+unvalidated. September 19 landmark-arc validation is recorded above; it does not
+validate the new hour-boundary renewal paths.
 
 Apple requires active application state for starting extended runtime:
 [Using extended runtime sessions](https://developer.apple.com/documentation/watchkit/using-extended-runtime-sessions).

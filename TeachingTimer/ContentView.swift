@@ -48,6 +48,20 @@ struct ContentView: View {
                     .tag(Page.nowPlaying)
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
+            .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
+                // Old pre-rendered dates no longer represent the same instants.
+                // New frames project from a fresh wall/monotonic clock pair.
+                context.invalidateTimelineContent()
+            }
+            .onChange(of: metronome.isActive) { _, _ in
+                context.invalidateTimelineContent()
+            }
+            .onChange(of: metronome.hapticsStopped) { _, _ in
+                context.invalidateTimelineContent()
+            }
+        }
+        .onAppear { [session] in
+            metronome.diagnosticContext = { [weak session] in session?.diagnosticContext ?? [:] }
         }
         .onChange(of: scenePhase) { _, phase in
             session.applicationStateChanged(String(describing: phase))
