@@ -2,7 +2,9 @@ import SwiftUI
 
 enum SquircleClockTuning {
     /// Tunable approximation; public APIs don't expose physical display curvature.
-    static let cornerRadius: CGFloat = 38
+    static func cornerRadius(for size: CGSize) -> CGFloat {
+        TimerFaceLayout.cornerRadius(for: size)
+    }
     static let edgeInset: CGFloat = 1.5
     static let tickInset: CGFloat = 3
     static let perimeterHandOvershoot: CGFloat = 2
@@ -44,7 +46,7 @@ private struct SquircleClockFace: View {
         GeometryReader { geometry in
             let size = geometry.size
             let boundary = RoundedRectangle(
-                cornerRadius: SquircleClockTuning.cornerRadius,
+                cornerRadius: SquircleClockTuning.cornerRadius(for: size),
                 style: .continuous
             )
 
@@ -76,7 +78,7 @@ private struct SquircleClockFace: View {
                 let direction = SquircleRayGeometry.direction(forSecond: index)
                 let perimeter = SquircleRayGeometry.intersection(
                     size: size,
-                    cornerRadius: SquircleClockTuning.cornerRadius,
+                    cornerRadius: SquircleClockTuning.cornerRadius(for: size),
                     edgeInset: SquircleClockTuning.edgeInset,
                     direction: direction
                 )
@@ -107,7 +109,7 @@ private struct SquircleClockFace: View {
             case .perimeterIntersection:
                 SquircleRayGeometry.intersection(
                     size: size,
-                    cornerRadius: SquircleClockTuning.cornerRadius,
+                    cornerRadius: SquircleClockTuning.cornerRadius(for: size),
                     edgeInset: SquircleClockTuning.edgeInset,
                     direction: direction
                 ).magnitude + SquircleClockTuning.perimeterHandOvershoot

@@ -18,10 +18,13 @@ struct SharedClockPage: View {
     @State private var confirmReset = false
 
     @Environment(\.isLuminanceReduced) private var isLuminanceReduced
+    @ScaledMetric(relativeTo: .headline) private var countFontSize = 13.0
+    @ScaledMetric(relativeTo: .caption) private var runtimeFontSize = 10.0
 
     var body: some View {
         let landmarkFrame = metronome.frame(at: date)
         GeometryReader { geometry in
+            let layout = TimerFaceLayout(size: geometry.size)
             ZStack {
                 clockFace
                 ClockAdditions(date: date, face: face, context: classStore.context,
@@ -29,17 +32,18 @@ struct SharedClockPage: View {
                                landmarkStartAngle: landmarkFrame.isVisible ? metronome.startAngle : nil,
                                landmarkProgress: landmarkFrame.progress)
                     .allowsHitTesting(false)
-                controls
-                    .offset(y: 34)
+                controls(layout: layout)
+                    .position(layout.controlsCenter)
                 CompanionVolumeControl(isFocused: crownIsActive && !confirmReset)
-                    .frame(width: 64, height: 28)
-                    .offset(y: -48)
+                    .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
+                    .position(layout.volumeCenter)
+                    .accessibilityLabel("iPhone playback volume")
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
         .ignoresSafeArea()
         .containerBackground(.black, for: .tabView)
-        .alert("Reset for a new class?", isPresented: $confirmReset) {
+        .alert("New class?", isPresented: $confirmReset) {
             Button("Reset", role: .destructive) {
                 session.stop(source: "new_class_reset")
                 metronome.cancel(reason: "new_class_reset")
@@ -47,7 +51,7 @@ struct SharedClockPage: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Clears the class end marker and stops runtime and landmarks.")
+            Text("Clears class timing and stops runtime and counting.")
         }
     }
 
@@ -64,41 +68,53 @@ struct SharedClockPage: View {
     }
 
     @ViewBuilder
-    private var controls: some View {
-        VStack(spacing: 3) {
+    private func controls(layout: TimerFaceLayout) -> some View {
+        VStack(spacing: layout.spacing) {
             Button {
                 if metronome.isActive { metronome.cancel() } else { metronome.start() }
             } label: {
-                Label(metronome.isActive ? "Stop count" : "Landmarks",
+                ViewThatFits(in: .horizontal) {
+                    Label(metronome.isActive ? "Stop count" : "Landmarks",
                       systemImage: metronome.isActive ? "stop.fill" : "metronome")
-                    .font(.system(size: 13, weight: .bold))
-                    .frame(width: 128, height: 52)
+                        .fixedSize()
+                    Image(systemName: metronome.isActive ? "stop.fill" : "metronome")
+                }
+                    .font(.system(size: countFontSize, weight: .bold))
+                    .padding(.horizontal, 8)
+                    .frame(width: layout.controlsWidth, height: layout.countHeight)
                     .background(.black.opacity(0.35), in: RoundedRectangle(cornerRadius: 16))
                     .overlay(RoundedRectangle(cornerRadius: 16).stroke(.white, lineWidth: metronome.isActive ? 3 : 1))
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("metronome-toggle")
+            .accessibilityLabel(metronome.isActive ? "Stop count" : "Landmarks")
             .accessibilityValue(metronome.isActive ? "Active" : "Inactive")
             .accessibilityHint("Counts one through six at ten-second intervals. Tap again to cancel.")
-            HStack(spacing: 4) {
+            HStack(spacing: layout.spacing) {
                 Button {
                     if session.isActive { session.stop() }
                     else { classStore.establishIfNeeded(); session.start() }
                 } label: {
-                    Text(session.isActive ? "Stop runtime" : (classStore.context == nil ? "Start class" : "Restart runtime"))
-                        .font(.system(size: 10, weight: .semibold))
-                        .multilineTextAlignment(.center)
-                        .frame(width: 88, height: 44)
+                    ViewThatFits(in: .vertical) {
+                        Text(runtimeActionTitle)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Image(systemName: session.isActive ? "stop.fill" : "play.fill")
+                    }
+                        .font(.system(size: runtimeFontSize, weight: .semibold))
+                        .frame(width: layout.controlsWidth - layout.resetSide - layout.spacing,
+                               height: layout.runtimeHeight)
                         .background(.black.opacity(0.35), in: Capsule())
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .disabled(session.phase == .starting)
+                .accessibilityLabel(runtimeActionTitle)
                 .accessibilityIdentifier("runtime-toggle")
                 Button { confirmReset = true } label: {
                     Image(systemName: "ellipsis")
-                        .frame(width: 44, height: 44)
+                        .frame(width: layout.resetSide, height: layout.resetSide)
                         .background(.black.opacity(0.35), in: Circle())
                         .overlay(Circle().stroke(.white.opacity(0.6), lineWidth: 1))
                         .contentShape(Rectangle())
@@ -110,19 +126,27 @@ struct SharedClockPage: View {
             // Reserve the space so status transitions don't move the tap targets.
             VStack(spacing: 0) {
                 Text(session.statusText)
-                    .font(.system(size: 9))
+                    .font(.system(size: 11 * layout.scale))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                     .accessibilityIdentifier("runtime-status")
-                Text(metronome.lastResult)
-                    .font(.system(size: 8))
+                Text(metronome.isActive && metronome.hapticsStopped ? "Haptics off · arc active" : metronome.lastResult)
+                    .font(.system(size: 10 * layout.scale))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                     .accessibilityIdentifier("landmark-result")
+                    .accessibilityLabel(metronome.lastResult)
             }
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
-                .frame(width: 150, height: 16)
+                .frame(width: layout.controlsWidth, height: layout.statusHeight)
                 .allowsHitTesting(false)
         }
+        .frame(width: layout.controlsWidth, height: layout.controlsHeight)
+    }
+
+    private var runtimeActionTitle: String {
+        session.isActive ? "Stop runtime" : (classStore.context == nil ? "Start class" : "Restart runtime")
     }
 }
 

@@ -22,7 +22,7 @@ struct ClockAdditions: View {
                     style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 3]))
                 let direction = CGVector(dx: sin(start), dy: -cos(start))
                 let vector = SquircleRayGeometry.intersection(size: size,
-                    cornerRadius: max(0, SquircleClockTuning.cornerRadius - inset),
+                    cornerRadius: max(0, SquircleClockTuning.cornerRadius(for: size) - inset),
                     edgeInset: SquircleClockTuning.edgeInset + inset, direction: direction)
                 let point = CGPoint(x: center.x + vector.dx, y: center.y + vector.dy)
                 graphics.fill(Path(ellipseIn: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6)),
@@ -62,7 +62,7 @@ struct ClockAdditions: View {
                     perimeter = CGVector(dx: direction.dx * radius, dy: direction.dy * radius)
                 } else {
                     perimeter = SquircleRayGeometry.intersection(size: size,
-                        cornerRadius: SquircleClockTuning.cornerRadius,
+                        cornerRadius: SquircleClockTuning.cornerRadius(for: size),
                         edgeInset: SquircleClockTuning.edgeInset, direction: direction)
                 }
                 let prominent = context.progress(at: date) >= 0.5
@@ -82,6 +82,14 @@ struct ClockAdditions: View {
             }
         }
         .accessibilityLabel("Wall-clock minute hand and scheduled class end")
+        .accessibilityValue(accessibilityDescription)
+    }
+
+    private var accessibilityDescription: String {
+        let time = date.formatted(date: .omitted, time: .shortened)
+        guard let context else { return "Current time \(time). No class scheduled." }
+        let end = context.scheduledEnd.formatted(date: .omitted, time: .shortened)
+        return "Current time \(time). Scheduled class end \(end)."
     }
 
     /// Uses the same ray/perimeter geometry as the ticks and end marker.
@@ -94,7 +102,7 @@ struct ClockAdditions: View {
             let angle = start + (end - start) * Double(index) / Double(steps)
             let direction = CGVector(dx: sin(angle), dy: -cos(angle))
             let vector = SquircleRayGeometry.intersection(size: size,
-                cornerRadius: inset == 3 ? SquircleClockTuning.cornerRadius : max(0, SquircleClockTuning.cornerRadius - inset),
+                cornerRadius: inset == 3 ? SquircleClockTuning.cornerRadius(for: size) : max(0, SquircleClockTuning.cornerRadius(for: size) - inset),
                 edgeInset: SquircleClockTuning.edgeInset + inset, direction: direction)
             let point = CGPoint(x: size.width / 2 + vector.dx, y: size.height / 2 + vector.dy)
             if index == 0 { path.move(to: point) } else { path.addLine(to: point) }

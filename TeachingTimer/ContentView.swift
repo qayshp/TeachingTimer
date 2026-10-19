@@ -48,6 +48,14 @@ struct ContentView: View {
                     .tag(Page.nowPlaying)
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
+#if DEBUG
+            // Visual checks only: no automatic session or haptic actions.
+            .transformEnvironment(\.dynamicTypeSize) { size in
+                let arguments = ProcessInfo.processInfo.arguments
+                if arguments.contains("--accessibility-text") { size = .accessibility3 }
+                else if arguments.contains("--large-text") { size = .xxxLarge }
+            }
+#endif
             .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
                 // Old pre-rendered dates no longer represent the same instants.
                 // New frames project from a fresh wall/monotonic clock pair.

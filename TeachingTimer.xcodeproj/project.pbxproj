@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		100000000000000000000011 = {isa = PBXBuildFile; fileRef = 200000000000000000000011; };
 		100000000000000000000009 = {isa = PBXBuildFile; fileRef = 200000000000000000000009; };
 		100000000000000000000010 = {isa = PBXBuildFile; fileRef = 200000000000000000000010; };
 		100000000000000000000001 /* TeachingTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000001 /* TeachingTimerApp.swift */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		200000000000000000000011 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerFaceLayout.swift; sourceTree = "<group>"; };
 		200000000000000000000009 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandmarkDiagnostics.swift; sourceTree = "<group>"; };
 		200000000000000000000010 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeRenewalRules.swift; sourceTree = "<group>"; };
 		200000000000000000000001 /* TeachingTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeachingTimerApp.swift; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 				000000000000000000000953,
 				200000000000000000000009,
 				200000000000000000000010,
+				200000000000000000000011,
 				200000000000000000000004 /* Info.plist */,
 			);
 			path = TeachingTimer;
@@ -159,6 +162,7 @@
 				000000000000000000000903,
 				100000000000000000000009,
 				100000000000000000000010,
+				100000000000000000000011,
 				100000000000000000000001 /* TeachingTimerApp.swift in Sources */,
 				100000000000000000000002 /* ContentView.swift in Sources */,
 				100000000000000000000003 /* ExtendedRuntimeController.swift in Sources */,

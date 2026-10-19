@@ -1,8 +1,75 @@
 # Teaching Timer watchOS proof of concept — version 2
 
-A watchOS-only app for Apple Watch SE 3 / watchOS 26. It tests a one-hour
+A watchOS-only app for Apple Watch / watchOS 26 and later. It tests a one-hour
 mindfulness extended-runtime session, a wall-clock-derived teaching timer,
 second-stepped analog hand, paired-iPhone Crown volume, and native Now Playing.
+
+## Adaptive layout pass (October 18, 2026)
+
+The teaching face now derives control widths, heights, and positions from available
+screen points using `TimerFaceLayout`, rather than fixed 40 mm offsets. Larger
+screens gain modestly larger controls; runtime/reset targets remain at least
+44 points and the landmark control remains oversized. Status text is larger and
+reserves fixed space so state changes do not shift touch targets. Action labels
+respond to Dynamic Type; landmark/runtime labels use symbol fallbacks when text
+does not fit, retaining explicit VoiceOver labels. The active haptic-failure
+message is shortened visually with the full result retained for VoiceOver.
+The reset confirmation uses shorter copy on the smallest display. Status text still
+uses compact fixed fonts: this is not full large-text accessibility support.
+
+The dial, clipped boundary, class progress and landmark arc use one size-adjusted
+corner-radius approximation. Physical curvature remains tunable, not exact.
+VoiceOver can read the minute-hand time and scheduled end without adding visible
+digital time. The native companion control's focus/resign implementation, timing,
+runtime renewal, class snapping, haptic policy and Now Playing are unchanged.
+
+Layout arithmetic checks span eight logical screen sizes (162×197 through
+211×257 points), verifying control separation, edge clearance and action targets:
+
+```sh
+swiftc TeachingTimer/TimerFaceLayout.swift Tests/TimerFaceLayoutChecks.swift -o /tmp/TimerFaceLayoutChecks
+/tmp/TimerFaceLayoutChecks
+```
+
+Xcode 27.1 initially encountered an old CoreSimulator 1171.7 framework. Running
+Apple's first-launch component installer with user-supplied administrator approval
+updated it to 1174.9.2. Restarting Device Hub after the update restored its screen
+view; native accessibility plus pointer input allowed live interaction testing.
+No simulator erasure or physical-device installation was involved.
+
+Simulator validation on watchOS 27.0:
+
+| Device | Checks |
+| --- | --- |
+| SE 3 40 mm | Idle/active layout, Start, landmarks, reset confirmation/reset, locked arc progression |
+| SE 3 44 mm | Idle/active layout, native volume feedback, reset/cancel confirmation and reset, page indicator |
+| Series 11 46 mm | Accessibility text fixture, Start/Stop, landmarks/cancel, swipe to Now Playing and back, class marker retained after Stop |
+| Ultra 3 49 mm | Large text fixture, Start/Stop, landmarks/cancel, swipe to Now Playing and back |
+
+The SE's locked run retained its arc after the existing late-pulse cutoff stopped
+haptics and later logged completion. Simulator completion callbacks can arrive
+late while inactive (observed 64.9s and 68.1s); this is not a precise haptic-delivery
+or frame-cadence guarantee. The existing projected visual lifetime is unchanged.
+Now Playing correctly rendered its native no-source state. Screenshots/journals
+from this pass are local ignored artifacts under `work/validation-2026-10-18/`.
+
+`simctl ui content_size` and Increase Contrast return unsupported for this watch
+runtime. Debug-only launch arguments `--large-text` and `--accessibility-text`
+instead set SwiftUI's `.xxxLarge` and `.accessibility3` environments respectively;
+they trigger no runtime or haptic actions and are absent from Release behavior.
+For example, after installing the Debug build on a simulator:
+
+```sh
+xcrun simctl launch --terminate-running-process WATCH_SIMULATOR_ID com.qayshp.TeachingTimer --accessibility-text
+```
+
+On hardware, recheck volume feedback and immediate Crown focus after controls,
+reset dismissal and Now Playing, plus reduced-luminance clarity. Longer localized
+labels and full VoiceOver/large-text acceptance remain follow-up work.
+This pass does not add duration settings, localization, onboarding or media
+availability handling. The installed Watch build is still the prior checkpoint.
+All seven deterministic check suites, simulator Debug build, and signed watchOS
+Release build passed before committing. The Release build excludes text fixtures.
 
 ## Why `mindfulness`
 
