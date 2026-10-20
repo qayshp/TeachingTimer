@@ -9,13 +9,17 @@ struct TimerFaceLayout {
     var countHeight: CGFloat { 52 * scale }
     var runtimeHeight: CGFloat { 44 * scale }
     var resetSide: CGFloat { runtimeHeight }
+    var resetSymbolSize: CGFloat { 20 * scale }
     var spacing: CGFloat { 4 * scale }
     var statusHeight: CGFloat { 28 * scale }
+    var statusHorizontalPadding: CGFloat { 6 * scale }
     var controlsHeight: CGFloat { countHeight + runtimeHeight + statusHeight + 2 * spacing }
     var controlsCenter: CGPoint {
         CGPoint(x: size.width / 2, y: size.height - 14 * scale - controlsHeight / 2)
     }
     var volumeSize: CGSize { CGSize(width: 64 * scale, height: 28) }
+    // Match the native control's fixed height; don't expand into nearby controls.
+    var volumeBackingSide: CGFloat { 38 }
     /// Tunable quiet zone for the system time/status icons, not a measured
     /// system-clock frame. Only the inner count arc is clipped here.
     var systemClockExclusion: CGRect {

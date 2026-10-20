@@ -1,5 +1,28 @@
 # Teaching Timer watchOS proof of concept — version 2
 
+## Readability third pass (October 20, 2026)
+
+The native companion volume control receives a white resting tint using
+WatchKit's `setTintColor` API. A static 38-point black circle behind it prevents
+clock/arc strokes from crossing its center; this is not a custom volume display.
+The native control, its frame, companion origin, and asynchronous focus/resign
+sequence are otherwise unchanged. Apple applies the tint only to the resting
+state; system Crown-adjustment feedback and unavailable-source dimming remain
+system-owned. The simulator has no paired media source, so physical playback
+appearance and instant Crown responsiveness still require Watch validation.
+
+The reset glyph now has a screen-proportional 20–25-point size independent of
+Dynamic Type; its existing 44-point-or-larger target remains unchanged. Footer
+lines have two scaled points of separation and six scaled points of horizontal
+padding within the existing reserved black status region. No runtime, class,
+count, navigation, or hand geometry behavior changed.
+
+Verified Debug simulator and signed Release watchOS builds, signature validation,
+and eight-size layout checks including volume-backing clearance and reset glyph
+proportion. Simulator screenshots cover SE 3 40 mm accessibility text and Ultra
+larger text under `work/validation-2026-10-20-third-pass/` (ignored).
+No physical Watch installation was performed.
+
 ## Readability second pass (October 20, 2026)
 
 The background squircle outline is now 0.75 points rather than 1.5, with lower

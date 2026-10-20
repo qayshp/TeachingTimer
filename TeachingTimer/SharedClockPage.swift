@@ -37,6 +37,14 @@ struct SharedClockPage: View {
                     .position(layout.controlsCenter)
                 CompanionVolumeControl(isFocused: crownIsActive && !confirmReset)
                     .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
+                    // Static backing only: the native control still owns all
+                    // volume feedback and Crown input.
+                    .background {
+                        Circle()
+                            .fill(.black)
+                            .frame(width: layout.volumeBackingSide, height: layout.volumeBackingSide)
+                            .allowsHitTesting(false)
+                    }
                     .position(layout.volumeCenter)
                     .accessibilityLabel("iPhone playback volume")
             }
@@ -121,6 +129,7 @@ struct SharedClockPage: View {
                 .accessibilityIdentifier("runtime-toggle")
                 Button { confirmReset = true } label: {
                     Image(systemName: "arrow.counterclockwise")
+                        .font(.system(size: layout.resetSymbolSize, weight: .medium))
                         .frame(width: layout.resetSide, height: layout.resetSide)
                         .background(.black, in: Circle())
                         .overlay(Circle().stroke(.white.opacity(0.6), lineWidth: 1))
@@ -132,7 +141,7 @@ struct SharedClockPage: View {
                 .accessibilityIdentifier("class-reset")
             }
             // Reserve the space so status transitions don't move the tap targets.
-            VStack(spacing: 0) {
+            VStack(spacing: 2 * layout.scale) {
                 Text(session.statusText)
                     .font(.system(size: 11 * layout.scale))
                     .lineLimit(1)
@@ -147,6 +156,7 @@ struct SharedClockPage: View {
             }
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
+                .padding(.horizontal, layout.statusHorizontalPadding)
                 .frame(width: layout.controlsWidth, height: layout.statusHeight)
                 // Keep hands and arcs out of the small diagnostic text without
                 // changing the reserved layout space or intercepting touches.
@@ -165,7 +175,11 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
     let isFocused: Bool
 
     func makeWKInterfaceObject(context: Context) -> WKInterfaceVolumeControl {
-        WKInterfaceVolumeControl(origin: .companion)
+        let volumeControl = WKInterfaceVolumeControl(origin: .companion)
+        // Native tint affects the resting appearance only. System adjustment
+        // feedback and unavailable-source presentation remain system-owned.
+        volumeControl.setTintColor(.white)
+        return volumeControl
     }
 
     func updateWKInterfaceObject(
