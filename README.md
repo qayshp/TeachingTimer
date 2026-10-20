@@ -1,5 +1,30 @@
 # Teaching Timer watchOS proof of concept — version 2
 
+## Readability second pass (October 20, 2026)
+
+The background squircle outline is now 0.75 points rather than 1.5, with lower
+brightness. The 2.5-point future-class track, dashed past track, ticks, and filled
+scheduled-end wedge are unchanged, preserving a geometry-based hierarchy in
+monochrome. The reset button now uses a counterclockwise arrow rather than an
+ellipsis; its target, accessibility label, and confirmation are unchanged.
+Count labels try full text, then short “Count” / “Stop” text, then the icon,
+without reducing the existing scaled text or touch target.
+
+Only the inner landmark arc and its start dot are clipped beneath a tunable
+upper-right system-clock quiet zone in `TimerFaceLayout`. This is an approximate
+screen-relative rectangle, not a claim that watchOS exposes the clock's frame.
+The arc retains its original monotonic anchor, start angle, and full progress;
+it continues invisibly behind the quiet zone and reappears beyond it. Hands,
+outer class progress/end marker, and native volume are not clipped or changed.
+
+Verified simulator and signed Release builds and all seven deterministic suites.
+The layout suite now checks the quiet zone across eight screen sizes. Device Hub
+checks include 40 mm accessibility-size short-label rendering, Ultra larger-text
+rendering, reset confirmation, and arc exclusion as the arc passes the system
+time. Screenshots are ignored under `work/validation-2026-10-20-second-pass/`.
+Physical readability and Crown regression validation remain pending; no physical
+Watch installation was performed.
+
 ## Readability first pass (October 20, 2026)
 
 Count, session, and reset controls now have opaque black backing so clock hands

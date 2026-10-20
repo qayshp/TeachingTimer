@@ -21,6 +21,11 @@ struct TimerFaceLayoutChecks {
             assert(layout.volumeCenter.y - layout.volumeSize.height / 2 >= 18)
             assert(layout.controlsCenter.y + layout.controlsHeight / 2 < size.height - 12)
             assert(TimerFaceLayout.cornerRadius(for: size) < size.width / 2)
+            let quietZone = layout.systemClockExclusion
+            assert(quietZone.minY == 0 && quietZone.maxX == size.width)
+            assert(quietZone.minX > 0 && quietZone.minX < size.width / 2)
+            assert(quietZone.maxY < controlsTop)
+            assert(!quietZone.contains(CGPoint(x: size.width / 2, y: size.height / 2)))
         }
         print("PASS: 8 Watch sizes, separated volume/actions, 44pt action targets, edge clearance")
     }

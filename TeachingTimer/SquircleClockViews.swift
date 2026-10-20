@@ -53,7 +53,7 @@ private struct SquircleClockFace: View {
             ZStack {
                 boundary
                     .inset(by: SquircleClockTuning.edgeInset)
-                    .stroke(.white.opacity(dimmed ? 0.42 : 0.72), lineWidth: 1.5)
+                    .stroke(.white.opacity(dimmed ? 0.35 : 0.45), lineWidth: 0.75)
 
                 ticks
                 hand

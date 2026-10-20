@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 /// Measurements use available points, not model names or pixel resolutions.
 struct TimerFaceLayout {
@@ -15,6 +16,12 @@ struct TimerFaceLayout {
         CGPoint(x: size.width / 2, y: size.height - 14 * scale - controlsHeight / 2)
     }
     var volumeSize: CGSize { CGSize(width: 64 * scale, height: 28) }
+    /// Tunable quiet zone for the system time/status icons, not a measured
+    /// system-clock frame. Only the inner count arc is clipped here.
+    var systemClockExclusion: CGRect {
+        CGRect(x: size.width * 0.48, y: 0,
+               width: size.width * 0.52, height: 36 * scale)
+    }
     var volumeCenter: CGPoint {
         CGPoint(x: size.width / 2,
                 y: max(32, controlsCenter.y - controlsHeight / 2 - 6 - volumeSize.height / 2))

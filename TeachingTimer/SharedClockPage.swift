@@ -78,6 +78,8 @@ struct SharedClockPage: View {
                     Label(metronome.isActive ? "Stop count" : "Start count",
                       systemImage: metronome.isActive ? "stop.fill" : "metronome")
                         .fixedSize()
+                    Text(metronome.isActive ? "Stop" : "Count")
+                        .fixedSize()
                     Image(systemName: metronome.isActive ? "stop.fill" : "metronome")
                 }
                     .font(.system(size: countFontSize, weight: .bold))
@@ -118,7 +120,7 @@ struct SharedClockPage: View {
                 .accessibilityHint(session.isActive ? "Stops the session and keeps class timing." : "Keeps the teaching clock active during class.")
                 .accessibilityIdentifier("runtime-toggle")
                 Button { confirmReset = true } label: {
-                    Image(systemName: "ellipsis")
+                    Image(systemName: "arrow.counterclockwise")
                         .frame(width: layout.resetSide, height: layout.resetSide)
                         .background(.black, in: Circle())
                         .overlay(Circle().stroke(.white.opacity(0.6), lineWidth: 1))
