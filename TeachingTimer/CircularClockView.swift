@@ -44,7 +44,7 @@ struct CircularClockView: View {
             .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Seconds")
-        .accessibilityValue("\(second)")
+        .accessibilityLabel("Seconds hand")
+        .accessibilityValue("\(second) seconds")
     }
 }

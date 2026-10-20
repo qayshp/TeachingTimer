@@ -70,8 +70,8 @@ final class WKInterfaceDevice {
         let beforeLate = device.submissions.count
         clock.advanceNext(lateness: 0.4); await drain()
         assert(model.isActive && model.hapticsStopped && device.submissions.count == beforeLate)
-        assert(model.lastResult == "Haptics stopped · arc continues")
-        assert(MetronomeController(defaults: defaults, journal: journal).lastResult == "Last count: haptics stopped")
+        assert(model.lastResult == "Taps off · arc continues")
+        assert(MetronomeController(defaults: defaults, journal: journal).lastResult == "Last count: taps stopped")
         let originalAngle = model.startAngle
         let progressAtFailure = model.progress
         // Exercise the production drawing entry point, not just its underlying
@@ -86,7 +86,7 @@ final class WKInterfaceDevice {
         assert(model.progress > progressAtFailure && model.startAngle == originalAngle)
         assert(device.submissions.count == beforeLate) // no more pulse deadlines queued
         clock.advanceNext(); await drain() // original 64.8s completion, not a new minute
-        assert(!model.isActive && model.lastResult == "Count complete · haptics stopped")
+        assert(!model.isActive && model.lastResult == "Count done · taps off")
         assert(device.submissions.count == beforeLate)
         // Both explicit end actions also cancel a silent visual run immediately.
         for reason in ["user_cancelled", "new_class_reset"] {
@@ -97,7 +97,7 @@ final class WKInterfaceDevice {
             assert(!model.isActive && model.progress == 0)
             assert(!model.frame(at: Date()).isVisible)
             clock.advanceNext(); await drain() // cancelled completion must not overwrite result
-            assert(model.lastResult == "Count cancelled")
+            assert(model.lastResult == "Count stopped")
         }
         // Full original schedule: 21 timed pulses, then completion at 64.8s.
         model.start(); await drain()
@@ -108,7 +108,7 @@ final class WKInterfaceDevice {
         assert(anchor.duration(to: clock.now) == .seconds(64))
         clock.advanceNext(); await drain()
         assert(anchor.duration(to: clock.now) == .seconds(64.8))
-        assert(!model.isActive && model.lastResult == "Count completed")
+        assert(!model.isActive && model.lastResult == "Count complete")
         await journal.flush()
         let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
         let events = try decoder.decode([LandmarkDiagnostics.Event].self, from: Data(contentsOf: journalURL))

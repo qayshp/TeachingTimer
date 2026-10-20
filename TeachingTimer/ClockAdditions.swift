@@ -81,15 +81,15 @@ struct ClockAdditions: View {
                 graphics.fill(marker, with: .color(.white))
             }
         }
-        .accessibilityLabel("Wall-clock minute hand and scheduled class end")
+        .accessibilityLabel("Clock and class end")
         .accessibilityValue(accessibilityDescription)
     }
 
     private var accessibilityDescription: String {
         let time = date.formatted(date: .omitted, time: .shortened)
-        guard let context else { return "Current time \(time). No class scheduled." }
+        guard let context else { return "Current time \(time). No class started." }
         let end = context.scheduledEnd.formatted(date: .omitted, time: .shortened)
-        return "Current time \(time). Scheduled class end \(end)."
+        return "Current time \(time). Class ends at \(end)."
     }
 
     /// Uses the same ray/perimeter geometry as the ticks and end marker.

@@ -88,16 +88,16 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     var statusText: String {
         switch phase {
         case .idle: ""
-        case .starting: "Starting runtime…"
-        case .running: "Runtime active"
-        case .expiring: "Runtime expiring"
-        case .expired: "Runtime expired · tap Restart"
-        case .interrupted: "Runtime ended · tap Restart"
-        case .stopped: "Runtime stopped"
+        case .starting: "Starting session…"
+        case .running: "Session active"
+        case .expiring: "Session ending"
+        case .expired: "Session ended"
+        case .interrupted: "Session interrupted"
+        case .stopped: "Session stopped"
         case .failed(let message):
             message == "Raise wrist, then restart runtime"
-                ? "Raise wrist · tap Restart"
-                : (startedAt == nil ? "Couldn't start · tap Restart" : "Runtime failed · tap Restart")
+                ? "Raise wrist to resume"
+                : (startedAt == nil ? "Couldn’t start session" : "Session interrupted")
         }
     }
     func start(automatically: Bool = false) {

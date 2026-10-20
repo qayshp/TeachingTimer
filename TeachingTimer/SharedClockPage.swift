@@ -43,15 +43,15 @@ struct SharedClockPage: View {
         }
         .ignoresSafeArea()
         .containerBackground(.black, for: .tabView)
-        .alert("New class?", isPresented: $confirmReset) {
-            Button("Reset", role: .destructive) {
+        .alert("Reset class?", isPresented: $confirmReset) {
+            Button("Reset class", role: .destructive) {
                 session.stop(source: "new_class_reset")
                 metronome.cancel(reason: "new_class_reset")
                 classStore.reset()
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Clears class timing and stops runtime and counting.")
+            Text("Ends the session and count. Clears class timing.")
         }
     }
 
@@ -74,7 +74,7 @@ struct SharedClockPage: View {
                 if metronome.isActive { metronome.cancel() } else { metronome.start() }
             } label: {
                 ViewThatFits(in: .horizontal) {
-                    Label(metronome.isActive ? "Stop count" : "Landmarks",
+                    Label(metronome.isActive ? "Stop count" : "Start count",
                       systemImage: metronome.isActive ? "stop.fill" : "metronome")
                         .fixedSize()
                     Image(systemName: metronome.isActive ? "stop.fill" : "metronome")
@@ -88,9 +88,9 @@ struct SharedClockPage: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("metronome-toggle")
-            .accessibilityLabel(metronome.isActive ? "Stop count" : "Landmarks")
-            .accessibilityValue(metronome.isActive ? "Active" : "Inactive")
-            .accessibilityHint("Counts one through six at ten-second intervals. Tap again to cancel.")
+            .accessibilityLabel(metronome.isActive ? "Stop count" : "Start count")
+            .accessibilityValue(metronome.isActive ? (metronome.hapticsStopped ? "Counting without vibrations" : "Counting") : "Ready")
+            .accessibilityHint(metronome.isActive ? "Stops the arc and vibrations." : "Starts a one-minute count. Vibrations mark ten-second intervals.")
             HStack(spacing: layout.spacing) {
                 Button {
                     if session.isActive { session.stop() }
@@ -111,6 +111,7 @@ struct SharedClockPage: View {
                 .buttonStyle(.plain)
                 .disabled(session.phase == .starting)
                 .accessibilityLabel(runtimeActionTitle)
+                .accessibilityHint(session.isActive ? "Stops the session and keeps class timing." : "Keeps the teaching clock active during class.")
                 .accessibilityIdentifier("runtime-toggle")
                 Button { confirmReset = true } label: {
                     Image(systemName: "ellipsis")
@@ -120,7 +121,8 @@ struct SharedClockPage: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("New class or reset")
+                .accessibilityLabel("Reset class")
+                .accessibilityHint("Asks before clearing class timing and stopping the session and count.")
                 .accessibilityIdentifier("class-reset")
             }
             // Reserve the space so status transitions don't move the tap targets.
@@ -130,7 +132,7 @@ struct SharedClockPage: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                     .accessibilityIdentifier("runtime-status")
-                Text(metronome.isActive && metronome.hapticsStopped ? "Haptics off · arc active" : metronome.lastResult)
+                Text(metronome.lastResult)
                     .font(.system(size: 10 * layout.scale))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -146,7 +148,7 @@ struct SharedClockPage: View {
     }
 
     private var runtimeActionTitle: String {
-        session.isActive ? "Stop runtime" : (classStore.context == nil ? "Start class" : "Restart runtime")
+        session.isActive ? "Stop session" : (classStore.context == nil ? "Start class" : "Resume session")
     }
 }
 

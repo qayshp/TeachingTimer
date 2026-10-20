@@ -1,5 +1,22 @@
 # Teaching Timer watchOS proof of concept — version 2
 
+## Copy review (October 19, 2026)
+
+User-facing language distinguishes scheduled **class** timing, the keep-active
+**session**, and the one-minute **count**. Start/Stop count replaces the ambiguous
+Landmarks label. Session controls say Start class, Stop session, or Resume session;
+short status/error messages describe the state without repeating a potentially
+truncated instruction. Reset class asks before ending the session/count and
+clearing timing. Count results use concise “taps” language, while VoiceOver hints
+explain the vibrations and actions. The native Now Playing copy is Apple's UI.
+Technical runtime/haptic names, raw errors and journal keys are unchanged.
+Previously saved count-result wording is translated on load. This is an English
+copy pass, not a localization implementation or a change to haptic scheduling.
+
+Verified: simulator build, deterministic landmark-controller checks, and live
+SE 3 44 mm active/reset screens in Device Hub. Screenshots are ignored artifacts
+under `work/validation-2026-10-19/`.
+
 A watchOS-only app for Apple Watch / watchOS 26 and later. It tests a one-hour
 mindfulness extended-runtime session, a wall-clock-derived teaching timer,
 second-stepped analog hand, paired-iPhone Crown volume, and native Now Playing.
@@ -305,7 +322,7 @@ new haptic, countdown, Crown binding, or touch target. The original `.directionU
 pattern, 0.8-second spacing, absolute deadlines, >=0.4-second cutoff for further
 haptics, 21 pulses in a successful run, and 64.8-second completion remain unchanged.
 After a missed deadline the original arc continues with `Stop count` still usable
-and `Haptics stopped · arc continues` in the secondary status area. It reaches full
+and `Taps off · arc continues` in the secondary status area. It reaches full
 extent at 60s and clears at 64.8s even when haptics stopped earlier. Stop/Reset
 immediately cancels both. Completion preserves the fact that haptics stopped.
 Tests cover cancellation during groups 5 and 6 followed by immediate restart:

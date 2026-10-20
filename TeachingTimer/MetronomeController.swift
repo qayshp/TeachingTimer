@@ -69,8 +69,13 @@ final class MetronomeController: ObservableObject {
         lastResult = defaults.string(forKey: "landmarkLastResult") ?? ""
         // Runs aren't restored across process launch. Keep the last-known
         // haptic result without falsely claiming an arc is still running.
-        if lastResult == "Haptics stopped · arc continues" {
-            lastResult = "Last count: haptics stopped"
+        switch lastResult {
+        case "Haptics stopped · arc continues", "Taps off · arc continues", "Last count: haptics stopped":
+            lastResult = "Last count: taps stopped"
+        case "Count complete · haptics stopped": lastResult = "Count done · taps off"
+        case "Count completed": lastResult = "Count complete"
+        case "Count cancelled": lastResult = "Count stopped"
+        default: break
         }
     }
 #if CONTROLLER_CHECKS
@@ -157,7 +162,7 @@ final class MetronomeController: ObservableObject {
                         self.log.warning("Landmark schedule missed; stopping haptics while arc continues")
                         self.hapticsStopped = true
                         self.nextScheduledBeat = nil
-                        self.lastResult = "Haptics stopped · arc continues"
+                        self.lastResult = "Taps off · arc continues"
                         self.defaults.set(self.lastResult, forKey: "landmarkLastResult")
                         self.record("landmark_haptics_stopped", extra: ["reason": "missed_deadline", "landmark": String(index),
                             "pulse": String(pulse + 1), "count": String(index),
@@ -221,8 +226,8 @@ final class MetronomeController: ObservableObject {
         guard isActive else { return }
         record("landmark_ended", extra: extra.merging(["reason": reason]) { _, value in value }, flush: true)
         lastResult = reason == "completed"
-            ? (hapticsStopped ? "Count complete · haptics stopped" : "Count completed")
-            : "Count cancelled"
+            ? (hapticsStopped ? "Count done · taps off" : "Count complete")
+            : "Count stopped"
         defaults.set(lastResult, forKey: "landmarkLastResult")
         task?.cancel(); task = nil; anchor = nil; isActive = false; nextScheduledBeat = nil
         hapticsStopped = false

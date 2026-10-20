@@ -66,8 +66,8 @@ private struct SquircleClockFace: View {
             .clipShape(boundary)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Seconds")
-        .accessibilityValue("\(second)")
+        .accessibilityLabel("Seconds hand")
+        .accessibilityValue("\(second) seconds")
     }
 
     private var ticks: some View {
