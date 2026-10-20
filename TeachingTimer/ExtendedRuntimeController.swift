@@ -129,8 +129,8 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         log.notice("Requesting runtime; awaiting delegate confirmation")
         replacement.start()
     }
-    func stop(source: String = "runtime_button") {
-        record("stop_requested", extra: ["source": source])
+    func stop(source: String = "runtime_button", details: [String: String] = [:]) {
+        record("stop_requested", extra: details.merging(["source": source]) { _, source in source })
         stopRequested = true
         renewalPending = false
         needsRestart = false

@@ -6,6 +6,10 @@ struct ClassContext: Codable, Equatable {
     let scheduledStart: Date
     let durationMinutes: Int
     var scheduledEnd: Date { scheduledStart.addingTimeInterval(Double(durationMinutes) * 60) }
+    /// A generous overrun window; independent of WatchKit's runtime limit.
+    static let retirementGraceMinutes = 30
+    var retirementDate: Date { scheduledEnd.addingTimeInterval(Double(Self.retirementGraceMinutes) * 60) }
+    func shouldRetire(at date: Date) -> Bool { date >= retirementDate }
     init(pressedAt: Date, durationMinutes: Int = 60, calendar: Calendar = .current) {
         precondition(durationMinutes > 0)
         initialStartPressedAt = pressedAt
@@ -37,4 +41,14 @@ final class ClassStore: ObservableObject {
         if let data = try? JSONEncoder().encode(context) { defaults.set(data, forKey: key) }
     }
     func reset() { context = nil; defaults.removeObject(forKey: key) }
+
+    /// The caller stops its session/count before timing is removed. No new
+    /// class is inferred until an explicit Start, and repeated checks are inert.
+    @discardableResult
+    func retireIfNeeded(at date: Date = Date(), beforeReset: (ClassContext) -> Void = { _ in }) -> Bool {
+        guard let context, context.shouldRetire(at: date) else { return false }
+        beforeReset(context)
+        reset()
+        return true
+    }
 }

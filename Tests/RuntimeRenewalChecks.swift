@@ -99,6 +99,17 @@ final class WKExtendedRuntimeSession {
         let afterStop = WKExtendedRuntimeSession.instances.count
         stopped.applicationBecameActive()
         assert(stopped.phase == .stopped && WKExtendedRuntimeSession.instances.count == afterStop)
+        // An aged-out class cancels pending foreground recovery before it runs.
+        let retired = try controller(); retired.start()
+        let retirementSession = WKExtendedRuntimeSession.instances.last!
+        retirementSession.confirmStart(); await drain()
+        WKApplication.shared().applicationState = .inactive
+        retirementSession.end(.resignedFrontmost); await drain()
+        let beforeRetirement = WKExtendedRuntimeSession.instances.count
+        retired.stop(source: "class_retired", details: ["classDurationMinutes": "60"])
+        WKApplication.shared().applicationState = .active
+        retired.applicationBecameActive(); await drain()
+        assert(retired.phase == .stopped && WKExtendedRuntimeSession.instances.count == beforeRetirement)
         // User-initiated policy never performs an early handoff or automatic restart.
         let manual = try controller(); manual.renewalPolicy = .userInitiated; manual.start()
         let fourth = WKExtendedRuntimeSession.instances.last!

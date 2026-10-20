@@ -28,6 +28,34 @@ struct ClassContextChecks {
         assert(ClassStore(defaults: defaults).context == original)
         store.reset()
         assert(ClassStore(defaults: defaults).context == nil)
+        store.establishIfNeeded(at: date(31))
+        let oldClass = store.context!
+        assert(oldClass.retirementDate == date(30).addingTimeInterval(90 * 60))
+        assert(!oldClass.shouldRetire(at: oldClass.retirementDate.addingTimeInterval(-0.001)))
+        var retirementCalls = 0
+        assert(!store.retireIfNeeded(at: oldClass.scheduledEnd.addingTimeInterval(29 * 60)))
+        // Class context survives an hour-long runtime boundary and the overrun.
+        assert(store.context == oldClass)
+        assert(store.retireIfNeeded(at: oldClass.retirementDate) { retired in
+            assert(store.context == oldClass && retired == oldClass)
+            retirementCalls += 1
+        })
+        assert(retirementCalls == 1 && store.context == nil)
+        assert(ClassStore(defaults: defaults).context == nil)
+        assert(!store.retireIfNeeded(at: oldClass.retirementDate.addingTimeInterval(600)) { _ in retirementCalls += 1 })
+        assert(retirementCalls == 1)
+        // A new context is created only by a later explicit Start.
+        let nextStart = date(31).addingTimeInterval(3 * 3600)
+        store.establishIfNeeded(at: nextStart, durationMinutes: 75)
+        let longerClass = store.context!
+        assert(longerClass.initialStartPressedAt == nextStart)
+        assert(longerClass.retirementDate.timeIntervalSince(longerClass.scheduledStart) == 105 * 60)
+        assert(!store.retireIfNeeded(at: longerClass.scheduledStart.addingTimeInterval(90 * 60)))
+        // Restored old data is checked against actual time on activation.
+        let reopened = ClassStore(defaults: defaults)
+        assert(reopened.retireIfNeeded(at: longerClass.retirementDate.addingTimeInterval(3600)))
+        assert(ClassStore(defaults: defaults).context == nil)
         print("PASS: quarter-hour boundaries, seconds, hour rollover, 75-minute end, midpoint, persistence and explicit reset")
+        print("PASS: exact retirement boundary, overrun grace, idempotence, persistence, fresh Start and 75-minute protection")
     }
 }

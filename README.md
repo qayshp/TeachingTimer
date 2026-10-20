@@ -1,5 +1,42 @@
 # Teaching Timer watchOS proof of concept — version 2
 
+## Automatic class retirement (October 19, 2026)
+
+An old class now clears automatically **30 minutes after its scheduled end**.
+For a 1:15–2:15 class this is 2:45: 90 minutes from the scheduled start, not
+exactly 90 minutes after the initial tap. A 75-minute class gets its full interval
+plus the same grace (105 minutes from scheduled start). The constant lives in
+`ClassContext.retirementGraceMinutes`; quarter-hour snapping is unchanged.
+
+Retirement stops the runtime, suppresses pending automatic renewal, stops any
+count, removes the persisted context/end marker, and presents Start class.
+It never silently starts or infers the next class. Only the next Start creates
+a fresh context. Reset class remains available for back-to-back classes before
+the grace window ends. Ordinary session Stop/Resume during the interval continues
+to preserve class timing; the one-hour WatchKit runtime limit is separate.
+
+A cancellable task waits for the deadline, with checks on appearance, return to
+active, clock changes, and before a session-button action. All checks use actual
+Date(), never future Always-On frame dates. Clock changes reschedule the wait.
+watchOS may suspend or delay the task; cleanup then occurs on return before old
+foreground-recovery intent is processed. This is not a background wake guarantee.
+The cutoff is idempotent, also handling persisted contexts from previous days.
+
+The runtime journal records `stop_requested` with source `class_retired`, exact
+initial/scheduled dates, duration, deadline and actual retirement time. Active
+counts record `landmark_ended` with reason `class_retired`. Existing journal data
+is retained across retirement.
+
+Verification: all seven deterministic suites and Debug simulator / signed Release
+builds pass. New checks cover the exact cutoff, grace, repeated checks, persistence,
+fresh Start, 75-minute protection, and cancellation of deferred runtime recovery.
+In Device Hub (SE 3 44 mm), simulator-only persisted-context fixtures placed the
+deadline seconds away: active session/count stopped at the cutoff, Start created
+fresh timing, returning from background cleared old timing without renewing it,
+and a cold launch on Now Playing also cleared a stale context. This exercised the
+normal lifecycle with synthetic dates, not a 90-minute wall-clock endurance test.
+Physical validation is pending; no build was installed on the user's Watch.
+
 ## Copy review (October 19, 2026)
 
 User-facing language distinguishes scheduled **class** timing, the keep-active
@@ -144,7 +181,7 @@ captured deterministically in automated simulator checks.
 captures the exact button timestamp, inferred scheduled start, and duration
 (default 60 minutes; 75 is also supported). Minutes 0–12 after a quarter-hour
 anchor backwards, including all seconds in minute 12; minutes 13–14 anchor
-forwards. Runtime Stop/Restart never changes this context. The ellipsis button
+forwards. Runtime Stop/Resume never changes an unexpired context. The ellipsis button
 opens a confirmation before Reset clears the context and cancels both services.
 
 The inward triangular end marker uses the scheduled end minute and the existing
@@ -152,8 +189,8 @@ perimeter intersection geometry (or the fitted circle radius). It grows modestly
 from an 8-point-wide, 14-point-deep solid white wedge to 9 points wide and
 17 points deep at the scheduled midpoint. Its initial filled area is roughly
 twice that of a major tick; emphasis relies on shape and size, not opacity.
-It persists until Reset,
-including beyond the scheduled end and across process relaunches.
+It persists through the scheduled end and across process relaunches until Reset
+or automatic retirement 30 minutes after the scheduled end.
 
 `MetronomeController` is independent of the runtime and class. The large button
 now starts a fresh landmark counter: immediate `.start` acknowledgement, then
@@ -305,7 +342,8 @@ WatchKit boundary doubles; they still require an actual hour-boundary Watch test
 `Documents/LandmarkDiagnostics.json` is a separate 2,000-event bounded journal.
 It records run IDs, configuration, acknowledgement and timed haptic submissions,
 scheduled/actual monotonic elapsed time, lateness, haptic name/raw value, and
-explicit visual-run end reasons: `completed`, `user_cancelled`, or `new_class_reset`.
+explicit visual-run end reasons: `completed`, `user_cancelled`, `new_class_reset`,
+or `class_retired`.
 A missed deadline now records a separate `landmark_haptics_stopped` event with
 reason `missed_deadline`; it does not end the visual run. Runtime ID/phase, scene state and application state are captured
 for correlation. A submission is not proof of physical vibration delivery.

@@ -13,6 +13,7 @@ struct SharedClockPage: View {
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
     @ObservedObject var metronome: MetronomeController
+    let retireOldClass: () -> Bool
     let crownIsActive: Bool
     var showsClassProgress = false
     @State private var confirmReset = false
@@ -93,6 +94,9 @@ struct SharedClockPage: View {
             .accessibilityHint(metronome.isActive ? "Stops the arc and vibrations." : "Starts a one-minute count. Vibrations mark ten-second intervals.")
             HStack(spacing: layout.spacing) {
                 Button {
+                    // A tap at the exact cutoff clears the old class first;
+                    // starting a new class always requires an explicit Start.
+                    guard !retireOldClass() else { return }
                     if session.isActive { session.stop() }
                     else { classStore.establishIfNeeded(); session.start() }
                 } label: {
