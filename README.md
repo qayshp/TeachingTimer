@@ -1,5 +1,22 @@
 # Teaching Timer watchOS proof of concept — version 2
 
+## Readability first pass (October 20, 2026)
+
+Count, session, and reset controls now have opaque black backing so clock hands
+cannot cross their labels. The active count outline is reduced from 3 to 2 points;
+the inactive outline remains 1 point. The existing reserved status area also has
+opaque black backing to separate its two text lines from hands, ticks, and arcs.
+Control positions, dimensions, touch targets, dial geometry, timing, haptics, and
+the native companion volume/focus implementation are unchanged.
+
+Verified Debug simulator and signed Release watchOS builds, plus layout checks
+for eight Watch sizes. Device Hub screenshots cover SE 3 40 mm and 44 mm, and
+Ultra 3 49 mm with larger text, including locked monochrome views. The small
+locked screen also showed the two-line haptic-stop status with the arc continuing.
+Artifacts are ignored under `work/validation-2026-10-19-readability/` (the test
+crossed midnight). These are simulator layout checks, not renewed physical Crown,
+haptic, or Always-On validation. No installation on the physical Watch was made.
+
 ## Automatic class retirement (October 19, 2026)
 
 An old class now clears automatically **30 minutes after its scheduled end**.

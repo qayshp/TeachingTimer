@@ -83,8 +83,8 @@ struct SharedClockPage: View {
                     .font(.system(size: countFontSize, weight: .bold))
                     .padding(.horizontal, 8)
                     .frame(width: layout.controlsWidth, height: layout.countHeight)
-                    .background(.black.opacity(0.35), in: RoundedRectangle(cornerRadius: 16))
-                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(.white, lineWidth: metronome.isActive ? 3 : 1))
+                    .background(.black, in: RoundedRectangle(cornerRadius: 16))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(.white, lineWidth: metronome.isActive ? 2 : 1))
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -109,7 +109,7 @@ struct SharedClockPage: View {
                         .font(.system(size: runtimeFontSize, weight: .semibold))
                         .frame(width: layout.controlsWidth - layout.resetSide - layout.spacing,
                                height: layout.runtimeHeight)
-                        .background(.black.opacity(0.35), in: Capsule())
+                        .background(.black, in: Capsule())
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -120,7 +120,7 @@ struct SharedClockPage: View {
                 Button { confirmReset = true } label: {
                     Image(systemName: "ellipsis")
                         .frame(width: layout.resetSide, height: layout.resetSide)
-                        .background(.black.opacity(0.35), in: Circle())
+                        .background(.black, in: Circle())
                         .overlay(Circle().stroke(.white.opacity(0.6), lineWidth: 1))
                         .contentShape(Rectangle())
                 }
@@ -146,6 +146,9 @@ struct SharedClockPage: View {
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
                 .frame(width: layout.controlsWidth, height: layout.statusHeight)
+                // Keep hands and arcs out of the small diagnostic text without
+                // changing the reserved layout space or intercepting touches.
+                .background(.black, in: RoundedRectangle(cornerRadius: 6))
                 .allowsHitTesting(false)
         }
         .frame(width: layout.controlsWidth, height: layout.controlsHeight)
