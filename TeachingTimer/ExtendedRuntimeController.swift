@@ -85,6 +85,12 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     var isActive: Bool {
         switch phase { case .starting, .running, .expiring: true; default: false }
     }
+    func actionTitle(hasClass: Bool) -> String {
+        if phase == .starting { return "Starting…" }
+        if isActive { return "Stop session" }
+        if !hasClass { return "Start class" }
+        return startedAt == nil ? "Start session" : "Resume session"
+    }
     var statusText: String {
         switch phase {
         case .idle: ""

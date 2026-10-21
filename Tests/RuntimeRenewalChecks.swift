@@ -54,9 +54,13 @@ final class WKExtendedRuntimeSession {
         assert(!RuntimeRenewalRules.isExpirationError(warned: true, expiration: now, now: now, domain: "RBSAssertionErrorDomain", code: 2))
         // Early active handoff: no overlap, only one invalidate request.
         let early = try controller()
+        assert(early.actionTitle(hasClass: false) == "Start class")
+        assert(early.actionTitle(hasClass: true) == "Start session")
         early.start()
+        assert(early.actionTitle(hasClass: true) == "Starting…")
         let first = WKExtendedRuntimeSession.instances.last!
         first.confirmStart(); await drain()
+        assert(early.actionTitle(hasClass: true) == "Stop session")
         first.expirationDate = Date().addingTimeInterval(15)
         first.warn(); await drain()
         assert(first.invalidationRequests == 1)
@@ -99,6 +103,8 @@ final class WKExtendedRuntimeSession {
         let afterStop = WKExtendedRuntimeSession.instances.count
         stopped.applicationBecameActive()
         assert(stopped.phase == .stopped && WKExtendedRuntimeSession.instances.count == afterStop)
+        assert(stopped.actionTitle(hasClass: true) == "Resume session")
+        assert(stopped.actionTitle(hasClass: false) == "Start class")
         // An aged-out class cancels pending foreground recovery before it runs.
         let retired = try controller(); retired.start()
         let retirementSession = WKExtendedRuntimeSession.instances.last!
@@ -150,6 +156,7 @@ final class WKExtendedRuntimeSession {
         assert(inFlight.invalidationRequests == 1)
         inFlight.end(.none); await drain(); starting.applicationBecameActive()
         assert(starting.phase == .stopped && WKExtendedRuntimeSession.instances.last === inFlight)
+        assert(starting.actionTitle(hasClass: true) == "Start session")
         print("PASS: early handoff ordering, inactive deferral, observed expiration error, rejected replacement no-loop, explicit reset, manual policy, narrow time/error boundaries")
     }
 }

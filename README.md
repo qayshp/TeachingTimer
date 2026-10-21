@@ -9,6 +9,12 @@ class. Landmark configuration rejects non-finite or over-one-day schedules befor
 creating deadlines. Valid 60/75-minute classes and the 10-second landmark preset,
 quarter-hour anchoring, foreground seconds hand, and Crown focus are unchanged.
 
+Copy now distinguishes Start session (no successful start) from Resume session
+(a previously running session), with Starting… while the action is disabled.
+Reset confirmation uses a shorter body and Reset button; VoiceOver describes six
+ten-second landmarks without confusing the 60-second arc with its 64.8-second
+completion. Existing diagnostic keys, errors, and persisted result text are kept.
+
 ## Foremost seconds hand (October 21, 2026)
 
 The seconds hand and center pivot now draw above all teaching-face controls and

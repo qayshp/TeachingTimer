@@ -64,14 +64,14 @@ struct SharedClockPage: View {
         .ignoresSafeArea()
         .containerBackground(.black, for: .tabView)
         .alert("Reset class?", isPresented: $confirmReset) {
-            Button("Reset class", role: .destructive) {
+            Button("Reset", role: .destructive) {
                 session.stop(source: "new_class_reset")
                 metronome.cancel(reason: "new_class_reset")
                 classStore.reset()
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Ends the session and count. Clears class timing.")
+            Text("Clears timing. Stops session and count.")
         }
     }
 
@@ -112,7 +112,7 @@ struct SharedClockPage: View {
             .accessibilityIdentifier("metronome-toggle")
             .accessibilityLabel(metronome.isActive ? "Stop count" : "Start count")
             .accessibilityValue(metronome.isActive ? (metronome.hapticsStopped ? "Counting without vibrations" : "Counting") : "Ready")
-            .accessibilityHint(metronome.isActive ? "Stops the arc and vibrations." : "Starts a one-minute count. Vibrations mark ten-second intervals.")
+            .accessibilityHint(metronome.isActive ? "Stops the arc and vibrations." : "Counts six ten-second landmarks with vibrations.")
             HStack(spacing: layout.spacing) {
                 Button {
                     // A tap at the exact cutoff clears the old class first;
@@ -169,8 +169,8 @@ struct SharedClockPage: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, layout.statusHorizontalPadding)
                 .frame(width: layout.controlsWidth, height: layout.statusHeight)
-                // Keep hands and arcs out of the small diagnostic text without
-                // changing the reserved layout space or intercepting touches.
+                // Keep the minute hand and arcs out of diagnostic text.
+                // The foreground seconds hand intentionally remains visible.
                 .background(.black, in: RoundedRectangle(cornerRadius: 6))
                 .allowsHitTesting(false)
         }
@@ -178,7 +178,7 @@ struct SharedClockPage: View {
     }
 
     private var runtimeActionTitle: String {
-        session.isActive ? "Stop session" : (classStore.context == nil ? "Start class" : "Resume session")
+        session.actionTitle(hasClass: classStore.context != nil)
     }
 }
 
