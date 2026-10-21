@@ -13,18 +13,20 @@ enum SquircleClockTuning {
 struct SquircleIntersectionClockView: View {
     let date: Date
     let dimmed: Bool
+    var layer: ClockFaceLayer = .complete
 
     var body: some View {
-        SquircleClockFace(date: date, dimmed: dimmed, handStyle: .perimeterIntersection)
+        SquircleClockFace(date: date, dimmed: dimmed, handStyle: .perimeterIntersection, layer: layer)
     }
 }
 
 struct SquircleClippedClockView: View {
     let date: Date
     let dimmed: Bool
+    var layer: ClockFaceLayer = .complete
 
     var body: some View {
-        SquircleClockFace(date: date, dimmed: dimmed, handStyle: .fixedAndClipped)
+        SquircleClockFace(date: date, dimmed: dimmed, handStyle: .fixedAndClipped, layer: layer)
     }
 }
 
@@ -37,6 +39,7 @@ private struct SquircleClockFace: View {
     let date: Date
     let dimmed: Bool
     let handStyle: HandStyle
+    let layer: ClockFaceLayer
 
     private var second: Int {
         Calendar.current.component(.second, from: date)
@@ -51,16 +54,18 @@ private struct SquircleClockFace: View {
             )
 
             ZStack {
-                boundary
-                    .inset(by: SquircleClockTuning.edgeInset)
-                    .stroke(.white.opacity(dimmed ? 0.35 : 0.45), lineWidth: 0.75)
-
-                ticks
-                hand
-
-                Circle()
-                    .fill(dimmed ? .white : .yellow)
-                    .frame(width: 9, height: 9)
+                if layer != .secondsHand {
+                    boundary
+                        .inset(by: SquircleClockTuning.edgeInset)
+                        .stroke(.white.opacity(dimmed ? 0.35 : 0.45), lineWidth: 0.75)
+                    ticks
+                }
+                if layer != .dial {
+                    hand
+                    Circle()
+                        .fill(dimmed ? .white : .yellow)
+                        .frame(width: 9, height: 9)
+                }
             }
             .frame(width: size.width, height: size.height)
             .clipShape(boundary)
@@ -68,6 +73,7 @@ private struct SquircleClockFace: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Seconds hand")
         .accessibilityValue("\(second) seconds")
+        .accessibilityHidden(layer == .dial)
     }
 
     private var ticks: some View {

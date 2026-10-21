@@ -1,5 +1,22 @@
 # Teaching Timer watchOS proof of concept — version 2
 
+## Foremost seconds hand (October 21, 2026)
+
+The seconds hand and center pivot now draw above all teaching-face controls and
+status text, restoring continuous visibility across their opaque backgrounds.
+The same clock view renders separate dial/hand layers from the same timeline
+date; its geometry, whole-second cadence, color, and display clipping are
+unchanged. The minute hand, class/count arcs, and scheduled marker stay behind
+controls. The foreground hand disables hit testing and the background dial is
+hidden from accessibility to avoid duplicate seconds-hand announcements.
+Native volume creation/focus and all session/class/haptic logic are unchanged.
+
+Verified Debug simulator and signed Release builds, signature validation, and
+eight-size layout checks. SE 3 40 mm screenshots confirm the hand crosses the
+count/session/status regions and the count and reset controls still respond.
+Artifacts are ignored under `work/validation-2026-10-21-foreground-hand/`.
+Physical Always-On and Crown regression validation remain necessary.
+
 ## Readability third pass (October 20, 2026)
 
 The native companion volume control receives a white resting tint using

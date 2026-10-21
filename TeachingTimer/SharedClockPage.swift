@@ -7,6 +7,11 @@ enum ClockFaceKind {
     case circular
 }
 
+/// Separate visual layers share the same date and hand geometry.
+enum ClockFaceLayer {
+    case complete, dial, secondsHand
+}
+
 struct SharedClockPage: View {
     let date: Date
     let face: ClockFaceKind
@@ -27,7 +32,7 @@ struct SharedClockPage: View {
         GeometryReader { geometry in
             let layout = TimerFaceLayout(size: geometry.size)
             ZStack {
-                clockFace
+                clockFace(layer: .dial)
                 ClockAdditions(date: date, face: face, context: classStore.context,
                                showsClassProgress: showsClassProgress,
                                landmarkStartAngle: landmarkFrame.isVisible ? metronome.startAngle : nil,
@@ -47,6 +52,10 @@ struct SharedClockPage: View {
                     }
                     .position(layout.volumeCenter)
                     .accessibilityLabel("iPhone playback volume")
+                // Teaching priority: the second hand stays continuous across
+                // all app controls, but never participates in input or focus.
+                clockFace(layer: .secondsHand)
+                    .allowsHitTesting(false)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
         }
@@ -65,14 +74,14 @@ struct SharedClockPage: View {
     }
 
     @ViewBuilder
-    private var clockFace: some View {
+    private func clockFace(layer: ClockFaceLayer) -> some View {
         switch face {
         case .squircleIntersection:
-            SquircleIntersectionClockView(date: date, dimmed: isLuminanceReduced)
+            SquircleIntersectionClockView(date: date, dimmed: isLuminanceReduced, layer: layer)
         case .squircleClipped:
-            SquircleClippedClockView(date: date, dimmed: isLuminanceReduced)
+            SquircleClippedClockView(date: date, dimmed: isLuminanceReduced, layer: layer)
         case .circular:
-            CircularClockView(date: date, dimmed: isLuminanceReduced)
+            CircularClockView(date: date, dimmed: isLuminanceReduced, layer: layer)
         }
     }
 
