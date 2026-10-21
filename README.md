@@ -2,6 +2,14 @@
 
 ## Review follow-up (October 21, 2026)
 
+Run all deterministic checks with `sh scripts/check.sh` from the repository root
+(or invoke the script using its absolute path from elsewhere). It stops on the
+first failed compile/assertion and leaves binaries in a unique temporary folder.
+The eight suites now include the production ray geometry, extracted unchanged
+from SwiftUI: 17,280 intersections across eight size families, three insets, and
+half-degree samples check bounds, rounded corners, and radial alignment. This
+does not prove physical screen curvature or wrist-down performance.
+
 Saved class contexts now validate duration (1–1440 minutes, a sanity bound rather
 than the Watch runtime limit) and usable dates when decoding. Invalid bytes are
 left intact until an explicit Start replaces them; the UI treats them as no

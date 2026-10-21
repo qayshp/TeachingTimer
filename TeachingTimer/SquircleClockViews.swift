@@ -137,58 +137,6 @@ private struct SquircleClockFace: View {
     }
 }
 
-enum SquircleRayGeometry {
-    /// Unit vector for clock orientation: 0 is up and 15 is right.
-    static func direction(forSecond second: Int) -> CGVector {
-        let radians = Double(second) * .pi / 30
-        return CGVector(dx: sin(radians), dy: -cos(radians))
-    }
-
-    /// Intersects a center-originating ray with an inset rounded rectangle.
-    /// Straight edges are tested first. Rays aimed into a corner use the outer
-    /// root of the corresponding corner-circle quadratic.
-    static func intersection(
-        size: CGSize,
-        cornerRadius requestedRadius: CGFloat,
-        edgeInset: CGFloat,
-        direction: CGVector
-    ) -> CGVector {
-        let halfWidth = max(0, size.width / 2 - edgeInset)
-        let halfHeight = max(0, size.height / 2 - edgeInset)
-        let radius = min(requestedRadius, halfWidth, halfHeight)
-        let straightHalfWidth = halfWidth - radius
-        let straightHalfHeight = halfHeight - radius
-        let epsilon: CGFloat = 0.0001
-
-        if abs(direction.dx) > epsilon {
-            let distance = halfWidth / abs(direction.dx)
-            let y = direction.dy * distance
-            if abs(y) <= straightHalfHeight {
-                return direction * distance
-            }
-        }
-
-        if abs(direction.dy) > epsilon {
-            let distance = halfHeight / abs(direction.dy)
-            let x = direction.dx * distance
-            if abs(x) <= straightHalfWidth {
-                return direction * distance
-            }
-        }
-
-        let cornerCenter = CGVector(
-            dx: direction.dx.sign == .minus ? -straightHalfWidth : straightHalfWidth,
-            dy: direction.dy.sign == .minus ? -straightHalfHeight : straightHalfHeight
-        )
-        let projection = direction.dot(cornerCenter)
-        let discriminant = max(
-            0,
-            projection * projection - (cornerCenter.dot(cornerCenter) - radius * radius)
-        )
-        return direction * (projection + sqrt(discriminant))
-    }
-}
-
 private extension CGVector {
     static func * (vector: CGVector, scalar: CGFloat) -> CGVector {
         CGVector(dx: vector.dx * scalar, dy: vector.dy * scalar)
@@ -202,9 +150,6 @@ private extension CGVector {
         hypot(dx, dy)
     }
 
-    func dot(_ other: CGVector) -> CGFloat {
-        dx * other.dx + dy * other.dy
-    }
 }
 
 private extension CGPoint {
