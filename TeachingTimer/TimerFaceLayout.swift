@@ -10,6 +10,8 @@ struct TimerFaceLayout {
     var runtimeHeight: CGFloat { 44 * scale }
     var resetSide: CGFloat { runtimeHeight }
     var resetSymbolSize: CGFloat { 20 * scale }
+    var runtimeWidth: CGFloat { controlsWidth - resetSide - spacing }
+    var runtimeTextWidth: CGFloat { runtimeWidth - 12 * scale }
     var spacing: CGFloat { 4 * scale }
     var statusHeight: CGFloat { 28 * scale }
     var statusHorizontalPadding: CGFloat { 6 * scale }

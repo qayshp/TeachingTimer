@@ -59,7 +59,8 @@ struct ContentView: View {
             // Visual checks only: no automatic session or haptic actions.
             .transformEnvironment(\.dynamicTypeSize) { size in
                 let arguments = ProcessInfo.processInfo.arguments
-                if arguments.contains("--accessibility-text") { size = .accessibility3 }
+                if arguments.contains("--maximum-text") { size = .accessibility5 }
+                else if arguments.contains("--accessibility-text") { size = .accessibility3 }
                 else if arguments.contains("--large-text") { size = .xxxLarge }
             }
 #endif

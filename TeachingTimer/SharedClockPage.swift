@@ -26,6 +26,8 @@ struct SharedClockPage: View {
     @Environment(\.isLuminanceReduced) private var isLuminanceReduced
     @ScaledMetric(relativeTo: .headline) private var countFontSize = 13.0
     @ScaledMetric(relativeTo: .caption) private var runtimeFontSize = 10.0
+    @ScaledMetric(relativeTo: .caption2) private var statusFontSize = 11.0
+    @ScaledMetric(relativeTo: .caption2) private var resultFontSize = 10.0
 
     var body: some View {
         let landmarkFrame = metronome.frame(at: date)
@@ -124,11 +126,13 @@ struct SharedClockPage: View {
                     ViewThatFits(in: .vertical) {
                         Text(runtimeActionTitle)
                             .multilineTextAlignment(.center)
+                            .frame(width: layout.runtimeTextWidth)
                             .fixedSize(horizontal: false, vertical: true)
                         Image(systemName: session.isActive ? "stop.fill" : "play.fill")
+                            .font(.system(size: min(runtimeFontSize, layout.runtimeHeight * 0.45)))
                     }
                         .font(.system(size: runtimeFontSize, weight: .semibold))
-                        .frame(width: layout.controlsWidth - layout.resetSide - layout.spacing,
+                        .frame(width: layout.runtimeWidth,
                                height: layout.runtimeHeight)
                         .background(.black, in: Capsule())
                         .contentShape(Rectangle())
@@ -152,18 +156,26 @@ struct SharedClockPage: View {
                 .accessibilityIdentifier("class-reset")
             }
             // Reserve the space so status transitions don't move the tap targets.
-            VStack(spacing: 2 * layout.scale) {
-                Text(session.statusText)
-                    .font(.system(size: 11 * layout.scale))
+            ViewThatFits(in: .vertical) {
+                VStack(spacing: 2 * layout.scale) {
+                    Text(session.statusText)
+                        .font(.system(size: statusFontSize * layout.scale))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .accessibilityIdentifier("runtime-status")
+                    Text(metronome.lastResult)
+                        .font(.system(size: resultFontSize * layout.scale))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .accessibilityIdentifier("landmark-result")
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                // At very large text sizes, prioritize an actionable status
+                // rather than compressing two lines or moving the controls.
+                Text(compactStatusText)
+                    .font(.system(size: min(statusFontSize * layout.scale, layout.statusHeight - 4), weight: .medium))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
-                    .accessibilityIdentifier("runtime-status")
-                Text(metronome.lastResult)
-                    .font(.system(size: 10 * layout.scale))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-                    .accessibilityIdentifier("landmark-result")
-                    .accessibilityLabel(metronome.lastResult)
             }
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
@@ -172,6 +184,9 @@ struct SharedClockPage: View {
                 // Keep the minute hand and arcs out of diagnostic text.
                 // The foreground seconds hand intentionally remains visible.
                 .background(.black, in: RoundedRectangle(cornerRadius: 6))
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Session and count status")
+                .accessibilityValue([session.statusText, metronome.lastResult].filter { !$0.isEmpty }.joined(separator: ". "))
                 .allowsHitTesting(false)
         }
         .frame(width: layout.controlsWidth, height: layout.controlsHeight)
@@ -179,6 +194,23 @@ struct SharedClockPage: View {
 
     private var runtimeActionTitle: String {
         session.actionTitle(hasClass: classStore.context != nil)
+    }
+
+    private var compactStatusText: String {
+        switch session.phase {
+        case .failed:
+            return session.startedAt == nil ? "Start failed" : "Interrupted"
+        case .interrupted: return "Interrupted"
+        default: break
+        }
+        if metronome.hapticsStopped { return "Taps off" }
+        switch session.phase {
+        case .starting: return "Starting…"
+        case .running: return "Session on"
+        case .expiring: return "Ending"
+        case .expired, .stopped: return "Session off"
+        default: return metronome.lastResult
+        }
     }
 }
 

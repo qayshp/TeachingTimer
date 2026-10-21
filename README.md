@@ -15,6 +15,14 @@ Reset confirmation uses a shorter body and Reset button; VoiceOver describes six
 ten-second landmarks without confusing the 60-second arc with its 64.8-second
 completion. Existing diagnostic keys, errors, and persisted result text are kept.
 
+The footer follows Dynamic Type while keeping its reserved space fixed: both
+full lines appear when they fit, otherwise a compact single-line status prioritizes
+session errors, then stopped haptics, then session state. VoiceOver retains both
+full statuses. Session labels now have an explicit text-width constraint, with
+wrapping/icon fallback rather than overflowing toward Reset on small screens.
+Debug-only `--maximum-text` adds the largest text-size visual check. No control
+positions, hit targets, seconds-hand layering, or Crown focus logic changed.
+
 ## Foremost seconds hand (October 21, 2026)
 
 The seconds hand and center pivot now draw above all teaching-face controls and

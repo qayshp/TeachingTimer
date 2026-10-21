@@ -16,6 +16,8 @@ struct TimerFaceLayoutChecks {
             let volumeBottom = layout.volumeCenter.y + layout.volumeSize.height / 2
             assert(layout.countHeight >= 44 && layout.resetSide >= 44)
             assert(layout.controlsWidth - layout.resetSide - layout.spacing >= 44)
+            assert(layout.runtimeWidth >= 44 && layout.runtimeTextWidth < layout.runtimeWidth)
+            assert(layout.runtimeTextWidth >= 70)
             assert(layout.controlsWidth <= size.width - 24)
             assert(layout.resetSymbolSize <= layout.resetSide / 2)
             assert(layout.volumeBackingSide <= layout.volumeSize.width)
