@@ -2,6 +2,13 @@
 
 ## Review follow-up (October 21, 2026)
 
+The code/copy/visual review and simulator matrix are recorded in
+`DEVELOPMENT_STATUS.md`; its old five-second metronome material is explicitly
+archived, not current guidance. Reset now uses the short body “Stops session and
+count.” below “Reset class?”; the full clearing effect remains in its VoiceOver
+hint. Model/controller tests and simulator screenshots are not physical Watch,
+VoiceOver listening, battery/performance, or App Store readiness validation.
+
 Run all deterministic checks with `sh scripts/check.sh` from the repository root
 (or invoke the script using its absolute path from elsewhere). It stops on the
 first failed compile/assertion and leaves binaries in a unique temporary folder.

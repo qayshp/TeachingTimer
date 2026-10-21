@@ -1,4 +1,82 @@
-# Teaching Timer development checkpoint — 2026-09-11
+# Teaching Timer development status — 2026-10-21
+
+## Current implementation and evidence
+
+The current app has two pages: the squircle teaching face and native Now Playing.
+It remains watchOS-only, without a workout session or iPhone companion app.
+The one-second wall-clock seconds hand draws above the controls; the minute hand
+and arcs remain behind them. Native companion volume and its focus sequence are
+unchanged by this review. Class context survives runtime replacements and is
+retired 30 minutes after scheduled end; Start establishes the next class.
+
+Counting uses 1–6 haptic groups at 10-second landmarks, 0.8-second pulse spacing,
+and `.directionUp`. The inner arc is full at 60 seconds and completes at 64.8.
+Late haptic submission stops future haptics but does not cancel the arc. Explicit
+Stop/Reset ends both. Journals preserve observed callback/error data without
+inferring missing causes. See README for the dated implementation history.
+
+The October 21 review produced, in order: persisted-data/schedule validation;
+truthful shorter action/confirmation copy; large-text footer and session-label
+layout fixes; extracted production geometry tests plus a fail-fast test runner;
+and this evidence reconciliation. No changes were made to runtime renewal,
+haptic scheduling, native Crown focus, or foreground seconds-hand geometry.
+
+### Verification matrix for this review
+
+| Simulator | Default text | Largest requested text | Notes |
+| --- | --- | --- | --- |
+| SE 3 40 mm | Inspected after settling | Inspected | Short Count label; session label wraps within its target |
+| SE 3 44 mm | Inspected | Inspected | Labels, marker, and footer fit |
+| Series 11 46 mm | Inspected | Inspected | No special geometry branch needed |
+| Ultra 3 49 mm | Inspected | Inspected | Same proportional layout; no Ultra-only redesign |
+
+The largest text setting is requested by a DEBUG-only flag; watchOS may cap its
+effective sizes. A locked SE 3 render was also inspected in monochrome with the
+seconds hand in front and a compact footer. Reset confirmation retains Apple's
+native scrollable presentation; at large text sizes scrolling may still be
+necessary. A native volume placeholder sometimes appeared late after launch on
+the 40 mm simulator and rendered after settling. No paired media source exists
+there, so screenshots do not validate playback volume or Crown responsiveness.
+The final default-text 40 mm reset capture shows both Reset and Cancel without
+scrolling after the body was reduced to “Stops session and count.”
+
+The screenshots in ignored `work/review-2026-10-21/` use simulator-only class and
+last-result fixtures, plus actual control taps for the active/locked view. Class
+fixtures are generated using the production quarter-hour helper. The visual
+matrix is not an automated interaction suite, VoiceOver listening test, measured
+battery/performance profile, or a claim that every physical Watch was tested.
+
+`sh scripts/check.sh` passes all eight deterministic suites. The layout suite
+covers eight logical screen sizes (40/41/42/44/45/46/49 mm families); the production
+geometry suite checks 17,280 rays across three insets. Debug simulator and signed
+Release watchOS builds and signature verification pass. The only Release warning
+is skipped App Intents extraction because this app does not use App Intents.
+
+### Kept unchanged or deferred deliberately
+
+- Keep the empirically working native volume/focus sequence and foreground hand.
+- No geometry cache or observation rewrite: there is no trace-backed performance
+  regression established by this review. The 1 Hz render does bounded geometry
+  work. Runtime journaling does synchronous event-level writes on MainActor;
+  changing durability/ordering needs profiling and is not justified as cleanup.
+- Retain dormant circular/clipped source as historical comparison code; there
+  are still only two navigable pages.
+- App Store readiness (app icon, localization, privacy declarations, distribution
+  metadata/review policy) is a separate review, not completed by this code pass.
+
+### Physical checks still required for the review commits
+
+Confirm seconds-hand visibility and 1 Hz wrist-down updates; minute/end-marker
+readability; count haptics and independent arc continuation; native Crown volume
+after controls, reset cancellation, and returning from Now Playing; automatic
+renewal/manual fallback; and class survival/retirement. VoiceOver needs an actual
+listening/navigation check. This review was not installed on the user's Watch.
+The last installed baseline remains the foreground-hand build `088744e`.
+
+## Archived development checkpoint — 2026-09-11
+
+The material below describes an old checkpoint, not the current count schedule
+or current verification status. It is retained as historical evidence.
 
 ## PoC version 2
 

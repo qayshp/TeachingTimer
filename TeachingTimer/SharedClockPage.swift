@@ -73,7 +73,7 @@ struct SharedClockPage: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Clears timing. Stops session and count.")
+            Text("Stops session and count.")
         }
     }
 
