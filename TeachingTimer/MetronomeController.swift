@@ -12,7 +12,8 @@ struct LandmarkSchedule {
     var isValid: Bool {
         intervalSeconds.isFinite && intervalSeconds > 0 &&
         (1...6).contains(landmarkCount) && pulseSpacing.isFinite &&
-        pulseSpacing >= 0.5 && Double(landmarkCount) * pulseSpacing < intervalSeconds
+        pulseSpacing >= 0.5 && Double(landmarkCount) * pulseSpacing < intervalSeconds &&
+        duration.isFinite && completionOffset.isFinite && completionOffset <= 86400
     }
     func pulseOffset(landmark: Int, pulse: Int) -> Double {
         Double(landmark) * intervalSeconds + Double(pulse) * pulseSpacing

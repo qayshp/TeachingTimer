@@ -28,6 +28,28 @@ struct ClassContextChecks {
         assert(ClassStore(defaults: defaults).context == original)
         store.reset()
         assert(ClassStore(defaults: defaults).context == nil)
+        // Decoding must enforce the same invariants as fresh construction.
+        let validData = try! JSONEncoder().encode(context)
+        let validObject = try! JSONSerialization.jsonObject(with: validData) as! [String: Any]
+        for badDuration in [0, -1, 1441, Int.max] {
+            var object = validObject
+            object["durationMinutes"] = badDuration
+            let bytes = try! JSONSerialization.data(withJSONObject: object)
+            defaults.set(bytes, forKey: "teachingClassContext.v1")
+            assert(ClassStore(defaults: defaults).context == nil)
+            assert(defaults.data(forKey: "teachingClassContext.v1") == bytes)
+        }
+        var badDate = validObject
+        badDate["scheduledStart"] = 1e100
+        let bytes = try! JSONSerialization.data(withJSONObject: badDate)
+        defaults.set(bytes, forKey: "teachingClassContext.v1")
+        assert(ClassStore(defaults: defaults).context == nil)
+        assert(defaults.data(forKey: "teachingClassContext.v1") == bytes)
+        defaults.set(Data("invalid".utf8), forKey: "teachingClassContext.v1")
+        let recovered = ClassStore(defaults: defaults)
+        assert(recovered.context == nil)
+        recovered.establishIfNeeded(at: date(31), durationMinutes: 75)
+        assert(ClassStore(defaults: defaults).context?.durationMinutes == 75)
         store.establishIfNeeded(at: date(31))
         let oldClass = store.context!
         assert(oldClass.retirementDate == date(30).addingTimeInterval(90 * 60))
@@ -57,5 +79,6 @@ struct ClassContextChecks {
         assert(ClassStore(defaults: defaults).context == nil)
         print("PASS: quarter-hour boundaries, seconds, hour rollover, 75-minute end, midpoint, persistence and explicit reset")
         print("PASS: exact retirement boundary, overrun grace, idempotence, persistence, fresh Start and 75-minute protection")
+        print("PASS: invalid persisted durations/dates rejected without overwriting data; explicit Start recovers")
     }
 }

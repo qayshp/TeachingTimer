@@ -26,6 +26,11 @@ struct LandmarkChecks {
         assert(!LandmarkSchedule(intervalSeconds: 0).isValid)
         assert(!LandmarkSchedule(landmarkCount: 0).isValid)
         assert(!LandmarkSchedule(pulseSpacing: 2).isValid)
+        for interval in [Double.nan, .infinity, .greatestFiniteMagnitude, 86400] {
+            assert(!LandmarkSchedule(intervalSeconds: interval).isValid)
+        }
+        assert(!LandmarkSchedule(pulseSpacing: .infinity).isValid)
+        assert(!LandmarkSchedule(landmarkCount: Int.max).isValid)
         // Simulate a batch of Always-On frames evaluated at one clock instant.
         let wallNow = Date(timeIntervalSince1970: 59)
         let frames = [0.0, 10, 20, 40].map {

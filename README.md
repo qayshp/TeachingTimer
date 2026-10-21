@@ -1,5 +1,14 @@
 # Teaching Timer watchOS proof of concept — version 2
 
+## Review follow-up (October 21, 2026)
+
+Saved class contexts now validate duration (1–1440 minutes, a sanity bound rather
+than the Watch runtime limit) and usable dates when decoding. Invalid bytes are
+left intact until an explicit Start replaces them; the UI treats them as no
+class. Landmark configuration rejects non-finite or over-one-day schedules before
+creating deadlines. Valid 60/75-minute classes and the 10-second landmark preset,
+quarter-hour anchoring, foreground seconds hand, and Crown focus are unchanged.
+
 ## Foremost seconds hand (October 21, 2026)
 
 The seconds hand and center pivot now draw above all teaching-face controls and
