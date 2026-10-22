@@ -22,9 +22,10 @@ chronological notes are in [docs/history](docs/history/REVIEW_NOTES.md).
 
 ## Verified this iteration
 
-- Eight local deterministic suites pass: schedule/persistence/retirement,
+- Nine local deterministic suites pass: schedule/persistence/retirement,
   landmark timing/future frames, runtime journal, runtime renewal, landmark
-  controller, landmark journal, face layout, and ray geometry.
+  controller, landmark journal, face layout, ray geometry, and the follow-up's
+  volume-control diagnostics.
 - Cancellation/restart isolation includes cancelling during groups five and six.
   Arc-only runs submit no haptics. Late haptics preserve the original arc lifetime.
 - Layout checks sample 5,760 count-track positions across eight logical sizes,
@@ -76,7 +77,7 @@ wrist-down hands/arc. They do not prove this new layout/management flow.
 
 ## Known limits
 
-**Unresolved Simulator navigation issue:** on the SE 3 watchOS 27 Simulator in
+**Unresolved blank-page issue, including physical Watch reports:** on the SE 3 watchOS 27 Simulator in
 Xcode 27.1 Device Hub, paging can leave an empty black page with the system time
 and page dots. It was observed returning from Now Playing after Lock, and also
 with the pre-review `84b10eb` build in the same simulator. This comparison does
@@ -84,8 +85,59 @@ not establish whether the cause is Simulator, SwiftUI/WatchKit, or an existing
 app interaction. A launch displays the face normally. Timeline invalidation,
 separating navigation from the timeline, view re-entry, and explicit sizing
 did not reliably resolve it; all speculative changes were removed. The original
-native volume adapter is byte-for-byte unchanged. Physical reproduction remains
-unknown. [Baseline capture](docs/images/simulator-baseline-blank.png).
+native volume adapter's behavior was left unchanged; the follow-up below adds
+passive instrumentation. On October 21, the maintainer confirmed the same visible
+symptom had occurred on a physical SE 3 during one or two earlier classes, with
+a paired iPhone. This establishes a real-use report, not only a Simulator issue;
+it does not prove the two environments have the same underlying cause. The exact
+physical trigger and recovery are not yet recorded.
+[Baseline Simulator capture](docs/images/simulator-baseline-blank.png).
+
+**Intermittent timer-page silencing:** the maintainer also reported that Crown
+volume changes on the timer page could silence playback at nonzero indicated
+levels while native Now Playing could still adjust volume. In the most recent
+example, October 21, the iPhone used AirPlay to a WiiM device connected to the
+speaker system by an unspecified connection. Raising volume using the iPhone's
+own controls restored subsequent volume adjustment on both Watch pages. No
+contemporaneous audio-route/volume trace was captured, and whether playback time
+kept advancing is unknown. Do not label this a confirmed mute command, routing
+fault, pairing failure, or shared root cause with the blank page.
+
+## Interface diagnostics follow-up — October 21, 2026
+
+- Added passive page selection/appearance/disappearance, reduced-luminance,
+  scene, class-sheet request-state, and native volume-control lifecycle events
+  to the existing bounded, off-main `RuntimeDiagnostics.json` journal.
+- Each native control and focus request has a random ID. Requests, API invocation,
+  and return are separate events; queued delay uses monotonic time. An older
+  queued request after a newer request/removal is logged, not suppressed.
+- Native `.companion` origin, focus guard, asynchronous call scheduling, and
+  removal-time `resignFocus()` are preserved. No timers, UI recovery, focus
+  retries, volume changes, or runtime/landmark behavior changes were added.
+- Focus is explicitly `unobserved`; callbacks do not prove visible pixels,
+  actual Crown routing, audio volume, or audible sound. There is no per-frame
+  logging and no collection of audio-route identifiers or track information.
+- The nine-suite check runner now covers passive diagnostic ordering, distinct
+  control/request IDs, superseded/post-removal calls, no per-frame events, and
+  no runtime state publication or session actions from interface logging.
+- All nine local suites pass. Xcode 27.1 signed/ad-hoc Simulator build succeeds;
+  the unsigned Release archive also contains the Watch app. A new capture-list
+  compiler warning was resolved before final verification.
+- SE 3 40 mm Simulator: separately launched teaching and Now Playing pages render
+  correctly. Runtime journal reads confirm page callbacks and distinct control/
+  request IDs for the existing focus call. Repeated reads of a stationary face
+  show no recurring per-second events. Launching directly on Now Playing does
+  not create or focus the timer's volume control in this check.
+- This was a launch/journal smoke check, not an interactive paging/Lock pass:
+  the desktop-control probe stalled and was cancelled without restarting Device
+  Hub. Page-transition/dimming capture, physical Crown/AirPlay behavior, and
+  reproducing either reported bug remain unverified for this instrumented build.
+  No physical Watch installation or fresh device-log pull was performed.
+
+Event names, interpretation, and reproduction details to collect are in
+[interface diagnostics](docs/INTERFACE_DIAGNOSTICS.md).
+
+## Remaining evidence boundaries
 
 Do not describe this iteration as fully validated for real teaching until the
 physical navigation/Crown checks above have passed. The existing Watch install

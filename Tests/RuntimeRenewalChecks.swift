@@ -162,6 +162,39 @@ final class WKExtendedRuntimeSession {
         inFlight.end(.none); await drain(); starting.applicationBecameActive()
         assert(starting.phase == .stopped && WKExtendedRuntimeSession.instances.last === inFlight)
         assert(starting.actionTitle(hasClass: true) == "Start session")
-        print("PASS: early handoff ordering, inactive deferral, observed expiration error, rejected replacement no-loop, explicit reset, manual policy, narrow time/error boundaries")
+        // UI observations share launch/runtime correlation without starting,
+        // invalidating, renewing, or publishing any session state.
+        let diagnosticURL = directory.appendingPathComponent("interface.json")
+        let journal = RuntimeDiagnostics(fileURL: diagnosticURL)
+        let instrumented = ExtendedRuntimeController(journal: journal)
+        var publications = 0
+        let observation = instrumented.objectWillChange.sink { publications += 1 }
+        let initialSessions = WKExtendedRuntimeSession.instances.count
+        instrumented.recordInterfaceEvent("page_appeared", details: ["observedPage": "classProgress"])
+        assert(instrumented.phase == .idle && publications == 0)
+        assert(WKExtendedRuntimeSession.instances.count == initialSessions)
+        instrumented.start()
+        let active = WKExtendedRuntimeSession.instances.last!
+        active.confirmStart(); await drain()
+        let publishedBefore = publications
+        let contextBefore = instrumented.diagnosticContext
+        instrumented.recordInterfaceEvent("volume_focus_call", details: ["controlID": "test-control"])
+        instrumented.recordInterfaceEvent("page_selection_changed", details: ["selectedPage": "nowPlaying"])
+        assert(instrumented.phase == .running && !instrumented.needsRestart)
+        assert(publications == publishedBefore && active.invalidationRequests == 0)
+        assert(instrumented.diagnosticContext == contextBefore)
+        assert(WKExtendedRuntimeSession.instances.count == initialSessions + 1)
+        await journal.flush()
+        let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
+        let entries = try decoder.decode([RuntimeDiagnostics.Event].self, from: Data(contentsOf: diagnosticURL))
+        let uiEvents = entries.filter { $0.details["category"] == "interface" }
+        assert(uiEvents.count == 3)
+        assert(Set(uiEvents.compactMap { $0.details["launchID"] }).count == 1)
+        assert(uiEvents[1].details["runtimeID"] == contextBefore["runtimeID"])
+        assert(uiEvents[1].details["phase"] == "running")
+        assert(uiEvents[1].details["sceneState"] == contextBefore["sceneState"])
+        assert(uiEvents[1].details["launchElapsedSeconds"] != nil)
+        observation.cancel()
+        print("PASS: early handoff ordering, inactive deferral, observed expiration error, rejected replacement no-loop, explicit reset, manual policy, narrow time/error boundaries, passive UI/runtime correlation")
     }
 }

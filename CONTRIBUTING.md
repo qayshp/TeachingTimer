@@ -2,7 +2,7 @@
 
 Keep changes small and run `sh scripts/check.sh` plus a Watch Simulator build.
 The project has no external package dependencies. Xcode's scheme does not
-contain an XCTest target; the script compiles and runs eight standalone suites.
+contain an XCTest target; the script compiles and runs nine standalone suites.
 Do not claim hardware validation from a simulator or WatchKit test double.
 
 ## Preserve these boundaries
@@ -45,6 +45,9 @@ without an explicit request.
 Describe the Watch size/OS, app revision, steps, expected/actual behavior, and
 whether runtime/count were active when reporting a problem. Don't post raw logs
 publicly without reviewing timestamps and error details for personal information.
+For blank pages or timer-page silencing, also follow the
+[interface diagnostics notes](docs/INTERFACE_DIAGNOSTICS.md). Do not interpret a
+focus-call return or an appearance callback as proof of actual focus or pixels.
 
 ## License
 

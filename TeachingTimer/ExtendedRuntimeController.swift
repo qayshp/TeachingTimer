@@ -97,6 +97,15 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         lastSceneState = state
         record("scene_state_changed", extra: ["sceneState": state])
     }
+
+    /// Shares the bounded, off-main runtime journal and launch/runtime IDs.
+    /// Does not publish state, change renewal intent, or touch the session.
+    func recordInterfaceEvent(_ event: String, details: [String: String]) {
+        var fields = details
+        fields["category"] = "interface"
+        fields["sceneState"] = lastSceneState
+        record(event, extra: fields)
+    }
     var isActive: Bool {
         switch phase { case .starting, .running, .expiring: true; default: false }
     }

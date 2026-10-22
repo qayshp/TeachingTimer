@@ -75,7 +75,7 @@ Apple development team and a unique bundle identifier under Signing & Capabiliti
 No signing keys or provisioning profiles belong in the repository.
 
 ```sh
-sh scripts/check.sh          # Eight deterministic model/controller/geometry suites
+sh scripts/check.sh          # Nine deterministic model/controller/diagnostic/geometry suites
 sh scripts/check-archive.sh  # Unsigned archive must actually contain the app
 ```
 
@@ -87,9 +87,10 @@ unsigned build was rejected by WatchKit on the tested simulator.
 In Xcode 27 Device Hub, **Controls → Lock (⌘L)** exercises reduced-luminance
 Always-On. Simulator haptic requests may sound as Mac speaker chimes. Neither
 establishes physical-watch cadence or how the vibrations feel while teaching.
-There is also an unresolved intermittent blank-page issue when paging in the
-tested Simulator, reproduced with the pre-review build as well. See the current
-verification notes before treating Simulator navigation as a passed check.
+An intermittent blank page has been observed in Simulator (including the
+pre-review build) and reported during classes on a physical SE 3 with a paired
+iPhone. It is not a Simulator-only limitation. See the current verification
+notes; neither the cause nor a reliable recovery is established.
 
 ## Runtime, privacy, and limitations
 
@@ -98,11 +99,24 @@ It is not a HealthKit workout. Renewal is attempted near expiration when active,
 or after eligible interruption on return; **Resume** remains the fallback.
 Automatic renewal and one-second Always-On are not guaranteed on every Watch/OS.
 
+The timer-page volume control has also intermittently silenced playback while
+native Now Playing could still adjust it. In one reported AirPlay → WiiM setup,
+raising volume on the iPhone restored both Watch controls. This is a reported
+recovery, not a diagnosed cause or guaranteed workaround. Test volume before
+class and keep the phone's controls available.
+
 Preferences, class context, and bounded runtime/count journals stay in the app's
 local container. There is no automatic upload. Journals contain timestamps,
-random run IDs, app/build versions, scene transitions, and runtime errors—not
-track names or health data. Corrupt journals are preserved separately before
-logging resumes. Review/redact logs before publishing them in an issue.
+random run/control/request IDs, app/build versions, scene/page/dimming changes,
+volume-focus lifecycle calls, and runtime errors—not track names, audio-route
+identifiers, volume values, or health data. Corrupt journals are preserved
+separately before logging resumes. Review/redact logs before publishing them
+in an issue.
+
+See [interface diagnostics](docs/INTERFACE_DIAGNOSTICS.md) for event meanings and
+what to record if the face goes blank or volume becomes silent. These events
+observe the existing behavior; they do not retry focus, rebuild pages, or fix
+either issue automatically.
 
 See [current verification and physical checks](DEVELOPMENT_STATUS.md),
 [contributor notes](CONTRIBUTING.md), and [historical engineering notes](docs/history/PROTOTYPE_NOTES.md).

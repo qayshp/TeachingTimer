@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        100000000000000000000015 /* VolumeControlDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000015; };
         100000000000000000000013 = {isa = PBXBuildFile; fileRef = 200000000000000000000013; };
         100000000000000000000014 = {isa = PBXBuildFile; fileRef = 200000000000000000000014; };
 		100000000000000000000012 = {isa = PBXBuildFile; fileRef = 200000000000000000000012; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+        200000000000000000000015 /* VolumeControlDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeControlDiagnostics.swift; sourceTree = "<group>"; };
         200000000000000000000013 = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
         200000000000000000000014 = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		200000000000000000000012 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockGeometry.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				200000000000000000000012,
 				200000000000000000000013,
 				200000000000000000000014,
+				200000000000000000000015,
 				200000000000000000000004 /* Info.plist */,
 			);
 			path = TeachingTimer;
@@ -188,6 +191,7 @@
 				100000000000000000000010,
 				100000000000000000000011,
 				100000000000000000000012,
+				100000000000000000000015 /* VolumeControlDiagnostics.swift in Sources */,
 				100000000000000000000001 /* TeachingTimerApp.swift in Sources */,
 				100000000000000000000002 /* ContentView.swift in Sources */,
 				100000000000000000000003 /* ExtendedRuntimeController.swift in Sources */,

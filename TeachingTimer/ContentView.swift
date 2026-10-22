@@ -7,7 +7,7 @@ import SwiftUI
 import WatchKit
 
 struct ContentView: View {
-    enum Page: Hashable {
+    enum Page: String, Hashable {
         case classProgress
         case nowPlaying
     }
@@ -16,6 +16,7 @@ struct ContentView: View {
     @StateObject private var classStore = ClassStore()
     @StateObject private var landmarks = LandmarkController()
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.isLuminanceReduced) private var dimmed
     @State private var page: Page = .classProgress
     @State private var classClockRevision = 0
 
@@ -52,10 +53,14 @@ struct ContentView: View {
                     crownIsActive: page == .classProgress,
                     showsClassProgress: true
                 )
+                .onAppear { recordInterfaceEvent("page_appeared", page: .classProgress) }
+                .onDisappear { recordInterfaceEvent("page_disappeared", page: .classProgress) }
                 .tag(Page.classProgress)
 
                 NowPlayingView()
                     .containerBackground(.black, for: .tabView)
+                    .onAppear { recordInterfaceEvent("page_appeared", page: .nowPlaying) }
+                    .onDisappear { recordInterfaceEvent("page_disappeared", page: .nowPlaying) }
                     .tag(Page.nowPlaying)
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
@@ -88,6 +93,14 @@ struct ContentView: View {
         .onAppear { [session] in
             landmarks.diagnosticContext = { [weak session] in session?.diagnosticContext ?? [:] }
             retireOldClass()
+            recordInterfaceEvent("interface_appeared")
+        }
+        .onDisappear { recordInterfaceEvent("interface_disappeared") }
+        .onChange(of: page) { old, _ in
+            recordInterfaceEvent("page_selection_changed", details: ["previousPage": old.rawValue])
+        }
+        .onChange(of: dimmed) { old, _ in
+            recordInterfaceEvent("luminance_changed", details: ["previousLuminanceReduced": String(old)])
         }
         .task(id: ClassTaskKey(context: classStore.context, clockRevision: classClockRevision)) {
             // Use actual wall time, never a potentially pre-rendered timeline
@@ -99,7 +112,7 @@ struct ContentView: View {
                 catch { return }
             }
         }
-        .onChange(of: scenePhase) { _, phase in
+        .onChange(of: scenePhase) { old, phase in
             session.applicationStateChanged(String(describing: phase))
             if phase == .active {
                 // Stop stale renewal intent before processing foreground recovery.
@@ -109,7 +122,19 @@ struct ContentView: View {
                 classClockRevision &+= 1
                 session.applicationBecameActive()
             }
+            recordInterfaceEvent("interface_scene_changed", details: ["previousScenePhase": String(describing: old)])
         }
+    }
+
+    private func recordInterfaceEvent(_ event: String, page observedPage: Page? = nil,
+                                      details: [String: String] = [:]) {
+        var fields = details
+        fields["selectedPage"] = page.rawValue
+        fields["observedPage"] = observedPage?.rawValue
+        fields["scenePhase"] = String(describing: scenePhase)
+        fields["luminanceReduced"] = String(dimmed)
+        // Appearance is a SwiftUI callback, not proof that pixels were visible.
+        session.recordInterfaceEvent(event, details: fields)
     }
 
     private var nextWholeSecond: Date {

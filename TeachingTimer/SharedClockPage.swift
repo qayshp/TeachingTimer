@@ -38,7 +38,13 @@ struct SharedClockPage: View {
                     .frame(width: 52, height: 44).contentShape(Rectangle())
                     .buttonStyle(.plain).position(x: 34, y: 23)
                     .accessibilityLabel("Class options").accessibilityIdentifier("class-options")
-                CompanionVolumeControl(isFocused: crownIsActive && classSheet == nil)
+                CompanionVolumeControl(
+                    isFocused: crownIsActive && classSheet == nil,
+                    diagnosticSnapshot: volumeDiagnosticSnapshot,
+                    recordDiagnostic: { [weak diagnosticSession = session] event, details in
+                        diagnosticSession?.recordInterfaceEvent(event, details: details)
+                    }
+                )
                     .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
                     .background { Circle().fill(.black).frame(width: 38, height: 38).allowsHitTesting(false) }
                     .position(layout.volumeCenter)
@@ -62,6 +68,15 @@ struct SharedClockPage: View {
         .sheet(item: $classSheet) { _ in
             ClassControlsView(session: session, classStore: classStore, landmarks: landmarks)
         }
+        .onChange(of: classSheet?.id) { _, _ in
+            session.recordInterfaceEvent("class_sheet_state_changed", details: volumeDiagnosticSnapshot)
+        }
+    }
+
+    private var volumeDiagnosticSnapshot: [String: String] {
+        ["lastViewTimerPageSelected": String(crownIsActive),
+         "lastViewClassSheetRequested": String(classSheet != nil),
+         "lastViewLuminanceReduced": String(dimmed)]
     }
 
     private var faceStatus: String {
@@ -247,12 +262,16 @@ private struct ClassControlsView: View {
 
 struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
     let isFocused: Bool
+    let diagnosticSnapshot: [String: String]
+    let recordDiagnostic: (String, [String: String]) -> Void
 
     func makeWKInterfaceObject(context: Context) -> WKInterfaceVolumeControl {
         let volumeControl = WKInterfaceVolumeControl(origin: .companion)
         // Native tint affects the resting appearance only. System adjustment
         // feedback and unavailable-source presentation remain system-owned.
         volumeControl.setTintColor(.white)
+        context.coordinator.diagnostics.lastViewSnapshot = diagnosticSnapshot
+        context.coordinator.diagnostics.created()
         return volumeControl
     }
 
@@ -260,15 +279,20 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
         _ volumeControl: WKInterfaceVolumeControl,
         context: Context
     ) {
+        let diagnostics = context.coordinator.diagnostics
+        diagnostics.lastViewSnapshot = diagnosticSnapshot
         guard context.coordinator.isFocused != isFocused else { return }
         context.coordinator.isFocused = isFocused
+        let request = diagnostics.requested(isFocused, source: "update")
 
         DispatchQueue.main.async {
+            diagnostics.willInvoke(request)
             if isFocused {
                 volumeControl.focus()
             } else {
                 volumeControl.resignFocus()
             }
+            diagnostics.didReturn(request)
         }
     }
 
@@ -276,14 +300,25 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
         _ volumeControl: WKInterfaceVolumeControl,
         coordinator: Coordinator
     ) {
+        let diagnostics = coordinator.diagnostics
+        diagnostics.removed()
+        let request = diagnostics.requested(false, source: "dismantle")
+        diagnostics.willInvoke(request)
         volumeControl.resignFocus()
+        diagnostics.didReturn(request)
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator()
+        Coordinator(recordDiagnostic: recordDiagnostic)
     }
 
+    @MainActor
     final class Coordinator {
         var isFocused = false
+        let diagnostics: VolumeControlDiagnostics
+
+        init(recordDiagnostic: @escaping (String, [String: String]) -> Void) {
+            diagnostics = VolumeControlDiagnostics(record: recordDiagnostic)
+        }
     }
 }
