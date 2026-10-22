@@ -40,11 +40,12 @@ struct SharedClockPage: View {
                     .accessibilityLabel("iPhone playback volume")
                 actions(layout: layout).position(x: geometry.size.width / 2, y: layout.actionY)
                 HStack(spacing: 3) {
-                    if landmarks.hapticsStopped { Image(systemName: "hand.raised.slash").accessibilityHidden(true) }
-                    Text(faceStatus)
+                    if landmarks.hapticsStopped {
+                        Image(systemName: "hand.raised.slash").frame(width: 13).accessibilityHidden(true)
+                    }
+                    Text(faceStatus).lineLimit(1).minimumScaleFactor(0.7)
                 }
                     .font(.system(size: min(labelSize, 15)))
-                    .lineLimit(1).minimumScaleFactor(0.85)
                     .frame(width: layout.controlsWidth, height: 18)
                     .position(layout.statusCenter).allowsHitTesting(false)
                 WallClockMinuteHand(date: date).allowsHitTesting(false)
