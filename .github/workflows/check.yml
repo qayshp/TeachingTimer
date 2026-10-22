@@ -1,0 +1,28 @@
+name: Watch checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: watch-checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: macos-26
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Toolchain
+        run: xcodebuild -version
+      - name: Deterministic model and controller checks
+        run: sh scripts/check.sh
+      - name: Build for Watch Simulator
+        run: >-
+          xcodebuild -project TeachingTimer.xcodeproj -scheme TeachingTimer
+          -configuration Debug -sdk watchsimulator
+          -derivedDataPath "$RUNNER_TEMP/TeachingTimer"
+          CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= build
+      - name: Verify archive contains app
+        run: sh scripts/check-archive.sh

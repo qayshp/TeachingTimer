@@ -2,6 +2,11 @@
 
 ## Usability implementation follow-up
 
+GitHub Actions runs the eight deterministic suites, a Watch Simulator build,
+and the real-app archive check on macOS 26. It uses read-only repository
+permissions, a pinned checkout action, and no signing/account secrets. Simulator
+interaction and physical Watch behavior remain separate manual checks.
+
 Packaging includes an original code-drawn 1024px opaque app icon, privacy
 manifest for app-only preferences and elapsed-time calculations, and generated
 build revision/timestamp metadata in the app and launch journal. Version 1.0
