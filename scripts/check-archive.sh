@@ -1,4 +1,9 @@
 #!/bin/sh
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 # Verify a real app is included. This is unsigned structural validation,
 # not App Store validation or permission to install on a physical Watch.
 set -eu

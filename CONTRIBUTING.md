@@ -46,5 +46,9 @@ Describe the Watch size/OS, app revision, steps, expected/actual behavior, and
 whether runtime/count were active when reporting a problem. Don't post raw logs
 publicly without reviewing timestamps and error details for personal information.
 
-Licensing is pending the maintainer's choice; discuss contributions before
-submitting code until that choice is recorded.
+## License
+
+Contributions to this project are under the [Mozilla Public License 2.0](LICENSE).
+Preserve existing license notices and add the MPL notice to new source files.
+Before including third-party material, verify license compatibility and retain
+its required notices; do not relabel someone else's work as MPL.

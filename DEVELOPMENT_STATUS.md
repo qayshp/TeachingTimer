@@ -13,7 +13,7 @@ chronological notes are in [docs/history](docs/history/REVIEW_NOTES.md).
 6. Visible delayed-vibration warning and optional visual-only count mode.
 7. Concise labels, accurate renewal state, optional minutes-left text (off by default).
 8. Real app included in archives, with an automated contents check.
-9. Copyleft license **pending maintainer selection**; no license silently chosen.
+9. MPL 2.0 selected by the maintainer, with the full license and source notices.
 10. Short current how-to, screenshots, and archived historical documentation.
 11. Original app icon, privacy manifest, build number/revision/time identification.
 12. Ordered off-main journals with corrupt-file preservation and recovery.
@@ -106,5 +106,5 @@ process kill. A missing callback is not proof of a cause. Existing malformed
 logs are backed up before recovery, not discarded. The app makes no network
 uploads; raw journals are excluded from public artifacts.
 
-App Store metadata, licensing, signed export, and App Review acceptance remain
+App Store metadata, signed export, and App Review acceptance remain
 separate work. No workout fallback or new companion application was added.

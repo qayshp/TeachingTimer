@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MPL-2.0
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 // Original code-drawn icon: no downloaded artwork or third-party assets.
 // Run from the repository root: swift scripts/render-icon.swift
 import AppKit

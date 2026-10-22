@@ -109,5 +109,10 @@ See [current verification and physical checks](DEVELOPMENT_STATUS.md),
 
 ## License
 
-The maintainer is choosing a copyleft license. No license has been applied yet;
-a public repository alone is not a grant of permission to reuse the code.
+Teaching Timer is licensed under the [Mozilla Public License 2.0](LICENSE)
+(`MPL-2.0`). Unless otherwise noted, this covers the project's source, tests,
+build configuration, documentation, and original assets.
+
+MPL is file-level copyleft: when distributing modified versions, changes to
+covered files must remain available under MPL. See the license for the full
+terms and [Mozilla's FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) for guidance.
