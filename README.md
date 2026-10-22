@@ -87,6 +87,9 @@ unsigned build was rejected by WatchKit on the tested simulator.
 In Xcode 27 Device Hub, **Controls → Lock (⌘L)** exercises reduced-luminance
 Always-On. Simulator haptic requests may sound as Mac speaker chimes. Neither
 establishes physical-watch cadence or how the vibrations feel while teaching.
+There is also an unresolved intermittent blank-page issue when paging in the
+tested Simulator, reproduced with the pre-review build as well. See the current
+verification notes before treating Simulator navigation as a passed check.
 
 ## Runtime, privacy, and limitations
 

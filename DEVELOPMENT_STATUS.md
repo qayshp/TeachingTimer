@@ -36,14 +36,15 @@ chronological notes are in [docs/history](docs/history/REVIEW_NOTES.md).
 - Unsigned Release archive includes the executable, icon assets, privacy manifest,
   and generated build metadata. This does not validate signed distribution.
 - GitHub Actions passed all suites, Simulator build, and archive verification
-  for `c0112ec` ([run](https://github.com/qayshp/TeachingTimer/actions/runs/39732170555)).
+  for `001ea2c` ([run](https://github.com/qayshp/TeachingTimer/actions/runs/39733429786)).
 - Device Hub: SE 3 40 mm face at maximum text size; Series 11 46 mm and Ultra 3
   49 mm layouts; class setup, +15 correction, and the 75-minute picker updating
   the end from 00:15 to 00:30. Active count captures show the clear track on both
   larger sizes. Screenshots are actual simulator captures, not physical evidence.
-- Horizontal paging reaches native Now Playing (its empty-source "Not Playing"
-  UI renders correctly) and returns to the teaching face. Actual paired-iPhone
-  transport and restored Crown volume focus still require hardware verification.
+- Native Now Playing's empty-source "Not Playing" UI was observed. The final
+  return-navigation check exposed an intermittent blank-page problem, described
+  below; a complete paging pass must not be claimed. Actual paired-iPhone
+  transport and restored Crown volume focus require hardware verification.
 - SE 3 Lock captures ten seconds apart show the inner arc advancing while the
   hands are monochrome. In that no-runtime run, delayed vibrations stopped and
   the warning appeared while the arc continued. This is not proof of delivery
@@ -74,6 +75,21 @@ Earlier SE 3 tests established useful Crown volume, native Now Playing, and
 wrist-down hands/arc. They do not prove this new layout/management flow.
 
 ## Known limits
+
+**Unresolved Simulator navigation issue:** on the SE 3 watchOS 27 Simulator in
+Xcode 27.1 Device Hub, paging can leave an empty black page with the system time
+and page dots. It was observed returning from Now Playing after Lock, and also
+with the pre-review `84b10eb` build in the same simulator. This comparison does
+not establish whether the cause is Simulator, SwiftUI/WatchKit, or an existing
+app interaction. A launch displays the face normally. Timeline invalidation,
+separating navigation from the timeline, view re-entry, and explicit sizing
+did not reliably resolve it; all speculative changes were removed. The original
+native volume adapter is byte-for-byte unchanged. Physical reproduction remains
+unknown. [Baseline capture](docs/images/simulator-baseline-blank.png).
+
+Do not describe this iteration as fully validated for real teaching until the
+physical navigation/Crown checks above have passed. The existing Watch install
+was not replaced during this review.
 
 Mindfulness runtime and OS scheduling are not delivery guarantees. A late pulse
 stops further vibrations, not the arc. The arc reaches full at 60 seconds; the
