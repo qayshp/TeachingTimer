@@ -2,6 +2,11 @@
 
 ## Usability implementation follow-up
 
+The app target now uses `SKIP_INSTALL=NO`. `scripts/check-archive.sh` checks
+that an unsigned Release archive really includes the app executable and plist;
+an archive-success message alone is insufficient. This is not signed export or
+App Store validation.
+
 The controller is now named `LandmarkController`, matching its actual purpose.
 Unused circular/clipped face implementations were removed from the shipping
 target and source tree; their experiments remain recoverable in Git history.
