@@ -147,7 +147,7 @@ private struct ClassControlsView: View {
                         Text(current.scheduledStart.formatted(date: .omitted, time: .shortened) + "–" +
                              current.scheduledEnd.formatted(date: .omitted, time: .shortened))
                         Text("\(current.durationMinutes) minutes").font(.caption)
-                        Text(session.statusText).font(.caption)
+                        if !session.statusText.isEmpty { Text(session.statusText).font(.caption) }
                     }
                     Button("Edit schedule") {
                         start = current.scheduledStart; duration = current.durationMinutes; mode = .edit
@@ -198,6 +198,11 @@ private struct ClassControlsView: View {
         }
         .onAppear {
             if classStore.context == nil { prepareNew() }
+        }
+        .onChange(of: classStore.context) { _, context in
+            // Retirement can occur while this sheet is open. Don't expose an
+            // uninitialized schedule draft when the old summary disappears.
+            if context == nil && mode == .summary { prepareNew() }
         }
         .alert("Start new class?", isPresented: $confirmReplacement) {
             Button("Start new", role: .destructive) { save() }
