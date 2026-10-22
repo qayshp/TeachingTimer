@@ -15,6 +15,6 @@ check RuntimeJournal TeachingTimer/RuntimeDiagnostics.swift Tests/RuntimeDiagnos
 check RuntimeRenewal -D CONTROLLER_CHECKS TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/RuntimeRenewalRules.swift TeachingTimer/ExtendedRuntimeController.swift Tests/RuntimeRenewalChecks.swift
 check LandmarkController -D CONTROLLER_CHECKS TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/MetronomeController.swift Tests/LandmarkControllerChecks.swift
 check LandmarkJournal TeachingTimer/LandmarkDiagnostics.swift Tests/LandmarkDiagnosticsChecks.swift
-check Layout TeachingTimer/TimerFaceLayout.swift Tests/TimerFaceLayoutChecks.swift
+check Layout TeachingTimer/ClockGeometry.swift TeachingTimer/TimerFaceLayout.swift Tests/TimerFaceLayoutChecks.swift
 check Geometry TeachingTimer/TimerFaceLayout.swift TeachingTimer/ClockGeometry.swift Tests/ClockGeometryChecks.swift
 printf 'All eight suites passed. Check binaries: %s\n' "$check_dir"

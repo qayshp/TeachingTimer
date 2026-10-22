@@ -13,25 +13,19 @@ struct ClockAdditions: View {
         Canvas { graphics, size in
             let center = CGPoint(x: size.width / 2, y: size.height / 2)
             if let start = landmarkStartAngle {
-                // Clip only this visual layer. The monotonic progress and start
-                // angle remain unchanged as the arc passes behind system time.
-                var landmarkGraphics = graphics
-                var visibleArea = Path(CGRect(origin: .zero, size: size))
-                visibleArea.addRect(TimerFaceLayout(size: size).systemClockExclusion)
-                landmarkGraphics.clip(to: visibleArea, style: FillStyle(eoFill: true))
-                // An inset, dashed squircle is distinct from the solid outer
-                // class perimeter even when all colors become monochrome.
-                let inset: CGFloat = 23
+                let layout = TimerFaceLayout(size: size)
                 let end = start + min(1, max(0, landmarkProgress)) * 2 * .pi
-                landmarkGraphics.stroke(perimeterPath(from: start, to: end, size: size, inset: inset),
+                var arc = Path()
+                let steps = max(1, Int(ceil((end - start) * 180 / .pi)))
+                for index in 0...steps {
+                    let point = layout.landmarkPoint(angle: start + (end - start) * Double(index) / Double(steps))
+                    if index == 0 { arc.move(to: point) } else { arc.addLine(to: point) }
+                }
+                graphics.stroke(arc,
                     with: .color(.white),
                     style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [4, 3]))
-                let direction = CGVector(dx: sin(start), dy: -cos(start))
-                let vector = SquircleRayGeometry.intersection(size: size,
-                    cornerRadius: max(0, SquircleClockTuning.cornerRadius(for: size) - inset),
-                    edgeInset: SquircleClockTuning.edgeInset + inset, direction: direction)
-                let point = CGPoint(x: center.x + vector.dx, y: center.y + vector.dy)
-                landmarkGraphics.fill(Path(ellipseIn: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6)),
+                let point = layout.landmarkPoint(angle: start)
+                graphics.fill(Path(ellipseIn: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6)),
                               with: .color(.white))
             }
             if showsClassProgress, let context, context.durationMinutes == 60 {
@@ -123,6 +117,7 @@ struct WallClockMinuteHand: View {
             var hand = Path()
             hand.move(to: center)
             hand.addLine(to: CGPoint(x: center.x + sin(angle) * length, y: center.y - cos(angle) * length))
+            graphics.stroke(hand, with: .color(.black), style: StrokeStyle(lineWidth: 8, lineCap: .square))
             graphics.stroke(hand, with: .color(.white), style: StrokeStyle(lineWidth: 6, lineCap: .square))
         }
         // ClockAdditions already supplies the wall time and class-end summary.

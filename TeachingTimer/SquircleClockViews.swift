@@ -127,6 +127,7 @@ private struct SquircleClockFace: View {
                 var path = Path()
                 path.move(to: center)
                 path.addLine(to: center + direction * length)
+                context.stroke(path, with: .color(.black), style: StrokeStyle(lineWidth: 5.5, lineCap: .round))
                 context.stroke(
                     path,
                     with: .color(dimmed ? .white : .yellow),

@@ -5,7 +5,26 @@
 Explicit class creation and schedule correction now preserve the initial Start
 timestamp on edits and support a fresh class before the retirement grace ends.
 Quarter-hour inference remains the default. Model checks cover early preparation,
-75-minute correction, persistence, and back-to-back replacement. UI follows next.
+75-minute correction, persistence, and back-to-back replacement.
+
+The teaching face now reserves a complete inner count track below the system
+clock. Its start angle and monotonic progress are unchanged; the track has its
+own inset rectangle rather than passing behind controls or a clock mask. Tests
+check every half-degree against control bounds (including the start dot) across
+eight sizes. Both hands remain foremost, with black edging for contrast.
+
+Class options move to a labeled top-left button. Start opens an editable schedule
+with the inferred quarter-hour and 60/75-minute duration. New class explicitly
+confirms replacement; editing retains the initial timestamp and active services.
+Replacing a class stops the count but preserves an already-running runtime.
+End class is confirmed. Session Stop is secondary; manual Resume stays on the
+face when needed. Count remains a generous 44-point-or-larger target.
+
+All eight deterministic suites and the locally signed Simulator build pass.
+SE 3 40 mm class setup, recovery, and count rendering were exercised in Device
+Hub. An unsigned Simulator build was rejected by WatchKit; the signed build's
+journal confirms `runtime_started`. Physical Crown focus after sheets and new
+class controls still needs testing. No physical Watch installation in this pass.
 
 ## Current implementation and evidence
 

@@ -77,6 +77,9 @@ struct ContentView: View {
             .onChange(of: metronome.hapticsStopped) { _, _ in
                 context.invalidateTimelineContent()
             }
+            .onChange(of: classStore.context) { _, _ in
+                context.invalidateTimelineContent()
+            }
         }
         .onAppear { [session] in
             metronome.diagnosticContext = { [weak session] in session?.diagnosticContext ?? [:] }
