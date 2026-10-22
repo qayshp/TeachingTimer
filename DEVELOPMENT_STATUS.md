@@ -2,6 +2,14 @@
 
 ## Usability implementation follow-up
 
+Count options now include vibrations on/off (next run only), defaulting on, and
+an optional minutes-left label, defaulting off. Arc-only runs submit no haptics
+and retain the 60-second arc / 64.8-second completion. Delayed haptics still stop
+independently, with a crossed-hand icon and "Vibrations off" text. Normal count
+results live in Class options rather than lingering on the face. Results persist
+as stable enum codes with migration from old English values. Renewal copy
+distinguishes an actual handoff from waiting for the wrist to be raised.
+
 Explicit class creation and schedule correction now preserve the initial Start
 timestamp on edits and support a fresh class before the retirement grace ends.
 Quarter-hour inference remains the default. Model checks cover early preparation,

@@ -70,8 +70,8 @@ final class WKInterfaceDevice {
         let beforeLate = device.submissions.count
         clock.advanceNext(lateness: 0.4); await drain()
         assert(model.isActive && model.hapticsStopped && device.submissions.count == beforeLate)
-        assert(model.lastResult == "Taps off · arc continues")
-        assert(MetronomeController(defaults: defaults, journal: journal).lastResult == "Last count: taps stopped")
+        assert(model.result == .vibrationsStopped)
+        assert(MetronomeController(defaults: defaults, journal: journal).result == .interrupted)
         let originalAngle = model.startAngle
         let progressAtFailure = model.progress
         // Exercise the production drawing entry point, not just its underlying
@@ -86,7 +86,7 @@ final class WKInterfaceDevice {
         assert(model.progress > progressAtFailure && model.startAngle == originalAngle)
         assert(device.submissions.count == beforeLate) // no more pulse deadlines queued
         clock.advanceNext(); await drain() // original 64.8s completion, not a new minute
-        assert(!model.isActive && model.lastResult == "Count done · taps off")
+        assert(!model.isActive && model.result == .completedWithoutVibrations)
         assert(device.submissions.count == beforeLate)
         // Both explicit end actions also cancel a silent visual run immediately.
         for reason in ["user_cancelled", "new_class_reset"] {
@@ -109,6 +109,16 @@ final class WKInterfaceDevice {
         clock.advanceNext(); await drain()
         assert(anchor.duration(to: clock.now) == .seconds(64.8))
         assert(!model.isActive && model.lastResult == "Count complete")
+        // Arc-only preference makes no acknowledgement or timed haptic requests;
+        // it retains the same 60-second arc and 64.8-second visual lifetime.
+        let beforeSilent = device.submissions.count
+        model.start(configuration: .init(hapticsEnabled: false)); await drain()
+        assert(model.isActive && !model.hapticsStopped && model.nextScheduledBeat == nil)
+        assert(model.frame(at: Date().addingTimeInterval(30)).isVisible)
+        clock.advanceNext(); await drain()
+        assert(!model.isActive && model.result == .completed)
+        assert(device.submissions.count == beforeSilent)
+        assert(defaults.string(forKey: "landmarkResult.v2") == "completed")
         await journal.flush()
         let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
         let events = try decoder.decode([LandmarkDiagnostics.Event].self, from: Data(contentsOf: journalURL))

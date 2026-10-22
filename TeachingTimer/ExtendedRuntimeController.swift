@@ -96,7 +96,9 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         case .idle: ""
         case .starting: "Starting session…"
         case .running: "Session active"
-        case .expiring: "Session ending"
+        case .expiring:
+            earlyHandoffRequested ? "Renewing session…" :
+                (renewalPolicy == .automatic ? "Raise wrist to renew" : "Session ending")
         case .expired: "Session ended"
         case .interrupted: "Session interrupted"
         case .stopped: "Session stopped"

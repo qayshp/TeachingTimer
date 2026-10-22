@@ -49,8 +49,23 @@ import OSLog
 
 @MainActor
 final class MetronomeController: ObservableObject {
+    enum Result: String {
+        case ready, running, completed, stopped, vibrationsStopped, completedWithoutVibrations, interrupted
+        var message: String {
+            switch self {
+            case .ready: ""
+            case .running: "Counting"
+            case .completed: "Count complete"
+            case .stopped: "Count stopped"
+            case .vibrationsStopped: "Vibrations off · arc continues"
+            case .completedWithoutVibrations: "Count complete · vibrations stopped"
+            case .interrupted: "Previous count interrupted"
+            }
+        }
+    }
     struct Configuration {
         var schedule = LandmarkSchedule()
+        var hapticsEnabled = true
         var acknowledgement: WKHapticType = .start
         // Physical-device trial: a more distinctive beat than the faint click.
         var beat: WKHapticType = .directionUp
@@ -59,7 +74,8 @@ final class MetronomeController: ObservableObject {
     /// A visual run can outlive haptic delivery. Only explicit cancel/reset or
     /// the original completion deadline ends the visual run.
     @Published private(set) var hapticsStopped = false
-    @Published private(set) var lastResult = ""
+    @Published private(set) var result: Result = .ready
+    var lastResult: String { result.message }
     var diagnosticContext: () -> [String: String] = { [:] }
     private let journal: LandmarkDiagnostics
     private let defaults: UserDefaults
@@ -67,17 +83,19 @@ final class MetronomeController: ObservableObject {
     init(defaults: UserDefaults = .standard, journal: LandmarkDiagnostics = LandmarkDiagnostics()) {
         self.defaults = defaults
         self.journal = journal
-        lastResult = defaults.string(forKey: "landmarkLastResult") ?? ""
-        // Runs aren't restored across process launch. Keep the last-known
-        // haptic result without falsely claiming an arc is still running.
-        switch lastResult {
-        case "Haptics stopped · arc continues", "Taps off · arc continues", "Last count: haptics stopped":
-            lastResult = "Last count: taps stopped"
-        case "Count complete · haptics stopped": lastResult = "Count done · taps off"
-        case "Count completed": lastResult = "Count complete"
-        case "Count cancelled": lastResult = "Count stopped"
-        default: break
+        if let saved = defaults.string(forKey: "landmarkResult.v2"), let stored = Result(rawValue: saved) {
+            // Never claim that a run survived process termination.
+            result = [.running, .vibrationsStopped].contains(stored) ? .interrupted : stored
+        } else {
+            switch defaults.string(forKey: "landmarkLastResult") ?? "" {
+            case "Count completed", "Count complete": result = .completed
+            case "Count cancelled", "Count stopped": result = .stopped
+            case "Count complete · haptics stopped", "Count done · taps off": result = .completedWithoutVibrations
+            case "": result = .ready
+            default: result = .interrupted
+            }
         }
+        defaults.set(result.rawValue, forKey: "landmarkResult.v2")
     }
 #if CONTROLLER_CHECKS
     var testNow: () -> ContinuousClock.Instant = { ContinuousClock().now }
@@ -132,16 +150,16 @@ final class MetronomeController: ObservableObject {
         let wallAnchor = Date()
         startAngle = LandmarkSchedule.startAngle(at: wallAnchor)
         let schedule = configuration.schedule
-        nextScheduledBeat = wallAnchor.addingTimeInterval(schedule.intervalSeconds)
+        nextScheduledBeat = configuration.hapticsEnabled ? wallAnchor.addingTimeInterval(schedule.intervalSeconds) : nil
         isActive = true
         hapticsStopped = false
-        lastResult = ""
-        defaults.set("", forKey: "landmarkLastResult")
+        setResult(.running)
         let diagnosticRun = UUID().uuidString
         runID = diagnosticRun
         record("landmark_started", extra: ["intervalSeconds": String(schedule.intervalSeconds),
             "landmarkCount": String(schedule.landmarkCount), "pulseSpacing": String(schedule.pulseSpacing),
-            "lateThresholdSeconds": String(schedule.maximumLateness)])
+            "lateThresholdSeconds": String(schedule.maximumLateness), "hapticsEnabled": String(configuration.hapticsEnabled)])
+        if configuration.hapticsEnabled {
         let acknowledgementElapsed = anchor.duration(to: now()).components
         let acknowledgementSeconds = Double(acknowledgementElapsed.seconds) + Double(acknowledgementElapsed.attoseconds) / 1e18
         log.notice("haptic_submit run=\(diagnosticRun, privacy: .public) kind=ack elapsed=\(acknowledgementSeconds) landmark=0 pulse=0 count=0 haptic=\(configuration.acknowledgement.rawValue)")
@@ -150,9 +168,11 @@ final class MetronomeController: ObservableObject {
             "actualElapsed": String(acknowledgementSeconds), "lateness": String(acknowledgementSeconds),
             "landmark": "0", "pulse": "0", "count": "0", "hapticType": String(configuration.acknowledgement.rawValue),
             "hapticName": Self.hapticName(configuration.acknowledgement)])
+        }
         log.notice("Landmarks activated; first group in \(schedule.intervalSeconds) seconds")
         task = Task { [weak self] in
             pulseGroups: for index in 1...schedule.landmarkCount {
+                guard configuration.hapticsEnabled else { break }
                 for pulse in 0..<index {
                     let deadline = anchor.advanced(by: .seconds(schedule.pulseOffset(landmark: index, pulse: pulse)))
                     do { try await self?.sleep(until: deadline) } catch { return }
@@ -163,8 +183,7 @@ final class MetronomeController: ObservableObject {
                         self.log.warning("Landmark schedule missed; stopping haptics while arc continues")
                         self.hapticsStopped = true
                         self.nextScheduledBeat = nil
-                        self.lastResult = "Taps off · arc continues"
-                        self.defaults.set(self.lastResult, forKey: "landmarkLastResult")
+                        self.setResult(.vibrationsStopped)
                         self.record("landmark_haptics_stopped", extra: ["reason": "missed_deadline", "landmark": String(index),
                             "pulse": String(pulse + 1), "count": String(index),
                             "scheduledElapsed": String(schedule.pulseOffset(landmark: index, pulse: pulse)),
@@ -202,6 +221,10 @@ final class MetronomeController: ObservableObject {
         let parts = duration.components
         return Double(parts.seconds) + Double(parts.attoseconds) / 1e18
     }
+    private func setResult(_ value: Result) {
+        result = value
+        defaults.set(value.rawValue, forKey: "landmarkResult.v2")
+    }
     private static func hapticName(_ type: WKHapticType) -> String {
         switch type {
         case .start: "start"
@@ -226,10 +249,7 @@ final class MetronomeController: ObservableObject {
     func cancel(reason: String = "user_cancelled", extra: [String: String] = [:]) {
         guard isActive else { return }
         record("landmark_ended", extra: extra.merging(["reason": reason]) { _, value in value }, flush: true)
-        lastResult = reason == "completed"
-            ? (hapticsStopped ? "Count done · taps off" : "Count complete")
-            : "Count stopped"
-        defaults.set(lastResult, forKey: "landmarkLastResult")
+        setResult(reason == "completed" ? (hapticsStopped ? .completedWithoutVibrations : .completed) : .stopped)
         task?.cancel(); task = nil; anchor = nil; isActive = false; nextScheduledBeat = nil
         hapticsStopped = false
         runID = nil
