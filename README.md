@@ -2,6 +2,12 @@
 
 ## Review follow-up (October 21, 2026)
 
+The unpublished review series was preserved on a safety branch, then replayed
+after the separate foreground-minute-hand commit. Both hands are now above the
+controls (seconds foremost); the review's text, validation, layout and test work
+is retained. Native Crown focus, class/session behavior and haptic timing remain
+unchanged. This combined revision still needs physical-watch validation.
+
 The code/copy/visual review and simulator matrix are recorded in
 `DEVELOPMENT_STATUS.md`; its old five-second metronome material is explicitly
 archived, not current guidance. Reset now uses the short body “Stops session and
@@ -621,3 +627,8 @@ the seconds hand. It remains the same shorter, six-point white hand at
 `minute + second / 60`, using the existing one-second timeline. Its overlay is
 noninteractive and adds no duplicate accessibility element. Dial arcs, markers,
 control dimensions, focus routing, and session/count logic are unchanged.
+
+After restoring the review series, all eight deterministic suites and Debug
+simulator / signed Release builds pass. SE 3 40 mm captures confirm the white
+minute hand remains continuous across the count control and the buttons still
+respond. Artifacts are ignored under `work/validation-2026-10-21-minute-hand/`.

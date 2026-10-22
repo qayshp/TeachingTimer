@@ -181,8 +181,8 @@ struct SharedClockPage: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, layout.statusHorizontalPadding)
                 .frame(width: layout.controlsWidth, height: layout.statusHeight)
-                // Keep the minute hand and arcs out of diagnostic text.
-                // The foreground seconds hand intentionally remains visible.
+                // Keep arcs out of diagnostic text. Both foreground clock
+                // hands intentionally remain visible across controls/status.
                 .background(.black, in: RoundedRectangle(cornerRadius: 6))
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Session and count status")

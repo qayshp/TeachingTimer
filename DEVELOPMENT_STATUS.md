@@ -4,8 +4,8 @@
 
 The current app has two pages: the squircle teaching face and native Now Playing.
 It remains watchOS-only, without a workout session or iPhone companion app.
-The one-second wall-clock seconds hand draws above the controls; the minute hand
-and arcs remain behind them. Native companion volume and its focus sequence are
+Both wall-clock hands draw above controls, with the seconds hand foremost;
+arcs remain behind them. Native companion volume and its focus sequence are
 unchanged by this review. Class context survives runtime replacements and is
 retired 30 minutes after scheduled end; Start establishes the next class.
 
@@ -71,7 +71,11 @@ readability; count haptics and independent arc continuation; native Crown volume
 after controls, reset cancellation, and returning from Now Playing; automatic
 renewal/manual fallback; and class survival/retirement. VoiceOver needs an actual
 listening/navigation check. This review was not installed on the user's Watch.
-The last installed baseline remains the foreground-hand build `088744e`.
+The last installed baseline remains the foreground-seconds-hand build `088744e`.
+The subsequent foreground-minute-hand change is a separate commit before the
+replayed review work. Review behavior is retained; its comments/notes now reflect
+both hands in front. Neither this combined build nor the minute-hand-only build
+has been installed on the physical Watch as part of the GitHub push request.
 
 ## Archived development checkpoint — 2026-09-11
 
