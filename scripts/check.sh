@@ -10,10 +10,10 @@ check() {
     "$check_dir/$check_name"
 }
 check ClassContext TeachingTimer/ClassContext.swift Tests/ClassContextChecks.swift
-check Landmarks TeachingTimer/MetronomeController.swift Tests/LandmarkChecks.swift
+check Landmarks TeachingTimer/LandmarkController.swift Tests/LandmarkChecks.swift
 check RuntimeJournal TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift Tests/RuntimeDiagnosticsChecks.swift
 check RuntimeRenewal -D CONTROLLER_CHECKS TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/RuntimeRenewalRules.swift TeachingTimer/ExtendedRuntimeController.swift Tests/RuntimeRenewalChecks.swift
-check LandmarkController -D CONTROLLER_CHECKS TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/MetronomeController.swift Tests/LandmarkControllerChecks.swift
+check LandmarkController -D CONTROLLER_CHECKS TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/LandmarkController.swift Tests/LandmarkControllerChecks.swift
 check LandmarkJournal TeachingTimer/LandmarkDiagnostics.swift Tests/LandmarkDiagnosticsChecks.swift
 check Layout TeachingTimer/ClockGeometry.swift TeachingTimer/TimerFaceLayout.swift Tests/TimerFaceLayoutChecks.swift
 check Geometry TeachingTimer/TimerFaceLayout.swift TeachingTimer/ClockGeometry.swift Tests/ClockGeometryChecks.swift

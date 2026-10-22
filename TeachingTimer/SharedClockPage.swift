@@ -1,15 +1,13 @@
 import SwiftUI
 import WatchKit
 
-enum ClockFaceKind { case squircleIntersection, squircleClipped, circular }
 enum ClockFaceLayer { case complete, dial, secondsHand }
 
 struct SharedClockPage: View {
     let date: Date
-    let face: ClockFaceKind
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
-    @ObservedObject var metronome: MetronomeController
+    @ObservedObject var landmarks: LandmarkController
     let retireOldClass: () -> Bool
     let crownIsActive: Bool
     var showsClassProgress = false
@@ -20,14 +18,14 @@ struct SharedClockPage: View {
     @ScaledMetric(relativeTo: .caption) private var labelSize = 13.0
 
     var body: some View {
-        let frame = metronome.frame(at: date)
+        let frame = landmarks.frame(at: date)
         GeometryReader { geometry in
             let layout = TimerFaceLayout(size: geometry.size)
             ZStack {
                 clockFace(layer: .dial)
-                ClockAdditions(date: date, face: face, context: classStore.context,
+                ClockAdditions(date: date, context: classStore.context,
                     showsClassProgress: showsClassProgress,
-                    landmarkStartAngle: frame.isVisible ? metronome.startAngle : nil,
+                    landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,
                     landmarkProgress: frame.progress)
                     .allowsHitTesting(false)
                 Button("Class") { classSheet = ClassSheetRequest() }
@@ -42,7 +40,7 @@ struct SharedClockPage: View {
                     .accessibilityLabel("iPhone playback volume")
                 actions(layout: layout).position(x: geometry.size.width / 2, y: layout.actionY)
                 HStack(spacing: 3) {
-                    if metronome.hapticsStopped { Image(systemName: "hand.raised.slash").accessibilityHidden(true) }
+                    if landmarks.hapticsStopped { Image(systemName: "hand.raised.slash").accessibilityHidden(true) }
                     Text(faceStatus)
                 }
                     .font(.system(size: min(labelSize, 15)))
@@ -56,16 +54,16 @@ struct SharedClockPage: View {
         .ignoresSafeArea()
         .containerBackground(.black, for: .tabView)
         .sheet(item: $classSheet) { _ in
-            ClassControlsView(session: session, classStore: classStore, metronome: metronome)
+            ClassControlsView(session: session, classStore: classStore, landmarks: landmarks)
         }
     }
 
     private var faceStatus: String {
-        if metronome.hapticsStopped { return "Vibrations off" }
+        if landmarks.hapticsStopped { return "Vibrations off" }
         if session.phase == .starting { return "Starting…" }
         if session.phase == .expiring { return session.statusText }
         if classStore.context != nil && !session.isActive { return "Session off" }
-        if metronome.isActive && !metronome.configuration.hapticsEnabled { return "Visual count" }
+        if landmarks.isActive && !landmarks.configuration.hapticsEnabled { return "Visual count" }
         if showRemainingMinutes, let context = classStore.context {
             if date < context.scheduledStart { return "Starts " + context.scheduledStart.formatted(date: .omitted, time: .shortened) }
             let minutes = max(0, Int(ceil(context.scheduledEnd.timeIntervalSince(date) / 60)))
@@ -86,24 +84,24 @@ struct SharedClockPage: View {
         } else {
             HStack(spacing: 4) {
                 Button {
-                    if metronome.isActive { metronome.cancel() }
-                    else { metronome.start(configuration: .init(hapticsEnabled: countVibrationsEnabled)) }
+                    if landmarks.isActive { landmarks.cancel() }
+                    else { landmarks.start(configuration: .init(hapticsEnabled: countVibrationsEnabled)) }
                 } label: {
                     ViewThatFits(in: .horizontal) {
-                        Text(metronome.isActive ? "Stop count" : "1-min count").fixedSize()
-                        Text(metronome.isActive ? "Stop" : "Count").fixedSize()
-                        Image(systemName: metronome.isActive ? "stop.fill" : "timer")
+                        Text(landmarks.isActive ? "Stop count" : "1-min count").fixedSize()
+                        Text(landmarks.isActive ? "Stop" : "Count").fixedSize()
+                        Image(systemName: landmarks.isActive ? "stop.fill" : "timer")
                     }
                     .font(.system(size: labelSize, weight: .semibold))
                     .frame(width: session.isActive ? layout.controlsWidth : layout.countWidth,
                            height: layout.actionHeight)
                     .background(.black, in: RoundedRectangle(cornerRadius: 12))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(.white, lineWidth: metronome.isActive ? 2 : 1))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(.white, lineWidth: landmarks.isActive ? 2 : 1))
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain).accessibilityIdentifier("metronome-toggle")
-                .accessibilityLabel(metronome.isActive ? "Stop count" : "Start one-minute count")
-                .accessibilityValue(metronome.hapticsStopped ? "Counting without vibrations" : (metronome.isActive ? "Counting" : "Ready"))
+                .accessibilityLabel(landmarks.isActive ? "Stop count" : "Start one-minute count")
+                .accessibilityValue(landmarks.hapticsStopped ? "Counting without vibrations" : (landmarks.isActive ? "Counting" : "Ready"))
                 .accessibilityHint("Six ten-second landmarks. Tap again to stop.")
                 if !session.isActive {
                     Button("Resume") { guard !retireOldClass() else { return }; session.start() }
@@ -118,11 +116,7 @@ struct SharedClockPage: View {
     }
 
     @ViewBuilder private func clockFace(layer: ClockFaceLayer) -> some View {
-        switch face {
-        case .squircleIntersection: SquircleIntersectionClockView(date: date, dimmed: dimmed, layer: layer)
-        case .squircleClipped: SquircleClippedClockView(date: date, dimmed: dimmed, layer: layer)
-        case .circular: CircularClockView(date: date, dimmed: dimmed, layer: layer)
-        }
+        SquircleIntersectionClockView(date: date, dimmed: dimmed, layer: layer)
     }
 }
 
@@ -135,7 +129,7 @@ private struct ClassControlsView: View {
     enum Mode { case summary, create, edit }
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
-    @ObservedObject var metronome: MetronomeController
+    @ObservedObject var landmarks: LandmarkController
     @Environment(\.dismiss) private var dismiss
     @State private var mode: Mode = .summary
     @State private var start = Date()
@@ -169,7 +163,7 @@ private struct ClassControlsView: View {
                         Toggle("Count vibrations", isOn: $countVibrationsEnabled)
                         Text("Applies to the next count. If vibrations are delayed, the arc keeps going.").font(.caption)
                         Toggle("Minutes left", isOn: $showRemainingMinutes)
-                        if !metronome.lastResult.isEmpty { Text(metronome.lastResult).font(.caption) }
+                        if !landmarks.lastResult.isEmpty { Text(landmarks.lastResult).font(.caption) }
                     }
                     Button("End class", role: .destructive) { confirmEnd = true }
                 } else {
@@ -212,7 +206,7 @@ private struct ClassControlsView: View {
         .alert("End class?", isPresented: $confirmEnd) {
             Button("End class", role: .destructive) {
                 session.stop(source: "new_class_reset")
-                metronome.cancel(reason: "new_class_reset")
+                landmarks.cancel(reason: "new_class_reset")
                 classStore.reset()
                 dismiss()
             }
@@ -230,7 +224,7 @@ private struct ClassControlsView: View {
         if mode == .edit {
             classStore.updateSchedule(start: start, durationMinutes: duration)
         } else {
-            metronome.cancel(reason: "new_class_reset")
+            landmarks.cancel(reason: "new_class_reset")
             // The confirmation is the actual Start action; opening the draft
             // earlier must not claim that the class was already running.
             classStore.begin(at: Date(), scheduledStart: start, durationMinutes: duration)

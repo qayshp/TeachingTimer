@@ -9,7 +9,7 @@ struct ContentView: View {
 
     @ObservedObject var session: ExtendedRuntimeController
     @StateObject private var classStore = ClassStore()
-    @StateObject private var metronome = MetronomeController()
+    @StateObject private var landmarks = LandmarkController()
     @Environment(\.scenePhase) private var scenePhase
     @State private var page: Page = .classProgress
     @State private var classClockRevision = 0
@@ -40,10 +40,9 @@ struct ContentView: View {
             TabView(selection: $page) {
                 SharedClockPage(
                     date: context.date,
-                    face: .squircleIntersection,
                     session: session,
                     classStore: classStore,
-                    metronome: metronome,
+                    landmarks: landmarks,
                     retireOldClass: { retireOldClass() },
                     crownIsActive: page == .classProgress,
                     showsClassProgress: true
@@ -71,10 +70,10 @@ struct ContentView: View {
                 retireOldClass()
                 classClockRevision &+= 1
             }
-            .onChange(of: metronome.isActive) { _, _ in
+            .onChange(of: landmarks.isActive) { _, _ in
                 context.invalidateTimelineContent()
             }
-            .onChange(of: metronome.hapticsStopped) { _, _ in
+            .onChange(of: landmarks.hapticsStopped) { _, _ in
                 context.invalidateTimelineContent()
             }
             .onChange(of: classStore.context) { _, _ in
@@ -82,7 +81,7 @@ struct ContentView: View {
             }
         }
         .onAppear { [session] in
-            metronome.diagnosticContext = { [weak session] in session?.diagnosticContext ?? [:] }
+            landmarks.diagnosticContext = { [weak session] in session?.diagnosticContext ?? [:] }
             retireOldClass()
         }
         .task(id: ClassTaskKey(context: classStore.context, clockRevision: classClockRevision)) {
@@ -124,7 +123,7 @@ struct ContentView: View {
                 "classRetiredAt": formatter.string(from: date),
                 "classDurationMinutes": String(old.durationMinutes)
             ])
-            metronome.cancel(reason: "class_retired")
+            landmarks.cancel(reason: "class_retired")
         }
     }
 }

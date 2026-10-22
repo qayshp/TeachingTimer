@@ -2,6 +2,12 @@
 
 ## Usability implementation follow-up
 
+The controller is now named `LandmarkController`, matching its actual purpose.
+Unused circular/clipped face implementations were removed from the shipping
+target and source tree; their experiments remain recoverable in Git history.
+The current two-page UI, native volume adapter, timing, and runtime lifecycle
+are unchanged by this cleanup. All eight suites and the Simulator build pass.
+
 Runtime and landmark journals now share an ordered off-main writer. Runtime
 events request immediate queued writes; landmark events retain their 250 ms
 batching. A corrupt journal is copied to a uniquely named `.corrupt.*.json`

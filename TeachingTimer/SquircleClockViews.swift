@@ -16,29 +16,13 @@ struct SquircleIntersectionClockView: View {
     var layer: ClockFaceLayer = .complete
 
     var body: some View {
-        SquircleClockFace(date: date, dimmed: dimmed, handStyle: .perimeterIntersection, layer: layer)
-    }
-}
-
-struct SquircleClippedClockView: View {
-    let date: Date
-    let dimmed: Bool
-    var layer: ClockFaceLayer = .complete
-
-    var body: some View {
-        SquircleClockFace(date: date, dimmed: dimmed, handStyle: .fixedAndClipped, layer: layer)
+        SquircleClockFace(date: date, dimmed: dimmed, layer: layer)
     }
 }
 
 private struct SquircleClockFace: View {
-    enum HandStyle {
-        case perimeterIntersection
-        case fixedAndClipped
-    }
-
     let date: Date
     let dimmed: Bool
-    let handStyle: HandStyle
     let layer: ClockFaceLayer
 
     private var second: Int {
@@ -111,17 +95,12 @@ private struct SquircleClockFace: View {
             let size = geometry.size
             let direction = SquircleRayGeometry.direction(forSecond: second)
             let center = CGPoint(x: size.width / 2, y: size.height / 2)
-            let length: CGFloat = switch handStyle {
-            case .perimeterIntersection:
-                SquircleRayGeometry.intersection(
+            let length = SquircleRayGeometry.intersection(
                     size: size,
                     cornerRadius: SquircleClockTuning.cornerRadius(for: size),
                     edgeInset: SquircleClockTuning.edgeInset,
                     direction: direction
                 ).magnitude + SquircleClockTuning.perimeterHandOvershoot
-            case .fixedAndClipped:
-                hypot(size.width, size.height) * 1.25
-            }
 
             Canvas { context, _ in
                 var path = Path()

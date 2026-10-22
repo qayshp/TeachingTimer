@@ -3,7 +3,6 @@ import SwiftUI
 /// Shared scheduled-end marker and progress arcs, sampled by the parent timeline.
 struct ClockAdditions: View {
     let date: Date
-    let face: ClockFaceKind
     let context: ClassContext?
     var showsClassProgress = false
     var landmarkStartAngle: Double?
@@ -47,15 +46,9 @@ struct ClockAdditions: View {
             if let context {
                 let minute = Calendar.current.component(.minute, from: context.scheduledEnd)
                 let direction = SquircleRayGeometry.direction(forSecond: minute)
-                let perimeter: CGVector
-                if face == .circular {
-                    let radius = min(size.width, size.height) * 0.94 / 2
-                    perimeter = CGVector(dx: direction.dx * radius, dy: direction.dy * radius)
-                } else {
-                    perimeter = SquircleRayGeometry.intersection(size: size,
+                let perimeter = SquircleRayGeometry.intersection(size: size,
                         cornerRadius: SquircleClockTuning.cornerRadius(for: size),
                         edgeInset: SquircleClockTuning.edgeInset, direction: direction)
-                }
                 let prominent = context.progress(at: date) >= 0.5
                 // Solid geometry carries the emphasis even in monochrome Always-On.
                 // Initial area is 56 pt², about twice a 10 × 2.5 pt major tick.

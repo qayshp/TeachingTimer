@@ -48,7 +48,7 @@ import Combine
 import OSLog
 
 @MainActor
-final class MetronomeController: ObservableObject {
+final class LandmarkController: ObservableObject {
     enum Result: String {
         case ready, running, completed, stopped, vibrationsStopped, completedWithoutVibrations, interrupted
         var message: String {
@@ -123,7 +123,7 @@ final class MetronomeController: ObservableObject {
     private(set) var startAngle: Double = 0
     private var anchor: ContinuousClock.Instant?
     private var task: Task<Void, Never>?
-    private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "Metronome")
+    private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "Landmarks")
     var beatsRemaining: Int { max(0, configuration.schedule.landmarkCount - beatsDelivered) }
     /// Read by the existing one-second timeline; no per-pulse UI publication.
     var progress: Double {

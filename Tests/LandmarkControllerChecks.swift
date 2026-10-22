@@ -39,7 +39,7 @@ final class WKInterfaceDevice {
         }
         let journalURL = directory.appendingPathComponent("LandmarkDiagnostics.json")
         let journal = LandmarkDiagnostics(url: journalURL)
-        let model = MetronomeController(defaults: defaults, journal: journal)
+        let model = LandmarkController(defaults: defaults, journal: journal)
         let clock = ManualClock()
         model.testNow = { clock.now }
         model.testSleep = { try await clock.sleep(until: $0) }
@@ -71,7 +71,7 @@ final class WKInterfaceDevice {
         clock.advanceNext(lateness: 0.4); await drain()
         assert(model.isActive && model.hapticsStopped && device.submissions.count == beforeLate)
         assert(model.result == .vibrationsStopped)
-        assert(MetronomeController(defaults: defaults, journal: journal).result == .interrupted)
+        assert(LandmarkController(defaults: defaults, journal: journal).result == .interrupted)
         let originalAngle = model.startAngle
         let progressAtFailure = model.progress
         // Exercise the production drawing entry point, not just its underlying
