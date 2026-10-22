@@ -1,5 +1,12 @@
 # Teaching Timer development status — 2026-10-21
 
+## Usability implementation follow-up
+
+Explicit class creation and schedule correction now preserve the initial Start
+timestamp on edits and support a fresh class before the retirement grace ends.
+Quarter-hour inference remains the default. Model checks cover early preparation,
+75-minute correction, persistence, and back-to-back replacement. UI follows next.
+
 ## Current implementation and evidence
 
 The current app has two pages: the squircle teaching face and native Now Playing.

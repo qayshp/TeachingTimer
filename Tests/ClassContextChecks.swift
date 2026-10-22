@@ -28,6 +28,17 @@ struct ClassContextChecks {
         assert(ClassStore(defaults: defaults).context == original)
         store.reset()
         assert(ClassStore(defaults: defaults).context == nil)
+        // Preparing early must allow the inferred quarter to be corrected.
+        store.begin(at: date(10, 23), scheduledStart: date(15), durationMinutes: 60)
+        assert(store.context?.scheduledEnd == date(15).addingTimeInterval(3600))
+        store.updateSchedule(start: date(30), durationMinutes: 75)
+        assert(store.context?.initialStartPressedAt == date(10, 23))
+        assert(ClassStore(defaults: defaults).context == store.context)
+        // Explicit New class before the old grace period expires gets a fresh anchor.
+        store.begin(at: date(40), scheduledStart: date(45), durationMinutes: 60)
+        assert(store.context?.initialStartPressedAt == date(40))
+        assert(store.context?.scheduledStart == date(45))
+        store.reset()
         // Decoding must enforce the same invariants as fresh construction.
         let validData = try! JSONEncoder().encode(context)
         let validObject = try! JSONSerialization.jsonObject(with: validData) as! [String: Any]

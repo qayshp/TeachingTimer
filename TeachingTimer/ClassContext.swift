@@ -12,10 +12,11 @@ struct ClassContext: Codable, Equatable {
     static let retirementGraceMinutes = 30
     var retirementDate: Date { scheduledEnd.addingTimeInterval(Double(Self.retirementGraceMinutes) * 60) }
     func shouldRetire(at date: Date) -> Bool { date >= retirementDate }
-    init(pressedAt: Date, durationMinutes: Int = 60, calendar: Calendar = .current) {
+    init(pressedAt: Date, durationMinutes: Int = 60, calendar: Calendar = .current,
+         scheduledStart: Date? = nil) {
         precondition(Self.validDurationMinutes.contains(durationMinutes))
         initialStartPressedAt = pressedAt
-        scheduledStart = Self.inferredStart(for: pressedAt, calendar: calendar)
+        self.scheduledStart = scheduledStart ?? Self.inferredStart(for: pressedAt, calendar: calendar)
         self.durationMinutes = durationMinutes
     }
     static func inferredStart(for date: Date, calendar: Calendar = .current) -> Date {
@@ -59,6 +60,24 @@ final class ClassStore: ObservableObject {
     func establishIfNeeded(at date: Date = Date(), durationMinutes: Int = 60) {
         guard context == nil else { return }
         context = ClassContext(pressedAt: date, durationMinutes: durationMinutes)
+        if let data = try? JSONEncoder().encode(context) { defaults.set(data, forKey: key) }
+    }
+    /// Explicit user confirmation may replace a class before the retirement grace ends.
+    /// The UI must stop the old count and handle runtime intent separately.
+    func begin(at date: Date = Date(), scheduledStart: Date, durationMinutes: Int) {
+        context = ClassContext(pressedAt: date, durationMinutes: durationMinutes, scheduledStart: scheduledStart)
+        persist()
+    }
+
+    /// Correct the schedule without changing the original Start timestamp or services.
+    func updateSchedule(start: Date, durationMinutes: Int) {
+        guard let existing = context else { return }
+        context = ClassContext(pressedAt: existing.initialStartPressedAt,
+            durationMinutes: durationMinutes, scheduledStart: start)
+        persist()
+    }
+
+    private func persist() {
         if let data = try? JSONEncoder().encode(context) { defaults.set(data, forKey: key) }
     }
     func reset() { context = nil; defaults.removeObject(forKey: key) }
