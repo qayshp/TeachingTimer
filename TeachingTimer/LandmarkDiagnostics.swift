@@ -10,23 +10,25 @@ final class LandmarkDiagnostics: @unchecked Sendable {
         let event: String
         let details: [String: String]
     }
-    private let queue = DispatchQueue(label: "TeachingTimer.LandmarkJournal", qos: .utility)
+    private let queue: DispatchQueue
     private let url: URL
     private let capacity: Int
     private var events: [Event] = []
     private var pending: [Event] = []
     private var loaded = false
     private var flushScheduled = false
-    private var unreadable = false
-    private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "LandmarkJournal")
+    private let log: Logger
 
-    init(url: URL = URL.documentsDirectory.appendingPathComponent("LandmarkDiagnostics.json"), capacity: Int = 2000) {
+    init(url: URL = URL.documentsDirectory.appendingPathComponent("LandmarkDiagnostics.json"), capacity: Int = 2000,
+         label: String = "LandmarkJournal") {
         self.url = url
         self.capacity = max(1, capacity)
+        queue = DispatchQueue(label: "TeachingTimer." + label, qos: .utility)
+        log = Logger(subsystem: "com.qayshp.TeachingTimer", category: label)
     }
 
-    func record(_ name: String, details: [String: String], flush: Bool = false) {
-        let event = Event(timestamp: Date(), event: name, details: details)
+    func record(_ name: String, details: [String: String], at date: Date = Date(), flush: Bool = false) {
+        let event = Event(timestamp: date, event: name, details: details.mapValues { String($0.prefix(1000)) })
         queue.async {
             self.pending.append(event)
             self.pending = Array(self.pending.suffix(self.capacity))
@@ -49,14 +51,23 @@ final class LandmarkDiagnostics: @unchecked Sendable {
     }
 
     private func writePending() {
-        guard !unreadable, !pending.isEmpty else { return }
+        guard !pending.isEmpty else { return }
         do {
             if !loaded {
                 if FileManager.default.fileExists(atPath: url.path) {
                     let decoder = JSONDecoder()
                     decoder.dateDecodingStrategy = .iso8601
                     do { events = try decoder.decode([Event].self, from: Data(contentsOf: url)) }
-                    catch { unreadable = true; throw error }
+                    catch {
+                        // Preserve the exact unreadable bytes before starting a
+                        // new journal. If the backup fails, leave the old file
+                        // untouched and retry on a later write.
+                        let backup = url.deletingPathExtension()
+                            .appendingPathExtension("corrupt." + UUID().uuidString + ".json")
+                        try FileManager.default.copyItem(at: url, to: backup)
+                        events = [Event(timestamp: Date(), event: "journal_recovered",
+                            details: ["preservedFile": backup.lastPathComponent])]
+                    }
                 }
                 loaded = true
             }

@@ -18,7 +18,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     private var renewalPending = false
     private var stopRequested = false
     private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "Runtime")
-    private var diagnostics: RuntimeDiagnostics?
+    private let diagnostics: RuntimeDiagnostics
     private let launchID = UUID().uuidString
     private var runtimeID: String?
     private var expirationWarningReceived = false
@@ -32,9 +32,8 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     }
 
     override init() {
+        diagnostics = RuntimeDiagnostics()
         super.init()
-        do { diagnostics = try RuntimeDiagnostics() }
-        catch { log.error("Cannot open persistent runtime journal: \(error.localizedDescription, privacy: .public)") }
         record("app_launched", extra: [
             "version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
             "os": ProcessInfo.processInfo.operatingSystemVersionString
@@ -43,8 +42,8 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
 
 #if CONTROLLER_CHECKS
     init(journal: RuntimeDiagnostics) {
-        super.init()
         diagnostics = journal
+        super.init()
     }
 #endif
 
@@ -74,8 +73,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         if let expiration = runtimeSession?.expirationDate {
             details["expirationDate"] = ISO8601DateFormatter().string(from: expiration)
         }
-        do { try diagnostics?.record(event, details: details) }
-        catch { log.error("Cannot persist runtime event: \(error.localizedDescription, privacy: .public)") }
+        diagnostics.record(event, details: details)
     }
 
     func applicationStateChanged(_ state: String) {

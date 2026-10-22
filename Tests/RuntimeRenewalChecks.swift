@@ -39,7 +39,7 @@ final class WKExtendedRuntimeSession {
         defer { try? FileManager.default.removeItem(at: directory) }
         func controller() throws -> ExtendedRuntimeController {
             WKApplication.shared().applicationState = .active
-            return ExtendedRuntimeController(journal: try RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)))
+            return ExtendedRuntimeController(journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)))
         }
         let now = Date(timeIntervalSince1970: 10000)
         assert(RuntimeRenewalRules.canHandoff(warned: true, expiration: now.addingTimeInterval(8), now: now, active: true, automatic: true, stopped: false))

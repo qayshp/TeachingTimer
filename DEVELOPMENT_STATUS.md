@@ -2,6 +2,13 @@
 
 ## Usability implementation follow-up
 
+Runtime and landmark journals now share an ordered off-main writer. Runtime
+events request immediate queued writes; landmark events retain their 250 ms
+batching. A corrupt journal is copied to a uniquely named `.corrupt.*.json`
+file before a new journal begins with `journal_recovered`. If preserving it
+fails, the original remains untouched. Tests cover recovery, ordering, retention,
+and relaunch. A sudden kill can still lose queued events; absence is not a cause.
+
 Count options now include vibrations on/off (next run only), defaulting on, and
 an optional minutes-left label, defaulting off. Arc-only runs submit no haptics
 and retain the 60-second arc / 64.8-second completion. Delayed haptics still stop

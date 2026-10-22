@@ -1,41 +1,21 @@
 import Foundation
 
-/// Small on-device journal. No network, media metadata, or per-tick writes.
-@MainActor
-final class RuntimeDiagnostics {
-    struct Event: Codable {
-        let timestamp: Date
-        let event: String
-        let details: [String: String]
-    }
+/// Runtime events use the same ordered, off-main writer as landmark events.
+/// Record returns after queuing; a sudden process kill may lose the last events.
+final class RuntimeDiagnostics: @unchecked Sendable {
+    typealias Event = LandmarkDiagnostics.Event
     let fileURL: URL
-    private let capacity: Int
-    private var events: [Event]
+    private let writer: LandmarkDiagnostics
 
     init(fileURL: URL = URL.documentsDirectory.appendingPathComponent("RuntimeDiagnostics.json"),
-         capacity: Int = 1000) throws {
+         capacity: Int = 1000) {
         self.fileURL = fileURL
-        self.capacity = max(1, capacity)
-        if FileManager.default.fileExists(atPath: fileURL.path) {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            // Never silently overwrite an unreadable existing diagnostic file.
-            events = try decoder.decode([Event].self, from: Data(contentsOf: fileURL))
-        } else {
-            events = []
-        }
+        writer = LandmarkDiagnostics(url: fileURL, capacity: capacity, label: "RuntimeJournal")
     }
 
-    func record(_ name: String, details: [String: String], at date: Date = Date()) throws {
-        var next = Array(events.suffix(capacity - 1))
-        next.append(Event(timestamp: date, event: name,
-                          details: details.mapValues { String($0.prefix(1000)) }))
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(),
-                                               withIntermediateDirectories: true)
-        try encoder.encode(next).write(to: fileURL, options: .atomic)
-        events = next
+    func record(_ name: String, details: [String: String], at date: Date = Date()) {
+        writer.record(name, details: details, at: date, flush: true)
     }
+
+    func flush() async { await writer.flush() }
 }

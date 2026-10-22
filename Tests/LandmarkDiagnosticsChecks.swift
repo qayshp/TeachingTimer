@@ -20,8 +20,11 @@ import Foundation
         let corrupt = directory.appendingPathComponent("corrupt.json")
         try Data("not JSON".utf8).write(to: corrupt)
         let bad = LandmarkDiagnostics(url: corrupt)
-        bad.record("must_not_overwrite", details: [:]); await bad.flush()
-        let preserved = try String(contentsOf: corrupt, encoding: .utf8)
+        bad.record("new_event", details: [:]); await bad.flush()
+        let recovered = try decoder.decode([LandmarkDiagnostics.Event].self, from: Data(contentsOf: corrupt))
+        assert(recovered.map(\.event) == ["journal_recovered", "new_event"])
+        let backup = directory.appendingPathComponent(recovered[0].details["preservedFile"]!)
+        let preserved = try String(contentsOf: backup, encoding: .utf8)
         assert(preserved == "not JSON")
         print("PASS: asynchronous journal ordering, flush, bounded retention, reopen and corrupt-history preservation")
     }
