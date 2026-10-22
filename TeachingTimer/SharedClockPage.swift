@@ -74,7 +74,7 @@ struct SharedClockPage: View {
 
     @ViewBuilder private func actions(layout: TimerFaceLayout) -> some View {
         if classStore.context == nil {
-            Button("Start class") { retireOldClass(); classSheet = ClassSheetRequest() }
+            Button("Start class") { _ = retireOldClass(); classSheet = ClassSheetRequest() }
                 .font(.system(size: labelSize, weight: .semibold))
                 .frame(width: layout.controlsWidth, height: layout.actionHeight)
                 .background(.black, in: Capsule())

@@ -2,6 +2,13 @@
 
 ## Usability implementation follow-up
 
+Packaging includes an original code-drawn 1024px opaque app icon, privacy
+manifest for app-only preferences and elapsed-time calculations, and generated
+build revision/timestamp metadata in the app and launch journal. Version 1.0
+build 2 identifies this iteration. Raw device uptime is no longer logged;
+launch/run-relative elapsed time plus wall timestamps retain useful correlation.
+App Store privacy answers and review approval still need separate verification.
+
 The app target now uses `SKIP_INSTALL=NO`. `scripts/check-archive.sh` checks
 that an unsigned Release archive really includes the app executable and plist;
 an archive-success message alone is insufficient. This is not signed export or

@@ -239,7 +239,6 @@ final class LandmarkController: ObservableObject {
         var details = diagnosticContext().merging(extra) { _, value in value }
         details["runID"] = runID ?? "none"
         details["appStateCode"] = String(WKApplication.shared().applicationState.rawValue)
-        details["uptimeSeconds"] = String(ProcessInfo.processInfo.systemUptime)
         details["groupsDelivered"] = String(beatsDelivered)
         details["hapticsStopped"] = String(hapticsStopped)
         if let anchor { details["elapsedSeconds"] = String(Self.seconds(anchor.duration(to: now()))) }

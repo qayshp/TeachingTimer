@@ -20,6 +20,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "Runtime")
     private let diagnostics: RuntimeDiagnostics
     private let launchID = UUID().uuidString
+    private let launchInstant = ContinuousClock().now
     private var runtimeID: String?
     private var expirationWarningReceived = false
     private var earlyHandoffRequested = false
@@ -36,8 +37,18 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         super.init()
         record("app_launched", extra: [
             "version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
+            "build": Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "unknown",
+            "revision": Self.buildMetadata["revision"] ?? "unknown",
+            "builtAt": Self.buildMetadata["builtAt"] ?? "unknown",
             "os": ProcessInfo.processInfo.operatingSystemVersionString
         ])
+    }
+
+    private static var buildMetadata: [String: String] {
+        guard let url = Bundle.main.url(forResource: "BuildInfo", withExtension: "plist"),
+              let data = try? Data(contentsOf: url),
+              let metadata = try? PropertyListDecoder().decode([String: String].self, from: data) else { return [:] }
+        return metadata
     }
 
 #if CONTROLLER_CHECKS
@@ -59,7 +70,8 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         @unknown default: details["appState"] = "unknown"
         }
         details["appStateCode"] = String(WKApplication.shared().applicationState.rawValue)
-        details["uptimeSeconds"] = String(ProcessInfo.processInfo.systemUptime)
+        let elapsed = launchInstant.duration(to: ContinuousClock().now).components
+        details["launchElapsedSeconds"] = String(Double(elapsed.seconds) + Double(elapsed.attoseconds) / 1e18)
         details["renewalPolicy"] = String(describing: renewalPolicy)
         details["renewalPending"] = String(renewalPending)
         details["stopRequested"] = String(stopRequested)
