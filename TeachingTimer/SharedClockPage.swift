@@ -52,6 +52,8 @@ struct SharedClockPage: View {
                     }
                     .position(layout.volumeCenter)
                     .accessibilityLabel("iPhone playback volume")
+                WallClockMinuteHand(date: date)
+                    .allowsHitTesting(false)
                 // Teaching priority: the second hand stays continuous across
                 // all app controls, but never participates in input or focus.
                 clockFace(layer: .secondsHand)

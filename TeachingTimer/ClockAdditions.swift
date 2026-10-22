@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Shared wall-clock minute hand and scheduled-end marker, sampled by the parent timeline.
+/// Shared scheduled-end marker and progress arcs, sampled by the parent timeline.
 struct ClockAdditions: View {
     let date: Date
     let face: ClockFaceKind
@@ -50,15 +50,6 @@ struct ClockAdditions: View {
                     with: .color(.white),
                     style: StrokeStyle(lineWidth: 2.5, lineCap: .butt))
             }
-            let components = Calendar.current.dateComponents([.minute, .second], from: date)
-            let minute = Double(components.minute ?? 0) + Double(components.second ?? 0) / 60
-            let angle = minute * .pi / 30
-            let length = min(size.width, size.height) * 0.29
-            var hand = Path()
-            hand.move(to: center)
-            hand.addLine(to: CGPoint(x: center.x + sin(angle) * length, y: center.y - cos(angle) * length))
-            graphics.stroke(hand, with: .color(.white), style: StrokeStyle(lineWidth: 6, lineCap: .square))
-
             if let context {
                 let minute = Calendar.current.component(.minute, from: context.scheduledEnd)
                 let direction = SquircleRayGeometry.direction(forSecond: minute)
@@ -114,5 +105,27 @@ struct ClockAdditions: View {
             if index == 0 { path.move(to: point) } else { path.addLine(to: point) }
         }
         return path
+    }
+}
+
+/// Same wall-clock geometry and cadence as before, in a separate foreground
+/// layer so controls cannot hide it. The seconds hand is drawn above this view.
+struct WallClockMinuteHand: View {
+    let date: Date
+
+    var body: some View {
+        Canvas { graphics, size in
+            let center = CGPoint(x: size.width / 2, y: size.height / 2)
+            let components = Calendar.current.dateComponents([.minute, .second], from: date)
+            let minute = Double(components.minute ?? 0) + Double(components.second ?? 0) / 60
+            let angle = minute * .pi / 30
+            let length = min(size.width, size.height) * 0.29
+            var hand = Path()
+            hand.move(to: center)
+            hand.addLine(to: CGPoint(x: center.x + sin(angle) * length, y: center.y - cos(angle) * length))
+            graphics.stroke(hand, with: .color(.white), style: StrokeStyle(lineWidth: 6, lineCap: .square))
+        }
+        // ClockAdditions already supplies the wall time and class-end summary.
+        .accessibilityHidden(true)
     }
 }

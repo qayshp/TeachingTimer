@@ -6,8 +6,9 @@ The seconds hand and center pivot now draw above all teaching-face controls and
 status text, restoring continuous visibility across their opaque backgrounds.
 The same clock view renders separate dial/hand layers from the same timeline
 date; its geometry, whole-second cadence, color, and display clipping are
-unchanged. The minute hand, class/count arcs, and scheduled marker stay behind
-controls. The foreground hand disables hit testing and the background dial is
+unchanged. Class/count arcs and the scheduled marker stay behind controls; the
+later foreground-minute-hand follow-up below also brings the minute hand forward.
+The foreground hands disable hit testing and the background dial is
 hidden from accessibility to avoid duplicate seconds-hand announcements.
 Native volume creation/focus and all session/class/haptic logic are unchanged.
 
@@ -574,3 +575,11 @@ Run deterministic class checks on macOS with:
 swiftc TeachingTimer/ClassContext.swift Tests/ClassContextChecks.swift -o /tmp/TeachingTimerClassChecks
 /tmp/TeachingTimerClassChecks
 ```
+
+## Foreground minute hand (October 21, 2026)
+
+The minute hand now draws above teaching controls and native volume, but below
+the seconds hand. It remains the same shorter, six-point white hand at
+`minute + second / 60`, using the existing one-second timeline. Its overlay is
+noninteractive and adds no duplicate accessibility element. Dial arcs, markers,
+control dimensions, focus routing, and session/count logic are unchanged.
