@@ -77,6 +77,12 @@ wrist-down hands/arc. They do not prove this new layout/management flow.
 
 ## Known limits
 
+**Build 5 dial visibility:** draw the Class capsule below the dial ticks and
+perimeter indicators. Drawing overlays ignore hit testing; button position,
+44-point hit area, hand precedence, native volume adapter, and timing are
+unchanged. Nine check suites and a Simulator build passed. SE 3 40 mm screenshot
+inspection confirms exposed upper-left ticks, and a real tap opened Class options.
+
 **October 22 Simulator follow-up:** repeated real swipes and Lock transitions
 did not reproduce the black page in a fresh SE 3 run. App-only termination and
 normal relaunch preserved the exact saved class; Resume successfully started a

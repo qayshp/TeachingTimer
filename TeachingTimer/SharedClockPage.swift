@@ -27,12 +27,6 @@ struct SharedClockPage: View {
         GeometryReader { geometry in
             let layout = TimerFaceLayout(size: geometry.size)
             ZStack {
-                clockFace(layer: .dial)
-                ClockAdditions(date: date, context: classStore.context,
-                    showsClassProgress: showsClassProgress,
-                    landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,
-                    landmarkProgress: frame.progress)
-                    .allowsHitTesting(false)
                 Button { classSheet = ClassSheetRequest() } label: {
                     HStack(spacing: 3) {
                         Text("Class")
@@ -46,6 +40,14 @@ struct SharedClockPage: View {
                     .frame(width: 64, height: 44).contentShape(Rectangle())
                     .buttonStyle(.plain).position(x: 38, y: 23)
                     .accessibilityLabel("Class options").accessibilityIdentifier("class-options")
+                // The edge-to-edge dial stays visible over the Class capsule.
+                // These drawing layers must not intercept the button's touches.
+                clockFace(layer: .dial).allowsHitTesting(false)
+                ClockAdditions(date: date, context: classStore.context,
+                    showsClassProgress: showsClassProgress,
+                    landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,
+                    landmarkProgress: frame.progress)
+                    .allowsHitTesting(false)
                 CompanionVolumeControl(
                     isFocused: crownIsActive && classSheet == nil,
                     diagnosticSnapshot: volumeDiagnosticSnapshot,
