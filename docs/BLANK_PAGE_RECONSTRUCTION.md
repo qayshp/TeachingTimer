@@ -1,5 +1,9 @@
 # Historical blank-page reconstruction
 
+Follow-up: the [exact-sequence test](EXACT_LOCK_REENTRY_TEST.md) ran two
+Lock/Home/reopen/media/timer passes on October 22 without reproducing a blank
+page. Recovery from an already-black page remains untested.
+
 Reviewed October 22, 2026 against the original timestamped tool records and
 retained Simulator screenshots. Times below are **October 21, Pacific daylight
 time** (the raw records use October 22 UTC). This is a historical reconstruction,

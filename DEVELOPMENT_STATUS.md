@@ -77,6 +77,12 @@ wrist-down hands/arc. They do not prove this new layout/management flow.
 
 ## Known limits
 
+**October 22 exact-sequence retry:** two Lock → Home → reopen-without-termination
+→ native media → timer passes rendered both pages. Foreground runtime recovery
+occurred and the class timing remained identical. No black page occurred, so
+force-close recovery is still unverified. See the
+[sequence, timestamps, and captures](docs/EXACT_LOCK_REENTRY_TEST.md).
+
 **Build 5 dial visibility:** draw the Class capsule below the dial ticks and
 perimeter indicators. Drawing overlays ignore hit testing; button position,
 44-point hit area, hand precedence, native volume adapter, and timing are
