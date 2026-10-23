@@ -54,10 +54,12 @@ continued to render. No haptic or runtime behavior was changed for this test.
   audio control, audible volume, paired-phone delivery, or AirPlay routing.
 - Core Animation/native-service errors also occurred with visibly healthy
   pages. Those messages alone do not identify the historical black-page cause.
-- The installed iOS 27.0 runtime contains Music, Podcasts, and Safari. A separate
-  paired iPhone/Watch Simulator would be a useful controlled comparison, but
-  neither media-source bridging nor the physical Apple Music → AirPlay → WiiM
-  route was tested here. The existing SE Simulator has no paired phone.
+- The existing SE Simulator has no paired phone. A subsequently authorized
+  [isolated paired test](PAIRED_SIMULATOR_MEDIA_TEST.md) found that the Music and
+  Podcasts runtime folders are resources, not runnable installed apps. A Safari
+  media session registered on the phone, but neither embedded nor standalone
+  Watch Now Playing picked it up. The physical Apple Music → AirPlay → WiiM
+  route remains untested in Simulator.
 - No application source was changed and no physical device was touched. Private
   screenshots, journals, saved class data, and filtered native errors are in
   `work/support/2026-10-22-exact-sequence/` (not committed).

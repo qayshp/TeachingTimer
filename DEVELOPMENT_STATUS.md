@@ -82,6 +82,10 @@ wrist-down hands/arc. They do not prove this new layout/management flow.
 occurred and the class timing remained identical. No black page occurred, so
 force-close recovery is still unverified. See the
 [sequence, timestamps, and captures](docs/EXACT_LOCK_REENTRY_TEST.md).
+An authorized [isolated paired-Simulator test](docs/PAIRED_SIMULATOR_MEDIA_TEST.md)
+registered playing media on the simulated iPhone, but neither embedded nor
+standalone Watch Now Playing received it. It did not provide a valid end-to-end
+volume test. No application-source or physical-device changes were made.
 
 **Build 5 dial visibility:** draw the Class capsule below the dial ticks and
 perimeter indicators. Drawing overlays ignore hit testing; button position,
