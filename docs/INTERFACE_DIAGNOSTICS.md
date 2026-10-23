@@ -89,8 +89,11 @@ resign/focus calls executing and returning on navigation. This does not verify
 native media pixels or actual Crown ownership. A foreground interruption and
 successful restart occurred between visits; visits spanned both sides, so that
 interruption alone does not explain the report. Available crash-report inventories
-did not identify a matching same-day media crash. Unified logs could not be
-collected without administrator authentication. Root cause remains unconfirmed;
+did not identify a matching same-day media crash. After administrator approval,
+the iPhone unified archive was collected; targeted and broader media searches
+of the class interval yielded only sparse, non-diagnostic entries. Direct Watch
+unified collection failed with connection-refused and device-not-configured
+errors despite device availability and trust. Root cause remains unconfirmed;
 no media/focus behavior was changed. Detailed evidence stays under ignored
 `work/support/2026-10-22-media/`.
 
