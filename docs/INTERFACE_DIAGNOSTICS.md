@@ -83,4 +83,15 @@ whether this shares a cause with the earlier volume silencing remains unknown.
 These journals cannot read the receiver's volume, verify the active AirPlay
 route, capture Crown deltas, confirm real focus, or prove that sound was heard.
 Correlate them with observations; absence of an event is not proof of a cause.
+Follow-up retrieval for the October 22 incident confirmed repeated media-page
+selection/appearance callbacks while runtime was running, with timer-control
+resign/focus calls executing and returning on navigation. This does not verify
+native media pixels or actual Crown ownership. A foreground interruption and
+successful restart occurred between visits; visits spanned both sides, so that
+interruption alone does not explain the report. Available crash-report inventories
+did not identify a matching same-day media crash. Unified logs could not be
+collected without administrator authentication. Root cause remains unconfirmed;
+no media/focus behavior was changed. Detailed evidence stays under ignored
+`work/support/2026-10-22-media/`.
+
 Review/redact journals before sharing; never commit raw device logs to GitHub.

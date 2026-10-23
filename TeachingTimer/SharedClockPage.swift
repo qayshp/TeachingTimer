@@ -33,10 +33,18 @@ struct SharedClockPage: View {
                     landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,
                     landmarkProgress: frame.progress)
                     .allowsHitTesting(false)
-                Button("Class") { classSheet = ClassSheetRequest() }
-                    .font(.system(size: min(labelSize, 16), weight: .semibold))
-                    .frame(width: 52, height: 44).contentShape(Rectangle())
-                    .buttonStyle(.plain).position(x: 34, y: 23)
+                Button { classSheet = ClassSheetRequest() } label: {
+                    HStack(spacing: 3) {
+                        Text("Class")
+                        Image(systemName: "chevron.down").font(.system(size: 8, weight: .bold))
+                    }
+                    .font(.system(size: min(labelSize, 14), weight: .semibold))
+                    .padding(.horizontal, 7).padding(.vertical, 5)
+                    .background(Capsule().fill(.black))
+                    .overlay(Capsule().strokeBorder(.primary, lineWidth: 1))
+                }
+                    .frame(width: 64, height: 44).contentShape(Rectangle())
+                    .buttonStyle(.plain).position(x: 38, y: 23)
                     .accessibilityLabel("Class options").accessibilityIdentifier("class-options")
                 CompanionVolumeControl(
                     isFocused: crownIsActive && classSheet == nil,
@@ -162,6 +170,7 @@ private struct ClassControlsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var mode: Mode = .summary
     @State private var start = Date()
+    @State private var defaultStart = Date()
     @State private var duration = 60
     @State private var confirmReplacement = false
     @State private var confirmEnd = false
@@ -198,11 +207,11 @@ private struct ClassControlsView: View {
                 } else if mode == .create {
                     Button(action: confirmStart) {
                         VStack(spacing: 6) {
-                            Text("Start \(duration)-min class")
+                            Text("Start 60-min class")
                                 .font(.headline)
                                 .fixedSize(horizontal: false, vertical: true)
-                            Text(start.formatted(date: .omitted, time: .shortened) + "–" +
-                                 start.addingTimeInterval(Double(duration) * 60).formatted(date: .omitted, time: .shortened))
+                            Text(defaultStart.formatted(date: .omitted, time: .shortened) + "–" +
+                                 defaultStart.addingTimeInterval(3600).formatted(date: .omitted, time: .shortened))
                                 .font(.caption)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
@@ -211,12 +220,14 @@ private struct ClassControlsView: View {
                         .contentShape(Rectangle())
                     }
                     .accessibilityIdentifier("confirm-class")
-                    Button("Adjust time or duration") { mode = .adjustNew }
+                    Button("Custom schedule") { mode = .adjustNew }
                         .frame(minHeight: 44)
                         .accessibilityIdentifier("adjust-class-schedule")
                 } else {
                     Section("Scheduled start") {
-                        Text(start.formatted(date: .abbreviated, time: .omitted)).font(.caption)
+                        if !Calendar.current.isDateInToday(start) {
+                            Text(start.formatted(date: .abbreviated, time: .omitted)).font(.caption)
+                        }
                         HStack {
                             Button("−15") { start = start.addingTimeInterval(-900) }
                                 .buttonStyle(.plain)
@@ -232,15 +243,15 @@ private struct ClassControlsView: View {
                         Text("75 min").tag(75)
                     }
                     Text("Ends " + start.addingTimeInterval(Double(duration) * 60).formatted(date: .omitted, time: .shortened))
-                    Button(mode == .edit ? "Save schedule" : "Start class", action: confirmStart)
+                    Button(mode == .edit ? "Save schedule" : "Start custom class", action: confirmStart)
                         .accessibilityIdentifier("confirm-class")
                     if mode == .adjustNew {
-                        Button("Back to quick start") { mode = .create }
+                        Button("Back to default") { mode = .create }
                             .frame(minHeight: 44)
                     }
                 }
             }
-            .navigationTitle(mode == .edit ? "Schedule" : (mode == .summary ? "Class" : "New class"))
+            .navigationTitle(mode == .edit ? "Schedule" : (mode == .summary ? "Class" : (mode == .adjustNew ? "Custom class" : "New class")))
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
         }
         .onAppear {
@@ -276,6 +287,7 @@ private struct ClassControlsView: View {
 
     private func prepareNew() {
         start = ClassContext.inferredStart(for: Date())
+        defaultStart = start
         duration = 60
         mode = .create
     }
@@ -292,7 +304,8 @@ private struct ClassControlsView: View {
             landmarks.cancel(reason: "new_class_reset")
             // The confirmation is the actual Start action; opening the draft
             // earlier must not claim that the class was already running.
-            classStore.begin(at: Date(), scheduledStart: start, durationMinutes: duration)
+            classStore.begin(at: Date(), scheduledStart: mode == .create ? defaultStart : start,
+                             durationMinutes: mode == .create ? 60 : duration)
             if !session.isActive { session.start() }
         }
         dismiss()

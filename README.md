@@ -13,7 +13,9 @@ until you have tested a build in your own teaching conditions.
 
 1. Tap **Start class**, check the proposed time range, then tap the large
    **Start 60-min class** button. For a different schedule, choose
-   **Adjust time or duration** for **−15 / +15** and **60 / 75 minutes**.
+   **Custom schedule** for **−15 / +15** and **60 / 75 minutes**, then **Start custom class**.
+   Custom edits never change the default 60-minute start. **Back to default** returns
+   to the original suggested time range. The outlined **Class ⌄** button opens class options.
 2. Read the long, thin hand for wall-clock seconds and the shorter, thicker hand
    for wall-clock minutes. Both stay in front of the controls. The system clock
    remains at the top right.

@@ -150,9 +150,12 @@ No fresh Watch journal has been retrieved for this incident, and no media or
 navigation fix is claimed. The Watch was reported away from the laptop.
 
 Class creation now opens with a large **Start 60-min class** action showing the
-inferred time range. **Adjust time or duration** reveals the existing schedule
-editor. Returning to quick start preserves adjustments (including 75 minutes)
-and labels the primary action accordingly. Replacing a class still asks for
+inferred time range. **Custom schedule** reveals the schedule editor and its
+separate **Start custom class** action. Custom edits remain isolated from the
+default's original inferred time and fixed 60-minute duration. **Back to default**
+does not carry custom values into that action. The routine date row is omitted
+unless the schedule is on another day. The face's Class control has an outlined
+capsule and disclosure chevron. Replacing a class still asks for
 confirmation; the exact Start timestamp is recorded only when confirmed.
 Quarter-hour inference, runtime renewal, landmarks, and native media/focus code
 are unchanged.
