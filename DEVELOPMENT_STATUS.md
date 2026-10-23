@@ -1,5 +1,9 @@
 # Teaching Timer — current verification
 
+Latest: [October 23 eight-form-factor Simulator review](docs/FORM_FACTOR_VALIDATION.md).
+All eight available display geometries were exercised; two non-blocking
+maximum-text polish findings remain. No app source or physical install changed.
+
 Updated for the October 21, 2026 usability/public-project pass. The older
 chronological notes are in [docs/history](docs/history/REVIEW_NOTES.md).
 
