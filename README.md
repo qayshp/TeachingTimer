@@ -11,8 +11,9 @@ until you have tested a build in your own teaching conditions.
 
 ## Quick start
 
-1. Tap **Start class**. Check the suggested quarter-hour start, adjust with
-   **−15 / +15**, choose **60 or 75 minutes**, then confirm **Start class**.
+1. Tap **Start class**, check the proposed time range, then tap the large
+   **Start 60-min class** button. For a different schedule, choose
+   **Adjust time or duration** for **−15 / +15** and **60 / 75 minutes**.
 2. Read the long, thin hand for wall-clock seconds and the shorter, thicker hand
    for wall-clock minutes. Both stay in front of the controls. The system clock
    remains at the top right.
@@ -91,6 +92,9 @@ An intermittent blank page has been observed in Simulator (including the
 pre-review build) and reported during classes on a physical SE 3 with a paired
 iPhone. It is not a Simulator-only limitation. See the current verification
 notes; neither the cause nor a reliable recovery is established.
+In an October 22 physical-class report, the media page stayed completely black
+and its Crown volume was unusable, while the timer and timer-page volume worked
+with Apple Music on iPhone → AirPlay → WiiM. No cause has been established.
 
 ## Runtime, privacy, and limitations
 

@@ -24,6 +24,9 @@ Check SE 3 40 mm first, then a larger Series and Ultra. Check class creation,
 schedule correction, New/End class confirmation, active/silent counts, recovery,
 Now Playing, and Lock. Debug launch arguments `--maximum-text`, `--large-text`,
 and `--show-now-playing` aid inspection without automatically starting services.
+`--show-class-setup` opens a new-class draft; add `--show-class-adjustments` to
+inspect its secondary editor. These Debug-only flags do not start a class or
+runtime, clear a saved class, or bypass replacement confirmation.
 Check hands pointing through controls and markers at all four quarter-hours.
 Record what was actually observed in `DEVELOPMENT_STATUS.md`.
 

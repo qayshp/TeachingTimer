@@ -73,6 +73,13 @@ last connection type was not specified. Raising volume on the iPhone restored
 both timer-page and Now Playing volume adjustment. This narrows reproduction
 conditions but does not identify a cause. It is not a guaranteed workaround.
 
+On October 22, the maintainer reported a different failure with Apple Music on
+iPhone → AirPlay → the same WiiM: the media page stayed entirely black, showed
+no media or transport controls, and could not control volume. The timer page
+and its volume control continued to work. This is not merely a visible "Not
+Playing" state. The Watch journal for that class has not yet been collected;
+whether this shares a cause with the earlier volume silencing remains unknown.
+
 These journals cannot read the receiver's volume, verify the active AirPlay
 route, capture Crown deltas, confirm real focus, or prove that sound was heard.
 Correlate them with observations; absence of an event is not proof of a cause.

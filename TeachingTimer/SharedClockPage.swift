@@ -68,6 +68,14 @@ struct SharedClockPage: View {
         .sheet(item: $classSheet) { _ in
             ClassControlsView(session: session, classStore: classStore, landmarks: landmarks)
         }
+#if DEBUG
+        .onAppear {
+            // Visual check only: opens a draft, never starts a class or runtime.
+            if ProcessInfo.processInfo.arguments.contains("--show-class-setup") {
+                classSheet = ClassSheetRequest()
+            }
+        }
+#endif
         .onChange(of: classSheet?.id) { _, _ in
             session.recordInterfaceEvent("class_sheet_state_changed", details: volumeDiagnosticSnapshot)
         }
@@ -147,7 +155,7 @@ private struct ClassSheetRequest: Identifiable {
 
 /// Secondary management UI owns its draft and dismissal; runtime state remains independent.
 private struct ClassControlsView: View {
-    enum Mode { case summary, create, edit }
+    enum Mode { case summary, create, adjustNew, edit }
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
     @ObservedObject var landmarks: LandmarkController
@@ -187,6 +195,25 @@ private struct ClassControlsView: View {
                         if !landmarks.lastResult.isEmpty { Text(landmarks.lastResult).font(.caption) }
                     }
                     Button("End class", role: .destructive) { confirmEnd = true }
+                } else if mode == .create {
+                    Button(action: confirmStart) {
+                        VStack(spacing: 6) {
+                            Text("Start \(duration)-min class")
+                                .font(.headline)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(start.formatted(date: .omitted, time: .shortened) + "–" +
+                                 start.addingTimeInterval(Double(duration) * 60).formatted(date: .omitted, time: .shortened))
+                                .font(.caption)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity, minHeight: 64)
+                        .contentShape(Rectangle())
+                    }
+                    .accessibilityIdentifier("confirm-class")
+                    Button("Adjust time or duration") { mode = .adjustNew }
+                        .frame(minHeight: 44)
+                        .accessibilityIdentifier("adjust-class-schedule")
                 } else {
                     Section("Scheduled start") {
                         Text(start.formatted(date: .abbreviated, time: .omitted)).font(.caption)
@@ -205,20 +232,27 @@ private struct ClassControlsView: View {
                         Text("75 min").tag(75)
                     }
                     Text("Ends " + start.addingTimeInterval(Double(duration) * 60).formatted(date: .omitted, time: .shortened))
-                    Button(mode == .edit ? "Save schedule" : "Start class") {
-                        if mode == .create && classStore.context != nil { confirmReplacement = true }
-                        else { save() }
-                    }.accessibilityIdentifier("confirm-class")
-                    if mode == .create {
-                        Text("Check the suggested time before starting.").font(.caption)
+                    Button(mode == .edit ? "Save schedule" : "Start class", action: confirmStart)
+                        .accessibilityIdentifier("confirm-class")
+                    if mode == .adjustNew {
+                        Button("Back to quick start") { mode = .create }
+                            .frame(minHeight: 44)
                     }
                 }
             }
-            .navigationTitle(mode == .edit ? "Schedule" : (mode == .create ? "New class" : "Class"))
+            .navigationTitle(mode == .edit ? "Schedule" : (mode == .summary ? "Class" : "New class"))
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
         }
         .onAppear {
             if classStore.context == nil { prepareNew() }
+#if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--show-class-setup") {
+                prepareNew()
+                if ProcessInfo.processInfo.arguments.contains("--show-class-adjustments") {
+                    mode = .adjustNew
+                }
+            }
+#endif
         }
         .onChange(of: classStore.context) { _, context in
             // Retirement can occur while this sheet is open. Don't expose an
@@ -244,6 +278,11 @@ private struct ClassControlsView: View {
         start = ClassContext.inferredStart(for: Date())
         duration = 60
         mode = .create
+    }
+
+    private func confirmStart() {
+        if mode != .edit && classStore.context != nil { confirmReplacement = true }
+        else { save() }
     }
 
     private func save() {

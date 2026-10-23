@@ -139,6 +139,35 @@ Event names, interpretation, and reproduction details to collect are in
 
 ## Remaining evidence boundaries
 
+### October 22 class feedback and quick-start change
+
+The maintainer clarified that during the October 22 class, the media page was
+completely black: no useful media information, no skip/pause controls, and no
+working Crown volume on that page. The timer and timer-page volume worked.
+Playback was Apple Music on the iPhone through AirPlay to the same WiiM receiver.
+This is a physical-device observation, not a "Not Playing" empty-source screen.
+No fresh Watch journal has been retrieved for this incident, and no media or
+navigation fix is claimed. The Watch was reported away from the laptop.
+
+Class creation now opens with a large **Start 60-min class** action showing the
+inferred time range. **Adjust time or duration** reveals the existing schedule
+editor. Returning to quick start preserves adjustments (including 75 minutes)
+and labels the primary action accordingly. Replacing a class still asks for
+confirmation; the exact Start timestamp is recorded only when confirmed.
+Quarter-hour inference, runtime renewal, landmarks, and native media/focus code
+are unchanged.
+
+Validation: all nine deterministic check suites passed, the watchOS Simulator
+Debug build succeeded, and the unsigned watchOS archive check passed. Simulator
+screenshots on SE 3 40 mm and Ultra 3 49 mm show the default action, time range,
+and adjustment option without scrolling; the existing adjustment form also
+renders. Debug-only launch arguments open drafts for these visual checks without
+starting a class or runtime. Full interactive confirmation/back-navigation and
+largest accessibility text sizes remain unverified: the maximum-text launch
+argument did not visibly enlarge this sheet, and Simulator's content-size query
+returned unsupported. No physical installation or new Watch-log retrieval was
+performed for this change.
+
 Do not describe this iteration as fully validated for real teaching until the
 physical navigation/Crown checks above have passed. The existing Watch install
 was not replaced during this review.
