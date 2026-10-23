@@ -94,4 +94,11 @@ collected without administrator authentication. Root cause remains unconfirmed;
 no media/focus behavior was changed. Detailed evidence stays under ignored
 `work/support/2026-10-22-media/`.
 
+The maintainer subsequently clarified that the foreground interruption was an
+intentional switch to another app to try to recover the black media page.
+Returning did not restore it; force-quitting was not tried. Do not characterize
+this event as unexplained foreground loss. The first retained event is consistent
+with the reported late opening of the app during class, but retention boundaries
+and callbacks cannot establish the exact first opening time.
+
 Review/redact journals before sharing; never commit raw device logs to GitHub.
