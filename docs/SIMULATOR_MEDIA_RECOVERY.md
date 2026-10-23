@@ -1,5 +1,9 @@
 # Media-page recovery attempt and class persistence
 
+For the original failing sequence and the distinction between a blank timer
+return and the physical black-media report, see the
+[historical reconstruction](BLANK_PAGE_RECONSTRUCTION.md).
+
 October 22, 2026. Source revision `61792db`, clean Debug Simulator build.
 Xcode 27.1 (27A9275), watchOS 27.0, existing SE 3 40 mm Simulator, no paired
 iPhone Simulator or real playback source. Device was initially shut down and

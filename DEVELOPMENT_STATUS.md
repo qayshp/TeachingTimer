@@ -105,6 +105,9 @@ a paired iPhone. This establishes a real-use report, not only a Simulator issue;
 it does not prove the two environments have the same underlying cause. The exact
 physical trigger and recovery are not yet recorded.
 [Baseline Simulator capture](docs/images/simulator-baseline-blank.png).
+The [historical reconstruction](docs/BLANK_PAGE_RECONSTRUCTION.md) identifies
+the clearest original failure as a blank **timer return after working media**.
+That is not yet proven to share a cause with the physical **black media** report.
 
 **Intermittent timer-page silencing:** the maintainer also reported that Crown
 volume changes on the timer page could silence playback at nonzero indicated
