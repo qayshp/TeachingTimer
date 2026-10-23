@@ -77,6 +77,13 @@ wrist-down hands/arc. They do not prove this new layout/management flow.
 
 ## Known limits
 
+**October 22 Simulator follow-up:** repeated real swipes and Lock transitions
+did not reproduce the black page in a fresh SE 3 run. App-only termination and
+normal relaunch preserved the exact saved class; Resume successfully started a
+replacement runtime without changing its schedule. This validates persistence,
+not black-page recovery. See [test sequence and screenshots](docs/SIMULATOR_MEDIA_RECOVERY.md).
+No speculative rendering/focus fix was introduced.
+
 **Unresolved blank-page issue, including physical Watch reports:** on the SE 3 watchOS 27 Simulator in
 Xcode 27.1 Device Hub, paging can leave an empty black page with the system time
 and page dots. It was observed returning from Now Playing after Lock, and also
