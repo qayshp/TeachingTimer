@@ -18,9 +18,10 @@ check ClassContext TeachingTimer/ClassContext.swift Tests/ClassContextChecks.swi
 check Landmarks TeachingTimer/LandmarkController.swift Tests/LandmarkChecks.swift
 check RuntimeJournal TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift Tests/RuntimeDiagnosticsChecks.swift
 check VolumeDiagnostics TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/VolumeControlDiagnostics.swift Tests/VolumeControlDiagnosticsChecks.swift
+check MediaReloadPolicy TeachingTimer/MediaReloadPolicy.swift Tests/MediaReloadPolicyChecks.swift
 check RuntimeRenewal -D CONTROLLER_CHECKS TeachingTimer/ClassContext.swift TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/RuntimeRenewalRules.swift TeachingTimer/ExtendedRuntimeController.swift Tests/RuntimeRenewalChecks.swift
 check LandmarkController -D CONTROLLER_CHECKS TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/LandmarkController.swift Tests/LandmarkControllerChecks.swift
 check LandmarkJournal TeachingTimer/LandmarkDiagnostics.swift Tests/LandmarkDiagnosticsChecks.swift
 check Layout TeachingTimer/ClockGeometry.swift TeachingTimer/TimerFaceLayout.swift Tests/TimerFaceLayoutChecks.swift
 check Geometry TeachingTimer/TimerFaceLayout.swift TeachingTimer/ClockGeometry.swift Tests/ClockGeometryChecks.swift
-printf 'All nine suites passed. Check binaries: %s\n' "$check_dir"
+printf 'All ten suites passed. Check binaries: %s\n' "$check_dir"

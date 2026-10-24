@@ -31,7 +31,7 @@ Elapsed time is relative to launch, not raw device uptime.
 | `luminance_changed` | SwiftUI reduced-luminance value changed, with previous/current values. No independent wrist-motion measurement. |
 | `interface_scene_changed` | Scene transition with page/dimming context, alongside existing `scene_state_changed` runtime events. |
 | `class_sheet_state_changed` | Whether the timer view requests its Class sheet; not confirmation of presentation completion. |
-| `media_reload_requested` | Explicit Class-options recovery request, native media generation, active-count flag/progress, and existing runtime context. Not proof of rendered recovery. |
+| `media_reload_requested` | Native-view recreation request: source, manual/automatic mode, previous/new media generation, active-count flag/progress, and existing runtime context. `failureDetected: unobserved`; not proof of failure or rendered recovery. |
 | `volume_control_created`, `volume_control_dismantled` | Native control creation/removal, identified by `controlID`. |
 | `volume_focus_requested` | Focus or resign request, identified by `requestID`, from `update` or `dismantle`. |
 | `volume_focus_call`, `volume_focus_call_returned` | Immediately before and after the existing WatchKit call; its return does not confirm focus was granted. |
@@ -43,11 +43,23 @@ particular request is superseded, whether dismantling has occurred, and monotoni
 for the queued callback. It is not an audio-command round-trip measurement.
 `actualFocus` is always `unobserved` because no confirmation is available here.
 
-Root interface events also include `mediaViewGeneration`. It changes only for
-an explicit **Reload media** request; it is not an automatic failure detector.
-The request changes only the native media view's SwiftUI identity, then selects
-that page after the Class sheet dismisses. Check pixels separately and compare
-runtime, count run, and volume-control IDs across the request.
+Root interface events also include `mediaViewGeneration`. Build 8 changes it
+once on deliberate media page entry (`source: page_entry`), on an active return
+after a recorded background phase while media is selected (`background_return`),
+or through **Reload media** (`class_options`). `refreshMode` distinguishes
+automatic from manual requests. `previousMediaViewGeneration` ties each request
+to the old host; `failureDetected` stays `unobserved` because no public service
+health callback is available. Healthy views are recreated too. The journal must
+not count automatic requests as failures prevented or recovered.
+
+Only the native media view's SwiftUI identity changes. Manual recovery selects
+that page after the Class sheet dismisses and suppresses the duplicate page-entry
+refresh. Background return while the timer is selected defers reconstruction
+until a media visit. Ordinary inactive/active wrist wakes, timeline frames, and
+staying on the page do not trigger reloads. Check pixels separately and compare
+runtime, count run, and volume-control IDs across each request. System-service
+logs may still preserve an underlying termination even if the page recovers
+before the user notices; automatic refresh is not a reliable incident detector.
 
 The `lastView...` fields are the last inputs supplied to the native-control
 adapter: timer page selection, Class-sheet request, and reduced luminance. They

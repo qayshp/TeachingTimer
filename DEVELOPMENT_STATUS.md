@@ -1,5 +1,14 @@
 # Teaching Timer — current verification
 
+Build 8 adds bounded automatic native-media refresh: once on media-page entry,
+or once after a real background return with media selected. Ordinary wrist wakes
+and clock ticks do not refresh it; manual Reload media remains available without
+duplicating the entry refresh. Each request records its trigger, generation,
+and `failureDetected: unobserved`. See the
+[automatic recovery evidence and limitations](docs/NOW_PLAYING_SERVICE_RECOVERY.md#automatic-refresh-build-8).
+Blank media and unintended volume silencing are the highest-priority bugs.
+The seconds-hand backstep on dimming is lower priority and remains unresolved.
+
 October 24 incident clarification: unexpected timer-page silencing also occurred
 with **USB audio**, not only AirPlay/WiiM. Reanalysis of the saved paired-device
 archives found a Watch zero-volume request at 18:52:47.854 and an iPhone Music

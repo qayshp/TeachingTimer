@@ -48,9 +48,10 @@ Tap **Class**, at the upper left, to:
 - Turn **Count vibrations** off for future visual-only counts, or enable the
   optional **Minutes left** label. Both count modes use the same arc timing.
 - **End class** with confirmation, clearing timing and stopping session/count.
-- **Reload media** if the media page is black. Scroll to **Media** in Class
-  options; this reopens the native controls while keeping class, session, and
-  count state. Swipe right afterward to return to the timer and Crown volume.
+- **Reload media** as a manual fallback. Media controls now refresh automatically
+  whenever you swipe into that page, or return from the background with media
+  selected. If it goes black while open, swipe to the timer and back, or scroll
+  to **Media → Reload media** in Class options. Class, session, and count continue.
 
 The suggested start uses the previous quarter-hour at minutes 0–12 after it and
 the next quarter-hour at minutes 13–14. Check it when preparing early: 1:10
@@ -105,9 +106,11 @@ establishes physical-watch cadence or how the vibrations feel while teaching.
 An intermittent blank page has been observed in Simulator (including the
 pre-review build) and reported during classes on a physical SE 3 with a paired
 iPhone. It is not a Simulator-only limitation. See the current verification
-notes. **Class → Reload media** recovered a controlled native-service failure
-in two Simulator trials without restarting the app. Physical recovery still
-needs validation, and the original physical trigger is unknown. See the
+notes. Recreating only the native media view recovered controlled service-loss
+failures without restarting the app. Build 8 applies that refresh on page entry
+and return from the background; ordinary wrist wakes do not trigger it. This is
+preventive recovery, not failure detection. Physical recovery still needs
+validation, and the original physical trigger is unknown. See the
 [reproduction and recovery results](docs/NOW_PLAYING_SERVICE_RECOVERY.md).
 In an October 22 physical-class report, the media page stayed completely black
 and its Crown volume was unusable, while the timer and timer-page volume worked
@@ -120,11 +123,14 @@ It is not a HealthKit workout. Renewal is attempted near expiration when active,
 or after eligible interruption on return; **Resume** remains the fallback.
 Automatic renewal and one-second Always-On are not guaranteed on every Watch/OS.
 
-The timer-page volume control has also intermittently silenced playback while
-native Now Playing could still adjust it. In one reported AirPlay → WiiM setup,
+The timer-page volume control has also intermittently silenced playback, with
+both AirPlay and USB audio reported. In one reported AirPlay → WiiM setup,
 raising volume on the iPhone restored both Watch controls. This is a reported
-recovery, not a diagnosed cause or guaranteed workaround. Test volume before
-class and keep the phone's controls available.
+recovery, not a diagnosed cause or guaranteed workaround. Automatic media refresh
+does not replace the timer's volume control and is not a proven silencing fix.
+Blank media and unintended silencing are the highest-priority bugs; the brief
+seconds-hand backstep on dimming is lower priority. Test volume before class
+and keep the phone's controls available.
 
 Preferences, class context, and bounded runtime/count journals stay in the app's
 local container. There is no automatic upload. Journals contain timestamps,

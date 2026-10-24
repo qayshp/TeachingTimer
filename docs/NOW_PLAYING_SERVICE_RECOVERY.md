@@ -174,3 +174,78 @@ validation should try Reload media during the naturally occurring failure,
 check that the active count and class continue, then return to the timer and
 confirm immediate Crown volume. This is a manual recovery option, not a claim
 that the original watchOS failure has been prevented.
+
+## Automatic refresh: build 8
+
+Build 8 uses the same narrow native-view identity change automatically on each
+deliberate timer → media selection, and on an active return after the app has
+actually entered the background if media is still selected. Returning to the
+timer defers the refresh until media is opened. A regular inactive/active wrist
+wake does not trigger it. There is no periodic retry, screenshot inspection, or
+private service-error hook. The manual Class action remains and suppresses a
+duplicate refresh when it also changes the selected page.
+
+`MediaReloadPolicy` isolates these decisions and is exercised by deterministic
+event-sequence checks, including foreground callback ordering and repeated wrist
+wakes. The native volume adapter, runtime/count controllers, class store, clock
+geometry, and original timeline/pager structure remain unchanged.
+
+Each `media_reload_requested` event records the reason (`page_entry`,
+`background_return`, or `class_options`), manual/automatic mode, previous/new
+generation, active count/progress, and runtime context. `failureDetected` is
+explicitly `unobserved`. This preserves when and why the app recreated the view,
+but cannot establish whether the old view was broken. Retained system-service
+logs can independently establish a connection error. Do not count preventive
+refreshes as detected failures or successful recoveries.
+
+### Simulator checks and remaining rendering uncertainty
+
+On the same SE 3 40 mm Simulator, two deliberate native-service terminations
+were followed by automatic native-content recovery without terminating the
+TeachingTimer process (PID 14969):
+
+- Background return with media selected: a refresh at 02:50:11 PDT created a
+  replacement native connection. Later direct Device Hub and simctl captures
+  showed Not Playing and transport controls, without a manual reload or another
+  app-page change. Initial recovery captures were black, so instantaneous
+  recovery or a measured latency bound is not established.
+- Background return to the timer: no media refresh occurred until the subsequent
+  swipe at 02:52:10 PDT. Direct Device Hub and simctl captures showed native media
+  content after that entry. The active count still had its original anchor.
+
+Saved class context and runtime intent matched before/after both trials. The
+same companion volume-control object survived, without dismantling. Going Home
+separately interrupted runtime and exercised the existing foreground runtime
+recovery; the native-view refresh did not itself restart a session.
+
+Both count runs retained their run IDs and finished with `reason: completed`.
+Their haptics stopped at the existing missed-deadline cutoff (about 0.405 and
+1.274 seconds late); the second was in the background with runtime interrupted.
+This validates preserved visual-run state, not uninterrupted haptic delivery.
+Three later page-entry refreshes retained the same running runtime ID, and two
+Lock/unlock cycles added no refresh events. All ten deterministic suites passed,
+including the new policy cases, and the signed Simulator build succeeded.
+The manual Class action produced exactly one further generation and rendered
+native controls. Across the final process there were seven refresh requests,
+one companion-control creation, no dismantles, and unchanged saved class/intent.
+
+Repeated-swipe tests also produced intermittent black captures in both the
+candidate and the unchanged build 7 under the same Simulator conditions. One
+candidate capture remained black at five seconds and displayed controls by ten
+seconds without another gesture; an unchanged-build capture was still black at
+eight seconds. These observations do not establish that automatic refresh causes
+the delay, nor that every black page is repaired by it. A stable page wrapper,
+changing identity in the selection binding, removing the native host offscreen,
+and separating the clock timeline from the pager did not reliably eliminate the
+captures. Those structural experiments were removed from the shipped change.
+
+This is automatic recovery for the tested connection-loss scenario, not a claim
+to have fixed every native-media rendering failure. Physical startup latency,
+actual playback/Crown behavior, and recovery during a naturally occurring blank
+page require hardware validation. **Volume silencing remains a separate
+high-priority bug**; the companion control is not reconstructed by this change.
+The lower-priority seconds-hand dimming transition is unchanged.
+
+Private evidence is retained under ignored
+`work/support/2026-10-24-auto-media/`, including the baseline comparison, failed
+structural experiments, final candidate logs, screenshots, and state snapshots.

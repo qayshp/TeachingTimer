@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var page: Page = .classProgress
     @State private var classClockRevision = 0
     @State private var mediaViewGeneration = 0
+    @State private var mediaReloadPolicy = MediaReloadPolicy()
 
     private struct ClassTaskKey: Equatable {
         let context: ClassContext?
@@ -60,7 +61,8 @@ struct ContentView: View {
                 .tag(Page.classProgress)
 
                 NowPlayingView()
-                    // Recreate only the native media host on explicit request.
+                    // Recreate only the native media host on bounded entry/return
+                    // events or a manual request, never on ordinary wrist wakes.
                     // The timer page, volume adapter, and shared state retain identity.
                     .id(mediaViewGeneration)
                     .containerBackground(.black, for: .tabView)
@@ -104,8 +106,11 @@ struct ContentView: View {
             recordInterfaceEvent("interface_appeared")
         }
         .onDisappear { recordInterfaceEvent("interface_disappeared") }
-        .onChange(of: page) { old, _ in
+        .onChange(of: page) { old, new in
             recordInterfaceEvent("page_selection_changed", details: ["previousPage": old.rawValue])
+            if new == .nowPlaying, let reason = mediaReloadPolicy.didSelectMedia() {
+                recreateMedia(reason: reason)
+            }
         }
         .onChange(of: dimmed) { old, _ in
             recordInterfaceEvent("luminance_changed", details: ["previousLuminanceReduced": String(old)])
@@ -121,6 +126,9 @@ struct ContentView: View {
             }
         }
         .onChange(of: scenePhase) { old, phase in
+            if phase == .background {
+                mediaReloadPolicy.didEnterBackground()
+            }
             session.applicationStateChanged(String(describing: phase))
             if phase == .active {
                 // Stop stale renewal intent before processing foreground recovery.
@@ -130,6 +138,9 @@ struct ContentView: View {
                 // missed while suspended and the class is not yet overdue.
                 classClockRevision &+= 1
                 session.applicationBecameActive()
+                if let reason = mediaReloadPolicy.didBecomeActive(mediaIsSelected: page == .nowPlaying) {
+                    recreateMedia(reason: reason)
+                }
             }
             recordInterfaceEvent("interface_scene_changed", details: ["previousScenePhase": String(describing: old)])
         }
@@ -152,13 +163,21 @@ struct ContentView: View {
     }
 
     private func reloadMedia() {
+        recreateMedia(reason: mediaReloadPolicy.manualReload(willSelectMedia: page != .nowPlaying))
+        page = .nowPlaying
+    }
+
+    private func recreateMedia(reason: MediaReloadPolicy.Reason) {
+        let previousGeneration = mediaViewGeneration
         mediaViewGeneration &+= 1
         recordInterfaceEvent("media_reload_requested", details: [
-            "source": "class_options",
+            "source": reason.rawValue,
+            "refreshMode": reason == .manual ? "manual" : "automatic",
+            "failureDetected": "unobserved",
+            "previousMediaViewGeneration": String(previousGeneration),
             "landmarksActive": String(landmarks.isActive),
             "landmarkProgress": String(landmarks.progress)
         ])
-        page = .nowPlaying
     }
 
     @discardableResult
