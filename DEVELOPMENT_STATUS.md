@@ -1,5 +1,10 @@
 # Teaching Timer — current verification
 
+Latest investigation: [Always-On seconds-hand transition](docs/ALWAYS_ON_HAND_TRANSITION.md).
+The brief backward tick was reproduced in the unchanged Simulator build with an
+active session. Two candidate fixes were insufficient and were removed; no app
+behavior change or physical install resulted.
+
 Latest: [October 23 eight-form-factor Simulator review](docs/FORM_FACTOR_VALIDATION.md).
 All eight available display geometries were exercised; two non-blocking
 maximum-text polish findings remain. No app source or physical install changed.
