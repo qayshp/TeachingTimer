@@ -50,16 +50,29 @@ remain the main evidence. The sysdiagnose retains only 60 records during
 12:20–12:40 and no matches for the targeted media query. Do not infer that the
 evening error was also the noon cause from that absence.
 
+## Simulator reproduction and Apple report
+
+On October 24, deliberately terminating `NanoNowPlayingViewService` while the
+Simulator host stayed alive reproduced the black media page twice, with the
+same WatchKit error domain/code. Force-closing and reopening TeachingTimer
+restored native media content both times. Class timing and saved runtime intent
+survived; build 6 automatically recovered runtime. This induced test does not
+establish why the service connection ended on the physical Watch.
+
+Filed **FB25305069**, “watchOS 27 NowPlayingView stays black after native view
+service ends; force-close restores it,” with the physical evidence, controlled
+Simulator steps, source, and combined Watch/iPhone sysdiagnose. This is separate
+from paired-Simulator media-discovery report FB25294079. See the
+[full reproduction and limits](NOW_PLAYING_SERVICE_RECOVERY.md).
+
 ## Recommended next experiment
 
-1. Preserve this evidence for a dedicated physical-Watch media feedback report.
-   The existing paired-Simulator media-discovery report is a different issue.
-2. Test a user-triggered reconstruction of only the native `NowPlayingView`,
+1. Test a user-triggered reconstruction of only the native `NowPlayingView`,
    offered from Class options so the native media page remains full-screen.
    Preserve class, runtime, count, and the working volume/focus adapter. Record
    the recovery request and resulting lifecycle; do not claim success from a
    lifecycle callback alone.
-3. Use a minimal native-media host to investigate foreground return after the
+2. Use a minimal native-media host to investigate foreground return after the
    remote view service is lost. Compare with standalone Now Playing on hardware
    when practical; Simulator media-source discovery is not equivalent to this
    physical rendering failure.

@@ -1,5 +1,13 @@
 # Media-page recovery attempt and class persistence
 
+**October 24 update:** a later, deliberate native view-service termination
+reproduced black **media** content twice; host force-close/relaunch restored it
+both times and preserved class timing. See the
+[service-loss reproduction and Apple Feedback FB25305069](NOW_PLAYING_SERVICE_RECOVERY.md).
+The October 22 observations below remain a historical record; build 6 now
+automatically recovers runtime after relaunch unless the user intentionally
+stopped it.
+
 For the original failing sequence and the distinction between a blank timer
 return and the physical black-media report, see the
 [historical reconstruction](BLANK_PAGE_RECONSTRUCTION.md).
