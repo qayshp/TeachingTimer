@@ -14,6 +14,9 @@ import Foundation
         for size in sizes {
             let layout = TimerFaceLayout(size: size)
             assert(layout.countWidth >= 44 && layout.optionsWidth >= 44 && layout.actionHeight >= 44)
+            assert(layout.volumeRefreshFrame.width >= 44 && layout.volumeRefreshFrame.height >= 44)
+            assert(layout.volumeRefreshFrame.minY >= 45) // Clear of Class button.
+            assert(layout.volumeRefreshFrame.maxY < layout.statusFrame.minY)
             assert(layout.volumeFrame.maxY < layout.statusFrame.minY)
             assert(layout.statusFrame.maxY < layout.actionFrame.minY)
             for index in 0..<720 {

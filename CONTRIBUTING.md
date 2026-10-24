@@ -2,7 +2,7 @@
 
 Keep changes small and run `sh scripts/check.sh` plus a Watch Simulator build.
 The project has no external package dependencies. Xcode's scheme does not
-contain an XCTest target; the script compiles and runs nine standalone suites.
+contain an XCTest target; the script compiles and runs eleven standalone suites.
 Do not claim hardware validation from a simulator or WatchKit test double.
 
 ## Preserve these boundaries

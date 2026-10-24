@@ -1,5 +1,19 @@
 # Teaching Timer — current verification
 
+Build 9 adds **tap-to-refresh** over the timer's native volume display, with a
+minimum 44-point-high touch area and a small refresh/checkmark cue. It replaces
+only the volume widget on explicit taps. The existing focus guard, queued focus
+call, and synchronous resign on removal are preserved; no wake-triggered
+replacement, extra focus delay, new page, or custom Crown binding was added.
+All eleven model suites and Simulator/device builds pass. SE 3 40 mm interaction
+tests verified replacement during an active count, page navigation through the
+tap area, and refresh after Lock/unlock. Class context and runtime intent stayed
+unchanged; the same runtime and count continued. The count completed, although
+the existing 0.4-second late-haptic rule stopped vibrations in this Simulator run.
+Series 46 mm/Ultra 49 mm rendering and layout bounds for eight sizes were checked. Actual
+physical Crown response and audio recovery still require testing. See
+[volume recovery behavior, evidence, and limits](docs/VOLUME_CONTROL_RECOVERY.md).
+
 Build 8 adds bounded automatic native-media refresh: once on media-page entry,
 or once after a real background return with media selected. Ordinary wrist wakes
 and clock ticks do not refresh it; manual Reload media remains available without

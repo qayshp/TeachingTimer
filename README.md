@@ -25,6 +25,10 @@ until you have tested a build in your own teaching conditions.
    A 75-minute class has the wedge without a potentially misleading one-hour arc.
 4. Turn the **Digital Crown** for the paired iPhone's volume. Swipe left for
    Apple's **Now Playing** controls; swipe right to return.
+   If timer-page volume stops behaving normally, **tap the volume display** to
+   refresh its native control, then try the Crown again. A brief checkmark
+   confirms the control was refreshed, not that sound recovered. If the phone
+   is already at zero, turn the Crown up; refreshing does not raise volume.
 5. Tap **1-min count** (or **Count** on compact layouts). The inner dashed arc
    traces one minute from the tap. Vibrations mark 10/20/30/40/50/60 seconds with
    1/2/3/4/5/6 pulses. Tap **Stop count** to cancel.
@@ -91,7 +95,7 @@ Apple development team and a unique bundle identifier under Signing & Capabiliti
 No signing keys or provisioning profiles belong in the repository.
 
 ```sh
-sh scripts/check.sh          # Nine deterministic model/controller/diagnostic/geometry suites
+sh scripts/check.sh          # Eleven deterministic model/controller/diagnostic/geometry suites
 sh scripts/check-archive.sh  # Unsigned archive must actually contain the app
 ```
 
@@ -124,10 +128,13 @@ or after eligible interruption on return; **Resume** remains the fallback.
 Automatic renewal and one-second Always-On are not guaranteed on every Watch/OS.
 
 The timer-page volume control has also intermittently silenced playback, with
-both AirPlay and USB audio reported. In one reported AirPlay → WiiM setup,
-raising volume on the iPhone restored both Watch controls. This is a reported
-recovery, not a diagnosed cause or guaranteed workaround. Automatic media refresh
-does not replace the timer's volume control and is not a proven silencing fix.
+both AirPlay and USB audio reported. The maintainer reports that playback keeps
+running; raising volume with the iPhone's buttons or Control Center restores
+sound. This is a reported recovery, not a diagnosed cause or guaranteed workaround.
+Build 9 adds [tap-to-refresh volume recovery](docs/VOLUME_CONTROL_RECOVERY.md).
+It replaces only the native volume widget on explicit taps, with no extra
+delay on ordinary Crown use. Its effectiveness against physical silencing is
+unverified. Automatic media refresh remains separate from volume refresh.
 Blank media and unintended silencing are the highest-priority bugs; the brief
 seconds-hand backstep on dimming is lower priority. Test volume before class
 and keep the phone's controls available.
@@ -142,8 +149,8 @@ in an issue.
 
 See [interface diagnostics](docs/INTERFACE_DIAGNOSTICS.md) for event meanings and
 what to record if the face goes blank or volume becomes silent. These events
-observe the existing behavior; they do not retry focus, rebuild pages, or fix
-either issue automatically.
+distinguish lifecycle calls and recovery requests from actual audio behavior;
+neither a completed refresh nor a returned focus call proves sound recovered.
 
 See [current verification and physical checks](DEVELOPMENT_STATUS.md),
 [contributor notes](CONTRIBUTING.md), and [historical engineering notes](docs/history/PROTOTYPE_NOTES.md).

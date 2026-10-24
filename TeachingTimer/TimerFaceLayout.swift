@@ -22,6 +22,12 @@ struct TimerFaceLayout {
     var volumeSize: CGSize { CGSize(width: 64 * scale, height: 28) }
     var volumeBackingSide: CGFloat { 38 }
     var volumeCenter: CGPoint { CGPoint(x: size.width / 2, y: 63 * scale) }
+    var volumeRefreshFrame: CGRect {
+        // Expand the tap area without moving native feedback or overlapping
+        // the Class button, whose 44-point target ends at y = 45.
+        CGRect(x: volumeCenter.x - volumeSize.width / 2,
+               y: max(45, volumeCenter.y - 22), width: volumeSize.width, height: 44)
+    }
     var statusCenter: CGPoint { CGPoint(x: size.width / 2, y: actionY - actionHeight / 2 - 12) }
     var actionFrame: CGRect {
         CGRect(x: 28, y: actionY - actionHeight / 2, width: controlsWidth, height: actionHeight)

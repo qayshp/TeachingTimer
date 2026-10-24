@@ -3,7 +3,8 @@
 These diagnostics investigate two unresolved symptoms: an intermittently blank
 teaching page, reported in Simulator and on a physical Watch, and timer-page
 Crown adjustment silencing playback while native Now Playing can still adjust
-volume. They do not attempt to repair either behavior.
+volume. Diagnostics remain observational; bounded media refresh and explicit
+volume refresh are separate recovery actions, not evidence that a fault occurred.
 
 ## Journal and correlation
 
@@ -32,6 +33,8 @@ Elapsed time is relative to launch, not raw device uptime.
 | `interface_scene_changed` | Scene transition with page/dimming context, alongside existing `scene_state_changed` runtime events. |
 | `class_sheet_state_changed` | Whether the timer view requests its Class sheet; not confirmation of presentation completion. |
 | `media_reload_requested` | Native-view recreation request: source, manual/automatic mode, previous/new media generation, active-count flag/progress, and existing runtime context. `failureDetected: unobserved`; not proof of failure or rendered recovery. |
+| `volume_refresh_requested` | Explicit timer-volume tap, with previous/new `volumeControlGeneration` and `failureDetected: unobserved`. Does not change page or media generation. |
+| `volume_refresh_completed` | The replacement widget's existing focus call returned. `completion: focus_call_returned`, `actualFocus: unobserved`, `audioRecovery: unobserved`. Not proof of Crown routing or audible recovery. |
 | `volume_control_created`, `volume_control_dismantled` | Native control creation/removal, identified by `controlID`. |
 | `volume_focus_requested` | Focus or resign request, identified by `requestID`, from `update` or `dismantle`. |
 | `volume_focus_call`, `volume_focus_call_returned` | Immediately before and after the existing WatchKit call; its return does not confirm focus was granted. |
@@ -42,6 +45,14 @@ particular request is superseded, whether dismantling has occurred, and monotoni
 `secondsSinceRequest`. On `volume_focus_call`, this interval includes time waiting
 for the queued callback. It is not an audio-command round-trip measurement.
 `actualFocus` is always `unobserved` because no confirmation is available here.
+
+Build 9 adds `volumeControlGeneration` to the adapter snapshot. Correlate the
+refresh request with old-generation removal and new-generation creation/control
+IDs, then focus-call ordering. A tap is ignored while that replacement is pending.
+Only explicit taps replace the volume widget; pages, class/runtime state, count,
+and ordinary wake handling retain their previous behavior. The checkmark confirms
+the returned call, never sound or successful focus. See
+[volume recovery](VOLUME_CONTROL_RECOVERY.md).
 
 Root interface events also include `mediaViewGeneration`. Build 8 changes it
 once on deliberate media page entry (`source: page_entry`), on an active return
@@ -72,7 +83,7 @@ or frame-rate measurement has been added.
 The control still has the same origin, tint, requested-focus guard, one queued
 focus/resign call when intent changes, and synchronous resign on removal. Even
 if a pending call later executes after removal, diagnostics only record it;
-they do not cancel, reorder, or retry the call. The timing, tab hierarchy, hands,
+they do not cancel, reorder, or retry the call. The focus timing, tab hierarchy, hands,
 landmarks, and runtime policy are unchanged. Logging has some overhead and is
 not a guarantee of identical timing under every condition.
 

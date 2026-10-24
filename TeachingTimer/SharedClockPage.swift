@@ -50,17 +50,15 @@ struct SharedClockPage: View {
                     landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,
                     landmarkProgress: frame.progress)
                     .allowsHitTesting(false)
-                CompanionVolumeControl(
+                RefreshableCompanionVolumeControl(
+                    layout: layout,
                     isFocused: crownIsActive && classSheet == nil,
                     diagnosticSnapshot: volumeDiagnosticSnapshot,
                     recordDiagnostic: { [weak diagnosticSession = session] event, details in
                         diagnosticSession?.recordInterfaceEvent(event, details: details)
                     }
                 )
-                    .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
-                    .background { Circle().fill(.black).frame(width: 38, height: 38).allowsHitTesting(false) }
                     .position(layout.volumeCenter)
-                    .accessibilityLabel("iPhone playback volume")
                 actions(layout: layout).position(x: geometry.size.width / 2, y: layout.actionY)
                 HStack(spacing: 3) {
                     if landmarks.hapticsStopped {
@@ -332,10 +330,78 @@ private struct ClassControlsView: View {
     }
 }
 
+private struct RefreshableCompanionVolumeControl: View {
+    let layout: TimerFaceLayout
+    let isFocused: Bool
+    let diagnosticSnapshot: [String: String]
+    let recordDiagnostic: (String, [String: String]) -> Void
+    @State private var refresh = VolumeRefreshState()
+
+    var body: some View {
+        let generation = refresh.generation
+        var snapshot = diagnosticSnapshot
+        snapshot["volumeControlGeneration"] = String(generation)
+        return ZStack {
+            CompanionVolumeControl(isFocused: isFocused,
+                diagnosticSnapshot: snapshot, recordDiagnostic: recordDiagnostic,
+                focusCallReturned: {
+                    guard refresh.focusCallReturned(for: generation) else { return }
+                    recordDiagnostic("volume_refresh_completed", [
+                        "source": "timer_tap", "volumeControlGeneration": String(generation),
+                        "completion": "focus_call_returned", "actualFocus": "unobserved",
+                        "audioRecovery": "unobserved"
+                    ])
+                })
+                .id(generation)
+                .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
+                .background { Circle().fill(.black).frame(width: 38, height: 38).allowsHitTesting(false) }
+            Image(systemName: refresh.confirmedGeneration == nil ? "arrow.clockwise" : "checkmark")
+                .font(.system(size: 10, weight: .bold))
+                .frame(width: 16, height: 16)
+                .background(Circle().fill(.black))
+                .offset(x: 20, y: 13)
+                .allowsHitTesting(false)
+            // A tap surface, not a new focusable control: Crown input remains
+            // with WatchKit. A horizontal drag still belongs to the TabView.
+            Color.clear
+                .frame(width: layout.volumeRefreshFrame.width, height: layout.volumeRefreshFrame.height)
+                .contentShape(Rectangle())
+                .onTapGesture(perform: requestRefresh)
+                .offset(y: layout.volumeRefreshFrame.midY - layout.volumeCenter.y)
+                .accessibilityHidden(true)
+        }
+        .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("iPhone playback volume")
+        .accessibilityValue(refresh.isRefreshing ? "Refreshing control" :
+            (refresh.confirmedGeneration == nil ? "" : "Control refreshed"))
+        .accessibilityHint("Turn the Crown to adjust. Double-tap to refresh the volume control.")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction { requestRefresh() }
+        .task(id: refresh.confirmedGeneration) {
+            guard let confirmed = refresh.confirmedGeneration else { return }
+            do { try await Task.sleep(for: .seconds(1.5)) }
+            catch { return }
+            refresh.dismissConfirmation(for: confirmed)
+        }
+    }
+
+    private func requestRefresh() {
+        guard isFocused, let generation = refresh.request() else { return }
+        var details = diagnosticSnapshot
+        details["source"] = "timer_tap"
+        details["previousVolumeControlGeneration"] = String(generation - 1)
+        details["volumeControlGeneration"] = String(generation)
+        details["failureDetected"] = "unobserved"
+        recordDiagnostic("volume_refresh_requested", details)
+    }
+}
+
 struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
     let isFocused: Bool
     let diagnosticSnapshot: [String: String]
     let recordDiagnostic: (String, [String: String]) -> Void
+    let focusCallReturned: () -> Void
 
     func makeWKInterfaceObject(context: Context) -> WKInterfaceVolumeControl {
         let volumeControl = WKInterfaceVolumeControl(origin: .companion)
@@ -365,6 +431,7 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
                 volumeControl.resignFocus()
             }
             diagnostics.didReturn(request)
+            if isFocused { focusCallReturned() }
         }
     }
 
