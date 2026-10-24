@@ -105,3 +105,26 @@ with the reported late opening of the app during class, but retention boundaries
 and callbacks cannot establish the exact first opening time.
 
 Review/redact journals before sharing; never commit raw device logs to GitHub.
+
+## October 23 physical recurrence
+
+Original Watch screenshots confirm entirely black media pages at 12:29:07 and
+18:52:31, with the media-page dot visible. A timer screenshot at 12:29:10 still
+shows its controls. The maintainer reports recovery after force-closing and
+reopening before the noon class. Standalone Now Playing was not checked during
+either incident. Do not substitute the Simulator's visible "Not Playing" state
+for this physical failure; prior black-timer Simulator observations are also a
+separate symptom until a shared cause is demonstrated.
+
+The retained evening journal shows media-page callbacks during a running
+session, then app relaunch and idle runtime until manual Start several minutes
+later. Build 6 addresses that separate recovery gap through persisted runtime
+intent; see [runtime recovery](RUNTIME_RECOVERY.md). It does not change the
+native media view, volume adapter, focus sequence, or page structure.
+
+The next priority is incident-time system evidence and a narrow test of
+recreating only the native media view as a user-requested recovery action.
+There is no reliable public blank-pixel detector here, so do not add automatic
+periodic media-view resets or claim this is definitively an Apple defect.
+[Watch log collection](WATCH_LOG_COLLECTION.md) records the new CoreDevice
+sysdiagnose route and the limits of the earlier direct-collector error.
