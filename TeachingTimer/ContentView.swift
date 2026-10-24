@@ -19,6 +19,7 @@ struct ContentView: View {
     @Environment(\.isLuminanceReduced) private var dimmed
     @State private var page: Page = .classProgress
     @State private var classClockRevision = 0
+    @State private var mediaViewGeneration = 0
 
     private struct ClassTaskKey: Equatable {
         let context: ClassContext?
@@ -50,6 +51,7 @@ struct ContentView: View {
                     classStore: classStore,
                     landmarks: landmarks,
                     retireOldClass: { retireOldClass() },
+                    reloadMedia: reloadMedia,
                     crownIsActive: page == .classProgress,
                     showsClassProgress: true
                 )
@@ -58,6 +60,9 @@ struct ContentView: View {
                 .tag(Page.classProgress)
 
                 NowPlayingView()
+                    // Recreate only the native media host on explicit request.
+                    // The timer page, volume adapter, and shared state retain identity.
+                    .id(mediaViewGeneration)
                     .containerBackground(.black, for: .tabView)
                     .onAppear { recordInterfaceEvent("page_appeared", page: .nowPlaying) }
                     .onDisappear { recordInterfaceEvent("page_disappeared", page: .nowPlaying) }
@@ -137,12 +142,23 @@ struct ContentView: View {
         fields["observedPage"] = observedPage?.rawValue
         fields["scenePhase"] = String(describing: scenePhase)
         fields["luminanceReduced"] = String(dimmed)
+        fields["mediaViewGeneration"] = String(mediaViewGeneration)
         // Appearance is a SwiftUI callback, not proof that pixels were visible.
         session.recordInterfaceEvent(event, details: fields)
     }
 
     private var nextWholeSecond: Date {
         Date(timeIntervalSince1970: floor(Date().timeIntervalSince1970) + 1)
+    }
+
+    private func reloadMedia() {
+        mediaViewGeneration &+= 1
+        recordInterfaceEvent("media_reload_requested", details: [
+            "source": "class_options",
+            "landmarksActive": String(landmarks.isActive),
+            "landmarkProgress": String(landmarks.progress)
+        ])
+        page = .nowPlaying
     }
 
     @discardableResult

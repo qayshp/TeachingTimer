@@ -48,6 +48,9 @@ Tap **Class**, at the upper left, to:
 - Turn **Count vibrations** off for future visual-only counts, or enable the
   optional **Minutes left** label. Both count modes use the same arc timing.
 - **End class** with confirmation, clearing timing and stopping session/count.
+- **Reload media** if the media page is black. Scroll to **Media** in Class
+  options; this reopens the native controls while keeping class, session, and
+  count state. Swipe right afterward to return to the timer and Crown volume.
 
 The suggested start uses the previous quarter-hour at minutes 0–12 after it and
 the next quarter-hour at minutes 13–14. Check it when preparing early: 1:10
@@ -102,7 +105,10 @@ establishes physical-watch cadence or how the vibrations feel while teaching.
 An intermittent blank page has been observed in Simulator (including the
 pre-review build) and reported during classes on a physical SE 3 with a paired
 iPhone. It is not a Simulator-only limitation. See the current verification
-notes; neither the cause nor a reliable recovery is established.
+notes. **Class → Reload media** recovered a controlled native-service failure
+in two Simulator trials without restarting the app. Physical recovery still
+needs validation, and the original physical trigger is unknown. See the
+[reproduction and recovery results](docs/NOW_PLAYING_SERVICE_RECOVERY.md).
 In an October 22 physical-class report, the media page stayed completely black
 and its Crown volume was unusable, while the timer and timer-page volume worked
 with Apple Music on iPhone → AirPlay → WiiM. No cause has been established.

@@ -14,9 +14,11 @@ struct SharedClockPage: View {
     @ObservedObject var classStore: ClassStore
     @ObservedObject var landmarks: LandmarkController
     let retireOldClass: () -> Bool
+    let reloadMedia: () -> Void
     let crownIsActive: Bool
     var showsClassProgress = false
     @State private var classSheet: ClassSheetRequest?
+    @State private var reloadMediaAfterDismiss = false
     @AppStorage("countVibrationsEnabled") private var countVibrationsEnabled = true
     @AppStorage("showRemainingMinutes") private var showRemainingMinutes = false
     @Environment(\.isLuminanceReduced) private var dimmed
@@ -75,8 +77,13 @@ struct SharedClockPage: View {
         }
         .ignoresSafeArea()
         .containerBackground(.black, for: .tabView)
-        .sheet(item: $classSheet) { _ in
-            ClassControlsView(session: session, classStore: classStore, landmarks: landmarks)
+        .sheet(item: $classSheet, onDismiss: {
+            guard reloadMediaAfterDismiss else { return }
+            reloadMediaAfterDismiss = false
+            reloadMedia()
+        }) { _ in
+            ClassControlsView(session: session, classStore: classStore, landmarks: landmarks,
+                              reloadMedia: { reloadMediaAfterDismiss = true })
         }
 #if DEBUG
         .onAppear {
@@ -169,6 +176,7 @@ private struct ClassControlsView: View {
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
     @ObservedObject var landmarks: LandmarkController
+    let reloadMedia: () -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var mode: Mode = .summary
     @State private var start = Date()
@@ -251,6 +259,15 @@ private struct ClassControlsView: View {
                         Button("Back to default") { mode = .create }
                             .frame(minHeight: 44)
                     }
+                }
+                Section("Media") {
+                    Button("Reload media") {
+                        reloadMedia()
+                        dismiss()
+                    }
+                    .accessibilityIdentifier("reload-media")
+                    Text("Reopens media controls. Class and count keep running.")
+                        .font(.caption)
                 }
             }
             .navigationTitle(mode == .edit ? "Schedule" : (mode == .summary ? "Class" : (mode == .adjustNew ? "Custom class" : "New class")))

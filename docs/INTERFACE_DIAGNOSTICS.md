@@ -31,6 +31,7 @@ Elapsed time is relative to launch, not raw device uptime.
 | `luminance_changed` | SwiftUI reduced-luminance value changed, with previous/current values. No independent wrist-motion measurement. |
 | `interface_scene_changed` | Scene transition with page/dimming context, alongside existing `scene_state_changed` runtime events. |
 | `class_sheet_state_changed` | Whether the timer view requests its Class sheet; not confirmation of presentation completion. |
+| `media_reload_requested` | Explicit Class-options recovery request, native media generation, active-count flag/progress, and existing runtime context. Not proof of rendered recovery. |
 | `volume_control_created`, `volume_control_dismantled` | Native control creation/removal, identified by `controlID`. |
 | `volume_focus_requested` | Focus or resign request, identified by `requestID`, from `update` or `dismantle`. |
 | `volume_focus_call`, `volume_focus_call_returned` | Immediately before and after the existing WatchKit call; its return does not confirm focus was granted. |
@@ -41,6 +42,12 @@ particular request is superseded, whether dismantling has occurred, and monotoni
 `secondsSinceRequest`. On `volume_focus_call`, this interval includes time waiting
 for the queued callback. It is not an audio-command round-trip measurement.
 `actualFocus` is always `unobserved` because no confirmation is available here.
+
+Root interface events also include `mediaViewGeneration`. It changes only for
+an explicit **Reload media** request; it is not an automatic failure detector.
+The request changes only the native media view's SwiftUI identity, then selects
+that page after the Class sheet dismisses. Check pixels separately and compare
+runtime, count run, and volume-control IDs across the request.
 
 The `lastView...` fields are the last inputs supplied to the native-control
 adapter: timer page selection, Class-sheet request, and reduced luminance. They

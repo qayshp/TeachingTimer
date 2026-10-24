@@ -115,10 +115,9 @@ hypothesis. Page navigation alone did not recover it; host recreation did.
 This does not yet separate a WatchKit recovery defect from an interaction with
 the host's view lifecycle, nor prove a physical service crash or memory pressure.
 
-The next narrow experiment is to reconstruct **only** `NowPlayingView` on user
-request, then repeat this service-loss test while preserving class, runtime,
-count, and the working companion volume/focus adapter. That experiment has not
-been implemented. A minimal native-media host would help separate framework
+The next narrow experiment was to reconstruct **only** `NowPlayingView` on user
+request; the successful build-7 tests are recorded below. A minimal native-media
+host would help separate framework
 behavior from TeachingTimer's view hierarchy. No automatic periodic recreation
 or private-API error hook is justified by this evidence.
 
@@ -129,3 +128,49 @@ Raw evidence remains private under ignored
 `work/support/2026-10-24-physical-media-feedback/`. The report asks Apple whether
 there is a supported recovery mechanism or whether WatchKit should recover
 internally. No further class incident is required before Apple can investigate.
+
+## Native-view-only recovery: build 7
+
+The user-authorized candidate adds **Reload media** to the secondary Class
+sheet. On dismissal it changes an identity attached only to `NowPlayingView`
+and selects the media tab. No timer-page identity, volume adapter, class store,
+runtime controller, or landmark controller is replaced. It uses public SwiftUI
+view identity; there is no service manipulation or automatic retry in app code.
+
+On the same SE 3 40 mm / watchOS 27.0 Simulator, the existing Home → service
+termination → reopen → timer → media sequence produced black media content in
+both trials. The new action restored native Not Playing and transport controls
+**2/2 times without force-closing TeachingTimer**:
+
+| Trial | Reload time (October 24 PDT) | Host PID | New native service PID | Active count progress at reload |
+| --- | --- | --- | --- | --- |
+| 1 | 01:55:47 | 94486 throughout | 95757 | 58.1% |
+| 2 | 01:57:10 | 94486 throughout | 96325 | 26.4% |
+
+- Saved ClassContext and runtime intent were identical before and after both
+  tests. Each reload preserved the runtime ID/start/expiration already active
+  at that moment. Going Home earlier in the reproduction separately caused the
+  existing foreground runtime-recovery behavior; do not attribute that to reload.
+- There was one companion volume-control creation and no dismantle during the
+  candidate process. The same control ID received focus again on returning to
+  the timer. The adapter's focus/resign implementation is unchanged. This is
+  lifecycle evidence, not proof of physical Crown responsiveness or audio volume.
+- Both landmark runs retained their original run ID, anchor, and completion
+  deadline. The first run stopped further haptics at 40.54 seconds because its
+  next pulse was 0.54 seconds late, above the existing 0.4-second cutoff; its arc
+  continued and the run completed. The second run submitted all 21 timing pulses
+  on the original schedule and completed normally. Simulator does not prove
+  physical haptic delivery.
+- Screenshots verify restored media pixels and the continuing count arc. No
+  paired-iPhone media playback was established by this test.
+- All nine deterministic suites and the Debug watchOS Simulator build passed.
+- The reload action/help rendered and opened native media on Series 12 46 mm
+  and Ultra 4 49 mm simulators as well. The Series check used the maximum-text
+  launch flag; this does not establish that every native Form row adopted that
+  environment size. Both checks used the new-class draft without starting it.
+
+Private evidence is under `work/support/2026-10-24-media-reload/`. Physical
+validation should try Reload media during the naturally occurring failure,
+check that the active count and class continue, then return to the timer and
+confirm immediate Crown volume. This is a manual recovery option, not a claim
+that the original watchOS failure has been prevented.

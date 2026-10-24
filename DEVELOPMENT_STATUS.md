@@ -1,5 +1,14 @@
 # Teaching Timer — current verification
 
+October 24, build 7: **Class → Reload media** recovered the native black media
+page in two deliberate Simulator service-loss trials, without terminating the
+host. Class context, the runtime active at each reload, active landmark run,
+and companion volume-control identity survived. Focus calls returned to the
+same volume control after returning to the timer. See
+[media recovery details](docs/NOW_PLAYING_SERVICE_RECOVERY.md#native-view-only-recovery-build-7).
+Physical media recovery, Crown responsiveness, and actual iPhone playback still
+require hardware testing. No physical Watch installation was performed.
+
 Latest investigation: [Always-On seconds-hand transition](docs/ALWAYS_ON_HAND_TRANSITION.md).
 The brief backward tick was reproduced in the unchanged Simulator build with an
 active session. Two candidate fixes were insufficient and were removed; no app

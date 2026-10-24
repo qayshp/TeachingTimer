@@ -67,11 +67,11 @@ from paired-Simulator media-discovery report FB25294079. See the
 
 ## Recommended next experiment
 
-1. Test a user-triggered reconstruction of only the native `NowPlayingView`,
-   offered from Class options so the native media page remains full-screen.
-   Preserve class, runtime, count, and the working volume/focus adapter. Record
-   the recovery request and resulting lifecycle; do not claim success from a
-   lifecycle callback alone.
+1. Validate **Class → Reload media** on the physical failure. This user-triggered
+   reconstruction of only `NowPlayingView` recovered both controlled Simulator
+   failures in build-7 testing, preserving class, runtime, count, and volume
+   adapter identity. Native content remains full-screen. See the linked results
+   for pixel evidence and the physical Crown/playback validation still needed.
 2. Use a minimal native-media host to investigate foreground return after the
    remote view service is lost. Compare with standalone Now Playing on hardware
    when practical; Simulator media-source discovery is not equivalent to this
@@ -79,5 +79,5 @@ from paired-Simulator media-discovery report FB25294079. See the
 
 Do not add automatic periodic recreation or attempt private-API error hooks.
 There is no proven public blank-page detector in the current implementation.
-This remains a diagnosis and next-step proposal; the shipped change is runtime
-recovery, not a claimed media fix.
+The manual media recovery does not prevent the original failure or establish
+its physical cause. Automatic runtime recovery remains a separate behavior.
