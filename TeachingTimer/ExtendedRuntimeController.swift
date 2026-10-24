@@ -24,6 +24,9 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     private var stopRequested = false
     private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "Runtime")
     private let diagnostics: RuntimeDiagnostics
+    private let intentStore: RuntimeIntentStore
+    private var classContext: ClassContext?
+    private var classWasSynchronized = false
     private let launchID = UUID().uuidString
     private let launchInstant = ContinuousClock().now
     private var runtimeID: String?
@@ -39,6 +42,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
 
     override init() {
         diagnostics = RuntimeDiagnostics()
+        intentStore = RuntimeIntentStore()
         super.init()
         record("app_launched", extra: [
             "version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
@@ -57,8 +61,10 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     }
 
 #if CONTROLLER_CHECKS
-    init(journal: RuntimeDiagnostics) {
+    init(journal: RuntimeDiagnostics,
+         intentStore: RuntimeIntentStore? = nil) {
         diagnostics = journal
+        self.intentStore = intentStore ?? RuntimeIntentStore(defaults: UserDefaults(suiteName: UUID().uuidString)!)
         super.init()
     }
 #endif
@@ -80,6 +86,10 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         details["renewalPolicy"] = String(describing: renewalPolicy)
         details["renewalPending"] = String(renewalPending)
         details["stopRequested"] = String(stopRequested)
+        details["savedRuntimeIntent"] = intentStore.value?.state.rawValue ?? "none"
+        if let id = intentStore.value?.classID {
+            details["intentClassID"] = ISO8601DateFormatter().string(from: id)
+        }
         details["expirationWarningReceived"] = String(expirationWarningReceived)
         details["earlyHandoffRequested"] = String(earlyHandoffRequested)
         details["automaticReplacement"] = String(automaticReplacement)
@@ -133,6 +143,10 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         }
     }
     func start(automatically: Bool = false) {
+        if classWasSynchronized {
+            guard let classContext, !classContext.shouldRetire(at: Date()) else { return }
+        }
+        if !automatically { saveIntent(.running) }
         guard !isActive, runtimeSession == nil else { return }
         let parentID = runtimeID
         automaticReplacement = automatically
@@ -162,6 +176,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         replacement.start()
     }
     func stop(source: String = "runtime_button", details: [String: String] = [:]) {
+        saveIntent(.stopped)
         record("stop_requested", extra: details.merging(["source": source]) { _, source in source })
         stopRequested = true
         renewalPending = false
@@ -171,6 +186,11 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         if runtimeSession == nil { phase = .stopped }
     }
     func applicationBecameActive() {
+        if let classContext, classContext.shouldRetire(at: Date()) {
+            stop(source: "recovery_class_retired")
+            intentStore.save(nil)
+            return
+        }
         if attemptEarlyHandoff() { return }
         guard renewalPending, renewalPolicy == .automatic, runtimeSession == nil, !stopRequested else { return }
         guard WKApplication.shared().applicationState == .active else { return }
@@ -179,6 +199,41 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         // fallback rather than retrying on every later scene transition.
         renewalPending = false
         start(automatically: true)
+    }
+
+    /// Call before recovery and before an explicit Start for a newly created
+    /// class. Repeated scene/appearance callbacks cannot re-arm failed attempts.
+    func synchronizeClass(_ context: ClassContext?) {
+        let changed = !classWasSynchronized || classContext?.initialStartPressedAt != context?.initialStartPressedAt
+        classContext = context
+        classWasSynchronized = true
+        guard changed else { return }
+        guard let context, !context.shouldRetire(at: Date()) else {
+            if isActive || renewalPending { stop(source: "recovery_no_current_class") }
+            intentStore.save(nil)
+            renewalPending = false
+            return
+        }
+        guard let intent = intentStore.value, intent.classID == context.initialStartPressedAt else {
+            // Older installs have no saved intent. Do not guess whether the
+            // user intentionally stopped; one explicit Start establishes it.
+            intentStore.save(nil)
+            renewalPending = false
+            record("runtime_intent_unavailable")
+            return
+        }
+        if runtimeSession == nil {
+            stopRequested = intent.state == .stopped
+            renewalPending = intent.state == .running
+            needsRestart = intent.state != .stopped
+            if stopRequested { phase = .stopped }
+        }
+        record("runtime_intent_restored")
+    }
+
+    private func saveIntent(_ state: RuntimeIntent.State) {
+        guard let context = classContext else { return }
+        intentStore.save(RuntimeIntent(classID: context.initialStartPressedAt, state: state))
     }
 
     @discardableResult
@@ -281,6 +336,7 @@ extension ExtendedRuntimeController: WKExtendedRuntimeSessionDelegate {
                 }
             } else {
                 renewalPending = false
+                saveIntent(.manualRecovery)
                 let message = error?.localizedDescription ?? "Runtime ended (reason \(reason.rawValue))"
                 phase = .failed(message)
                 if automaticReplacement && !wasRunning { record("automatic_restart_failed", extra: ["cause": reasonName]) }

@@ -54,6 +54,15 @@ the next quarter-hour at minutes 13–14. Check it when preparing early: 1:10
 suggests 1:00, so choose +15 for a 1:15 class. A class retires automatically
 30 minutes after scheduled end. It does not silently start another class.
 
+Reopening an ongoing class automatically resumes its mindfulness session if
+it was meant to be running, including after force-quitting the app. An explicit
+**Stop session** stays stopped across reopening until you choose **Resume**.
+Class timing is preserved in both cases; a count does not restart automatically.
+If watchOS rejects recovery, use **Resume** rather than expecting repeated retries.
+On the first upgrade from a build that did not save session intent, an existing
+class needs one explicit **Resume**; new classes save intent automatically.
+See [runtime recovery](docs/RUNTIME_RECOVERY.md) for validation and boundaries.
+
 ## Screenshots
 
 Actual watchOS 27 simulator captures, not mockups. Native volume may appear

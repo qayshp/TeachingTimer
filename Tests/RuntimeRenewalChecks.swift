@@ -162,6 +162,85 @@ final class WKExtendedRuntimeSession {
         inFlight.end(.none); await drain(); starting.applicationBecameActive()
         assert(starting.phase == .stopped && WKExtendedRuntimeSession.instances.last === inFlight)
         assert(starting.actionTitle(hasClass: true) == "Start session")
+        // Process recreation restores *intent*, never a WatchKit object. The
+        // same defaults suite models storage shared by successive launches.
+        let suite = "TeachingTimerRecoveryChecks." + UUID().uuidString
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let savedClass = ClassContext(pressedAt: Date(), scheduledStart: Date())
+        func launch(_ context: ClassContext? = savedClass) -> ExtendedRuntimeController {
+            let controller = ExtendedRuntimeController(
+                journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)),
+                intentStore: RuntimeIntentStore(defaults: UserDefaults(suiteName: suite)!))
+            controller.synchronizeClass(context)
+            return controller
+        }
+        WKApplication.shared().applicationState = .active
+        let original = launch()
+        let beforeLegacy = WKExtendedRuntimeSession.instances.count
+        original.applicationBecameActive()
+        assert(WKExtendedRuntimeSession.instances.count == beforeLegacy) // migration never guesses
+        original.start(); WKExtendedRuntimeSession.instances.last!.confirmStart(); await drain()
+        assert(RuntimeIntentStore(defaults: defaults).value?.state == .running)
+        // No invalidation callback: model a force-killed old process.
+        WKApplication.shared().applicationState = .inactive
+        let reopened = launch()
+        let beforeRecovery = WKExtendedRuntimeSession.instances.count
+        reopened.applicationBecameActive()
+        assert(WKExtendedRuntimeSession.instances.count == beforeRecovery)
+        WKApplication.shared().applicationState = .active
+        reopened.applicationBecameActive()
+        reopened.synchronizeClass(savedClass); reopened.applicationBecameActive()
+        assert(WKExtendedRuntimeSession.instances.count == beforeRecovery + 1)
+        let recovered = WKExtendedRuntimeSession.instances.last!
+        recovered.confirmStart(); await drain()
+        assert(reopened.phase == .running)
+        // Editing the schedule keeps identity and saved intent.
+        let edited = ClassContext(pressedAt: savedClass.initialStartPressedAt,
+                                  durationMinutes: 75, scheduledStart: savedClass.scheduledStart)
+        reopened.synchronizeClass(edited)
+        assert(RuntimeIntentStore(defaults: defaults).value?.state == .running)
+        // Explicit stop survives death while invalidate is still pending.
+        reopened.stop()
+        let stoppedLaunch = launch(edited)
+        stoppedLaunch.applicationBecameActive()
+        assert(stoppedLaunch.phase == .stopped && WKExtendedRuntimeSession.instances.last === recovered)
+        stoppedLaunch.start(); let resumed = WKExtendedRuntimeSession.instances.last!
+        resumed.confirmStart(); await drain()
+        let resumedLaunch = launch(edited)
+        resumedLaunch.renewalPolicy = .userInitiated
+        resumedLaunch.applicationBecameActive()
+        assert(WKExtendedRuntimeSession.instances.last === resumed)
+        resumedLaunch.renewalPolicy = .automatic
+        resumedLaunch.applicationBecameActive()
+        let rejected = WKExtendedRuntimeSession.instances.last!
+        rejected.end(.error); await drain()
+        let rejectedCount = WKExtendedRuntimeSession.instances.count
+        resumedLaunch.synchronizeClass(edited); resumedLaunch.applicationBecameActive()
+        launch(edited).applicationBecameActive()
+        assert(WKExtendedRuntimeSession.instances.count == rejectedCount)
+        assert(RuntimeIntentStore(defaults: defaults).value?.state == .manualRecovery)
+        // Manual resume clears failure suppression; missing/new/retired class
+        // cannot inherit the previous class's permission to run.
+        resumedLaunch.start()
+        assert(RuntimeIntentStore(defaults: defaults).value?.state == .running)
+        let otherClass = ClassContext(pressedAt: Date().addingTimeInterval(1))
+        let beforeOther = WKExtendedRuntimeSession.instances.count
+        launch(otherClass).applicationBecameActive()
+        assert(WKExtendedRuntimeSession.instances.count == beforeOther)
+        assert(RuntimeIntentStore(defaults: defaults).value == nil)
+        defaults.set(Data("invalid".utf8), forKey: "teachingRuntimeIntent.v1")
+        launch().applicationBecameActive()
+        assert(WKExtendedRuntimeSession.instances.count == beforeOther)
+        RuntimeIntentStore(defaults: defaults).save(RuntimeIntent(classID: savedClass.initialStartPressedAt, state: .running))
+        launch(nil).applicationBecameActive()
+        assert(RuntimeIntentStore(defaults: defaults).value == nil)
+        let expiredClass = ClassContext(pressedAt: savedClass.initialStartPressedAt,
+                                       scheduledStart: Date().addingTimeInterval(-10000))
+        RuntimeIntentStore(defaults: defaults).save(RuntimeIntent(classID: savedClass.initialStartPressedAt, state: .running))
+        launch(expiredClass).applicationBecameActive()
+        assert(WKExtendedRuntimeSession.instances.count == beforeOther)
+        assert(RuntimeIntentStore(defaults: defaults).value == nil)
         // UI observations share launch/runtime correlation without starting,
         // invalidating, renewing, or publishing any session state.
         let diagnosticURL = directory.appendingPathComponent("interface.json")
@@ -195,6 +274,7 @@ final class WKExtendedRuntimeSession {
         assert(uiEvents[1].details["sceneState"] == contextBefore["sceneState"])
         assert(uiEvents[1].details["launchElapsedSeconds"] != nil)
         observation.cancel()
+        print("PASS: relaunch recovery, inactive deferral, duplicate activation, persistent Stop, manual resume, schedule edits, failed-start suppression across launches, legacy/missing/corrupt/mismatched/expired intent")
         print("PASS: early handoff ordering, inactive deferral, observed expiration error, rejected replacement no-loop, explicit reset, manual policy, narrow time/error boundaries, passive UI/runtime correlation")
     }
 }

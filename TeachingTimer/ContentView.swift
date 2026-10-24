@@ -88,11 +88,14 @@ struct ContentView: View {
             }
             .onChange(of: classStore.context) { _, _ in
                 context.invalidateTimelineContent()
+                session.synchronizeClass(classStore.context)
             }
         }
         .onAppear { [session] in
             landmarks.diagnosticContext = { [weak session] in session?.diagnosticContext ?? [:] }
             retireOldClass()
+            session.synchronizeClass(classStore.context)
+            session.applicationBecameActive()
             recordInterfaceEvent("interface_appeared")
         }
         .onDisappear { recordInterfaceEvent("interface_disappeared") }
@@ -117,6 +120,7 @@ struct ContentView: View {
             if phase == .active {
                 // Stop stale renewal intent before processing foreground recovery.
                 retireOldClass()
+                session.synchronizeClass(classStore.context)
                 // Also refresh the wait if a clock-change notification was
                 // missed while suspended and the class is not yet overdue.
                 classClockRevision &+= 1

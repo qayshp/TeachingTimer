@@ -308,7 +308,8 @@ private struct ClassControlsView: View {
             // earlier must not claim that the class was already running.
             classStore.begin(at: Date(), scheduledStart: mode == .create ? defaultStart : start,
                              durationMinutes: mode == .create ? 60 : duration)
-            if !session.isActive { session.start() }
+            session.synchronizeClass(classStore.context)
+            session.start()
         }
         dismiss()
     }

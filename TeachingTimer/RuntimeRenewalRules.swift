@@ -5,6 +5,35 @@
 
 import Foundation
 
+/// Desired behavior survives process death; the WatchKit session itself does not.
+/// Bound to the exact initial Start timestamp, not an editable scheduled time.
+struct RuntimeIntent: Codable, Equatable {
+    enum State: String, Codable { case running, stopped, manualRecovery }
+    let classID: Date
+    let state: State
+}
+
+@MainActor
+final class RuntimeIntentStore {
+    private let defaults: UserDefaults
+    private let key = "teachingRuntimeIntent.v1"
+    private(set) var value: RuntimeIntent?
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        if let data = defaults.data(forKey: key) {
+            value = try? JSONDecoder().decode(RuntimeIntent.self, from: data)
+        }
+    }
+
+    func save(_ intent: RuntimeIntent?) {
+        guard intent != value else { return }
+        value = intent
+        if let intent, let data = try? JSONEncoder().encode(intent) { defaults.set(data, forKey: key) }
+        else { defaults.removeObject(forKey: key) }
+    }
+}
+
 /// Deliberately narrow experiment, not a general retry policy for OS errors.
 enum RuntimeRenewalRules {
     static let expirationTolerance: TimeInterval = 2
