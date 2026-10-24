@@ -1,5 +1,15 @@
 # Teaching Timer — current verification
 
+October 24 incident clarification: unexpected timer-page silencing also occurred
+with **USB audio**, not only AirPlay/WiiM. Reanalysis of the saved paired-device
+archives found a Watch zero-volume request at 18:52:47.854 and an iPhone Music
+zero-volume observation at 18:52:48.051 during the October 23 evening class.
+The black media screenshot precedes that request. Treat silencing and blank
+media as high-priority interruptions; their shared cause is unproven and the
+media reload below is not a validated silencing remedy. See the
+[correlated evidence and limits](docs/MEDIA_INCIDENT_2026-10-23.md#october-24-follow-up-timer-page-silencing-with-usb-audio).
+This follow-up changes documentation only; raw diagnostics remain private.
+
 October 24, build 7: **Class → Reload media** recovered the native black media
 page in two deliberate Simulator service-loss trials, without terminating the
 host. Class context, the runtime active at each reload, active landmark run,
@@ -141,9 +151,9 @@ That is not yet proven to share a cause with the physical **black media** report
 
 **Intermittent timer-page silencing:** the maintainer also reported that Crown
 volume changes on the timer page could silence playback at nonzero indicated
-levels while native Now Playing could still adjust volume. In the most recent
-example, October 21, the iPhone used AirPlay to a WiiM device connected to the
-speaker system by an unspecified connection. Raising volume using the iPhone's
+levels while native Now Playing could still adjust volume. In the initially
+documented example, October 21, the iPhone used AirPlay to a WiiM device connected
+to the speaker system by an unspecified connection. Raising volume using the iPhone's
 own controls restored subsequent volume adjustment on both Watch pages. No
 contemporaneous audio-route/volume trace was captured, and whether playback time
 kept advancing is unknown. Do not label this a confirmed mute command, routing

@@ -135,3 +135,22 @@ There is no reliable public blank-pixel detector here, so do not add automatic
 periodic media-view resets or claim this is definitively an Apple defect.
 [Watch log collection](WATCH_LOG_COLLECTION.md) records the new CoreDevice
 sysdiagnose route and the limits of the earlier direct-collector error.
+
+### October 24: wired-output silencing correlation
+
+The maintainer subsequently recalled timer-page volume adjustment silencing
+USB-C-connected audio early in the October 23 18:45 class. Saved iPhone logs
+corroborate a USB audio route. At 18:52:47.854 the Watch's native volume framework
+inside TeachingTimer requested zero; iPhone Music reported zero at 18:52:48.051.
+The app journal places the timer page active with runtime running, and records
+no new focus call at that moment. The earlier focus call was not superseded or
+invoked on a dismantled control. The black media screenshot was taken about
+17 seconds before the recorded zero request, so it is not evidence that this
+volume change caused the black page.
+
+This is system-log correlation, not a new readable-volume capability in the app
+journal. Unexpected silencing is a high-priority issue across both reported
+AirPlay and USB routes; its root cause and relationship to the media-service
+failure remain unproven. **Reload media** preserves the companion control and
+has not been validated as an audio recovery. See the
+[incident timeline and proposed physical comparison](MEDIA_INCIDENT_2026-10-23.md#october-24-follow-up-timer-page-silencing-with-usb-audio).
