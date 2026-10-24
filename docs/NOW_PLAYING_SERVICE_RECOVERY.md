@@ -8,6 +8,14 @@ Feedback Assistant shows the report as **Open** in Submitted. Both attachment
 uploads completed at 00:56:28 PDT, and the submitted description was read back
 and verified against the prepared report.
 
+A follow-up at 01:27 PDT added the broader captured Simulator stream: 8,877
+event records from 00:40:29–00:47:08, controller-invalidation excerpts, and a
+reading guide to both trials. The stream was filtered at capture to TeachingTimer
+or messages mentioning `NanoNowPlayingViewService`; it is not an unfiltered
+system logarchive. The initial report already contained the steps, hypothesis,
+screenshots, and selected errors. The follow-up text was read back and verified,
+and its attachment upload completed at 01:27:41 PDT.
+
 ## Result
 
 Deliberately terminating the native `NanoNowPlayingViewService` in Simulator
@@ -92,6 +100,10 @@ Underlying service connection to <service PID> halted
 ```
 
 The physical evening log has the same domain/code but redacts the failure reason.
+In trial 2, the callback's underlying-connection text reports PID `-1`, although
+the service deliberately terminated for that trial was PID 73164. The broader
+trace preserves that distinction and the subsequent remote-controller and
+presentation-environment invalidation records.
 ClassContext and persisted runtime intent were equal before and after both host
 relaunches. The build 6 journal recorded `automatic_restart_succeeded`; class
 timing survived, and runtime recovery worked independently of media recovery.
