@@ -9,10 +9,12 @@ same volume control after returning to the timer. See
 Physical media recovery, Crown responsiveness, and actual iPhone playback still
 require hardware testing. No physical Watch installation was performed.
 
-Latest investigation: [Always-On seconds-hand transition](docs/ALWAYS_ON_HAND_TRANSITION.md).
-The brief backward tick was reproduced in the unchanged Simulator build with an
-active session. Two candidate fixes were insufficient and were removed; no app
-behavior change or physical install resulted.
+Latest hand investigation, October 24:
+[Always-On seconds-hand transition](docs/ALWAYS_ON_HAND_TRANSITION.md).
+The backward tick also occurs in a separate clock-only view using Path or Canvas
+with a fixed epoch. Constant color failed on repeat and in TeachingTimer with an
+active session. The temporary hand changes were removed; a standalone Simulator
+probe is retained for diagnosis. No hand fix or physical validation is claimed.
 
 Latest: [October 23 eight-form-factor Simulator review](docs/FORM_FACTOR_VALIDATION.md).
 All eight available display geometries were exercised; two non-blocking

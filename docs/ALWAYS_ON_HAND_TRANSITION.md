@@ -77,3 +77,49 @@ Apple references:
 Private local evidence is under `work/support/2026-10-23-hand-transition/`:
 screen captures, short videos, extracted frames, context logs, and the Simulator
 runtime journal. These generated diagnostic artifacts are ignored by Git.
+
+## October 24: clock-only isolation
+
+The investigation continued after the native media recovery was validated.
+The same SE 3 40 mm / watchOS 27.0 Simulator was used. Initial isolation builds
+replaced the app entry/content with just one TimelineView hand under a separate
+bundle identifier; no TeachingTimer state objects or media controls were created.
+The small view was then packaged as a standalone app built from a single Swift
+file, available in [the clock probe](../tools/timeline-clock-probe/README.md).
+
+Each pass recorded four Lock/unlock cycles, about 32 seconds. The hand was
+measured from captured frames; sub-tick rasterization differences were excluded.
+The following are observed backward whole ticks, not callback counts:
+
+| Variant | Recorded result |
+| --- | --- |
+| Clock-only Path drawing, fixed epoch, yellow/white | 47 → 46 at 7.198 s; 6 → 5 at 25.542 s |
+| Clock-only Canvas, fixed epoch, yellow/white | 44 → 43 at 21.658 s |
+| Clock-only Path, fixed epoch, constant white, first pass | No backward whole tick detected |
+| Same constant-white variant, repeat | 49 → 48 at 25.288 s; 53 → 52 at 28.970 s |
+| TeachingTimer with temporary fixed epoch and constant-white hand, runtime active | 43 → 42 at 18.015 s; 54 → 53 at 28.995 s |
+| Standalone single-file probe, Path, fixed epoch, yellow/white | 24 → 23 at 3.507 s; 35 → 34 at 14.498 s; 42 → 41 at 21.832 s |
+
+The apparent improvement from the first constant-color pass did not survive a
+repeat. The full-app temporary changes were removed. The shipped media-recovery
+code retains the original hand appearance/schedule; no seconds-hand fix is claimed.
+
+The reduced test demonstrates that session logic, media, landmarks, nested
+TeachingTimer geometry, and Canvas are not required to trigger the symptom in
+Simulator. It points more strongly toward the SwiftUI/watchOS transition between
+live and Always-On frames, without establishing the internal framework cause or
+proving identical behavior on hardware. There is now a small reproducible case
+for a separate Apple report or a comparison on a newer watchOS Simulator runtime.
+
+Apple's timeline guidance still requires using the supplied context date because
+the system may request views up to five minutes ahead. Substituting `Date.now`,
+clamping against the last requested future date, or adding a high-frequency timer
+would not be a justified remedy. The class/count time models were not changed.
+
+The new private recordings, frame analyses, build logs, and original fixture are
+under ignored `work/support/2026-10-24-hand-isolation/`.
+The standalone build script, app installation, and launch were verified; its
+four-cycle run contained 298 captured video frames. TeachingTimer's separate
+journal confirmed a running runtime throughout the full-app candidate's
+Lock/unlock pass. The final Simulator app was restored to the committed media
+recovery build with its original hand rendering. No physical installation occurred.
