@@ -103,3 +103,89 @@ Watch and iPhone diagnostics promptly after the incident, and a comparison
 with standalone Now Playing if practical. Preserve the distinction between a
 black embedded page and a visible native "Not Playing" screen. Do not infer
 remote view rendering or audible playback from lifecycle callbacks alone.
+
+## Three separate operations: requirements and observed failures
+
+Updated October 24, 2026 for Xcode 27.1 and a physical SE 3 on watchOS 27.
+Do not confuse an unlocked-but-dimmed Always-On display with the passcode lock
+that normally follows taking the Watch off the wrist. A 70-second wake setting
+makes initial connection attempts easier; it does not guarantee developer access.
+
+Apple's current [Device Hub pairing guide](https://developer.apple.com/documentation/xcode/pairing-your-devices-with-your-mac)
+requires developer pairing/trust and Developer Mode on Watch and companion phone,
+and describes network pairing and compatible local networking. The
+[watchOS Group Lab](https://developer.apple.com/videos/play/wwdc2026/8014/)
+explains that recent Xcode connects directly from Mac to Watch; devices must be
+able to communicate on the network. It recommends keeping the Watch nearby.
+Phone–Watch Bluetooth connectivity, matching Wi-Fi names, and a remembered
+pairing are therefore useful but not proof of a usable Mac developer tunnel.
+Neither source establishes a universal requirement to keep the display bright
+throughout every transfer.
+
+| Operation | What must work | What brightness/unlock establishes |
+| --- | --- | --- |
+| Copy app journals | Trusted developer connection and access to the installed app's data container; correct bundle ID/path; file accessible under current data protection. No app launch is needed. | A locked, charging SE 3 journal copy succeeded on September 19. Unlock/wake can help establish access, especially after reboot, but bright/unlocked is not a sufficient condition and is not a proven universal requirement for every copy. |
+| Collect/copy system diagnostics | Starting a new capture needs a working diagnostic service. Capture generation, transfer and gzip/tar validity are separate checks. Copying a completed archive needs accessible crash-log storage; phone-forwarded combined archives provide another route. | We released the user from keeping the screen awake after the fresh October 24 capture started; direct download later succeeded. We did not measure the Watch's actual lock state throughout. A client timeout can leave the device collecting; inspect before starting another. |
+| Install a development build | Usable developer services/DDI, supported Xcode/device OS, valid signing/provisioning/entitlements, and device acceptance of installation. Install and launch are separate operations. | Start unlocked/awake and respond to device trust prompts if requested. Those conditions do not fix a missing developer tunnel or failed DDI mount. Confirm the install result and installed bundle/build; a successful build on the Mac does not confirm deployment. |
+
+[Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)
+is required for development installation/run; normal App Store/TestFlight
+installation follows a different path. TestFlight could reduce future manual
+build deployment friction, but would not itself solve raw developer-log access.
+That is a distribution option, not a change made during this investigation.
+
+### Verified history, rather than a list of supposed cures
+
+- Direct administrator-authorized `log collect --device-udid` failed for Watch
+  with connection-refused / `Device not configured (6)` despite trust and visible
+  device reports. The same general collector worked for the iPhone. An elevated
+  Watch retry also lacked the normal user's pairing context. These are distinct
+  tool/service failures, not proof the historical logs were irretrievably gone.
+- Earlier CoreDevice requests timed out or lost a socket after partial downloads
+  (including roughly 105 MiB). A Watch capture nevertheless completed on-device;
+  a phone-forwarded `co-sysdiagnose` later yielded a valid Watch archive. Do not
+  treat a partially downloaded gzip as usable or keep restarting collection.
+- During the first October 24 evening attempt, journal access failed with
+  CoreDevice 4016: developer-services, trusted-discovery and power assertions
+  were unavailable. Further copies/inventories timed out. The user had reported
+  unlocked/awake and the same Wi-Fi. One Device Hub restart did not resolve it.
+  At 23:01 the iPhone diagnostic showed Watch Bluetooth connected, while Mac
+  developer access was still unavailable. The phone-only sysdiagnose did not
+  generate a new Watch archive; existing combined captures predated the classes.
+- After the user moved the Watch physically closer and woke it, the first journal
+  copy still timed out. Crash-log inventory then succeeded and the next journal
+  copy worked. Both runtime and landmark journals were retrieved. A fresh
+  `devicectl device sysdiagnose` requested at 23:11:50 completed and downloaded
+  directly, without another administrator prompt. Its 161,969,870-byte gzip
+  validated; 570 system-logarchive files were extracted and queried successfully.
+  Proximity is correlated with success, but a controlled test has not isolated
+  distance, radio state, time, or service recovery as the cause.
+- Build 8 installation records include CoreDevice 4016, a network timeout (60),
+  and a DDI mount failure (12040 / 12044 / 12018, no mounted-image metadata).
+  A later unlocked retry succeeded and an installed-app query confirmed the
+  build. Unlocking was not an immediate cure on every attempt. Earlier signing
+  expiration, keychain authorization and Xcode component preparation were
+  separate build/deployment blockers; none proves a journal-copy problem.
+
+### Practical collection sequence
+
+1. Prepare paths/commands first. Read device status, then try the small journal
+   copy once before asking the user to tap continuously. Use the existing bundle
+   ID `com.qayshp.TeachingTimer`; do not launch or reinstall to extract a file.
+2. For build 10 and later, copy `RuntimeDiagnostics.json`,
+   `InterfaceDiagnostics.json`, and `LandmarkDiagnostics.json`. The interface
+   detail file may not exist until a routine wake/dim event has been written.
+3. Inventory Watch and phone sysdiagnose storage. Reuse an existing capture only
+   if its time and retained contents cover the incident. If needed, start one
+   new Watch capture, then separate generation from download progress.
+4. Tell the user promptly when the small files are safe and the capture is
+   underway. Do not equate waiting for analysis with needing an awake Watch.
+5. Validate file transfer and archive integrity. If the direct copy fails, look
+   for the matching combined archive on the phone. Preserve partial results and
+   exact errors; use bounded retries, not repeated re-pairing or network toggles.
+
+If the developer connection remains intermittent, Apple's DTS escalation is
+CoreDevice profiles on Mac/phone/Watch, a Watch sysdiagnose profile, reproduction,
+and Mac/Watch diagnostics. See the linked DTS guidance above. Profiles increase
+evidence; they are not a proven connectivity repair. No such profiles were
+installed by this investigation.
