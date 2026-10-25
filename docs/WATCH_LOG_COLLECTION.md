@@ -77,6 +77,29 @@ the noon incident interval had only 60 retained records and no results in the
 targeted media query, while the evening interval retained substantial evidence.
 See [the physical media incident assessment](MEDIA_INCIDENT_2026-10-23.md).
 
+### October 25: forwarded archive recovered again
+
+Build 11's Runtime, Interface, and Landmark journals copied successfully. One
+new Watch sysdiagnose started at about 00:15:55 Pacific. Its direct transfer broke
+after 96,124,443 bytes with CoreDevice 13003 / POSIX 32 (broken pipe). Subsequent
+Watch inventories timed out, including an explicit unlocked/awake retry. The
+partial download was unusable; display dimming was not established as the cause.
+
+The paired iPhone's 00:15:56 capture transferred and validated successfully
+(395,621,960 bytes, 889 logarchive files). At about 00:24, a combined
+`co-sysdiagnose` appeared on the phone. Its 551,955,456-byte transfer completed;
+the extracted Watch member passed gzip validation (156,324,666 bytes, 581
+logarchive files). Both devices' archives supplied incident-time media evidence.
+No second capture, device reset, logging profile, or further administrator prompt
+was needed. This repeats the verified phone-forwarding recovery route; it does
+not mean every phone-only capture includes Watch logs.
+
+The preceding installation also encountered DDI errors 12040/12044/12018 and a
+tunnel error 4000/1001 despite a reported awake Watch. A later connected Device
+Hub state allowed installation and launch. The observed recovery does not isolate
+which device/service transition fixed access. Keep installation, small journal
+copying, capture generation, and large-file transfer as separate outcomes.
+
 ## Profiles and incident capture
 
 No logging configuration profile was present on the Watch during this attempt;

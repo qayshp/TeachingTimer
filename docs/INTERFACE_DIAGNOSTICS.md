@@ -64,6 +64,11 @@ audio route. They include the latest request ID/focus intent, whether the
 particular request is superseded, whether dismantling has occurred, and monotonic
 `secondsSinceRequest`. On `volume_focus_call`, this interval includes time waiting
 for the queued callback. It is not an audio-command round-trip measurement.
+Build 12 adds `settlingSeconds` to request/call/return/skip events: 0.25 for the
+first focus request on a manually replaced widget, otherwise zero. Compare the
+requested settling interval with `secondsSinceRequest` to distinguish deliberate
+delay from main-queue scheduling time. An interrupted request cannot reclaim
+focus after a newer intent or removal; a media-to-timer return has no extra delay.
 `actualFocus` is always `unobserved` because no confirmation is available here.
 
 Build 9 adds `volumeControlGeneration` to the adapter snapshot. Correlate the
@@ -106,6 +111,8 @@ The control retains the same companion origin, tint, native focus/resign API,
 and synchronous resign on removal. Build 11 changes creation timing only at
 startup and actual background return; it also guards queued update calls so an
 obsolete control cannot reclaim the Crown. A skipped call is logged explicitly.
+Build 12 adds a one-time 250 ms wait before manual replacement focus, preserving
+the existing immediate page-return path. Neither wait verifies native readiness.
 There are no periodic retries, custom Crown handlers, private volume APIs or
 chosen recovery volume. Tab hierarchy, hands, landmarks, runtime and media policy
 are unchanged. Logging has some overhead and is not a guarantee of identical

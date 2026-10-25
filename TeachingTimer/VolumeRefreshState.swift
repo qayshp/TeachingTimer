@@ -35,6 +35,21 @@ struct VolumeRefreshState {
     }
 }
 
+/// Delays only the first focus request on a manually replaced widget. Consume
+/// the delay when scheduled, so even an interrupted refresh has an immediate
+/// focus path on the next media-to-timer return. This is not a readiness check.
+struct VolumeFocusTiming {
+    static let refreshSettlingSeconds = 0.25
+    private var hasRequestedFocus = false
+
+    mutating func settlingSeconds(wantsFocus: Bool, afterManualRefresh: Bool) -> Double {
+        guard wantsFocus else { return 0 }
+        let delay = afterManualRefresh && !hasRequestedFocus ? Self.refreshSettlingSeconds : 0
+        hasRequestedFocus = true
+        return delay
+    }
+}
+
 /// One staged setup per app launch / background epoch. A cancelled attempt
 /// cannot finish a later attempt. Ordinary wrist wakes do not change the epoch.
 struct VolumeActivationState {

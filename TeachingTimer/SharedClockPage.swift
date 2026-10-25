@@ -356,6 +356,7 @@ private struct RefreshableCompanionVolumeControl: View {
         return ZStack {
             if activation.hasControl {
                 CompanionVolumeControl(isFocused: isFocused && current,
+                    afterManualRefresh: refresh.source == .timerTap,
                     diagnosticSnapshot: snapshot, recordDiagnostic: recordDiagnostic,
                     focusCallReturned: {
                         guard refresh.focusCallReturned(for: generation) else { return }
@@ -452,6 +453,7 @@ private struct RefreshableCompanionVolumeControl: View {
 
 struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
     let isFocused: Bool
+    let afterManualRefresh: Bool
     let diagnosticSnapshot: [String: String]
     let recordDiagnostic: (String, [String: String]) -> Void
     let focusCallReturned: () -> Void
@@ -474,9 +476,11 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
         diagnostics.lastViewSnapshot = diagnosticSnapshot
         guard context.coordinator.isFocused != isFocused else { return }
         context.coordinator.isFocused = isFocused
-        let request = diagnostics.requested(isFocused, source: "update")
+        let settlingSeconds = context.coordinator.focusTiming.settlingSeconds(
+            wantsFocus: isFocused, afterManualRefresh: afterManualRefresh)
+        let request = diagnostics.requested(isFocused, source: "update", settlingSeconds: settlingSeconds)
 
-        DispatchQueue.main.async {
+        let invoke: @MainActor @Sendable () -> Void = {
             guard diagnostics.canInvoke(request) else {
                 diagnostics.skipped(request)
                 return
@@ -489,6 +493,14 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
             }
             diagnostics.didReturn(request)
             if isFocused { focusCallReturned() }
+        }
+        if settlingSeconds > 0 {
+            // Give the replacement and refresh tap time to settle. Selection
+            // changes/removal invalidate this request before it can run.
+            DispatchQueue.main.asyncAfter(deadline: .now() + settlingSeconds, execute: invoke)
+        } else {
+            // Preserve the existing immediate path for media-to-timer returns.
+            DispatchQueue.main.async(execute: invoke)
         }
     }
 
@@ -511,6 +523,7 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
     @MainActor
     final class Coordinator {
         var isFocused = false
+        var focusTiming = VolumeFocusTiming()
         let diagnostics: VolumeControlDiagnostics
 
         init(recordDiagnostic: @escaping (String, [String: String]) -> Void) {

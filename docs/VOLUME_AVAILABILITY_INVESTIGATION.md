@@ -109,3 +109,46 @@ intermittent blank-page bug is resolved. Its behavior is unchanged in build 11.
 
 See [setup validation](VOLUME_CONTROL_RECOVERY.md#staged-setup--build-11) and
 [diagnostic event meanings and retention](INTERFACE_DIAGNOSTICS.md).
+
+## Physical follow-up, October 25 — available control after refresh
+
+Build 11 was installed and launched on the SE 3. The maintainer reported losing
+Crown response after tapping refresh, with response returning after visiting
+media. The user explicitly tapped Play on media, starting Watch playback; swiping
+alone was not reported to start audio. Watch-local and iPhone playback were then
+active separately. Times below are Pacific daylight time.
+
+All seven manual refreshes created replacements, resigned the old control, and
+called new focus in that order. Call returns followed taps by about 18–41 ms.
+No obsolete queued call was observed. Native timer controllers reported available
+YES/Absolute at startup and every replacement, unlike the earlier failed class.
+
+The strongest sequence was:
+
+- 00:07:48–55: 31 timer volume submissions reached the phone.
+- 00:07:56: refresh read nonzero phone volume and available YES/Absolute.
+  Another refresh followed at 00:08:01.
+- 00:07:56.300–00:08:04: no timer submissions, despite 193 non-touch input
+  dispatches reaching the app window. Those event types do not prove Crown
+  direction or which native control owned focus.
+- 00:08:04–05: media round trip, without another replacement. Ten timer
+  submissions and matching phone requests resumed at 00:08:05–06.
+- A similar gap followed the 00:08:25 refresh; input reached the window, and
+  submissions resumed after a later media round trip.
+
+Across the captured interval, all 202 timer volume submissions targeted iPhone.
+Native media made 306 Watch-local submissions, then eight iPhone submissions.
+All 210 Watch-to-phone commands matched phone-side requests in order and rounded
+value; this is correlation, not a shared request-ID join or proof of audibility.
+It supports different source selection on the two pages, with no evidence that
+the timer controlled the Mac or Watch-local audio in this test. One zero request
+followed descending values during deliberate testing; its intent is unknown and
+it is not established as another unexpected mute incident.
+
+The evidence favors focus/host-lifecycle timing after manual replacement. It
+does not identify the native focus owner or prove premature focus is the cause.
+Build 12 tests a single 250 ms delay before manual replacement focus, preserving
+immediate media return and build 11 startup/background staging. See
+[implementation and validation](VOLUME_CONTROL_RECOVERY.md#focus-after-manual-refresh--build-12).
+This is not yet a physical fix for either failure mode. Raw journals and paired
+system archives remain private under `work/support/2026-10-25-volume-startup-report/`.

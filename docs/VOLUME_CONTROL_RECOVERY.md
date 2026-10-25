@@ -1,5 +1,48 @@
 # Native volume-control recovery
 
+## Focus after manual refresh — build 12
+
+The first focus request on a manually replaced volume widget now waits 250 ms
+after mounting. This gives the replacement and the tap's native focus processing
+time to settle. The old widget still resigns synchronously during removal; a
+newer focus intent or removal invalidates a queued request before it can run.
+This is one bounded timing experiment, not a readiness test or retry loop.
+
+Ordinary media-to-timer returns keep the existing next-main-queue focus call,
+with no additional delay or widget replacement. Even if the user leaves during
+the initial refresh wait, returning uses that immediate path. Startup and actual
+background return keep build 11's one-second staged setup. Volume remains native
+and fixed to `.companion`; the app does not choose a recovery volume.
+
+The physical build 11 test found available YES/Absolute controls that stopped
+submitting volume commands after refresh, then resumed after a media round trip.
+The app had called `focus()` correctly, but its return did not prove Crown
+ownership. See [the physical evidence](VOLUME_AVAILABILITY_INVESTIGATION.md#physical-follow-up-october-25--available-control-after-refresh).
+The precise cause is unconfirmed; delaying focus may not repair the separate
+unavailable-endpoint or unexpected-silencing problems.
+
+### Validation
+
+SE 3 40 mm Simulator, watchOS 27.0, Xcode 27.1:
+
+- Two manual refreshes invoked replacement focus about 264 ms after requesting
+  it. Both old widgets resigned before the new focus call.
+- A media round trip reused the same widget and invoked focus about 8 ms after
+  requesting it, with `settlingSeconds: 0`. Native media rendered Not Playing
+  and transport controls; the timer rendered on return.
+- Class timing and runtime intent were unchanged. The same runtime and count
+  continued through both replacements and the media round trip. All six pulse
+  groups were submitted and the count completed normally at about 64.84 seconds.
+- Deterministic checks cover superseded/removed delayed work, immediate return
+  after an interrupted refresh, and zero extra delay for automatic setup.
+  All eleven suites and Simulator/signed-device builds passed.
+
+These are framework-call timings, not measured Crown-to-audio latency. Physical
+validation still needs working iPhone playback → refresh → Crown adjustment
+without a media-page visit, followed by a normal media round trip. The paired
+Simulator does not provide a validated end-to-end companion audio-volume path.
+Private evidence is under ignored `work/support/2026-10-25-delayed-focus/`.
+
 ## Staged setup — build 11
 
 Build 11 waits for the app to be active, the timer to be selected, and the Class
@@ -64,7 +107,8 @@ one-day / 4,000-event detail journal. Safety caps can shorten these windows.
 ## Tap-to-refresh — original build 9 behavior
 
 The following records the original manual recovery experiment. Build 11 adds
-the automatic setup above and the obsolete queued-focus guard.
+automatic setup and the obsolete queued-focus guard; build 12 adds the bounded
+manual-refresh focus delay above.
 
 The timer's native volume display now has a single-tap recovery action. Tap its
 speaker area, then turn the Crown again. A small refresh arrow becomes a checkmark
@@ -85,13 +129,14 @@ the phone's buttons or Control Center restores sound without pressing Play.
   width, and clear of the Class button and lower actions. A transparent tap layer
   intercepts volume-area taps; it introduces no new focusable button or Crown
   binding. VoiceOver exposes a labeled refresh action on the volume element.
-- The existing native adapter retains its requested-focus guard, one queued
+- The native adapter retains its requested-focus guard, one queued
   `focus()`/`resignFocus()` call when intent changes, and synchronous resign on
-  removal. The only addition to that path is a notification after focus returns.
+  removal. Build 12 delays only a manual replacement's first focus request.
 - Duplicate taps while replacement is pending are ignored. Old-generation
   callbacks cannot complete a newer refresh or clear newer confirmation feedback.
-- Clock renders, dim/wake, page returns, and media reloads do not replace the
-  volume control. This is explicit recovery, not automatic fault detection.
+- Clock renders, ordinary dim/wake, page returns, and media reloads do not replace
+  the volume control. Startup/background setup is separate from explicit refresh;
+  neither detects a failure.
 
 ## Simulator evidence, October 24, 2026
 
@@ -123,8 +168,9 @@ Private screenshots and journal snapshots remain under ignored
 ## Physical validation still needed
 
 1. Ordinary Crown response remains immediate before any refresh.
-2. Tap, then immediately turn the Crown: volume responds, with visible native
-   feedback. Repeat after wrist-down/wake and a Now Playing round trip.
+2. Tap, allow the quarter-second settling interval, then turn the Crown: volume
+   responds with native feedback without needing a media visit. Repeat after
+   wrist-down/wake; confirm a Now Playing round trip adds no settling delay.
 3. Confirm tap accuracy and swipe behavior while moving/teaching.
 4. During a real silencing incident, note whether a refresh followed by an upward
    Crown turn restores sound without touching the phone or visiting media.

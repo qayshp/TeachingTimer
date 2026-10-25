@@ -31,6 +31,18 @@
         assert(state.focusCallReturned(for: 4))
         assert(state.confirmedGeneration == nil && !state.isRefreshing)
 
+        var focusTiming = VolumeFocusTiming()
+        assert(focusTiming.settlingSeconds(wantsFocus: false, afterManualRefresh: true) == 0)
+        assert(focusTiming.settlingSeconds(wantsFocus: true, afterManualRefresh: true) == 0.25)
+        // Leaving during the delay invalidates the request in the adapter.
+        // Returning must not wait out or restart that delay on this widget.
+        assert(focusTiming.settlingSeconds(wantsFocus: false, afterManualRefresh: true) == 0)
+        assert(focusTiming.settlingSeconds(wantsFocus: true, afterManualRefresh: true) == 0)
+        var automaticFocus = VolumeFocusTiming()
+        assert(automaticFocus.settlingSeconds(wantsFocus: true, afterManualRefresh: false) == 0)
+        assert(automaticFocus.settlingSeconds(wantsFocus: false, afterManualRefresh: false) == 0)
+        assert(automaticFocus.settlingSeconds(wantsFocus: true, afterManualRefresh: false) == 0)
+
         var activation = VolumeActivationState()
         assert(!activation.hasControl)
         assert(activation.begin(backgroundRevision: 0, isActive: false, timerIsSelected: true) == nil)
@@ -62,6 +74,6 @@
         assert(!activation.cancel(returning))
         assert(activation.complete(latest))
         assert(activation.isCurrent(backgroundRevision: 2))
-        print("PASS: manual refresh, staged startup/background return, cancellation, stale callbacks, no wrist/page churn")
+        print("PASS: manual refresh delay, immediate media return, staged startup/background return, cancellation, no wrist/page churn")
     }
 }

@@ -13,6 +13,7 @@ final class VolumeControlDiagnostics {
         let id = UUID().uuidString
         let focused: Bool
         let source: String
+        let settlingSeconds: Double
         let instant = ContinuousClock().now
     }
 
@@ -35,8 +36,8 @@ final class VolumeControlDiagnostics {
         emit("volume_control_dismantled")
     }
 
-    func requested(_ focused: Bool, source: String) -> Request {
-        let request = Request(focused: focused, source: source)
+    func requested(_ focused: Bool, source: String, settlingSeconds: Double = 0) -> Request {
+        let request = Request(focused: focused, source: source, settlingSeconds: settlingSeconds)
         latestRequestID = request.id
         latestRequestedFocus = focused
         emit("volume_focus_requested", request: request)
@@ -73,6 +74,7 @@ final class VolumeControlDiagnostics {
             details["requestedFocus"] = String(request.focused)
             details["call"] = request.focused ? "focus" : "resignFocus"
             details["source"] = request.source
+            details["settlingSeconds"] = String(request.settlingSeconds)
             details["supersededRequest"] = String(request.id != latestRequestID)
             let duration = request.instant.duration(to: ContinuousClock().now).components
             details["secondsSinceRequest"] = String(Double(duration.seconds) + Double(duration.attoseconds) / 1e18)

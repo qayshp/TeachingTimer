@@ -38,7 +38,7 @@ struct VolumeControlDiagnosticsChecks {
         assert(observed.count == eventCount)
 
         // A queued focus must not steal the Crown after a later resign request.
-        let pendingFocus = diagnostic.requested(true, source: "update")
+        let pendingFocus = diagnostic.requested(true, source: "update", settlingSeconds: 0.25)
         let resign = diagnostic.requested(false, source: "update")
         assert(!diagnostic.canInvoke(pendingFocus))
         diagnostic.skipped(pendingFocus)
@@ -49,13 +49,23 @@ struct VolumeControlDiagnosticsChecks {
         assert(superseded["latestRequestedFocus"] == "false")
         assert(superseded["latestRequestID"] == resign.id)
         assert(superseded["lastViewTimerPageSelected"] == "false")
+        assert(superseded["settlingSeconds"] == "0.25")
         assert(diagnostic.canInvoke(resign))
         diagnostic.willInvoke(resign)
         diagnostic.didReturn(resign)
 
+        // Return from media before the old delay fires: only the new immediate
+        // request can execute. The delayed callback cannot refocus a second time.
+        let returnedFocus = diagnostic.requested(true, source: "update")
+        assert(diagnostic.canInvoke(returnedFocus))
+        assert(!diagnostic.canInvoke(pendingFocus))
+        assert(returnedFocus.settlingSeconds == 0)
+        diagnostic.willInvoke(returnedFocus)
+        diagnostic.didReturn(returnedFocus)
+
         // Removal makes all queued update calls ineligible. The adapter still
         // resigns synchronously during dismantle, without using the queue gate.
-        let afterRemoval = diagnostic.requested(true, source: "update")
+        let afterRemoval = diagnostic.requested(true, source: "update", settlingSeconds: 0.25)
         diagnostic.removed()
         let dismantle = diagnostic.requested(false, source: "dismantle")
         diagnostic.willInvoke(dismantle)
