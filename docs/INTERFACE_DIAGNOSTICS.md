@@ -3,8 +3,8 @@
 These diagnostics investigate two unresolved symptoms: an intermittently blank
 teaching page, reported in Simulator and on a physical Watch, and timer-page
 Crown adjustment silencing playback while native Now Playing can still adjust
-volume. Diagnostics remain observational; bounded media refresh and explicit
-volume refresh are separate recovery actions, not evidence that a fault occurred.
+volume. Diagnostics record observations; bounded media refresh, staged volume setup,
+and explicit volume refresh are separate actions, not evidence that a fault occurred.
 
 ## Journal and correlation
 
@@ -52,6 +52,9 @@ Elapsed time is relative to launch, not raw device uptime.
 | `media_reload_requested` | Native-view recreation request: source, manual/automatic mode, previous/new media generation, active-count flag/progress, and existing runtime context. `failureDetected: unobserved`; not proof of failure or rendered recovery. |
 | `volume_refresh_requested` | Explicit timer-volume tap, with previous/new `volumeControlGeneration` and `failureDetected: unobserved`. Does not change page or media generation. |
 | `volume_refresh_completed` | The replacement widget's existing focus call returned. `completion: focus_call_returned`, `actualFocus: unobserved`, `audioRecovery: unobserved`. Not proof of Crown routing or audible recovery. |
+| `volume_setup_scheduled`, `volume_setup_cancelled` | Build 11 settling attempt on startup/background return, including attempt ID, background revision and one-second delay. Cancellation means eligibility changed or the view was removed; no control was created by that attempt. |
+| `volume_setup_requested`, `volume_setup_focus_returned` | Automatic control creation/replacement, then the new control's focus call returned. Sources are `startup` or `background_return`; generation connects the lifecycle events. Actual focus and audio recovery remain unobserved. |
+| `volume_focus_call_skipped` | An obsolete queued update was prevented from invoking WatchKit because the control was dismantled or a newer focus intent superseded it. No focus/resign API was called for this event. |
 | `volume_control_created`, `volume_control_dismantled` | Native control creation/removal, identified by `controlID`. |
 | `volume_focus_requested` | Focus or resign request, identified by `requestID`, from `update` or `dismantle`. |
 | `volume_focus_call`, `volume_focus_call_returned` | Immediately before and after the existing WatchKit call; its return does not confirm focus was granted. |
@@ -66,9 +69,11 @@ for the queued callback. It is not an audio-command round-trip measurement.
 Build 9 adds `volumeControlGeneration` to the adapter snapshot. Correlate the
 refresh request with old-generation removal and new-generation creation/control
 IDs, then focus-call ordering. A tap is ignored while that replacement is pending.
-Only explicit taps replace the volume widget; pages, class/runtime state, count,
-and ordinary wake handling retain their previous behavior. The checkmark confirms
-the returned call, never sound or successful focus. See
+Build 11 also stages setup once on startup and actual background return. A short
+preparation indicator is not a health measurement; automatic setup does not show
+a success checkmark. Pages, class/runtime state, count, and ordinary wrist wakes
+do not themselves replace a ready widget. The manual checkmark confirms the
+returned call, never sound or successful focus. See
 [volume recovery](VOLUME_CONTROL_RECOVERY.md).
 
 Root interface events also include `mediaViewGeneration`. Build 8 changes it
@@ -97,12 +102,14 @@ or frame-rate measurement has been added.
 
 ## Preserve the experiment
 
-The control still has the same origin, tint, requested-focus guard, one queued
-focus/resign call when intent changes, and synchronous resign on removal. Even
-if a pending call later executes after removal, diagnostics only record it;
-they do not cancel, reorder, or retry the call. The focus timing, tab hierarchy, hands,
-landmarks, and runtime policy are unchanged. Logging has some overhead and is
-not a guarantee of identical timing under every condition.
+The control retains the same companion origin, tint, native focus/resign API,
+and synchronous resign on removal. Build 11 changes creation timing only at
+startup and actual background return; it also guards queued update calls so an
+obsolete control cannot reclaim the Crown. A skipped call is logged explicitly.
+There are no periodic retries, custom Crown handlers, private volume APIs or
+chosen recovery volume. Tab hierarchy, hands, landmarks, runtime and media policy
+are unchanged. Logging has some overhead and is not a guarantee of identical
+timing under every condition.
 
 ## Useful incident details
 

@@ -20,6 +20,7 @@ struct VolumeControlDiagnosticsChecks {
         diagnostic.lastViewSnapshot = ["lastViewTimerPageSelected": "true"]
         diagnostic.created()
         let focus = diagnostic.requested(true, source: "update")
+        assert(diagnostic.canInvoke(focus))
         diagnostic.willInvoke(focus)
         diagnostic.didReturn(focus)
         assert(observed.map(\.0) == ["volume_control_created", "volume_focus_requested",
@@ -36,31 +37,36 @@ struct VolumeControlDiagnosticsChecks {
         }
         assert(observed.count == eventCount)
 
-        // A later request does not suppress or reorder the caller's earlier call.
+        // A queued focus must not steal the Crown after a later resign request.
         let pendingFocus = diagnostic.requested(true, source: "update")
         let resign = diagnostic.requested(false, source: "update")
-        diagnostic.willInvoke(pendingFocus)
-        diagnostic.didReturn(pendingFocus)
+        assert(!diagnostic.canInvoke(pendingFocus))
+        diagnostic.skipped(pendingFocus)
+        assert(observed.last!.0 == "volume_focus_call_skipped")
         let superseded = observed.last!.1
         assert(superseded["supersededRequest"] == "true")
         assert(superseded["requestedFocus"] == "true")
         assert(superseded["latestRequestedFocus"] == "false")
         assert(superseded["latestRequestID"] == resign.id)
         assert(superseded["lastViewTimerPageSelected"] == "false")
+        assert(diagnostic.canInvoke(resign))
         diagnostic.willInvoke(resign)
         diagnostic.didReturn(resign)
 
-        // A pre-existing queued call after dismantle stays visible, not "fixed".
+        // Removal makes all queued update calls ineligible. The adapter still
+        // resigns synchronously during dismantle, without using the queue gate.
         let afterRemoval = diagnostic.requested(true, source: "update")
         diagnostic.removed()
         let dismantle = diagnostic.requested(false, source: "dismantle")
         diagnostic.willInvoke(dismantle)
         diagnostic.didReturn(dismantle)
-        diagnostic.willInvoke(afterRemoval)
-        diagnostic.didReturn(afterRemoval)
+        assert(!diagnostic.canInvoke(afterRemoval))
+        diagnostic.skipped(afterRemoval)
         assert(observed.last!.1["controlDismantled"] == "true")
         assert(observed.last!.1["supersededRequest"] == "true")
         assert(observed.last!.1["source"] == "update")
+        assert(!observed.contains { $0.0 == "volume_focus_call" && $0.1["requestID"] == afterRemoval.id })
+        assert(!observed.contains { $0.0 == "volume_focus_call" && $0.1["requestID"] == pendingFocus.id })
         for (_, fields) in observed {
             assert(fields["controlID"] == diagnostic.controlID)
             assert(fields["origin"] == "companion")
@@ -79,6 +85,6 @@ struct VolumeControlDiagnosticsChecks {
         let entries = try decoder.decode([RuntimeDiagnostics.Event].self, from: Data(contentsOf: url))
         assert(entries.map(\.event) == observed.map(\.0))
         assert(entries.map(\.details) == observed.map(\.1))
-        print("PASS: passive volume lifecycle, request/call IDs, superseded and post-removal calls, monotonic delay, no per-frame events, persistent ordering")
+        print("PASS: volume lifecycle, stale/removed focus protection, monotonic delay, no per-frame events, persistent ordering")
     }
 }

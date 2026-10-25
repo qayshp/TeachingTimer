@@ -16,6 +16,7 @@ struct SharedClockPage: View {
     let retireOldClass: () -> Bool
     let reloadMedia: () -> Void
     let crownIsActive: Bool
+    let volumeBackgroundRevision: Int
     var showsClassProgress = false
     @State private var classSheet: ClassSheetRequest?
     @State private var reloadMediaAfterDismiss = false
@@ -53,6 +54,7 @@ struct SharedClockPage: View {
                 RefreshableCompanionVolumeControl(
                     layout: layout,
                     isFocused: crownIsActive && classSheet == nil,
+                    backgroundRevision: volumeBackgroundRevision,
                     diagnosticSnapshot: volumeDiagnosticSnapshot,
                     recordDiagnostic: { [weak diagnosticSession = session] event, details in
                         diagnosticSession?.recordInterfaceEvent(event, details: details)
@@ -333,34 +335,55 @@ private struct ClassControlsView: View {
 private struct RefreshableCompanionVolumeControl: View {
     let layout: TimerFaceLayout
     let isFocused: Bool
+    let backgroundRevision: Int
     let diagnosticSnapshot: [String: String]
     let recordDiagnostic: (String, [String: String]) -> Void
     @State private var refresh = VolumeRefreshState()
+    @State private var activation = VolumeActivationState()
+    @Environment(\.scenePhase) private var scenePhase
+
+    private struct SetupKey: Equatable {
+        let backgroundRevision: Int
+        let isActive: Bool
+        let isFocused: Bool
+    }
 
     var body: some View {
         let generation = refresh.generation
+        let current = activation.isCurrent(backgroundRevision: backgroundRevision)
         var snapshot = diagnosticSnapshot
         snapshot["volumeControlGeneration"] = String(generation)
         return ZStack {
-            CompanionVolumeControl(isFocused: isFocused,
-                diagnosticSnapshot: snapshot, recordDiagnostic: recordDiagnostic,
-                focusCallReturned: {
-                    guard refresh.focusCallReturned(for: generation) else { return }
-                    recordDiagnostic("volume_refresh_completed", [
-                        "source": "timer_tap", "volumeControlGeneration": String(generation),
-                        "completion": "focus_call_returned", "actualFocus": "unobserved",
-                        "audioRecovery": "unobserved"
-                    ])
-                })
-                .id(generation)
-                .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
-                .background { Circle().fill(.black).frame(width: 38, height: 38).allowsHitTesting(false) }
-            Image(systemName: refresh.confirmedGeneration == nil ? "arrow.clockwise" : "checkmark")
+            if activation.hasControl {
+                CompanionVolumeControl(isFocused: isFocused && current,
+                    diagnosticSnapshot: snapshot, recordDiagnostic: recordDiagnostic,
+                    focusCallReturned: {
+                        guard refresh.focusCallReturned(for: generation) else { return }
+                        let source = refresh.source ?? .timerTap
+                        recordDiagnostic(source == .timerTap ? "volume_refresh_completed" : "volume_setup_focus_returned", [
+                            "source": source.rawValue, "volumeControlGeneration": String(generation),
+                            "completion": "focus_call_returned", "actualFocus": "unobserved",
+                            "audioRecovery": "unobserved"
+                        ])
+                    })
+                    .id(generation)
+                    .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
+                    .background { Circle().fill(.black).frame(width: 38, height: 38).allowsHitTesting(false) }
+            } else {
+                ProgressView().controlSize(.mini).tint(.white)
+                    .accessibilityHidden(true).allowsHitTesting(false)
+            }
+            if current {
+                Image(systemName: refresh.confirmedGeneration == nil ? "arrow.clockwise" : "checkmark")
                 .font(.system(size: 10, weight: .bold))
                 .frame(width: 16, height: 16)
                 .background(Circle().fill(.black))
                 .offset(x: 20, y: 13)
                 .allowsHitTesting(false)
+            } else if activation.hasControl {
+                ProgressView().controlSize(.mini).tint(.white)
+                    .offset(x: 20, y: 13).accessibilityHidden(true).allowsHitTesting(false)
+            }
             // A tap surface, not a new focusable control: Crown input remains
             // with WatchKit. A horizontal drag still belongs to the TabView.
             Color.clear
@@ -373,11 +396,14 @@ private struct RefreshableCompanionVolumeControl: View {
         .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("iPhone playback volume")
-        .accessibilityValue(refresh.isRefreshing ? "Refreshing control" :
-            (refresh.confirmedGeneration == nil ? "" : "Control refreshed"))
+        .accessibilityValue(!current ? "Preparing volume control" : (refresh.isRefreshing ? "Refreshing control" :
+            (refresh.confirmedGeneration == nil ? "" : "Control refreshed")))
         .accessibilityHint("Turn the Crown to adjust. Double-tap to refresh the volume control.")
         .accessibilityAddTraits(.isButton)
         .accessibilityAction { requestRefresh() }
+        .task(id: SetupKey(backgroundRevision: backgroundRevision, isActive: scenePhase == .active, isFocused: isFocused)) {
+            await prepareVolumeControl()
+        }
         .task(id: refresh.confirmedGeneration) {
             guard let confirmed = refresh.confirmedGeneration else { return }
             do { try await Task.sleep(for: .seconds(1.5)) }
@@ -387,13 +413,40 @@ private struct RefreshableCompanionVolumeControl: View {
     }
 
     private func requestRefresh() {
-        guard isFocused, let generation = refresh.request() else { return }
+        guard isFocused, activation.isCurrent(backgroundRevision: backgroundRevision),
+              let generation = refresh.request() else { return }
         var details = diagnosticSnapshot
         details["source"] = "timer_tap"
         details["previousVolumeControlGeneration"] = String(generation - 1)
         details["volumeControlGeneration"] = String(generation)
         details["failureDetected"] = "unobserved"
         recordDiagnostic("volume_refresh_requested", details)
+    }
+
+    @MainActor
+    private func prepareVolumeControl() async {
+        guard let attempt = activation.begin(backgroundRevision: backgroundRevision,
+            isActive: scenePhase == .active, timerIsSelected: isFocused) else { return }
+        var details = diagnosticSnapshot
+        details["setupAttemptID"] = String(attempt.id)
+        details["backgroundRevision"] = String(attempt.backgroundRevision)
+        details["source"] = attempt.source.rawValue
+        details["settlingSeconds"] = String(VolumeActivationState.settlingSeconds)
+        details["failureDetected"] = "unobserved"
+        recordDiagnostic("volume_setup_scheduled", details)
+        do {
+            try await Task.sleep(for: .seconds(VolumeActivationState.settlingSeconds))
+            try Task.checkCancellation()
+        } catch {
+            activation.cancel(attempt)
+            details["reason"] = "eligibility_changed_or_view_removed"
+            recordDiagnostic("volume_setup_cancelled", details)
+            return
+        }
+        guard activation.complete(attempt), let generation = refresh.request(source: attempt.source) else { return }
+        details["previousVolumeControlGeneration"] = String(generation - 1)
+        details["volumeControlGeneration"] = String(generation)
+        recordDiagnostic("volume_setup_requested", details)
     }
 }
 
@@ -424,6 +477,10 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
         let request = diagnostics.requested(isFocused, source: "update")
 
         DispatchQueue.main.async {
+            guard diagnostics.canInvoke(request) else {
+                diagnostics.skipped(request)
+                return
+            }
             diagnostics.willInvoke(request)
             if isFocused {
                 volumeControl.focus()

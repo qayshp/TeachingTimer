@@ -1,4 +1,70 @@
-# Tap-to-refresh volume control — build 9
+# Native volume-control recovery
+
+## Staged setup — build 11
+
+Build 11 waits for the app to be active, the timer to be selected, and the Class
+sheet to be dismissed, then allows one second before creating/focusing the
+companion volume control. Cold launch initially shows a small preparation
+indicator. After an actual background return, the old native display remains
+while setup waits, without requesting Crown focus for the old control.
+
+A change in eligibility cancels pending setup. Returning schedules a new bounded
+attempt; it does not run a retry loop. Completed setup is retained across ordinary
+wrist-down/wake, Class sheets, media-page round trips, and clock frames. Only a
+new background transition makes another automatic setup necessary. Each delayed
+attempt and queued native focus call is protected against obsolete work.
+
+Steady-state Crown input still goes directly to the same native `.companion`
+widget. Manual tap-to-refresh remains available. No volume value is chosen, no
+media page is secretly opened, and class/count/runtime/media logic is unchanged.
+The one-second wait is a settling interval, not an availability test: WatchKit
+has no public readiness callback here. Automatic setup therefore has no success
+checkmark or claim of recovered sound.
+
+### Validation
+
+SE 3 40 mm Simulator, watchOS 27.0, Xcode 27.1:
+
+- Startup created one native control after approximately 1.05 seconds of settling.
+- Two actual Settings/background/return cycles each produced one replacement.
+  One return briefly became inactive during the wait: that attempt was canceled
+  and the next eligible attempt completed after approximately one second.
+- Returning with the Class sheet open deferred setup until dismissal.
+- Native media rendered Not Playing and transport controls. A media round trip
+  relinquished/re-requested focus without replacing the timer control.
+- Lock/unlock was confirmed by reduced-luminance true/false events. It did not
+  create another control; the same runtime continued through those transitions.
+- Saved class timing was identical across the checks. A count run survived the
+  background return and volume replacement and reached normal visual completion.
+  Its haptics stopped at the existing late-pulse cutoff (about 0.52 seconds late
+  at 30 seconds), independently of the arc. Backgrounding ended the runtime,
+  and the existing automatic recovery restarted it on return as intended.
+- An explicit refresh after wake still replaced/focused the native control. Old
+  synchronous resigns completed before replacement focus calls. No obsolete or
+  post-removal queued focus invocation was observed.
+- All eleven deterministic suites and Simulator/signed-device builds passed.
+  Tests cover canceled/superseded setup, stale focus requests, manual fallback,
+  journal retention, and absence of wrist/page replacement churn.
+
+These checks validate setup and state continuity. They cannot establish that
+the physical companion endpoint is healthy or that this repairs the intermittent
+unavailable/zero-volume incidents. The maintainer reports that a manual refresh
+did not fix the failed October 24 class. Staging tests a different startup/return
+timing, but may encounter the same unavailable native endpoint. Compare physical
+AirPlay and other routes after startup, background return, and ordinary paging.
+If it still fails, collect native capability and volume-command logs; avoid
+adding repeated blind resets.
+
+Private validation evidence is under ignored
+`work/support/2026-10-24-staged-volume/` (testing crossed midnight Pacific).
+Build 11 also includes build 10 journal retention: seven days / 10,000 events in
+the operational journal, with routine scene/luminance events isolated in a
+one-day / 4,000-event detail journal. Safety caps can shorten these windows.
+
+## Tap-to-refresh — original build 9 behavior
+
+The following records the original manual recovery experiment. Build 11 adds
+the automatic setup above and the obsolete queued-focus guard.
 
 The timer's native volume display now has a single-tap recovery action. Tap its
 speaker area, then turn the Crown again. A small refresh arrow becomes a checkmark

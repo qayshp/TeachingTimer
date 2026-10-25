@@ -5,8 +5,8 @@
 
 import Foundation
 
-/// Passive instrumentation only: never schedules, suppresses, or retries a
-/// focus call. WatchKit provides no confirmation of actual focus or volume.
+/// Records native focus lifecycle and exposes request validity to the adapter.
+/// WatchKit provides no confirmation of actual focus, availability or volume.
 @MainActor
 final class VolumeControlDiagnostics {
     struct Request {
@@ -45,6 +45,14 @@ final class VolumeControlDiagnostics {
 
     func willInvoke(_ request: Request) {
         emit("volume_focus_call", request: request)
+    }
+
+    func canInvoke(_ request: Request) -> Bool {
+        !dismantled && request.id == latestRequestID
+    }
+
+    func skipped(_ request: Request) {
+        emit("volume_focus_call_skipped", request: request)
     }
 
     func didReturn(_ request: Request) {

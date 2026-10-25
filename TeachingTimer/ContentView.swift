@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var classClockRevision = 0
     @State private var mediaViewGeneration = 0
     @State private var mediaReloadPolicy = MediaReloadPolicy()
+    @State private var volumeBackgroundRevision = 0
 
     private struct ClassTaskKey: Equatable {
         let context: ClassContext?
@@ -54,6 +55,7 @@ struct ContentView: View {
                     retireOldClass: { retireOldClass() },
                     reloadMedia: reloadMedia,
                     crownIsActive: page == .classProgress,
+                    volumeBackgroundRevision: volumeBackgroundRevision,
                     showsClassProgress: true
                 )
                 .onAppear { recordInterfaceEvent("page_appeared", page: .classProgress) }
@@ -128,6 +130,7 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .background {
                 mediaReloadPolicy.didEnterBackground()
+                volumeBackgroundRevision &+= 1
             }
             session.applicationStateChanged(String(describing: phase), details: [
                 "selectedPage": page.rawValue,

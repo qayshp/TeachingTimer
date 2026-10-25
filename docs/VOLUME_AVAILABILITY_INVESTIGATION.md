@@ -54,11 +54,11 @@ a successful focus return detects a healthy controller. Apple's
 [volume-control documentation](https://developer.apple.com/documentation/watchkit/wkinterfacevolumecontrol?language=objc)
 likewise assigns volume changes to the system.
 
-## Proposed first repair experiment — not implemented yet
+## Staged activation experiment — build 11
 
-Try **one bounded, staged activation on cold launch and actual background
-return**, while preserving the control during ordinary wrist wakes and page
-swipes:
+Build 11 implements **one bounded, staged activation on cold launch and actual
+background return**, while preserving the control during ordinary wrist wakes
+and page swipes:
 
 1. After the timer is selected, the Class sheet is dismissed, and the app is
    active, allow about one second for foreground/route discovery to settle.
@@ -88,6 +88,24 @@ native-view lifecycle, not validate this audio repair.
 
 ## Changes in this iteration
 
-Build 10 changes journal retention/noise only. Native volume creation, focus,
-refresh and media behavior remain unchanged pending this controlled experiment.
-See [diagnostic event meanings and retention](INTERFACE_DIAGNOSTICS.md).
+Build 10 changed journal retention/noise only. Build 11 includes those changes
+and the staged setup above. A small progress indicator and VoiceOver value
+communicate preparation. Automatic setup has no success checkmark because the
+app cannot verify actual volume availability. Manual tap-to-refresh retains its
+existing focus-call acknowledgement. Pending automatic setup is canceled when
+its scene/page/sheet eligibility changes; it is rescheduled when eligible again.
+A completed setup is not repeated until another actual background transition.
+
+The maintainer reports that tapping refresh did not fix the failed class.
+That makes this a tentative timing experiment, not an established cure. A late
+refresh can still leave the underlying native endpoint unavailable. If staged
+creation also fails, collect the native availability/capability evidence and
+avoid layering periodic blind retries on top of it.
+
+The native media page worked correctly in both October 24 classes, according
+to the maintainer. This is encouraging physical evidence for the existing media
+recovery behavior, but two successful classes do not establish that the
+intermittent blank-page bug is resolved. Its behavior is unchanged in build 11.
+
+See [setup validation](VOLUME_CONTROL_RECOVERY.md#staged-setup--build-11) and
+[diagnostic event meanings and retention](INTERFACE_DIAGNOSTICS.md).
