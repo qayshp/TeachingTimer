@@ -18,6 +18,7 @@ final class LandmarkDiagnostics: @unchecked Sendable {
     private let queue: DispatchQueue
     private let url: URL
     private let capacity: Int
+    private let retentionInterval: TimeInterval?
     private var events: [Event] = []
     private var pending: [Event] = []
     private var loaded = false
@@ -25,9 +26,10 @@ final class LandmarkDiagnostics: @unchecked Sendable {
     private let log: Logger
 
     init(url: URL = URL.documentsDirectory.appendingPathComponent("LandmarkDiagnostics.json"), capacity: Int = 2000,
-         label: String = "LandmarkJournal") {
+         label: String = "LandmarkJournal", retentionInterval: TimeInterval? = nil) {
         self.url = url
         self.capacity = max(1, capacity)
+        self.retentionInterval = retentionInterval
         queue = DispatchQueue(label: "TeachingTimer." + label, qos: .utility)
         log = Logger(subsystem: "com.qayshp.TeachingTimer", category: label)
     }
@@ -76,7 +78,15 @@ final class LandmarkDiagnostics: @unchecked Sendable {
                 }
                 loaded = true
             }
-            let next = Array((events + pending).suffix(capacity))
+            // Trim on writes, relative to the latest submitted event rather than
+            // the worker's execution time. Keep future-dated entries after a
+            // backwards clock correction. A size cap still bounds that case.
+            var retained = events + pending
+            if let retentionInterval, let latest = pending.last {
+                let cutoff = latest.timestamp.addingTimeInterval(-retentionInterval)
+                retained.removeAll { $0.timestamp < cutoff }
+            }
+            let next = Array(retained.suffix(capacity))
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]

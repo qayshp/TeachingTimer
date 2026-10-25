@@ -8,11 +8,28 @@ volume refresh are separate recovery actions, not evidence that a fault occurred
 
 ## Journal and correlation
 
-Events go to the existing local `Documents/RuntimeDiagnostics.json`. Its bounded
-1,000-event history survives relaunch; older entries rotate out. Writes and
-encoding are off the main thread, with the existing corrupt-file preservation.
-A sudden process kill can lose the most recent queued events. Pull the journal
-soon after an incident, together with `LandmarkDiagnostics.json` if relevant.
+Build 10 separates operational evidence from routine wrist transitions:
+
+- `Documents/RuntimeDiagnostics.json` retains seven days of runtime, class,
+  page, media, and volume events, with a 10,000-event safety cap. Background
+  entry/exit and initial scene state remain here. New Class does not clear it.
+- `Documents/InterfaceDiagnostics.json` retains routine active/inactive and
+  reduced-luminance transitions for one day, with a 4,000-event safety cap.
+  These precise timestamps remain useful for dimming investigations, but cannot
+  displace earlier classes from the operational journal.
+- `Documents/LandmarkDiagnostics.json` keeps its existing 2,000-event policy.
+
+Age pruning happens on the next write to each file. Count caps can shorten the
+time window under exceptional event volume; these are bounds, not guaranteed
+minimum retention. Existing runtime history is read in place and is not cleared
+on upgrade; already-rotated entries cannot be recovered. Old interface events
+already in that history age out normally rather than being moved retroactively.
+
+Encoding and atomic file replacement stay off the main thread, with corrupt-file
+preservation. Routine callbacks batch for 250 ms; launches, runtime start/stop,
+invalidation/expiration, and significant scene changes request an immediate
+queued write. A sudden process kill can lose the latest queued events. Pull all
+three files soon after an incident; detailed system logs have separate retention.
 Do not uninstall the app or clear its container to recover a blank page before
 collecting evidence.
 
@@ -29,8 +46,8 @@ Elapsed time is relative to launch, not raw device uptime.
 | `interface_appeared`, `interface_disappeared` | Root SwiftUI lifecycle callbacks. |
 | `page_selection_changed` | Previous and newly selected tab. Not proof that the selected content is visible. |
 | `page_appeared`, `page_disappeared` | Callback for `observedPage`, plus current `selectedPage`. Pages may be prepared before selection; this is not pixel evidence. |
-| `luminance_changed` | SwiftUI reduced-luminance value changed, with previous/current values. No independent wrist-motion measurement. |
-| `interface_scene_changed` | Scene transition with page/dimming context, alongside existing `scene_state_changed` runtime events. |
+| `luminance_changed` | In the interface detail file: SwiftUI reduced-luminance value changed. No independent wrist-motion measurement. |
+| `scene_state_changed` | One canonical scene event with previous/current state and page/dimming/media-generation context. Background entry/exit and initial state go to the runtime journal; ordinary active/inactive transitions go to the interface file. |
 | `class_sheet_state_changed` | Whether the timer view requests its Class sheet; not confirmation of presentation completion. |
 | `media_reload_requested` | Native-view recreation request: source, manual/automatic mode, previous/new media generation, active-count flag/progress, and existing runtime context. `failureDetected: unobserved`; not proof of failure or rendered recovery. |
 | `volume_refresh_requested` | Explicit timer-volume tap, with previous/new `volumeControlGeneration` and `failureDetected: unobserved`. Does not change page or media generation. |
@@ -135,6 +152,20 @@ with the reported late opening of the app during class, but retention boundaries
 and callbacks cannot establish the exact first opening time.
 
 Review/redact journals before sharing; never commit raw device logs to GitHub.
+
+### Noise review in build 10
+
+The October 24 retained runtime file contained 848 scene/luminance records out
+of 1,000, covering only about 103 minutes. Each scene transition was recorded
+twice. Build 10 removes the duplicate `interface_scene_changed` event and moves
+ordinary wake/dim traffic to the detail file. Scene and runtime handling itself
+is unchanged. Each operational event still carries its current app state, and
+root interface events carry current page/dimming context.
+
+Keep creation/removal, page appearance/selection, and focus request/call/return
+records. They are a small fraction of traffic and distinguish a queued request
+from an executed call, identify stale generations, and help diagnose blank native
+views. Neither appearance nor a returned focus call proves visible/working UI.
 
 ## October 23 physical recurrence
 

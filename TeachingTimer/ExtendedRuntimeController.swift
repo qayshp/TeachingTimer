@@ -103,9 +103,12 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         diagnostics.record(event, details: details)
     }
 
-    func applicationStateChanged(_ state: String) {
+    func applicationStateChanged(_ state: String, details: [String: String] = [:]) {
+        var fields = details
+        fields["previousSceneState"] = lastSceneState
+        fields["sceneState"] = state
         lastSceneState = state
-        record("scene_state_changed", extra: ["sceneState": state])
+        record("scene_state_changed", extra: fields)
     }
 
     /// Shares the bounded, off-main runtime journal and launch/runtime IDs.

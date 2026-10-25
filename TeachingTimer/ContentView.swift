@@ -125,11 +125,15 @@ struct ContentView: View {
                 catch { return }
             }
         }
-        .onChange(of: scenePhase) { old, phase in
+        .onChange(of: scenePhase) { _, phase in
             if phase == .background {
                 mediaReloadPolicy.didEnterBackground()
             }
-            session.applicationStateChanged(String(describing: phase))
+            session.applicationStateChanged(String(describing: phase), details: [
+                "selectedPage": page.rawValue,
+                "luminanceReduced": String(dimmed),
+                "mediaViewGeneration": String(mediaViewGeneration)
+            ])
             if phase == .active {
                 // Stop stale renewal intent before processing foreground recovery.
                 retireOldClass()
@@ -142,7 +146,6 @@ struct ContentView: View {
                     recreateMedia(reason: reason)
                 }
             }
-            recordInterfaceEvent("interface_scene_changed", details: ["previousScenePhase": String(describing: old)])
         }
     }
 

@@ -396,6 +396,10 @@ not established whether that report is related to the Simulator signing issue.
 
 ### Persistent runtime diagnostics
 
+The following records the original implementation. Build 10 increases operational
+retention and separates routine interface transitions; see
+[the current policy](../INTERFACE_DIAGNOSTICS.md#journal-and-correlation).
+
 `Documents/RuntimeDiagnostics.json` in the Watch app's own data container retains
 the latest 1,000 runtime/lifecycle events across app launches and New Class/Reset.
 Each event is saved immediately using an atomic file replacement. It includes
