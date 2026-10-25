@@ -131,10 +131,13 @@ The timer-page volume control has also intermittently silenced playback, with
 both AirPlay and USB audio reported. The maintainer reports that playback keeps
 running; raising volume with the iPhone's buttons or Control Center restores
 sound. This is a reported recovery, not a diagnosed cause or guaranteed workaround.
-Build 9 adds [tap-to-refresh volume recovery](docs/VOLUME_CONTROL_RECOVERY.md).
-It replaces only the native volume widget on explicit taps, with no extra
-delay on ordinary Crown use. Its effectiveness against physical silencing is
-unverified. Automatic media refresh remains separate from volume refresh.
+[Tap-to-refresh volume recovery](docs/VOLUME_CONTROL_RECOVERY.md) now retains
+the native widget and cycles its Crown focus after a quarter-second pause.
+Build 13 also retains it through background returns, addressing a reproduced
+Simulator focus/feedback failure associated with the earlier replacement path.
+Ordinary media-to-timer focus stays immediate. Actual iPhone-volume recovery and
+the separate silencing issue still need physical validation. Automatic native
+media refresh remains separate from volume refresh.
 Blank media and unintended silencing are the highest-priority bugs; the brief
 seconds-hand backstep on dimming is lower priority. Test volume before class
 and keep the phone's controls available.

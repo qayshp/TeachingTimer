@@ -3,7 +3,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-/// Tracks widget replacement, never audio state or actual Crown focus.
+/// Tracks requests to refocus the retained widget, never actual focus or audio.
 struct VolumeRefreshState {
     enum Source: String { case timerTap = "timer_tap", startup, backgroundReturn = "background_return" }
     private(set) var generation = 0
@@ -12,8 +12,8 @@ struct VolumeRefreshState {
     private(set) var source: Source?
 
     mutating func request(source: Source = .timerTap) -> Int? {
-        // A foreground setup replaces any unfinished request on the old widget.
-        // Repeated manual taps still cannot create concurrent replacements.
+        // Foreground setup supersedes any unfinished request. Repeated manual
+        // taps cannot create concurrent focus cycles.
         guard !isRefreshing || source != .timerTap else { return nil }
         generation += 1
         isRefreshing = true
@@ -35,18 +35,24 @@ struct VolumeRefreshState {
     }
 }
 
-/// Delays only the first focus request on a manually replaced widget. Consume
-/// the delay when scheduled, so even an interrupted refresh has an immediate
-/// focus path on the next media-to-timer return. This is not a readiness check.
-struct VolumeFocusTiming {
-    static let refreshSettlingSeconds = 0.25
-    private var hasRequestedFocus = false
+/// A fresh request cycles focus on the same widget. Page returns retain the
+/// immediate path, including after an interrupted cycle. This is not readiness.
+struct VolumeFocusState {
+    struct Change {
+        let resignBeforeFocus: Bool
+        var settlingSeconds: Double { resignBeforeFocus ? refreshSettlingSeconds : 0 }
+    }
 
-    mutating func settlingSeconds(wantsFocus: Bool, afterManualRefresh: Bool) -> Double {
-        guard wantsFocus else { return 0 }
-        let delay = afterManualRefresh && !hasRequestedFocus ? Self.refreshSettlingSeconds : 0
-        hasRequestedFocus = true
-        return delay
+    static let refreshSettlingSeconds = 0.25
+    private var requestedFocus = false
+    private var generation: Int?
+
+    mutating func update(wantsFocus: Bool, generation: Int) -> Change? {
+        let rearm = wantsFocus && self.generation != nil && self.generation != generation
+        guard requestedFocus != wantsFocus || rearm else { return nil }
+        requestedFocus = wantsFocus
+        self.generation = generation
+        return Change(resignBeforeFocus: rearm)
     }
 }
 

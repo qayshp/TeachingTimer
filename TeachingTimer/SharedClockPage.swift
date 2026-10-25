@@ -352,22 +352,23 @@ private struct RefreshableCompanionVolumeControl: View {
         let generation = refresh.generation
         let current = activation.isCurrent(backgroundRevision: backgroundRevision)
         var snapshot = diagnosticSnapshot
-        snapshot["volumeControlGeneration"] = String(generation)
+        snapshot["volumeRequestGeneration"] = String(generation)
         return ZStack {
             if activation.hasControl {
+                // Keep native identity across refresh/background setup. Replacing
+                // this widget reproduced lost Crown feedback after Home return.
                 CompanionVolumeControl(isFocused: isFocused && current,
-                    afterManualRefresh: refresh.source == .timerTap,
+                    focusGeneration: generation,
                     diagnosticSnapshot: snapshot, recordDiagnostic: recordDiagnostic,
                     focusCallReturned: {
                         guard refresh.focusCallReturned(for: generation) else { return }
                         let source = refresh.source ?? .timerTap
                         recordDiagnostic(source == .timerTap ? "volume_refresh_completed" : "volume_setup_focus_returned", [
-                            "source": source.rawValue, "volumeControlGeneration": String(generation),
+                            "source": source.rawValue, "volumeRequestGeneration": String(generation),
                             "completion": "focus_call_returned", "actualFocus": "unobserved",
                             "audioRecovery": "unobserved"
                         ])
                     })
-                    .id(generation)
                     .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
                     .background { Circle().fill(.black).frame(width: 38, height: 38).allowsHitTesting(false) }
             } else {
@@ -418,8 +419,9 @@ private struct RefreshableCompanionVolumeControl: View {
               let generation = refresh.request() else { return }
         var details = diagnosticSnapshot
         details["source"] = "timer_tap"
-        details["previousVolumeControlGeneration"] = String(generation - 1)
-        details["volumeControlGeneration"] = String(generation)
+        details["previousVolumeRequestGeneration"] = String(generation - 1)
+        details["volumeRequestGeneration"] = String(generation)
+        details["controlReplaced"] = "false"
         details["failureDetected"] = "unobserved"
         recordDiagnostic("volume_refresh_requested", details)
     }
@@ -445,15 +447,16 @@ private struct RefreshableCompanionVolumeControl: View {
             return
         }
         guard activation.complete(attempt), let generation = refresh.request(source: attempt.source) else { return }
-        details["previousVolumeControlGeneration"] = String(generation - 1)
-        details["volumeControlGeneration"] = String(generation)
+        details["previousVolumeRequestGeneration"] = String(generation - 1)
+        details["volumeRequestGeneration"] = String(generation)
+        details["controlReplaced"] = "false"
         recordDiagnostic("volume_setup_requested", details)
     }
 }
 
 struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
     let isFocused: Bool
-    let afterManualRefresh: Bool
+    let focusGeneration: Int
     let diagnosticSnapshot: [String: String]
     let recordDiagnostic: (String, [String: String]) -> Void
     let focusCallReturned: () -> Void
@@ -474,11 +477,17 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
     ) {
         let diagnostics = context.coordinator.diagnostics
         diagnostics.lastViewSnapshot = diagnosticSnapshot
-        guard context.coordinator.isFocused != isFocused else { return }
-        context.coordinator.isFocused = isFocused
-        let settlingSeconds = context.coordinator.focusTiming.settlingSeconds(
-            wantsFocus: isFocused, afterManualRefresh: afterManualRefresh)
-        let request = diagnostics.requested(isFocused, source: "update", settlingSeconds: settlingSeconds)
+        guard let change = context.coordinator.focusState.update(
+            wantsFocus: isFocused, generation: focusGeneration) else { return }
+        if change.resignBeforeFocus {
+            let resign = diagnostics.requested(false, source: "refocus")
+            diagnostics.willInvoke(resign)
+            volumeControl.resignFocus()
+            diagnostics.didReturn(resign)
+        }
+        let request = diagnostics.requested(isFocused,
+            source: change.resignBeforeFocus ? "refocus" : "update",
+            settlingSeconds: change.settlingSeconds)
 
         let invoke: @MainActor @Sendable () -> Void = {
             guard diagnostics.canInvoke(request) else {
@@ -494,10 +503,10 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
             diagnostics.didReturn(request)
             if isFocused { focusCallReturned() }
         }
-        if settlingSeconds > 0 {
-            // Give the replacement and refresh tap time to settle. Selection
-            // changes/removal invalidate this request before it can run.
-            DispatchQueue.main.asyncAfter(deadline: .now() + settlingSeconds, execute: invoke)
+        if change.settlingSeconds > 0 {
+            // Let the explicit resign/tap settle on the retained control.
+            // Selection changes/removal invalidate this request before it runs.
+            DispatchQueue.main.asyncAfter(deadline: .now() + change.settlingSeconds, execute: invoke)
         } else {
             // Preserve the existing immediate path for media-to-timer returns.
             DispatchQueue.main.async(execute: invoke)
@@ -522,8 +531,7 @@ struct CompanionVolumeControl: WKInterfaceObjectRepresentable {
 
     @MainActor
     final class Coordinator {
-        var isFocused = false
-        var focusTiming = VolumeFocusTiming()
+        var focusState = VolumeFocusState()
         let diagnostics: VolumeControlDiagnostics
 
         init(recordDiagnostic: @escaping (String, [String: String]) -> Void) {

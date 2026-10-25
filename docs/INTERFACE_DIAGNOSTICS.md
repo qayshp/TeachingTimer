@@ -50,13 +50,13 @@ Elapsed time is relative to launch, not raw device uptime.
 | `scene_state_changed` | One canonical scene event with previous/current state and page/dimming/media-generation context. Background entry/exit and initial state go to the runtime journal; ordinary active/inactive transitions go to the interface file. |
 | `class_sheet_state_changed` | Whether the timer view requests its Class sheet; not confirmation of presentation completion. |
 | `media_reload_requested` | Native-view recreation request: source, manual/automatic mode, previous/new media generation, active-count flag/progress, and existing runtime context. `failureDetected: unobserved`; not proof of failure or rendered recovery. |
-| `volume_refresh_requested` | Explicit timer-volume tap, with previous/new `volumeControlGeneration` and `failureDetected: unobserved`. Does not change page or media generation. |
-| `volume_refresh_completed` | The replacement widget's existing focus call returned. `completion: focus_call_returned`, `actualFocus: unobserved`, `audioRecovery: unobserved`. Not proof of Crown routing or audible recovery. |
+| `volume_refresh_requested` | Explicit timer-volume tap, with previous/new request generation and `failureDetected: unobserved`. Build 13 uses `volumeRequestGeneration` and `controlReplaced: false`; older builds used `volumeControlGeneration` for replacements. Does not change page or media generation. |
+| `volume_refresh_completed` | The requested focus call returned. `completion: focus_call_returned`, `actualFocus: unobserved`, `audioRecovery: unobserved`. Not proof of Crown routing or audible recovery. |
 | `volume_setup_scheduled`, `volume_setup_cancelled` | Build 11 settling attempt on startup/background return, including attempt ID, background revision and one-second delay. Cancellation means eligibility changed or the view was removed; no control was created by that attempt. |
-| `volume_setup_requested`, `volume_setup_focus_returned` | Automatic control creation/replacement, then the new control's focus call returned. Sources are `startup` or `background_return`; generation connects the lifecycle events. Actual focus and audio recovery remain unobserved. |
+| `volume_setup_requested`, `volume_setup_focus_returned` | Automatic startup/background setup, then the requested focus call returned. Build 13 creates the widget only on initial setup and retains it afterward. Sources are `startup` or `background_return`; request generation connects the lifecycle events. Actual focus and audio recovery remain unobserved. |
 | `volume_focus_call_skipped` | An obsolete queued update was prevented from invoking WatchKit because the control was dismantled or a newer focus intent superseded it. No focus/resign API was called for this event. |
 | `volume_control_created`, `volume_control_dismantled` | Native control creation/removal, identified by `controlID`. |
-| `volume_focus_requested` | Focus or resign request, identified by `requestID`, from `update` or `dismantle`. |
+| `volume_focus_requested` | Focus or resign request, identified by `requestID`, from `update`, `dismantle`, or build 13's explicit `refocus` cycle. |
 | `volume_focus_call`, `volume_focus_call_returned` | Immediately before and after the existing WatchKit call; its return does not confirm focus was granted. |
 
 Volume events identify `.companion` as the configured origin, not a discovered
@@ -65,7 +65,9 @@ particular request is superseded, whether dismantling has occurred, and monotoni
 `secondsSinceRequest`. On `volume_focus_call`, this interval includes time waiting
 for the queued callback. It is not an audio-command round-trip measurement.
 Build 12 adds `settlingSeconds` to request/call/return/skip events: 0.25 for the
-first focus request on a manually replaced widget, otherwise zero. Compare the
+first focus request on a manually replaced widget, otherwise zero. Build 13 uses
+0.25 for manual/background refocus on the retained widget; initial focus and
+ordinary page returns remain zero. Compare the
 requested settling interval with `secondsSinceRequest` to distinguish deliberate
 delay from main-queue scheduling time. An interrupted request cannot reclaim
 focus after a newer intent or removal; a media-to-timer return has no extra delay.
@@ -73,7 +75,11 @@ focus after a newer intent or removal; a media-to-timer return has no extra dela
 
 Build 9 adds `volumeControlGeneration` to the adapter snapshot. Correlate the
 refresh request with old-generation removal and new-generation creation/control
-IDs, then focus-call ordering. A tap is ignored while that replacement is pending.
+IDs, then focus-call ordering. Build 13 renames the counter to
+`volumeRequestGeneration`: it counts setup/refresh requests, not native widgets.
+The native `controlID` stays the same across those requests. `refocus` records a
+synchronous resign followed by one guarded delayed focus; it is not a retry loop.
+A tap is ignored while that request is pending.
 Build 11 also stages setup once on startup and actual background return. A short
 preparation indicator is not a health measurement; automatic setup does not show
 a success checkmark. Pages, class/runtime state, count, and ordinary wrist wakes
@@ -113,6 +119,9 @@ startup and actual background return; it also guards queued update calls so an
 obsolete control cannot reclaim the Crown. A skipped call is logged explicitly.
 Build 12 adds a one-time 250 ms wait before manual replacement focus, preserving
 the existing immediate page-return path. Neither wait verifies native readiness.
+Build 13 retains the widget and cycles its focus for manual/background requests;
+it removes the identity-based replacements that broke native feedback in the
+Simulator reproduction. A request generation change does not imply replacement.
 There are no periodic retries, custom Crown handlers, private volume APIs or
 chosen recovery volume. Tab hierarchy, hands, landmarks, runtime and media policy
 are unchanged. Logging has some overhead and is not a guarantee of identical

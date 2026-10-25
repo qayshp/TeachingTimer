@@ -215,7 +215,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
                 ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -246,7 +246,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
                 ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

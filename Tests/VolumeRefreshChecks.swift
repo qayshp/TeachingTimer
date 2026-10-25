@@ -8,8 +8,8 @@
         var state = VolumeRefreshState()
         assert(!state.focusCallReturned(for: 0)) // Initial focus is not a refresh.
         assert(state.request() == 1)
-        assert(state.request() == nil) // Rapid taps cannot replace an in-flight widget.
-        assert(!state.focusCallReturned(for: 0)) // Removed widget callback is stale.
+        assert(state.request() == nil) // Rapid taps cannot overlap an in-flight request.
+        assert(!state.focusCallReturned(for: 0)) // Earlier request callback is stale.
         assert(state.isRefreshing && state.confirmedGeneration == nil)
         assert(state.focusCallReturned(for: 1))
         assert(!state.isRefreshing && state.confirmedGeneration == 1)
@@ -24,24 +24,38 @@
         assert(state.confirmedGeneration == nil && state.generation == 2)
 
         // A foreground setup supersedes an unfinished manual request. An old
-        // widget's callback cannot complete it, and automatic setup has no checkmark.
+        // request's callback cannot complete it, and automatic setup has no checkmark.
         assert(state.request() == 3)
         assert(state.request(source: .backgroundReturn) == 4)
         assert(!state.focusCallReturned(for: 3))
         assert(state.focusCallReturned(for: 4))
         assert(state.confirmedGeneration == nil && !state.isRefreshing)
 
-        var focusTiming = VolumeFocusTiming()
-        assert(focusTiming.settlingSeconds(wantsFocus: false, afterManualRefresh: true) == 0)
-        assert(focusTiming.settlingSeconds(wantsFocus: true, afterManualRefresh: true) == 0.25)
-        // Leaving during the delay invalidates the request in the adapter.
-        // Returning must not wait out or restart that delay on this widget.
-        assert(focusTiming.settlingSeconds(wantsFocus: false, afterManualRefresh: true) == 0)
-        assert(focusTiming.settlingSeconds(wantsFocus: true, afterManualRefresh: true) == 0)
-        var automaticFocus = VolumeFocusTiming()
-        assert(automaticFocus.settlingSeconds(wantsFocus: true, afterManualRefresh: false) == 0)
-        assert(automaticFocus.settlingSeconds(wantsFocus: false, afterManualRefresh: false) == 0)
-        assert(automaticFocus.settlingSeconds(wantsFocus: true, afterManualRefresh: false) == 0)
+        var focus = VolumeFocusState()
+        assert(focus.update(wantsFocus: false, generation: 1) == nil)
+        assert(focus.update(wantsFocus: true, generation: 1)?.settlingSeconds == 0)
+        for _ in 0..<120 { // Clock renders must not repeat native focus calls.
+            assert(focus.update(wantsFocus: true, generation: 1) == nil)
+        }
+        assert(focus.update(wantsFocus: false, generation: 1)?.resignBeforeFocus == false)
+        assert(focus.update(wantsFocus: true, generation: 1)?.settlingSeconds == 0)
+
+        // Manual refresh cycles the retained widget once. If selection changes
+        // before completion, the next page return remains immediate.
+        let manual = focus.update(wantsFocus: true, generation: 2)!
+        assert(manual.resignBeforeFocus && manual.settlingSeconds == 0.25)
+        assert(focus.update(wantsFocus: true, generation: 2) == nil)
+        assert(focus.update(wantsFocus: false, generation: 2)?.settlingSeconds == 0)
+        assert(focus.update(wantsFocus: true, generation: 2)?.settlingSeconds == 0)
+
+        // A new background setup also cycles focus; its ordinary inactive/active
+        // and page transitions do not restart that cycle or add another delay.
+        assert(focus.update(wantsFocus: false, generation: 2) != nil)
+        let background = focus.update(wantsFocus: true, generation: 3)!
+        assert(background.resignBeforeFocus && background.settlingSeconds == 0.25)
+        assert(focus.update(wantsFocus: true, generation: 3) == nil)
+        assert(focus.update(wantsFocus: false, generation: 3)?.settlingSeconds == 0)
+        assert(focus.update(wantsFocus: true, generation: 3)?.settlingSeconds == 0)
 
         var activation = VolumeActivationState()
         assert(!activation.hasControl)
@@ -63,7 +77,7 @@
             assert(activation.begin(backgroundRevision: 0, isActive: active, timerIsSelected: selected) == nil)
         }
         assert(!activation.isCurrent(backgroundRevision: 1))
-        assert(activation.hasControl) // Existing display survives until replacement.
+        assert(activation.hasControl) // Existing widget survives the background return.
         assert(activation.begin(backgroundRevision: 1, isActive: false, timerIsSelected: true) == nil)
         assert(activation.begin(backgroundRevision: 1, isActive: true, timerIsSelected: false) == nil)
         let returning = activation.begin(backgroundRevision: 1, isActive: true, timerIsSelected: true)!
@@ -74,6 +88,6 @@
         assert(!activation.cancel(returning))
         assert(activation.complete(latest))
         assert(activation.isCurrent(backgroundRevision: 2))
-        print("PASS: manual refresh delay, immediate media return, staged startup/background return, cancellation, no wrist/page churn")
+        print("PASS: retained-widget focus cycles, immediate media return, no per-frame calls, staged setup and cancellation")
     }
 }

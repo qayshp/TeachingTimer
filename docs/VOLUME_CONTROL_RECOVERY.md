@@ -1,5 +1,35 @@
 # Native volume-control recovery
 
+## Retain the native widget — build 13
+
+The SE 3 Simulator reproduced the input/feedback part of the physical report:
+the native volume ring responded to Crown input on launch, stopped after
+Home → reopen, stayed unresponsive after refresh, then responded after a media
+round trip. This does not establish end-to-end iPhone audio-volume control.
+See [reproduction and comparisons](SIMULATOR_VOLUME_FOCUS.md).
+
+A resign/refocus cycle on the already affected replacement did not restore its
+response. Retaining the original widget through background return did. Build 13
+therefore removes the SwiftUI identity changes that recreated the volume widget
+on background setup and manual refresh. Initial one-second staging remains;
+background return still waits for the active timer page before refocusing.
+
+Manual refresh and completed background setup cycle `resignFocus()` then one
+`focus()` call after 250 ms on the same widget. Newer selection/request state or
+removal invalidates delayed work. Ordinary media-to-timer returns and Class-sheet
+dismissals keep the immediate next-main-queue path. No per-frame or periodic
+focus retries, hidden media visits, custom Crown bindings, or volume setters are
+introduced. Runtime, class, landmarks, and media-reload policy are unchanged.
+
+The refresh checkmark means the API call returned, not that sound or actual focus
+was verified. Build 13's journal uses `volumeRequestGeneration` for request
+revisions and `controlID` for native widget identity; it no longer conflates
+requests with replacements. See [event meanings](INTERFACE_DIAGNOSTICS.md).
+
+This is a tested Simulator focus mitigation pending physical validation. It is
+not a proven cure for the separate unavailable-endpoint or silencing incidents.
+The build 11/12 behavior and prior validation below are historical comparisons.
+
 ## Focus after manual refresh — build 12
 
 The first focus request on a manually replaced volume widget now waits 250 ms
