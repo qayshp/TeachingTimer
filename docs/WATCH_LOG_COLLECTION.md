@@ -1,5 +1,9 @@
 # Physical Watch diagnostic collection
 
+[Bounded journal-copy and installation commands](DIAGNOSTIC_TOOLS.md) preserve
+per-attempt evidence and report completion before offline analysis. System-log
+capture remains a separate operation.
+
 The intermittent developer-tunnel failure is filed as **FB25329139**. Its
 October 26 evidence includes failure while the Watch was already unlocked,
 fully awake, and on the laptop, followed by success on retry. See

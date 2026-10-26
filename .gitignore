@@ -37,3 +37,7 @@ DerivedData*/
 
 # Keep asset catalogs, Info.plist, entitlements, shared workspace settings,
 # shared schemes, and Package.resolved in source control when present.
+
+# Python diagnostic-tool bytecode
+__pycache__/
+*.py[cod]

@@ -23,6 +23,8 @@ jobs:
         run: xcodebuild -version
       - name: Deterministic model and controller checks
         run: sh scripts/check.sh
+      - name: Diagnostic tooling checks (no devices)
+        run: sh scripts/check-tools.sh
       - name: Build for Watch Simulator
         run: >-
           xcodebuild -project TeachingTimer.xcodeproj -scheme TeachingTimer

@@ -106,6 +106,7 @@ Apple development team and a unique bundle identifier under Signing & Capabiliti
 No signing keys or provisioning profiles belong in the repository.
 
 ```sh
+sh scripts/check-tools.sh    # Offline diagnostic tooling checks
 sh scripts/check.sh          # Eleven deterministic model/controller/diagnostic/geometry suites
 sh scripts/check-archive.sh  # Unsigned archive must actually contain the app
 ```
@@ -133,6 +134,9 @@ validation, and the original physical trigger is unknown. See the
 In an October 22 physical-class report, the media page stayed completely black
 and its Crown volume was unusable, while the timer and timer-page volume worked
 with Apple Music on iPhone → AirPlay → WiiM. No cause has been established.
+
+For bounded journal copying and verified installation, see
+[local diagnostic tools](docs/DIAGNOSTIC_TOOLS.md).
 
 ## Runtime, privacy, and limitations
 
