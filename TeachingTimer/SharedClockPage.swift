@@ -14,12 +14,10 @@ struct SharedClockPage: View {
     @ObservedObject var classStore: ClassStore
     @ObservedObject var landmarks: LandmarkController
     let retireOldClass: () -> Bool
-    let reloadMedia: () -> Void
     let crownIsActive: Bool
     let volumeBackgroundRevision: Int
     var showsClassProgress = false
     @State private var classSheet: ClassSheetRequest?
-    @State private var reloadMediaAfterDismiss = false
     @AppStorage("countVibrationsEnabled") private var countVibrationsEnabled = true
     @AppStorage("showRemainingMinutes") private var showRemainingMinutes = false
     @Environment(\.isLuminanceReduced) private var dimmed
@@ -77,13 +75,8 @@ struct SharedClockPage: View {
         }
         .ignoresSafeArea()
         .containerBackground(.black, for: .tabView)
-        .sheet(item: $classSheet, onDismiss: {
-            guard reloadMediaAfterDismiss else { return }
-            reloadMediaAfterDismiss = false
-            reloadMedia()
-        }) { _ in
-            ClassControlsView(session: session, classStore: classStore, landmarks: landmarks,
-                              reloadMedia: { reloadMediaAfterDismiss = true })
+        .sheet(item: $classSheet) { _ in
+            ClassControlsView(session: session, classStore: classStore, landmarks: landmarks)
         }
 #if DEBUG
         .onAppear {
@@ -188,7 +181,6 @@ private struct ClassControlsView: View {
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
     @ObservedObject var landmarks: LandmarkController
-    let reloadMedia: () -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var mode: Mode = .summary
     @State private var start = Date()
@@ -300,15 +292,6 @@ private struct ClassControlsView: View {
                         Text("Only this class. The default stays 60 minutes at the suggested start.").font(.caption)
                         classAction("Default schedule", icon: "arrow.uturn.backward") { mode = .create }
                     }
-                }
-                Section("Media") {
-                    classAction("Reload media", icon: "arrow.clockwise") {
-                        reloadMedia()
-                        dismiss()
-                    }
-                    .accessibilityIdentifier("reload-media")
-                    Text("Reopens media controls. Class and count keep running.")
-                        .font(.caption)
                 }
             }
             // A different task starts at its first row, not the summary's old

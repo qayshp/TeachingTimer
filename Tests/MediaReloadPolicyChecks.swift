@@ -36,21 +36,6 @@ struct MediaReloadPolicyChecks {
         assert(policy.didSelectMedia() == .pageEntry)
         assert(policy.didBecomeActive(mediaIsSelected: true) == nil)
 
-        // Manual recovery from the Class sheet also selects media. It must
-        // replace once, not again when the selection's onChange is delivered.
-        assert(policy.manualReload(willSelectMedia: true) == .manual)
-        assert(policy.didSelectMedia() == nil)
-        assert(policy.didSelectMedia() == .pageEntry)
-        assert(policy.manualReload(willSelectMedia: false) == .manual)
-        assert(policy.didSelectMedia() == .pageEntry)
-
-        policy.didEnterBackground()
-        assert(policy.manualReload(willSelectMedia: true) == .manual)
-        assert(policy.didBecomeActive(mediaIsSelected: true) == nil)
-        assert(policy.didSelectMedia() == nil)
-        policy.didEnterBackground()
-        assert(policy.didBecomeActive(mediaIsSelected: true) == .backgroundReturn)
-
-        print("PASS: media entry/foreground refresh, wrist-wake stability, timer deferral, manual deduplication and callback ordering")
+        print("PASS: media entry/foreground refresh, wrist-wake stability, timer deferral and callback ordering")
     }
 }

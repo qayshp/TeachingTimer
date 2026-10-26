@@ -56,10 +56,11 @@ Tap **Class**, at the upper left, to:
 - Turn **Count vibrations** off for future visual-only counts, or enable the
   optional **Minutes left** label. Both count modes use the same arc timing.
 - **End class** with confirmation, clearing timing and stopping session/count.
-- **Reload media** as a manual fallback. Media controls now refresh automatically
-  whenever you swipe into that page, or return from the background with media
-  selected. If it goes black while open, swipe to the timer and back, or scroll
-  to **Media → Reload media** in Class options. Class, session, and count continue.
+
+Media controls refresh automatically when you swipe into their page, or return
+from the background with media selected. If the page goes black while open,
+swipe to the timer and back. Class, session, and count continue; no Class-menu
+action is needed.
 
 The suggested start uses the previous quarter-hour at minutes 0–12 after it and
 the next quarter-hour at minutes 13–14. Check it when preparing early: 1:10

@@ -1,5 +1,14 @@
 # Teaching Timer — current verification
 
+## Build 16 — simpler Class menu
+
+Removed the redundant Reload media action and its explanatory section from all
+Class-menu modes, along with its unused callback and manual-refresh policy path.
+Automatic media refresh on page entry and eligible background return remains;
+ordinary wrist wakes still do not reload it. Timer volume recovery is unchanged.
+This build has not been installed on the physical Watch; build 15 was subsequently
+installed and launched successfully after the October 26 review below.
+
 ## October 26, 2026 — builds 13–15
 
 Build 15 makes class actions explicit in monochrome: outlined buttons with icons,

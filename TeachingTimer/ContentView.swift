@@ -53,7 +53,6 @@ struct ContentView: View {
                     classStore: classStore,
                     landmarks: landmarks,
                     retireOldClass: { retireOldClass() },
-                    reloadMedia: reloadMedia,
                     crownIsActive: page == .classProgress,
                     volumeBackgroundRevision: volumeBackgroundRevision,
                     showsClassProgress: true
@@ -64,7 +63,7 @@ struct ContentView: View {
 
                 NowPlayingView()
                     // Recreate only the native media host on bounded entry/return
-                    // events or a manual request, never on ordinary wrist wakes.
+                    // events, never on ordinary wrist wakes.
                     // The timer page, volume adapter, and shared state retain identity.
                     .id(mediaViewGeneration)
                     .containerBackground(.black, for: .tabView)
@@ -165,17 +164,12 @@ struct ContentView: View {
         Date(timeIntervalSince1970: floor(Date().timeIntervalSince1970) + 1)
     }
 
-    private func reloadMedia() {
-        recreateMedia(reason: mediaReloadPolicy.manualReload(willSelectMedia: page != .nowPlaying))
-        page = .nowPlaying
-    }
-
     private func recreateMedia(reason: MediaReloadPolicy.Reason) {
         let previousGeneration = mediaViewGeneration
         mediaViewGeneration &+= 1
         recordInterfaceEvent("media_reload_requested", details: [
             "source": reason.rawValue,
-            "refreshMode": reason == .manual ? "manual" : "automatic",
+            "refreshMode": "automatic",
             "failureDetected": "unobserved",
             "previousMediaViewGeneration": String(previousGeneration),
             "landmarksActive": String(landmarks.isActive),

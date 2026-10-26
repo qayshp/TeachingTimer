@@ -1,5 +1,10 @@
 # Native Now Playing service-loss reproduction
 
+Current UI, build 16: the redundant Class-menu Reload media action has been
+removed. Swipe to the timer and back to request a fresh native media view;
+automatic page-entry/background-return recovery is unchanged. References to
+manual reload below document the earlier experiments and builds.
+
 October 24, 2026. Apple Feedback **FB25305069**:
 “watchOS 27 NowPlayingView stays black after native view service ends;
 force-close restores it.” Submitted under Developer Technologies & SDKs →

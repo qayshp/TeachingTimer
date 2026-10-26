@@ -9,11 +9,9 @@ struct MediaReloadPolicy {
     enum Reason: String {
         case pageEntry = "page_entry"
         case backgroundReturn = "background_return"
-        case manual = "class_options"
     }
 
     private var needsForegroundRefresh = false
-    private var manualEntryAlreadyRefreshed = false
 
     mutating func didEnterBackground() {
         needsForegroundRefresh = true
@@ -22,22 +20,12 @@ struct MediaReloadPolicy {
     mutating func didBecomeActive(mediaIsSelected: Bool) -> Reason? {
         guard needsForegroundRefresh else { return nil }
         needsForegroundRefresh = false
-        return mediaIsSelected && !manualEntryAlreadyRefreshed ? .backgroundReturn : nil
+        return mediaIsSelected ? .backgroundReturn : nil
     }
 
     mutating func didSelectMedia() -> Reason? {
         // A fresh page entry also satisfies any pending foreground refresh.
         needsForegroundRefresh = false
-        if manualEntryAlreadyRefreshed {
-            manualEntryAlreadyRefreshed = false
-            return nil
-        }
         return .pageEntry
-    }
-
-    mutating func manualReload(willSelectMedia: Bool) -> Reason {
-        needsForegroundRefresh = false
-        manualEntryAlreadyRefreshed = willSelectMedia
-        return .manual
     }
 }
