@@ -1,5 +1,11 @@
 # Physical Watch diagnostic collection
 
+The intermittent developer-tunnel failure is filed as **FB25329139**. Its
+October 26 evidence includes failure while the Watch was already unlocked,
+fully awake, and on the laptop, followed by success on retry. See
+[Apple feedback status](APPLE_FEEDBACK.md). This does not establish the cause
+of the separate direct-collector error below.
+
 ## Meaning of the direct collection error
 
 The administrator-authorized `/usr/bin/log collect --device-udid …` attempt

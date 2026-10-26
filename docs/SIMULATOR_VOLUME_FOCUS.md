@@ -1,5 +1,8 @@
 # Native volume focus after Home return
 
+Filed October 26 as **FB25329167**, with source comparisons, Simulator captures,
+and focused physical logs. See [Apple feedback status](APPLE_FEEDBACK.md).
+
 On October 25, 2026, the SE 3 Simulator reproduced the **input/visual-feedback**
 part of the build 12 physical-Watch report. It did not establish actual paired
 iPhone volume, route, or audibility. Build 13 avoids the reproduced failure by

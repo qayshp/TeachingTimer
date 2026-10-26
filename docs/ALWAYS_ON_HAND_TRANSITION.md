@@ -1,5 +1,9 @@
 # Seconds-hand transition investigation — October 23, 2026
 
+Filed October 26 as **FB25329087**, with the standalone probe, recordings,
+frame analysis, and comparison notes. See [Apple feedback status](APPLE_FEEDBACK.md)
+for the remaining capture gaps. No seconds-hand fix is claimed.
+
 ## Report and scope
 
 After the 2 p.m. class, the user reported a brief apparent backward step of the

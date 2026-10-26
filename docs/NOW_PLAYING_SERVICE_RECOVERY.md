@@ -1,5 +1,9 @@
 # Native Now Playing service-loss reproduction
 
+October 26 follow-ups added view-only recovery trials, automatic refresh,
+physical observations, and the zero-volume event ordering. All attachment
+uploads completed. See [Apple feedback status](APPLE_FEEDBACK.md).
+
 Current UI, build 16: the redundant Class-menu Reload media action has been
 removed. Swipe to the timer and back to request a fresh native media view;
 automatic page-entry/background-return recovery is unchanged. References to

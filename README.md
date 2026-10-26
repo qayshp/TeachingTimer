@@ -9,6 +9,8 @@ Built around real teaching on Apple Watch SE 3. Still experimental—especially
 timed vibrations and automatic runtime renewal. Keep a backup timing method
 until you have tested a build in your own teaching conditions.
 
+Apple reports and remaining evidence gaps: [feedback status](docs/APPLE_FEEDBACK.md).
+
 ## Quick start
 
 1. Tap **Start class**, check the proposed time range, then tap the solid white

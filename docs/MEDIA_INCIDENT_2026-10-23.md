@@ -120,8 +120,10 @@ This follow-up made no behavioral changes or fresh physical-device requests.
 
 **Reload media is not a proven silencing fix.** It deliberately leaves the
 companion volume control intact. Its two successful rendering recoveries do not
-establish volume recovery. The new USB/volume correlation is documented here;
-it has not yet been added as a follow-up to Apple report FB25305069.
+establish volume recovery. The USB/volume correlation and focused excerpts were
+added to Apple report FB25305069 on October 26, preserving the ordering and
+uncertainty. Silencing also has a separate unsubmitted Feedback Assistant draft;
+see [Apple feedback status](APPLE_FEEDBACK.md).
 
 Private query outputs and a bounded journal excerpt are under ignored
 `work/support/2026-10-24-volume-correlation/`. Raw route identifiers, track
