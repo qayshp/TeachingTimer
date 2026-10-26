@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: MPL-2.0
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key><string>net.qays.TeachingTimer.VolumeProbe</string>
+    <key>CFBundleExecutable</key><string>NativeVolumeProbe</string>
+    <key>CFBundleName</key><string>Volume Probe</string>
+    <key>CFBundleDisplayName</key><string>Volume Probe</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>1.0</string>
+    <key>CFBundleVersion</key><string>1</string>
+    <key>MinimumOSVersion</key><string>26.0</string>
+    <key>UIDeviceFamily</key><array><integer>4</integer></array>
+    <key>WKApplication</key><true/>
+    <key>WKWatchOnly</key><true/>
+    <key>LSRequiresIPhoneOS</key><true/>
+</dict>
+</plist>
