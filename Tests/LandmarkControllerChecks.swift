@@ -75,10 +75,10 @@ final class WKInterfaceDevice {
         // delay submits the pulse and preserves later absolute group anchors.
         model.start(); await drain()
         clock.advanceNext(lateness: 2); await drain()
-        assert(model.isActive && !model.hapticsStopped)
+        assert(model.isActive)
         let beforeLate = device.submissions.count
         clock.advanceNext(lateness: 0.4); await drain()
-        assert(model.isActive && !model.hapticsStopped && device.submissions.count == beforeLate + 1)
+        assert(model.isActive && device.submissions.count == beforeLate + 1)
         assert(model.result == .running)
         assert(LandmarkController(defaults: defaults, journal: journal).result == .interrupted)
         let originalAngle = model.startAngle
@@ -105,7 +105,7 @@ final class WKInterfaceDevice {
         clock.advanceNext(); await drain() // group 2 is obsolete too
         assert(device.submissions.count == beforeSuspension)
         clock.advanceNext(); await drain() // group 3 can still fit before 40s
-        assert(device.submissions.count == beforeSuspension + 1 && !model.hapticsStopped)
+        assert(device.submissions.count == beforeSuspension + 1)
         clock.advanceNext(); await drain()
         assert(abs(seconds(longAnchor.duration(to: clock.now)) - 35.8) < 0.000001)
         model.cancel(); clock.advanceNext(); await drain()
@@ -113,7 +113,7 @@ final class WKInterfaceDevice {
         for reason in ["user_cancelled", "new_class_reset"] {
             model.start(); await drain()
             clock.advanceNext(lateness: 0.41); await drain()
-            assert(model.isActive && !model.hapticsStopped)
+            assert(model.isActive)
             model.cancel(reason: reason)
             assert(!model.isActive && model.progress == 0)
             assert(!model.frame(at: Date()).isVisible)
@@ -140,12 +140,17 @@ final class WKInterfaceDevice {
         // it retains the same 60-second arc and 64.8-second visual lifetime.
         let beforeSilent = device.submissions.count
         model.start(configuration: .init(hapticsEnabled: false)); await drain()
-        assert(model.isActive && !model.hapticsStopped && model.nextScheduledBeat == nil)
+        assert(model.isActive && model.nextScheduledBeat == nil)
         assert(model.frame(at: Date().addingTimeInterval(30)).isVisible)
         clock.advanceNext(); await drain()
         assert(!model.isActive && model.result == .completed)
         assert(device.submissions.count == beforeSilent)
         assert(defaults.string(forKey: "landmarkResult.v2") == "completed")
+        // Legacy saved outcomes remain readable after removing unreachable live state.
+        defaults.set("completedWithoutVibrations", forKey: "landmarkResult.v2")
+        assert(LandmarkController(defaults: defaults, journal: journal).result == .completedWithoutVibrations)
+        defaults.set("vibrationsStopped", forKey: "landmarkResult.v2")
+        assert(LandmarkController(defaults: defaults, journal: journal).result == .interrupted)
         await journal.flush()
         let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
         let events = try decoder.decode([LandmarkDiagnostics.Event].self, from: Data(contentsOf: journalURL))

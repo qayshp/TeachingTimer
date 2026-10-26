@@ -54,6 +54,7 @@ import OSLog
 
 @MainActor
 final class LandmarkController: ObservableObject {
+    // Legacy values remain decodable, even though new runs no longer emit them.
     enum Result: String {
         case ready, running, completed, stopped, vibrationsStopped, completedWithoutVibrations, interrupted
         var message: String {
@@ -76,8 +77,6 @@ final class LandmarkController: ObservableObject {
         var beat: WKHapticType = .directionUp
     }
     @Published private(set) var isActive = false
-    /// Kept for reading diagnostics from older builds; lateness no longer disables haptics.
-    private(set) var hapticsStopped = false
     @Published private(set) var result: Result = .ready
     var lastResult: String { result.message }
     var diagnosticContext: () -> [String: String] = { [:] }
@@ -156,7 +155,6 @@ final class LandmarkController: ObservableObject {
         let schedule = configuration.schedule
         nextScheduledBeat = configuration.hapticsEnabled ? wallAnchor.addingTimeInterval(schedule.intervalSeconds) : nil
         isActive = true
-        hapticsStopped = false
         setResult(.running)
         let diagnosticRun = UUID().uuidString
         runID = diagnosticRun
@@ -261,7 +259,6 @@ final class LandmarkController: ObservableObject {
         details["runID"] = runID ?? "none"
         details["appStateCode"] = String(WKApplication.shared().applicationState.rawValue)
         details["groupsDelivered"] = String(beatsDelivered)
-        details["hapticsStopped"] = String(hapticsStopped)
         if let anchor { details["elapsedSeconds"] = String(Self.seconds(anchor.duration(to: now()))) }
         journal.record(event, details: details, flush: flush)
     }
@@ -269,9 +266,8 @@ final class LandmarkController: ObservableObject {
     func cancel(reason: String = "user_cancelled", extra: [String: String] = [:]) {
         guard isActive else { return }
         record("landmark_ended", extra: extra.merging(["reason": reason]) { _, value in value }, flush: true)
-        setResult(reason == "completed" ? (hapticsStopped ? .completedWithoutVibrations : .completed) : .stopped)
+        setResult(reason == "completed" ? .completed : .stopped)
         task?.cancel(); task = nil; anchor = nil; isActive = false; nextScheduledBeat = nil
-        hapticsStopped = false
         runID = nil
         log.notice("Landmarks ended: \(reason, privacy: .public)")
     }

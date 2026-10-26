@@ -60,12 +60,7 @@ struct SharedClockPage: View {
                 )
                     .position(layout.volumeCenter)
                 actions(layout: layout).position(x: geometry.size.width / 2, y: layout.actionY)
-                HStack(spacing: 3) {
-                    if landmarks.hapticsStopped {
-                        Image(systemName: "hand.raised.slash").frame(width: 13).accessibilityHidden(true)
-                    }
-                    Text(faceStatus).lineLimit(1).minimumScaleFactor(0.7)
-                }
+                Text(faceStatus).lineLimit(1).minimumScaleFactor(0.7)
                     .font(.system(size: min(labelSize, 15)))
                     .frame(width: layout.controlsWidth, height: 18)
                     .position(layout.statusCenter).allowsHitTesting(false)
@@ -98,7 +93,6 @@ struct SharedClockPage: View {
     }
 
     private var faceStatus: String {
-        if landmarks.hapticsStopped { return "Vibrations off" }
         if session.phase == .starting { return "Starting…" }
         if session.phase == .expiring { return session.statusText }
         if classStore.context != nil && !session.isActive { return "Session off" }
@@ -146,7 +140,7 @@ struct SharedClockPage: View {
                 }
                 .buttonStyle(.plain).accessibilityIdentifier("metronome-toggle")
                 .accessibilityLabel(landmarks.isActive ? "Stop count" : "Start one-minute count")
-                .accessibilityValue(landmarks.hapticsStopped ? "Counting without vibrations" : (landmarks.isActive ? "Counting" : "Ready"))
+                .accessibilityValue(landmarks.isActive ? (landmarks.configuration.hapticsEnabled ? "Counting" : "Visual count") : "Ready")
                 .accessibilityHint("Six ten-second landmarks. Tap again to stop.")
                 if !session.isActive {
                     Button { guard !retireOldClass() else { return }; session.start() } label: {

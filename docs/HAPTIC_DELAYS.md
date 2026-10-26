@@ -48,3 +48,14 @@ arc was visible while locked. This verifies scheduling and native submissions,
 not physical vibration delivery, strength, or accurate counting while teaching.
 
 Raw evidence is private under `work/support/2026-10-26-usability/`.
+
+## Build 18 cleanup
+
+Removed the always-false live `hapticsStopped` property, its unreachable warning
+branch, and the impossible new-run completion branch. Legacy saved result codes
+(`vibrationsStopped`, `completedWithoutVibrations`) remain readable. An old
+in-progress stopped-vibration result restores as interrupted; a completed legacy
+result retains its explanation. New visual-only counts keep their existing timing
+and now use the explicit VoiceOver value “Visual count.” No scheduling, pulse type,
+spacing, media focus, or geometry changed. Controller checks cover legacy decoding
+as well as late submissions, cancellation and restart isolation.
