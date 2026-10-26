@@ -37,8 +37,10 @@ The initial acknowledgement is distinct from the `.directionUp` timing pulses.
 Pulses within a group are 0.8 seconds apart. The sixth group begins at 60 seconds,
 its last pulse is scheduled at 64 seconds, and the arc's scheduled endpoint is
 64.8 seconds. watchOS can deliver completion callbacks later.
-If a pulse is at least 0.4 seconds late, further vibrations stop rather than
-catch up in a burst. **Vibrations off** appears, but the arc continues on time.
+Build 14 removes the run-wide late-haptic shutdown. Late pulses continue with
+spacing; obsolete groups are skipped rather than replayed across the next
+landmark or after completion. The arc keeps its original timing. See
+[late-pulse behavior and Simulator checks](docs/HAPTIC_DELAYS.md).
 
 ## Class options
 

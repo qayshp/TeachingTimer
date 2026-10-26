@@ -92,9 +92,6 @@ struct ContentView: View {
             .onChange(of: landmarks.isActive) { _, _ in
                 context.invalidateTimelineContent()
             }
-            .onChange(of: landmarks.hapticsStopped) { _, _ in
-                context.invalidateTimelineContent()
-            }
             .onChange(of: classStore.context) { _, _ in
                 context.invalidateTimelineContent()
                 session.synchronizeClass(classStore.context)

@@ -13,7 +13,7 @@ struct LandmarkSchedule {
 
     var duration: Double { intervalSeconds * Double(landmarkCount) }
     var completionOffset: Double { pulseOffset(landmark: landmarkCount, pulse: landmarkCount) }
-    var maximumLateness: Double { pulseSpacing / 2 }
+    var lateDiagnosticThreshold: Double { pulseSpacing / 2 }
     var isValid: Bool {
         intervalSeconds.isFinite && intervalSeconds > 0 &&
         (1...6).contains(landmarkCount) && pulseSpacing.isFinite &&
@@ -76,9 +76,8 @@ final class LandmarkController: ObservableObject {
         var beat: WKHapticType = .directionUp
     }
     @Published private(set) var isActive = false
-    /// A visual run can outlive haptic delivery. Only explicit cancel/reset or
-    /// the original completion deadline ends the visual run.
-    @Published private(set) var hapticsStopped = false
+    /// Kept for reading diagnostics from older builds; lateness no longer disables haptics.
+    private(set) var hapticsStopped = false
     @Published private(set) var result: Result = .ready
     var lastResult: String { result.message }
     var diagnosticContext: () -> [String: String] = { [:] }
@@ -163,7 +162,8 @@ final class LandmarkController: ObservableObject {
         runID = diagnosticRun
         record("landmark_started", extra: ["intervalSeconds": String(schedule.intervalSeconds),
             "landmarkCount": String(schedule.landmarkCount), "pulseSpacing": String(schedule.pulseSpacing),
-            "lateThresholdSeconds": String(schedule.maximumLateness), "hapticsEnabled": String(configuration.hapticsEnabled)])
+            "lateDiagnosticThresholdSeconds": String(schedule.lateDiagnosticThreshold),
+            "latePolicy": "continue_spaced_skip_obsolete_groups", "hapticsEnabled": String(configuration.hapticsEnabled)])
         if configuration.hapticsEnabled {
         let acknowledgementElapsed = anchor.duration(to: now()).components
         let acknowledgementSeconds = Double(acknowledgementElapsed.seconds) + Double(acknowledgementElapsed.attoseconds) / 1e18
@@ -176,26 +176,42 @@ final class LandmarkController: ObservableObject {
         }
         log.notice("Landmarks activated; first group in \(schedule.intervalSeconds) seconds")
         task = Task { [weak self] in
-            pulseGroups: for index in 1...schedule.landmarkCount {
+            var lastSubmission: ContinuousClock.Instant?
+            for index in 1...schedule.landmarkCount {
                 guard configuration.hapticsEnabled else { break }
+                var submittedGroup = true
                 for pulse in 0..<index {
-                    let deadline = anchor.advanced(by: .seconds(schedule.pulseOffset(landmark: index, pulse: pulse)))
+                    let offset = schedule.pulseOffset(landmark: index, pulse: pulse)
+                    let scheduled = anchor.advanced(by: .seconds(offset))
+                    // Keep absolute landmark anchors, but never compress delayed
+                    // pulses into a burst. A delayed submission shifts spacing only.
+                    let deadline = max(scheduled, lastSubmission?.advanced(by: .seconds(schedule.pulseSpacing)) ?? scheduled)
                     do { try await self?.sleep(until: deadline) } catch { return }
                     guard let self, !Task.isCancelled, self.isActive, self.runID == diagnosticRun else { return }
-                    // Never compress overdue pulses into a misleading catch-up burst.
-                    let lateness = Self.seconds(deadline.duration(to: self.now()))
-                    guard lateness < schedule.maximumLateness else {
-                        self.log.warning("Landmark schedule missed; stopping haptics while arc continues")
-                        self.hapticsStopped = true
-                        self.nextScheduledBeat = nil
-                        self.setResult(.vibrationsStopped)
-                        self.record("landmark_haptics_stopped", extra: ["reason": "missed_deadline", "landmark": String(index),
-                            "pulse": String(pulse + 1), "count": String(index),
-                            "scheduledElapsed": String(schedule.pulseOffset(landmark: index, pulse: pulse)),
-                            "actualElapsed": String(Self.seconds(anchor.duration(to: self.now()))),
-                            "lateness": String(lateness), "lateThresholdSeconds": String(schedule.maximumLateness)], flush: true)
-                        break pulseGroups
+                    let instant = self.now()
+                    let actual = Self.seconds(anchor.duration(to: instant))
+                    let lateness = actual - offset
+                    // Do not replay an obsolete group across the next landmark
+                    // or after the count's original completion. Later groups keep
+                    // their original deadlines and are still attempted.
+                    let groupEnd = index < schedule.landmarkCount
+                        ? Double(index + 1) * schedule.intervalSeconds : schedule.completionOffset
+                    let remaining = Double(index - pulse - 1) * schedule.pulseSpacing
+                    guard actual + remaining < groupEnd else {
+                        submittedGroup = false
+                        self.record("landmark_group_skipped", extra: ["reason": "group_window_elapsed",
+                            "landmark": String(index), "pulse": String(pulse + 1), "count": String(index),
+                            "scheduledElapsed": String(offset), "actualElapsed": String(actual),
+                            "lateness": String(lateness), "windowEnd": String(groupEnd)], flush: true)
+                        break
                     }
+                    if lateness >= schedule.lateDiagnosticThreshold {
+                        self.record("landmark_pulse_late", extra: ["landmark": String(index),
+                            "pulse": String(pulse + 1), "count": String(index),
+                            "scheduledElapsed": String(offset), "actualElapsed": String(actual),
+                            "lateness": String(lateness), "action": "submit_and_continue"])
+                    }
+                    lastSubmission = instant
                     let diagnosticElapsed = anchor.duration(to: self.now()).components
                     let diagnosticSeconds = Double(diagnosticElapsed.seconds) + Double(diagnosticElapsed.attoseconds) / 1e18
                     self.log.notice("haptic_submit run=\(diagnosticRun, privacy: .public) kind=landmark elapsed=\(diagnosticSeconds) landmark=\(index) pulse=\(pulse + 1) count=\(index) haptic=\(configuration.beat.rawValue)")
@@ -210,12 +226,12 @@ final class LandmarkController: ObservableObject {
                     self.log.notice("Landmark \(index), pulse \(pulse + 1)")
                 }
                 guard let self, !Task.isCancelled else { return }
-                self.beatsDelivered = index
+                if submittedGroup { self.beatsDelivered += 1 }
                 self.nextScheduledBeat = index < schedule.landmarkCount
                     ? wallAnchor.addingTimeInterval(schedule.intervalSeconds * Double(index + 1)) : nil
             }
-            // Same visual lifetime even when haptics stopped: full at 60s,
-            // finished at 64.8s. No re-anchoring and no catch-up pulses.
+            // Original visual lifetime: full at 60s, finished at 64.8s.
+            // No re-anchoring, run-wide timeout, or compressed catch-up pulses.
             let end = schedule.completionOffset
             do { try await self?.sleep(until: anchor.advanced(by: .seconds(end))) } catch { return }
             guard let self, !Task.isCancelled, self.runID == diagnosticRun else { return }

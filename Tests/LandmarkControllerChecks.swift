@@ -27,12 +27,15 @@ final class WKInterfaceDevice {
     }
     func advanceNext(lateness: Double = 0) {
         let next = waits.removeFirst()
-        now = next.0.advanced(by: .seconds(lateness))
+        now = max(now, next.0.advanced(by: .seconds(lateness)))
         next.1.resume()
     }
 }
 
 @main struct LandmarkControllerChecks {
+    static func seconds(_ duration: Duration) -> Double {
+        Double(duration.components.seconds) + Double(duration.components.attoseconds) / 1e18
+    }
     @MainActor static func drain() async { for _ in 0..<30 { await Task.yield() } }
     @MainActor static func main() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -68,51 +71,70 @@ final class WKInterfaceDevice {
             model.cancel(reason: "new_class_reset")
             clock.advanceNext(); await drain()
         }
-        // Exact lateness boundary stops haptics only; below it submits a beat.
+        // Former 0.4-second cutoff is diagnostic only. Even a two-second
+        // delay submits the pulse and preserves later absolute group anchors.
         model.start(); await drain()
-        clock.advanceNext(lateness: 0.399); await drain()
-        assert(model.isActive)
+        clock.advanceNext(lateness: 2); await drain()
+        assert(model.isActive && !model.hapticsStopped)
         let beforeLate = device.submissions.count
         clock.advanceNext(lateness: 0.4); await drain()
-        assert(model.isActive && model.hapticsStopped && device.submissions.count == beforeLate)
-        assert(model.result == .vibrationsStopped)
+        assert(model.isActive && !model.hapticsStopped && device.submissions.count == beforeLate + 1)
+        assert(model.result == .running)
         assert(LandmarkController(defaults: defaults, journal: journal).result == .interrupted)
         let originalAngle = model.startAngle
         let progressAtFailure = model.progress
-        // Exercise the production drawing entry point, not just its underlying
-        // elapsed-time getter: silent runs must still supply visible frames.
         let frameAtFailure = model.frame(at: Date())
         let futureFrame = model.frame(at: Date().addingTimeInterval(10))
         assert(frameAtFailure.isVisible && futureFrame.isVisible)
         assert(abs(frameAtFailure.progress - progressAtFailure) < 0.001)
         assert(abs(futureFrame.progress - (progressAtFailure + 10.0 / 60)) < 0.001)
         assert(!model.frame(at: Date().addingTimeInterval(100)).isVisible)
-        clock.now = clock.now.advanced(by: .seconds(10))
-        assert(model.progress > progressAtFailure && model.startAngle == originalAngle)
-        assert(device.submissions.count == beforeLate) // no more pulse deadlines queued
-        clock.advanceNext(); await drain() // original 64.8s completion, not a new minute
-        assert(!model.isActive && model.result == .completedWithoutVibrations)
-        assert(device.submissions.count == beforeLate)
-        // Both explicit end actions also cancel a silent visual run immediately.
+        let previousPulse = clock.now
+        clock.advanceNext(); await drain()
+        assert(previousPulse.duration(to: clock.now) >= .seconds(0.8))
+        assert(model.startAngle == originalAngle)
+        model.cancel(); clock.advanceNext(); await drain()
+
+        // After suspension past several groups, skip obsolete groups but do not
+        // disable the rest of the run or submit a burst of overdue pulses.
+        model.start(); await drain()
+        let longAnchor = clock.now
+        let beforeSuspension = device.submissions.count
+        clock.advanceNext(lateness: 25); await drain() // group 1 wakes at 35s
+        assert(device.submissions.count == beforeSuspension)
+        clock.advanceNext(); await drain() // group 2 is obsolete too
+        assert(device.submissions.count == beforeSuspension)
+        clock.advanceNext(); await drain() // group 3 can still fit before 40s
+        assert(device.submissions.count == beforeSuspension + 1 && !model.hapticsStopped)
+        clock.advanceNext(); await drain()
+        assert(abs(seconds(longAnchor.duration(to: clock.now)) - 35.8) < 0.000001)
+        model.cancel(); clock.advanceNext(); await drain()
+        // Explicit Stop and Reset still cancel immediately, even after lateness.
         for reason in ["user_cancelled", "new_class_reset"] {
             model.start(); await drain()
             clock.advanceNext(lateness: 0.41); await drain()
-            assert(model.isActive && model.hapticsStopped)
+            assert(model.isActive && !model.hapticsStopped)
             model.cancel(reason: reason)
             assert(!model.isActive && model.progress == 0)
             assert(!model.frame(at: Date()).isVisible)
-            clock.advanceNext(); await drain() // cancelled completion must not overwrite result
+            clock.advanceNext(); await drain()
             assert(model.lastResult == "Count stopped")
         }
+        // A run resumed after its entire lifetime emits no old haptics.
+        model.start(); await drain()
+        let afterAck = device.submissions.count
+        for _ in 0..<6 { clock.advanceNext(lateness: 100); await drain() }
+        clock.advanceNext(); await drain()
+        assert(!model.isActive && device.submissions.count == afterAck)
         // Full original schedule: 21 timed pulses, then completion at 64.8s.
         model.start(); await drain()
         let anchor = clock.now
         let beforeFull = device.submissions.count
         for _ in 0..<21 { clock.advanceNext(); await drain() }
         assert(model.isActive && device.submissions.count == beforeFull + 21)
-        assert(anchor.duration(to: clock.now) == .seconds(64))
+        assert(abs(seconds(anchor.duration(to: clock.now)) - 64) < 0.000001)
         clock.advanceNext(); await drain()
-        assert(anchor.duration(to: clock.now) == .seconds(64.8))
+        assert(abs(seconds(anchor.duration(to: clock.now)) - 64.8) < 0.000001)
         assert(!model.isActive && model.lastResult == "Count complete")
         // Arc-only preference makes no acknowledgement or timed haptic requests;
         // it retains the same 60-second arc and 64.8-second visual lifetime.
@@ -130,12 +152,12 @@ final class WKInterfaceDevice {
         for reason in ["user_cancelled", "new_class_reset", "completed"] {
             assert(events.contains { $0.event == "landmark_ended" && $0.details["reason"] == reason })
         }
-        let late = events.first { $0.details["reason"] == "missed_deadline" }!
-        assert(late.event == "landmark_haptics_stopped")
-        assert(!events.contains { $0.event == "landmark_ended" && $0.details["reason"] == "missed_deadline" })
+        let late = events.first { $0.event == "landmark_pulse_late" }!
+        assert(!events.contains { $0.event == "landmark_haptics_stopped" })
         assert(late.details["runtimePhase"] == "running" && late.details["sceneState"] == "inactive")
-        assert(late.details["pulse"] == "1" && late.details["landmark"] == "2")
+        assert(late.details["pulse"] == "1" && late.details["landmark"] == "1")
+        assert(events.contains { $0.event == "landmark_group_skipped" })
         assert(events.contains { $0.details["hapticName"] == "directionUp" })
-        print("PASS: groups 5/6 cancellation and restart isolation, late haptics stop independently, arc/anchor survive, explicit Stop/Reset cancel both, 21 pulses, 64.8s completion, persistent end reasons")
+        print("PASS: groups 5/6 cancellation and restart isolation, late pulses continue with spacing, obsolete groups skip without disabling, arc/anchor survive, explicit Stop/Reset cancel both, 21 pulses, 64.8s completion, persistent end reasons")
     }
 }
