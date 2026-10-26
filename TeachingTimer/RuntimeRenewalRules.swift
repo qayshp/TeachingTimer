@@ -18,19 +18,25 @@ final class RuntimeIntentStore {
     private let defaults: UserDefaults
     private let key = "teachingRuntimeIntent.v1"
     private(set) var value: RuntimeIntent?
+    private var persistenceEvents: [PersistenceEvent] = []
+    func takePersistenceEvents() -> [PersistenceEvent] {
+        defer { persistenceEvents.removeAll() }; return persistenceEvents
+    }
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        if let data = defaults.data(forKey: key) {
-            value = try? JSONDecoder().decode(RuntimeIntent.self, from: data)
-        }
+        value = PersistenceDiagnostics.load(RuntimeIntent.self, key: key, defaults: defaults, events: &persistenceEvents)
     }
 
     func save(_ intent: RuntimeIntent?) {
         guard intent != value else { return }
         value = intent
-        if let intent, let data = try? JSONEncoder().encode(intent) { defaults.set(data, forKey: key) }
-        else { defaults.removeObject(forKey: key) }
+        if let intent {
+            PersistenceDiagnostics.save(intent, key: key, defaults: defaults, events: &persistenceEvents)
+        } else {
+            defaults.removeObject(forKey: key)
+            persistenceEvents.append(PersistenceEvent(name: "persistence_removed", details: ["store": key, "source": "class_cleared"]))
+        }
     }
 }
 

@@ -14,13 +14,13 @@ check() {
     swiftc "$@" -o "$check_dir/$check_name"
     "$check_dir/$check_name"
 }
-check ClassContext TeachingTimer/ClassContext.swift Tests/ClassContextChecks.swift
+check ClassContext TeachingTimer/PersistenceDiagnostics.swift TeachingTimer/ClassContext.swift Tests/ClassContextChecks.swift
 check Landmarks TeachingTimer/LandmarkController.swift Tests/LandmarkChecks.swift
 check RuntimeJournal TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift Tests/RuntimeDiagnosticsChecks.swift
 check VolumeDiagnostics TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/VolumeControlDiagnostics.swift Tests/VolumeControlDiagnosticsChecks.swift
 check MediaReloadPolicy TeachingTimer/MediaReloadPolicy.swift Tests/MediaReloadPolicyChecks.swift
 check VolumeRefresh TeachingTimer/VolumeRefreshState.swift Tests/VolumeRefreshChecks.swift
-check RuntimeRenewal -D CONTROLLER_CHECKS TeachingTimer/ClassContext.swift TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/RuntimeRenewalRules.swift TeachingTimer/ExtendedRuntimeController.swift Tests/RuntimeRenewalChecks.swift
+check RuntimeRenewal -D CONTROLLER_CHECKS TeachingTimer/PersistenceDiagnostics.swift TeachingTimer/ClassContext.swift TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/RuntimeRenewalRules.swift TeachingTimer/ExtendedRuntimeController.swift Tests/RuntimeRenewalChecks.swift
 check LandmarkController -D CONTROLLER_CHECKS TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/LandmarkController.swift Tests/LandmarkControllerChecks.swift
 check LandmarkJournal TeachingTimer/LandmarkDiagnostics.swift Tests/LandmarkDiagnosticsChecks.swift
 check Layout TeachingTimer/ClockGeometry.swift TeachingTimer/TimerFaceLayout.swift Tests/TimerFaceLayoutChecks.swift

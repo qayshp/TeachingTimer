@@ -93,12 +93,14 @@ struct ContentView: View {
             }
             .onChange(of: classStore.context) { _, _ in
                 context.invalidateTimelineContent()
+                session.recordPersistenceEvents(classStore.takePersistenceEvents())
                 session.synchronizeClass(classStore.context)
             }
         }
         .onAppear { [session] in
             landmarks.diagnosticContext = { [weak session] in session?.diagnosticContext ?? [:] }
             retireOldClass()
+            session.recordPersistenceEvents(classStore.takePersistenceEvents())
             session.synchronizeClass(classStore.context)
             session.applicationBecameActive()
             recordInterfaceEvent("interface_appeared")

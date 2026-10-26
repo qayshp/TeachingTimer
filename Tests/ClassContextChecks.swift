@@ -93,6 +93,38 @@ struct ClassContextChecks {
         let reopened = ClassStore(defaults: defaults)
         assert(reopened.retireIfNeeded(at: longerClass.retirementDate.addingTimeInterval(3600)))
         assert(ClassStore(defaults: defaults).context == nil)
+        // Empty preferences and unreadable preferences are different diagnoses.
+        store.reset()
+        let absent = ClassStore(defaults: defaults)
+        assert(absent.takePersistenceEvents().first?.details["state"] == "absent")
+        assert(absent.takePersistenceEvents().isEmpty)
+        let corruptBytes = Data("keep these exact bytes".utf8)
+        defaults.set(corruptBytes, forKey: "teachingClassContext.v1")
+        let broken = ClassStore(defaults: defaults)
+        let failure = broken.takePersistenceEvents().first!
+        assert(failure.name == "persistence_read_failed" && failure.details["state"] == "unreadable")
+        assert(failure.details["backupReadBack"] == "true")
+        let recoveryKey = "teachingClassContext.v1.unreadable.v1"
+        assert(defaults.dictionary(forKey: recoveryKey)?["bytes"] as? Data == corruptBytes)
+        let capturedAt = defaults.dictionary(forKey: recoveryKey)?["capturedAt"] as? Date
+        _ = ClassStore(defaults: defaults)
+        assert(defaults.dictionary(forKey: recoveryKey)?["capturedAt"] as? Date == capturedAt)
+        broken.begin(at: date(31), scheduledStart: date(30), durationMinutes: 60)
+        assert(ClassStore(defaults: defaults).context == broken.context)
+        assert(defaults.dictionary(forKey: recoveryKey)?["bytes"] as? Data == corruptBytes)
+        defaults.set("unexpected preference type", forKey: "teachingClassContext.v1")
+        let wrongType = ClassStore(defaults: defaults)
+        assert(wrongType.takePersistenceEvents().first?.details["state"] == "unexpected_type")
+        let backupBytes = defaults.dictionary(forKey: recoveryKey)!["bytes"] as! Data
+        let propertyList = try! PropertyListSerialization.propertyList(from: backupBytes, format: nil) as! [String: String]
+        assert(propertyList["value"] == "unexpected preference type")
+        // Failed encoding leaves the old stored value intact and is observable.
+        var events: [PersistenceEvent] = []
+        defaults.set(corruptBytes, forKey: "encode-test")
+        PersistenceDiagnostics.save(Double.nan, key: "encode-test", defaults: defaults, events: &events)
+        assert(events.last?.name == "persistence_write_failed")
+        assert(defaults.data(forKey: "encode-test") == corruptBytes)
+        print("PASS: missing/restored/unreadable/type diagnostics, one-shot draining, exact bounded recovery bytes, failed encoding preserves prior value")
         print("PASS: quarter-hour boundaries, seconds, hour rollover, 75-minute end, midpoint, persistence and explicit reset")
         print("PASS: exact retirement boundary, overrun grace, idempotence, persistence, fresh Start and 75-minute protection")
         print("PASS: invalid persisted durations/dates rejected without overwriting data; explicit Start recovers")

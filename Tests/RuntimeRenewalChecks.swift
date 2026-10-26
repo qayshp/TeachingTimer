@@ -46,6 +46,17 @@ final class WKExtendedRuntimeSession {
             WKApplication.shared().applicationState = .active
             return ExtendedRuntimeController(journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)))
         }
+        let diagnosticDefaults = UserDefaults(suiteName: "PersistenceIntent." + UUID().uuidString)!
+        let absentIntent = RuntimeIntentStore(defaults: diagnosticDefaults)
+        assert(absentIntent.takePersistenceEvents().first?.details["state"] == "absent")
+        diagnosticDefaults.set(Data("broken-intent".utf8), forKey: "teachingRuntimeIntent.v1")
+        let brokenIntent = RuntimeIntentStore(defaults: diagnosticDefaults)
+        assert(brokenIntent.value == nil)
+        assert(brokenIntent.takePersistenceEvents().first?.name == "persistence_read_failed")
+        assert(diagnosticDefaults.dictionary(forKey: "teachingRuntimeIntent.v1.unreadable.v1")?["bytes"] as? Data == Data("broken-intent".utf8))
+        brokenIntent.save(RuntimeIntent(classID: Date(), state: .stopped))
+        assert(brokenIntent.takePersistenceEvents().first?.name == "persistence_saved")
+        assert(RuntimeIntentStore(defaults: diagnosticDefaults).value?.state == .stopped)
         let now = Date(timeIntervalSince1970: 10000)
         assert(RuntimeRenewalRules.canHandoff(warned: true, expiration: now.addingTimeInterval(8), now: now, active: true, automatic: true, stopped: false))
         for delta in [-1.0, 0, 21] {

@@ -51,6 +51,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
             "builtAt": Self.buildMetadata["builtAt"] ?? "unknown",
             "os": ProcessInfo.processInfo.operatingSystemVersionString
         ])
+        recordPersistenceEvents(intentStore.takePersistenceEvents())
     }
 
     private static var buildMetadata: [String: String] {
@@ -68,6 +69,10 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         super.init()
     }
 #endif
+
+    func recordPersistenceEvents(_ events: [PersistenceEvent]) {
+        for event in events { record(event.name, extra: event.details) }
+    }
 
     private func record(_ event: String, extra: [String: String] = [:]) {
         var details = extra
@@ -192,6 +197,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         if let classContext, classContext.shouldRetire(at: Date()) {
             stop(source: "recovery_class_retired")
             intentStore.save(nil)
+            recordPersistenceEvents(intentStore.takePersistenceEvents())
             return
         }
         if attemptEarlyHandoff() { return }
@@ -214,6 +220,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         guard let context, !context.shouldRetire(at: Date()) else {
             if isActive || renewalPending { stop(source: "recovery_no_current_class") }
             intentStore.save(nil)
+            recordPersistenceEvents(intentStore.takePersistenceEvents())
             renewalPending = false
             return
         }
@@ -221,6 +228,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
             // Older installs have no saved intent. Do not guess whether the
             // user intentionally stopped; one explicit Start establishes it.
             intentStore.save(nil)
+            recordPersistenceEvents(intentStore.takePersistenceEvents())
             renewalPending = false
             record("runtime_intent_unavailable")
             return
@@ -237,6 +245,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     private func saveIntent(_ state: RuntimeIntent.State) {
         guard let context = classContext else { return }
         intentStore.save(RuntimeIntent(classID: context.initialStartPressedAt, state: state))
+        recordPersistenceEvents(intentStore.takePersistenceEvents())
     }
 
     @discardableResult

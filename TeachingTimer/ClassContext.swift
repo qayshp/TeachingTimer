@@ -58,14 +58,18 @@ final class ClassStore: ObservableObject {
     @Published private(set) var context: ClassContext?
     private let defaults: UserDefaults
     private let key = "teachingClassContext.v1"
+    private var persistenceEvents: [PersistenceEvent] = []
+    func takePersistenceEvents() -> [PersistenceEvent] {
+        defer { persistenceEvents.removeAll() }; return persistenceEvents
+    }
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        if let data = defaults.data(forKey: key) { context = try? JSONDecoder().decode(ClassContext.self, from: data) }
+        context = PersistenceDiagnostics.load(ClassContext.self, key: key, defaults: defaults, events: &persistenceEvents)
     }
     func establishIfNeeded(at date: Date = Date(), durationMinutes: Int = 60) {
         guard context == nil else { return }
         context = ClassContext(pressedAt: date, durationMinutes: durationMinutes)
-        if let data = try? JSONEncoder().encode(context) { defaults.set(data, forKey: key) }
+        PersistenceDiagnostics.save(context, key: key, defaults: defaults, events: &persistenceEvents)
     }
     /// Explicit user confirmation may replace a class before the retirement grace ends.
     /// The UI must stop the old count and handle runtime intent separately.
@@ -83,9 +87,12 @@ final class ClassStore: ObservableObject {
     }
 
     private func persist() {
-        if let data = try? JSONEncoder().encode(context) { defaults.set(data, forKey: key) }
+        PersistenceDiagnostics.save(context, key: key, defaults: defaults, events: &persistenceEvents)
     }
-    func reset() { context = nil; defaults.removeObject(forKey: key) }
+    func reset() {
+        context = nil; defaults.removeObject(forKey: key)
+        persistenceEvents.append(PersistenceEvent(name: "persistence_removed", details: ["store": key, "source": "explicit_reset_or_retirement"]))
+    }
 
     /// The caller stops its session/count before timing is removed. No new
     /// class is inferred until an explicit Start, and repeated checks are inert.
