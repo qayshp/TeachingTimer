@@ -11,6 +11,7 @@ final class RuntimeDiagnostics: @unchecked Sendable {
     typealias Event = LandmarkDiagnostics.Event
     static let retentionInterval: TimeInterval = 7 * 24 * 60 * 60
     static let defaultCapacity = 10_000
+    static let interfaceCapacity = 10_000
     let fileURL: URL
     let interfaceFileURL: URL
     private let writer: LandmarkDiagnostics
@@ -18,13 +19,13 @@ final class RuntimeDiagnostics: @unchecked Sendable {
 
     init(fileURL: URL = URL.documentsDirectory.appendingPathComponent("RuntimeDiagnostics.json"),
          capacity: Int = RuntimeDiagnostics.defaultCapacity,
-         interfaceCapacity: Int = 4000) {
+         interfaceCapacity: Int = RuntimeDiagnostics.interfaceCapacity) {
         self.fileURL = fileURL
         interfaceFileURL = fileURL.deletingLastPathComponent().appendingPathComponent("InterfaceDiagnostics.json")
         writer = LandmarkDiagnostics(url: fileURL, capacity: capacity, label: "RuntimeJournal",
                                      retentionInterval: Self.retentionInterval)
         interfaceWriter = LandmarkDiagnostics(url: interfaceFileURL, capacity: interfaceCapacity,
-                                              label: "InterfaceJournal", retentionInterval: 24 * 60 * 60)
+                                              label: "InterfaceJournal", retentionInterval: Self.retentionInterval)
     }
 
     func record(_ name: String, details: [String: String], at date: Date = Date()) {

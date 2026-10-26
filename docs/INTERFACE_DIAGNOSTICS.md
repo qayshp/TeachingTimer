@@ -8,16 +8,17 @@ and explicit volume refresh are separate actions, not evidence that a fault occu
 
 ## Journal and correlation
 
-Build 10 separates operational evidence from routine wrist transitions:
+Build 10 separated operational evidence from routine wrist transitions. Build 17
+extends detail/landmark retention for multi-class teaching weeks:
 
 - `Documents/RuntimeDiagnostics.json` retains seven days of runtime, class,
   page, media, and volume events, with a 10,000-event safety cap. Background
   entry/exit and initial scene state remain here. New Class does not clear it.
 - `Documents/InterfaceDiagnostics.json` retains routine active/inactive and
-  reduced-luminance transitions for one day, with a 4,000-event safety cap.
+  reduced-luminance transitions for seven days, with a 10,000-event safety cap.
   These precise timestamps remain useful for dimming investigations, but cannot
   displace earlier classes from the operational journal.
-- `Documents/LandmarkDiagnostics.json` keeps its existing 2,000-event policy.
+- `Documents/LandmarkDiagnostics.json` retains seven days, with a 20,000-event safety cap.
 
 Age pruning happens on the next write to each file. Count caps can shorten the
 time window under exceptional event volume; these are bounds, not guaranteed

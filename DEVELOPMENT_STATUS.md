@@ -3,6 +3,14 @@
 Updated October 26, 2026. Historical observations are kept separately so that
 previous build states do not read as current facts.
 
+## Build 17 — diagnostics retention (not installed)
+
+Operational history remains seven days / 10,000 events. Wake/dim detail now keeps
+seven days / 10,000 events; landmarks keep seven days / 20,000 events. No session,
+media, Crown, haptic or rendering behavior changed. The seven-day/21-class stress
+checks and all eleven suites pass; a Debug Watch Simulator build succeeds.
+See [retention audit and limits](docs/JOURNAL_RETENTION.md).
+
 ## Teaching baseline and deployment
 
 **Build 16 (1.0), source `e5e5ab4`, was installed and launched on the physical

@@ -97,6 +97,48 @@ struct RuntimeDiagnosticsChecks {
         await ageReopened.flush()
         let backwards = try decoder.decode([RuntimeDiagnostics.Event].self, from: Data(contentsOf: ageURL))
         assert(backwards.map(\.event) == ["boundary", "current", "clock_moved_back"])
+        // Production defaults: 21 classes across a seven-day teaching week,
+        // 100 wake cycles/class. Every class must survive in both journals.
+        let weekURL = directory.appendingPathComponent("week/RuntimeDiagnostics.json")
+        let week = RuntimeDiagnostics(fileURL: weekURL)
+        for day in 0..<7 {
+            for number in 0..<3 {
+                let id = "day-\(day)-class-\(number)"
+                let base = start.addingTimeInterval(Double(day * 86400 + number * 7200))
+                week.record("runtime_started", details: ["runtimeID": id], at: base)
+                for wake in 0..<100 {
+                    let date = base.addingTimeInterval(Double(wake * 30 + 1))
+                    for (previous, current) in [("active", "inactive"), ("inactive", "active")] {
+                        week.record("scene_state_changed", details: ["runtimeID": id,
+                            "sceneState": current, "previousSceneState": previous], at: date)
+                    }
+                    week.record("luminance_changed", details: ["runtimeID": id], at: date)
+                    for name in ["volume_focus_requested", "volume_focus_call", "volume_focus_call_returned"] {
+                        week.record(name, details: ["runtimeID": id], at: date)
+                    }
+                }
+                week.record("runtime_invalidated", details: ["runtimeID": id], at: base.addingTimeInterval(3600))
+            }
+            await week.flush()
+        }
+        let weekMain = try decoder.decode([RuntimeDiagnostics.Event].self, from: Data(contentsOf: weekURL))
+        let weekDetail = try decoder.decode([RuntimeDiagnostics.Event].self, from: Data(contentsOf: week.interfaceFileURL))
+        assert(weekMain.count == 21 * 302 && weekDetail.count == 21 * 300)
+        assert(Set(weekMain.compactMap { $0.details["runtimeID"] }).count == 21)
+        assert(Set(weekDetail.compactMap { $0.details["runtimeID"] }).count == 21)
+
+        // Interface age pruning after reopening has the same inclusive boundary.
+        let detailURL = directory.appendingPathComponent("detail-age/RuntimeDiagnostics.json")
+        let detail = RuntimeDiagnostics(fileURL: detailURL)
+        for offset in [-1.0, 0.0] {
+            detail.record("luminance_changed", details: ["offset": String(offset)], at: start.addingTimeInterval(offset))
+        }
+        await detail.flush()
+        let detailAgain = RuntimeDiagnostics(fileURL: detailURL)
+        detailAgain.record("luminance_changed", details: ["offset": "now"], at: start.addingTimeInterval(7 * 86400))
+        await detailAgain.flush()
+        let detailAged = try decoder.decode([RuntimeDiagnostics.Event].self, from: Data(contentsOf: detail.interfaceFileURL))
+        assert(detailAged.map { $0.details["offset"]! } == ["0.0", "now"])
         print("PASS: durable runtime events, relaunch, size/age retention, multi-class wake isolation, background context and corrupt-file preservation")
     }
 }

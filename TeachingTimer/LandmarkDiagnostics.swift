@@ -10,6 +10,10 @@ import OSLog
 /// never on the MainActor that submits the haptics. A sudden kill may lose the
 /// most recent buffer; absence of an end event is not a diagnosed cancellation.
 final class LandmarkDiagnostics: @unchecked Sendable {
+    // A busy week: 3 classes/day, 20 counts/class, up to 45 events/count
+    // (including every timing pulse late) fits below this safety cap.
+    static let defaultCapacity = 20_000
+    static let retentionInterval: TimeInterval = 7 * 24 * 60 * 60
     struct Event: Codable, Sendable {
         let timestamp: Date
         let event: String
@@ -25,8 +29,8 @@ final class LandmarkDiagnostics: @unchecked Sendable {
     private var flushScheduled = false
     private let log: Logger
 
-    init(url: URL = URL.documentsDirectory.appendingPathComponent("LandmarkDiagnostics.json"), capacity: Int = 2000,
-         label: String = "LandmarkJournal", retentionInterval: TimeInterval? = nil) {
+    init(url: URL = URL.documentsDirectory.appendingPathComponent("LandmarkDiagnostics.json"), capacity: Int = LandmarkDiagnostics.defaultCapacity,
+         label: String = "LandmarkJournal", retentionInterval: TimeInterval? = LandmarkDiagnostics.retentionInterval) {
         self.url = url
         self.capacity = max(1, capacity)
         self.retentionInterval = retentionInterval

@@ -31,6 +31,46 @@ import Foundation
         let backup = directory.appendingPathComponent(recovered[0].details["preservedFile"]!)
         let preserved = try String(contentsOf: backup, encoding: .utf8)
         assert(preserved == "not JSON")
+        // Production defaults, seven days of 3 classes x 20 counts.
+        // 45 events/count includes acknowledgement, all 21 late timing pulses,
+        // their separate late diagnostics, start and end. No old class is evicted.
+        let weekURL = directory.appendingPathComponent("week.json")
+        let week = LandmarkDiagnostics(url: weekURL)
+        let start = Date(timeIntervalSince1970: 1_800_000_000)
+        for day in 0..<7 {
+            for number in 0..<3 {
+                for count in 0..<20 {
+                    let runID = "\(day)-\(number)-\(count)"
+                    let date = start.addingTimeInterval(Double(day * 86400 + number * 7200 + count * 90))
+                    week.record("landmark_started", details: ["runID": runID], at: date)
+                    week.record("haptic_submitted", details: ["runID": runID, "kind": "ack"], at: date)
+                    for pulse in 1...21 {
+                        for name in ["landmark_pulse_late", "haptic_submitted"] {
+                            week.record(name, details: ["runID": runID], at: date.addingTimeInterval(Double(pulse * 3)))
+                        }
+                    }
+                    week.record("landmark_ended", details: ["runID": runID], at: date.addingTimeInterval(65))
+                }
+            }
+            await week.flush()
+        }
+        let fullWeek = try decoder.decode([LandmarkDiagnostics.Event].self, from: Data(contentsOf: weekURL))
+        assert(fullWeek.count == 18_900)
+        assert(Set(fullWeek.compactMap { $0.details["runID"] }).count == 420)
+        let ageURL = directory.appendingPathComponent("age.json")
+        let age = LandmarkDiagnostics(url: ageURL)
+        age.record("old", details: [:], at: start.addingTimeInterval(-1))
+        age.record("boundary", details: [:], at: start)
+        await age.flush()
+        let ageAgain = LandmarkDiagnostics(url: ageURL)
+        ageAgain.record("current", details: [:], at: start.addingTimeInterval(7 * 86400))
+        await ageAgain.flush()
+        var aged = try decoder.decode([LandmarkDiagnostics.Event].self, from: Data(contentsOf: ageURL))
+        assert(aged.map(\.event) == ["boundary", "current"])
+        ageAgain.record("clock_back", details: [:], at: start)
+        await ageAgain.flush()
+        aged = try decoder.decode([LandmarkDiagnostics.Event].self, from: Data(contentsOf: ageURL))
+        assert(aged.map(\.event) == ["boundary", "current", "clock_back"])
         print("PASS: asynchronous journal ordering, flush, bounded retention, reopen and corrupt-history preservation")
     }
 }
