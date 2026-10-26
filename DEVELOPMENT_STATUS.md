@@ -11,6 +11,28 @@ media, Crown, haptic or rendering behavior changed. The seven-day/21-class stres
 checks and all eleven suites pass; a Debug Watch Simulator build succeeds.
 See [retention audit and limits](docs/JOURNAL_RETENTION.md).
 
+## First diagnostics/tooling batch
+
+Completed locally, October 26, 2026:
+
+1. Original installed build 16 and matching symbols preserved privately; signed
+   archive reconstructed separately; immutable teaching source tag pushed.
+2. Current status separated from historical reports, including build-16 physical
+   installation and the maintainer's positive usability feedback.
+3. Seven-day retention checked for all three journals; build 17 extends detail
+   and landmark bounds without changing teaching behavior.
+4. Bounded journal-copy/install tool records each attempt, validates copies and
+   installed versions, and keeps launch separate. It does not auto-repair devices.
+5. Local summary tool correlates supplied journals without inventing focus,
+   rendering, audio, haptic delivery, or missing-event causes.
+
+[Tool usage and limits](docs/DIAGNOSTIC_TOOLS.md). All 29 Python tooling tests pass
+using a fake command boundary; no physical operation was performed in this batch.
+The summary was also checked against a real saved build-12 incident. Eleven
+Swift suites and the build-17 Simulator build passed. Live execution of the new
+device tool remains to be checked during the next requested collection/install.
+The physical Watch's last verified installed build remains **16**.
+
 ## Teaching baseline and deployment
 
 **Build 16 (1.0), source `e5e5ab4`, was installed and launched on the physical

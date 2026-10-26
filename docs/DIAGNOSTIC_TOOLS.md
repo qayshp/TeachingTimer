@@ -93,3 +93,52 @@ bounded retry, timeouts/budget, evidence preservation, install/query disagreemen
 and independent launch success/failure. They never contact or modify a real
 Watch, phone or simulator. Live connectivity reliability is not established by
 these tests; verify the tools against the next authorized physical operation.
+
+## Summarize an incident offline
+
+Point the summary tool at one capture directory (the three canonical journal
+filenames), or explicitly supply one file per journal if historical captures
+use prefixes:
+
+```sh
+python3 scripts/journal_summary.py work/support/NEW-INCIDENT/journals \
+  --timezone America/Los_Angeles \
+  --start 2026-10-26T12:00:00-07:00 \
+  --end 2026-10-26T15:00:00-07:00 \
+  --output work/support/NEW-INCIDENT/summary.md
+```
+
+Without `--output`, Markdown goes to stdout. Output files must be new; inputs
+are never modified. Defaults are the full observed window, UTC display, and at
+most 120 compact timeline rows. `--detail` includes individual pulse, focus-call
+and routine wrist events; `--limit` can raise the timeline bound. Aggregates
+always cover the entire selected window, even when its timeline is truncated.
+Timestamp filters require an explicit offset or Z; display uses the requested
+IANA timezone, including daylight-saving offsets. Do not combine different
+Watch snapshots in one invocation; duplicate journal types are rejected.
+
+The report includes source fingerprints and coverage, build/revision identified
+by launch ID, recorded class anchors, runtime invalidations with original reason
+names/raw codes, landmark submission/lateness/skip counts, focus request/call/
+return/skip totals per native control, page/media events and a correlated timeline.
+Source filename and row numbers make timeline claims traceable. A matching launch
+may identify a build even if it predates the selected incident window.
+
+It explicitly distinguishes initial Start timestamps from scheduled class times.
+A missing schedule is not guessed from the quarter-hour rule. Last-known runtime
+state uses source-file order; backward timestamps are flagged. Cross-file equal
+timestamps do not establish causality. It reports quiet intervals and potential
+cap truncation without calling them crashes or missing execution. Missing files,
+malformed rows, corrupt-file recovery and absent terminal callbacks remain visible.
+A missing end callback does not become an inferred haptic cancellation.
+
+A report with valid events exits 0 even when coverage warnings exist; review the
+cautions. No valid selected events, invalid arguments, or an unwritable/existing
+output exits 2. A window with no events still produces an explanatory report.
+Raw JSON is kept intact, and summaries are not automatically sanitized for public
+sharing: they can include class timestamps, random session IDs and error context.
+
+Verified against the saved October 25 build-12 home-return snapshot as well as
+synthetic tests covering partial data, focus ambiguity, clocks moving backward,
+DST, window/build correlation, caps and output preservation. This creates no new
+physical observations and does not contact the Watch or phone.
