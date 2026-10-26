@@ -185,3 +185,14 @@ build configuration, documentation, and original assets.
 MPL is file-level copyleft: when distributing modified versions, changes to
 covered files must remain available under MPL. See the license for the full
 terms and [Mozilla's FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) for guidance.
+
+## Reliability and distribution tooling
+
+- [Bounded Simulator lifecycle and media-failure captures](tools/simulator-regression/README.md)
+- [Isolated native companion-volume probe](tools/native-volume-probe/README.md)
+- [Persistence failure diagnostics](docs/PERSISTENCE_DIAGNOSTICS.md)
+- [TestFlight identity preparation and diagnostic-access gates](docs/TESTFLIGHT_PREPARATION.md)
+
+Future distribution uses `net.qays.TeachingTimer` (qays.net). The current
+Xcode development installation keeps `com.qayshp.TeachingTimer`; no existing
+class or journal is migrated simply by building the distribution identity.

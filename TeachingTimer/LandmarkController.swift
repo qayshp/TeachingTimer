@@ -126,7 +126,7 @@ final class LandmarkController: ObservableObject {
     private(set) var startAngle: Double = 0
     private var anchor: ContinuousClock.Instant?
     private var task: Task<Void, Never>?
-    private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "Landmarks")
+    private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "net.qays.TeachingTimer", category: "Landmarks")
     var beatsRemaining: Int { max(0, configuration.schedule.landmarkCount - beatsDelivered) }
     /// Read by the existing one-second timeline; no per-pulse UI publication.
     var progress: Double {

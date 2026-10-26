@@ -6,7 +6,7 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleIdentifier</key><string>com.qayshp.TeachingTimer.ClockProbe</string>
+    <key>CFBundleIdentifier</key><string>net.qays.TeachingTimer.ClockProbe</string>
     <key>CFBundleExecutable</key><string>TimelineClockProbe</string>
     <key>CFBundleName</key><string>Clock Probe</string>
     <key>CFBundleDisplayName</key><string>Clock Probe</string>

@@ -35,7 +35,7 @@ final class LandmarkDiagnostics: @unchecked Sendable {
         self.capacity = max(1, capacity)
         self.retentionInterval = retentionInterval
         queue = DispatchQueue(label: "TeachingTimer." + label, qos: .utility)
-        log = Logger(subsystem: "com.qayshp.TeachingTimer", category: label)
+        log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "net.qays.TeachingTimer", category: label)
     }
 
     func record(_ name: String, details: [String: String], at date: Date = Date(), flush: Bool = false) {

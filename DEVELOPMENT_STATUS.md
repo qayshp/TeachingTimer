@@ -3,6 +3,44 @@
 Updated October 26, 2026. Historical observations are kept separately so that
 previous build states do not read as current facts.
 
+## Build 18 — second reliability/tooling batch (not installed)
+
+Completed October 26, 2026:
+
+6. Class/runtime-intent persistence distinguishes absent data from decoding or
+   encoding failures, preserves unreadable preferences locally, and reports
+   metadata through the existing journal. [Details](docs/PERSISTENCE_DIAGNOSTICS.md).
+7. Removed unreachable live haptic-stop state/warnings while preserving decoding
+   and explanation of older saved outcomes. No haptic timing change.
+8. Added [bounded Simulator regression captures](tools/simulator-regression/README.md)
+   for Home/refresh/media return and deliberate native media-service loss.
+9. Added a separate [native volume probe](tools/native-volume-probe/README.md)
+   with retained/replacement control and immediate/delayed setup comparisons.
+10. Prepared the future `net.qays.TeachingTimer` identity using the maintainer's
+    qays.net domain, keeping the installed development identity unchanged.
+    [Unsigned archive rehearsal and pilot gates](docs/TESTFLIGHT_PREPARATION.md).
+
+All eleven Swift suites and 32 Python tooling tests pass. The Debug Simulator
+build and unsigned distribution-identity Release archive pass. The volume probe
+builds/runs on SE 3 40 mm, and both refresh modes have the expected lifecycle
+journal events. No real companion-volume success is inferred from those events.
+
+**New visual evidence:** after deliberately terminating the native media view
+service in the isolated simulator, first reopen rendered Not Playing, but a
+subsequent media entry stayed black through the five-second delayed capture.
+The automatic reload request was recorded. Another entry rendered normally in
+the first run. The mitigation is therefore not a complete visual fix for this
+fault sequence. Saved class bytes and the app host survived; Home invalidated the
+runtime with `resigned_frontmost`, and automatic recovery restarted it. Physical
+blank-page causation remains unknown. Source behavior was not changed to hide
+this failure. The unpaired volume ring showed no change during Crown tests, so
+actual focus/phone volume remains unverified.
+
+No physical installation, TestFlight upload or Apple report submission occurred
+in this batch. The physical Watch's last verified installed build remains **16**.
+Private evidence is under `work/support/2026-10-26-second-batch/` on the development
+Mac. The disposable regression simulator remains running for manual inspection.
+
 ## Build 17 — diagnostics retention (not installed)
 
 Operational history remains seven days / 10,000 events. Wake/dim detail now keeps

@@ -18,7 +18,7 @@ From the repository root:
 ```sh
 sh tools/timeline-clock-probe/build.sh
 xcrun simctl install SIMULATOR_UDID work/timeline-clock-probe/TimelineClockProbe.app
-xcrun simctl launch SIMULATOR_UDID com.qayshp.TeachingTimer.ClockProbe
+xcrun simctl launch SIMULATOR_UDID net.qays.TeachingTimer.ClockProbe
 ```
 
 Watch the hand while alternating **Device Hub → Controls → Lock** (⌘L) and
@@ -38,7 +38,7 @@ For example, restart only the probe in the selected simulator:
 
 ```sh
 xcrun simctl launch --terminate-running-process SIMULATOR_UDID \
-    com.qayshp.TeachingTimer.ClockProbe --constant-color
+    net.qays.TeachingTimer.ClockProbe --constant-color
 ```
 
 Expected: a hand ticking clockwise once per second, possibly at a slower system

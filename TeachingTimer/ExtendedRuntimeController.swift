@@ -22,7 +22,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     private var runtimeSession: WKExtendedRuntimeSession?
     private var renewalPending = false
     private var stopRequested = false
-    private let log = Logger(subsystem: "com.qayshp.TeachingTimer", category: "Runtime")
+    private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "net.qays.TeachingTimer", category: "Runtime")
     private let diagnostics: RuntimeDiagnostics
     private let intentStore: RuntimeIntentStore
     private var classContext: ClassContext?
