@@ -1,5 +1,42 @@
 # Teaching Timer — current verification
 
+## October 26, 2026 — builds 13–15
+
+Build 15 makes class actions explicit in monochrome: outlined buttons with icons,
+solid primary actions, and an outlined face Resume control. Start/time editors
+open at the top; Cancel discards drafts; Stop/Resume returns to the teaching face.
+The default 60-minute schedule, shared state, hands, and native volume implementation
+are unchanged. See the [usability review and screenshots](docs/USABILITY_REVIEW_2026-10-26.md).
+
+Build 14 removes the run-wide lateness shutdown of count haptics. Absolute landmark
+anchors remain; late submissions keep spacing, and obsolete groups are skipped
+without disabling later groups. A locked Simulator run submitted all 21 timing
+pulses despite 15 late pulses. See [the experiment and limits](docs/HAPTIC_DELAYS.md).
+
+Build 13 retains the native volume widget through background returns and refresh,
+with one guarded quarter-second focus cycle. Media-to-timer focus remains
+immediate. This addresses the reproduced Simulator focus regression, not a proven
+fix for paired-phone unavailability or volume silencing. See
+[volume recovery](docs/VOLUME_CONTROL_RECOVERY.md).
+
+All eleven deterministic suites pass. Debug and Release Simulator builds succeed.
+Menu layout was checked on all eight available Watch models; final maximum-text
+confirmation used SE 3 40 mm, Series 12 42 mm, and Ultra 4 49 mm. SE 3 interaction
+checks cover Stop/Resume, schedule Cancel/Save, and page/focus lifecycle. There is
+no physical-device validation or installation in this pass; the user's Watch
+remains on build 12.
+
+Outstanding priorities remain actual iPhone volume reliability, blank media-page
+recovery under real class conditions, haptic delivery/countability, and the
+seconds-hand dim-transition backstep. Simulator media does not validate paired
+iPhone audio. [Device Hub research](docs/DEVICE_HUB_TESTING.md) documents the public
+physical-device input path and the known sound-output None issue.
+
+## Historical verification — builds 9 and earlier
+
+The observations below describe those builds. In particular, widget replacement,
+the late-haptic shutdown, and its warning are superseded above.
+
 Build 9 adds **tap-to-refresh** over the timer's native volume display, with a
 minimum 44-point-high touch area and a small refresh/checkmark cue. It replaces
 only the volume widget on explicit taps. The existing focus guard, queued focus

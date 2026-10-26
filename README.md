@@ -11,11 +11,12 @@ until you have tested a build in your own teaching conditions.
 
 ## Quick start
 
-1. Tap **Start class**, check the proposed time range, then tap the large
-   **Start 60-min class** button. For a different schedule, choose
-   **Custom schedule** for **−15 / +15** and **60 / 75 minutes**, then **Start custom class**.
-   Custom edits never change the default 60-minute start. **Back to default** returns
-   to the original suggested time range. The outlined **Class ⌄** button opens class options.
+1. Tap **Start class**, check the proposed time range, then tap the solid white
+   **Start class** button (**Start** in compact text layouts). It starts a 60-minute class.
+   For a different schedule, choose **Custom schedule**, adjust **−15 min / +15 min**
+   and **60 / 75 minutes**, then **Start class**.
+   Custom edits never change the default. **Default schedule** returns to the original
+   suggestion; **Cancel** closes without saving. The outlined **Class ⌄** button opens class options.
 2. Read the long, thin hand for wall-clock seconds and the shorter, thicker hand
    for wall-clock minutes. Both stay in front of the controls. The system clock
    remains at the top right.
@@ -34,7 +35,7 @@ until you have tested a build in your own teaching conditions.
    1/2/3/4/5/6 pulses. Tap **Stop count** to cancel.
 
 The initial acknowledgement is distinct from the `.directionUp` timing pulses.
-Pulses within a group are 0.8 seconds apart. The sixth group begins at 60 seconds,
+Pulses within a group are scheduled 0.8 seconds apart. The sixth group begins at 60 seconds,
 its last pulse is scheduled at 64 seconds, and the arc's scheduled endpoint is
 64.8 seconds. watchOS can deliver completion callbacks later.
 Build 14 removes the run-wide late-haptic shutdown. Late pulses continue with
@@ -50,7 +51,8 @@ Tap **Class**, at the upper left, to:
 - Start a **New class**, including back-to-back classes. Confirmation replaces
   the schedule and stops the old count; an active runtime can continue.
 - **Stop session / Resume session** without clearing the class. When the session
-  is off, a **Resume** control is also available directly on the face.
+  is off, an outlined **Resume** control is also available directly on the face.
+  Either menu action returns to the face immediately.
 - Turn **Count vibrations** off for future visual-only counts, or enable the
   optional **Minutes left** label. Both count modes use the same arc timing.
 - **End class** with confirmation, clearing timing and stopping session/count.
@@ -87,6 +89,10 @@ More checks: [maximum text on SE 3](docs/images/se-40-large-text.png),
 [class setup](docs/images/class-setup.png), [locked count](docs/images/se-40-locked.png).
 The Ultra example uses a 75-minute class; the other examples use 60 minutes.
 
+Build 15's revised action buttons and current setup screens are shown in the
+[October 26 usability review](docs/USABILITY_REVIEW_2026-10-26.md), including
+maximum-text checks on SE 3, Series 12, and Ultra 4.
+
 ## Build and test
 
 Requires Xcode with the watchOS 26 SDK or later; this iteration was checked
@@ -109,6 +115,9 @@ unsigned build was rejected by WatchKit on the tested simulator.
 In Xcode 27 Device Hub, **Controls → Lock (⌘L)** exercises reduced-luminance
 Always-On. Simulator haptic requests may sound as Mac speaker chimes. Neither
 establishes physical-watch cadence or how the vibrations feel while teaching.
+See [Device Hub testing boundaries](docs/DEVICE_HUB_TESTING.md) for the current
+Simulator sound-output limitation, physical-device remote input, and the next
+seconds-hand transition investigation.
 An intermittent blank page has been observed in Simulator (including the
 pre-review build) and reported during classes on a physical SE 3 with a paired
 iPhone. It is not a Simulator-only limitation. See the current verification

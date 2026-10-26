@@ -39,8 +39,8 @@ struct SharedClockPage: View {
                     .padding(.horizontal, 7).padding(.vertical, 5)
                     .background(Capsule().fill(.black))
                     .overlay(Capsule().strokeBorder(.primary, lineWidth: 1))
-                }
                     .frame(width: 64, height: 44).contentShape(Rectangle())
+                }
                     .buttonStyle(.plain).position(x: 38, y: 23)
                     .accessibilityLabel("Class options").accessibilityIdentifier("class-options")
                 // The edge-to-edge dial stays visible over the Class capsule.
@@ -120,13 +120,18 @@ struct SharedClockPage: View {
 
     @ViewBuilder private func actions(layout: TimerFaceLayout) -> some View {
         if classStore.context == nil {
-            Button("Start class") { _ = retireOldClass(); classSheet = ClassSheetRequest() }
-                .font(.system(size: labelSize, weight: .semibold))
-                .frame(width: layout.controlsWidth, height: layout.actionHeight)
-                .background(.black, in: Capsule())
-                .overlay(Capsule().stroke(.white, lineWidth: 1))
-                .contentShape(Rectangle()).buttonStyle(.plain)
-                .accessibilityIdentifier("class-start")
+            Button { _ = retireOldClass(); classSheet = ClassSheetRequest() } label: {
+                ViewThatFits(in: .horizontal) {
+                    Text("Start class").fixedSize()
+                    Text("Start").fixedSize()
+                }
+                    .font(.system(size: labelSize, weight: .semibold))
+                    .frame(width: layout.controlsWidth, height: layout.actionHeight)
+                    .background(.black, in: Capsule())
+                    .overlay(Capsule().stroke(.white, lineWidth: 1))
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain).accessibilityIdentifier("class-start")
         } else {
             HStack(spacing: 4) {
                 Button {
@@ -139,6 +144,7 @@ struct SharedClockPage: View {
                         Image(systemName: landmarks.isActive ? "stop.fill" : "timer")
                     }
                     .font(.system(size: labelSize, weight: .semibold))
+                    .padding(.horizontal, 6)
                     .frame(width: session.isActive ? layout.controlsWidth : layout.countWidth,
                            height: layout.actionHeight)
                     .background(.black, in: RoundedRectangle(cornerRadius: 12))
@@ -150,12 +156,18 @@ struct SharedClockPage: View {
                 .accessibilityValue(landmarks.hapticsStopped ? "Counting without vibrations" : (landmarks.isActive ? "Counting" : "Ready"))
                 .accessibilityHint("Six ten-second landmarks. Tap again to stop.")
                 if !session.isActive {
-                    Button("Resume") { guard !retireOldClass() else { return }; session.start() }
-                        .font(.system(size: min(labelSize, 12), weight: .semibold))
-                        .lineLimit(1).minimumScaleFactor(0.75)
-                        .frame(width: layout.optionsWidth, height: layout.actionHeight)
-                        .contentShape(Rectangle()).buttonStyle(.plain)
-                        .accessibilityLabel("Resume session").accessibilityIdentifier("runtime-toggle")
+                    Button { guard !retireOldClass() else { return }; session.start() } label: {
+                        Text("Resume")
+                            .font(.system(size: min(labelSize, 12), weight: .semibold))
+                            .lineLimit(1).minimumScaleFactor(0.75)
+                            .padding(.horizontal, 4)
+                            .frame(width: layout.optionsWidth, height: layout.actionHeight)
+                            .background(.black, in: RoundedRectangle(cornerRadius: 12))
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(.white, lineWidth: 1))
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Resume session").accessibilityIdentifier("runtime-toggle")
                 }
             }
         }
@@ -172,7 +184,7 @@ private struct ClassSheetRequest: Identifiable {
 
 /// Secondary management UI owns its draft and dismissal; runtime state remains independent.
 private struct ClassControlsView: View {
-    enum Mode { case summary, create, adjustNew, edit }
+    enum Mode: Hashable { case summary, create, adjustNew, edit }
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
     @ObservedObject var landmarks: LandmarkController
@@ -192,33 +204,52 @@ private struct ClassControlsView: View {
             Form {
                 if mode == .summary, let current = classStore.context {
                     Section {
-                        Text(current.scheduledStart.formatted(date: .omitted, time: .shortened) + "–" +
-                             current.scheduledEnd.formatted(date: .omitted, time: .shortened))
-                        Text("\(current.durationMinutes) minutes").font(.caption)
-                        if !session.statusText.isEmpty { Text(session.statusText).font(.caption) }
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(current.scheduledStart.formatted(date: .omitted, time: .shortened) + "–" +
+                                 current.scheduledEnd.formatted(date: .omitted, time: .shortened))
+                                .font(.headline).fixedSize(horizontal: false, vertical: true)
+                            Text("\(current.durationMinutes) minutes").font(.caption)
+                            if !session.statusText.isEmpty { Text(session.statusText).font(.caption) }
+                        }
                     }
-                    Button("Edit schedule") {
-                        start = current.scheduledStart; duration = current.durationMinutes; mode = .edit
+                    Section {
+                        classAction(session.isActive ? "Stop session" : "Resume session",
+                                    icon: session.isActive ? "pause.fill" : "play.fill",
+                                    prominent: !session.isActive) {
+                            if session.isActive { session.stop() } else { session.start() }
+                            dismiss()
+                        }
+                        .disabled(session.phase == .starting)
+                        .accessibilityIdentifier("class-session-toggle")
+                    } footer: {
+                        Text("Stopping keeps class timing. Wrist-down updates may slow.")
                     }
-                    Button("New class") { prepareNew() }
-                        .accessibilityIdentifier("new-class")
-                    Button(session.isActive ? "Stop session" : "Resume session") {
-                        if session.isActive { session.stop() } else { session.start() }
-                    }.disabled(session.phase == .starting)
-                    Text("Stopping the session keeps class timing. Wrist-down updates may slow.")
-                        .font(.caption)
+                    Section("Schedule") {
+                        classAction("Edit schedule", icon: "calendar") {
+                            start = current.scheduledStart; duration = current.durationMinutes; mode = .edit
+                        }.accessibilityIdentifier("edit-class-schedule")
+                        classAction("New class", icon: "plus") { prepareNew() }
+                            .accessibilityIdentifier("new-class")
+                    }
                     Section("Count & display") {
                         Toggle("Count vibrations", isOn: $countVibrationsEnabled)
-                        Text("Applies to the next count. If vibrations are delayed, the arc keeps going.").font(.caption)
+                        Text("Applies to the next count. Timing may vary if watchOS delays a vibration.").font(.caption)
                         Toggle("Minutes left", isOn: $showRemainingMinutes)
                         if !landmarks.lastResult.isEmpty { Text(landmarks.lastResult).font(.caption) }
                     }
-                    Button("End class", role: .destructive) { confirmEnd = true }
+                    Section {
+                        classAction("End class", icon: "xmark.circle", role: .destructive) { confirmEnd = true }
+                            .accessibilityIdentifier("end-class")
+                    }
                 } else if mode == .create {
                     Button(action: confirmStart) {
                         VStack(spacing: 6) {
-                            Text("Start 60-min class")
-                                .font(.headline)
+                            ViewThatFits(in: .horizontal) {
+                                Label("Start class", systemImage: "play.fill").fixedSize()
+                                Label("Start", systemImage: "play.fill").fixedSize()
+                            }
+                            .font(.headline)
+                            Text("60 minutes").font(.caption)
                                 .fixedSize(horizontal: false, vertical: true)
                             Text(defaultStart.formatted(date: .omitted, time: .shortened) + "–" +
                                  defaultStart.addingTimeInterval(3600).formatted(date: .omitted, time: .shortened))
@@ -229,23 +260,31 @@ private struct ClassControlsView: View {
                         .frame(maxWidth: .infinity, minHeight: 64)
                         .contentShape(Rectangle())
                     }
+                    .buttonStyle(ClassActionStyle(prominent: true))
+                    .listRowBackground(Color.clear)
+                    .accessibilityLabel("Start 60-minute class")
+                    .accessibilityValue(defaultStart.formatted(date: .omitted, time: .shortened) + " to " +
+                        defaultStart.addingTimeInterval(3600).formatted(date: .omitted, time: .shortened))
                     .accessibilityIdentifier("confirm-class")
-                    Button("Custom schedule") { mode = .adjustNew }
-                        .frame(minHeight: 44)
+                    classAction("Custom schedule", icon: "slider.horizontal.3") { mode = .adjustNew }
                         .accessibilityIdentifier("adjust-class-schedule")
                 } else {
                     Section("Scheduled start") {
                         if !Calendar.current.isDateInToday(start) {
                             Text(start.formatted(date: .abbreviated, time: .omitted)).font(.caption)
                         }
-                        HStack {
-                            Button("−15") { start = start.addingTimeInterval(-900) }
-                                .buttonStyle(.plain)
-                                .frame(minWidth: 44, minHeight: 44).accessibilityLabel("Start fifteen minutes earlier")
-                            Text(start.formatted(date: .omitted, time: .shortened)).font(.headline).minimumScaleFactor(0.7)
-                            Button("+15") { start = start.addingTimeInterval(900) }
-                                .buttonStyle(.plain)
-                                .frame(minWidth: 44, minHeight: 44).accessibilityLabel("Start fifteen minutes later")
+                        VStack(spacing: 8) {
+                            Text(start.formatted(date: .omitted, time: .shortened))
+                                .font(.headline).frame(maxWidth: .infinity)
+                            HStack(spacing: 8) {
+                                Button("−15 min") { start = start.addingTimeInterval(-900) }
+                                    .accessibilityLabel("Start fifteen minutes earlier")
+                                    .accessibilityIdentifier("start-earlier")
+                                Button("+15 min") { start = start.addingTimeInterval(900) }
+                                    .accessibilityLabel("Start fifteen minutes later")
+                                    .accessibilityIdentifier("start-later")
+                            }
+                            .buttonStyle(ClassActionStyle(compact: true))
                         }
                     }
                     Picker("Duration", selection: $duration) {
@@ -253,15 +292,17 @@ private struct ClassControlsView: View {
                         Text("75 min").tag(75)
                     }
                     Text("Ends " + start.addingTimeInterval(Double(duration) * 60).formatted(date: .omitted, time: .shortened))
-                    Button(mode == .edit ? "Save schedule" : "Start custom class", action: confirmStart)
+                    classAction(mode == .edit ? "Save schedule" : "Start class",
+                                icon: mode == .edit ? "checkmark" : "play.fill", prominent: true,
+                                action: confirmStart)
                         .accessibilityIdentifier("confirm-class")
                     if mode == .adjustNew {
-                        Button("Back to default") { mode = .create }
-                            .frame(minHeight: 44)
+                        Text("Only this class. The default stays 60 minutes at the suggested start.").font(.caption)
+                        classAction("Default schedule", icon: "arrow.uturn.backward") { mode = .create }
                     }
                 }
                 Section("Media") {
-                    Button("Reload media") {
+                    classAction("Reload media", icon: "arrow.clockwise") {
                         reloadMedia()
                         dismiss()
                     }
@@ -270,9 +311,24 @@ private struct ClassControlsView: View {
                         .font(.caption)
                 }
             }
-            .navigationTitle(mode == .edit ? "Schedule" : (mode == .summary ? "Class" : (mode == .adjustNew ? "Custom class" : "New class")))
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
+            // A different task starts at its first row, not the summary's old
+            // scroll offset. Only this Form is recreated; shared app state stays.
+            .id(mode)
+            .navigationTitle(mode == .summary ? "Class" : (mode == .create ? "Start" : "Time"))
+            .toolbar { ToolbarItem(placement: .cancellationAction) {
+                Button(mode == .summary ? "Done" : "Cancel") { dismiss() }
+            } }
         }
+#if DEBUG
+        // Sheet presentation can reset the environment inherited from TabView.
+        // Apply the visual-test size explicitly to this presentation as well.
+        .transformEnvironment(\.dynamicTypeSize) { size in
+            let arguments = ProcessInfo.processInfo.arguments
+            if arguments.contains("--maximum-text") { size = .accessibility5 }
+            else if arguments.contains("--accessibility-text") { size = .accessibility3 }
+            else if arguments.contains("--large-text") { size = .xxxLarge }
+        }
+#endif
         .onAppear {
             if classStore.context == nil { prepareNew() }
 #if DEBUG
@@ -304,6 +360,19 @@ private struct ClassControlsView: View {
         } message: { Text("Clears timing and stops the session and count.") }
     }
 
+    private func classAction(_ title: String, icon: String, prominent: Bool = false,
+                             role: ButtonRole? = nil, action: @escaping () -> Void) -> some View {
+        Button(role: role, action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: icon).frame(width: 18).accessibilityHidden(true)
+                Text(title).fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+            }
+        }
+        .buttonStyle(ClassActionStyle(prominent: prominent, destructive: role == .destructive))
+        .listRowBackground(Color.clear)
+    }
+
     private func prepareNew() {
         start = ClassContext.inferredStart(for: Date())
         defaultStart = start
@@ -329,6 +398,27 @@ private struct ClassControlsView: View {
             session.start()
         }
         dismiss()
+    }
+}
+
+/// Explicit action surfaces stay distinct from read-only Form rows in monochrome.
+private struct ClassActionStyle: ButtonStyle {
+    var prominent = false
+    var destructive = false
+    var compact = false
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(compact ? .caption.weight(.semibold) : .body.weight(.semibold))
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .padding(.horizontal, compact ? 3 : 8).padding(.vertical, compact ? 0 : 4)
+            .foregroundStyle(prominent ? Color.black : (destructive ? .red : .white))
+            .background(prominent ? Color.white : Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(prominent ? .clear : .white, lineWidth: 1))
+            .opacity(!isEnabled ? 0.4 : (configuration.isPressed ? 0.65 : 1))
+            .contentShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
