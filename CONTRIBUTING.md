@@ -13,7 +13,8 @@ Do not claim hardware validation from a simulator or WatchKit test double.
   above controls. Never animate them with a high-frequency sweep.
 - Count scheduling uses absolute `ContinuousClock` deadlines and a per-run ID.
   Cancellation must prevent old-generation pulses from leaking into a fresh run.
-- Late vibrations can stop while the monotonic visual arc continues. Future
+- Late pulses retain spacing; obsolete groups are skipped without stopping the
+  monotonic visual arc or disabling later groups. Future
   Always-On frames use their requested timeline date, not a cached progress value.
 - The native companion volume adapter's focus/resign sequence is regression-sensitive.
   Restore focus after sheets and Now Playing; test on a real paired Watch/iPhone.

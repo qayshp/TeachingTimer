@@ -87,17 +87,18 @@ do not themselves replace a ready widget. The manual checkmark confirms the
 returned call, never sound or successful focus. See
 [volume recovery](VOLUME_CONTROL_RECOVERY.md).
 
-Root interface events also include `mediaViewGeneration`. Build 8 changes it
+Root interface events also include `mediaViewGeneration`. Build 8 introduced changes to it
 once on deliberate media page entry (`source: page_entry`), on an active return
 after a recorded background phase while media is selected (`background_return`),
-or through **Reload media** (`class_options`). `refreshMode` distinguishes
+or, historically, through **Reload media** (`class_options`). Build 16 removes
+that menu action and its manual path. `refreshMode` distinguishes
 automatic from manual requests. `previousMediaViewGeneration` ties each request
 to the old host; `failureDetected` stays `unobserved` because no public service
 health callback is available. Healthy views are recreated too. The journal must
 not count automatic requests as failures prevented or recovered.
 
-Only the native media view's SwiftUI identity changes. Manual recovery selects
-that page after the Class sheet dismisses and suppresses the duplicate page-entry
+Only the native media view's SwiftUI identity changes. Before build 16, manual recovery selected
+that page after the Class sheet dismissed and suppressed the duplicate page-entry
 refresh. Background return while the timer is selected defers reconstruction
 until a media visit. Ordinary inactive/active wrist wakes, timeline frames, and
 staying on the page do not trigger reloads. Check pixels separately and compare

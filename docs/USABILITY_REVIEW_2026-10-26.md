@@ -1,5 +1,9 @@
 # Teaching usability review — October 26, 2026
 
+This is the historical Simulator review. Build 16 was subsequently installed
+and launched; see [current status](../DEVELOPMENT_STATUS.md) for deployment and
+the maintainer’s later physical usability feedback.
+
 Build 15 follows build 14's separate haptic experiment. The priority is a teacher
 making short, one-handed interactions while watching a class. No physical Watch
 was used, installed, or contacted in this pass. The physical Watch remains on
