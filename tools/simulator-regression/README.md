@@ -18,7 +18,7 @@ python3 tools/simulator-regression/run.py --simulator SIMULATOR_UUID \
 ```
 
 The runner installs the supplied app, establishes a class if absent, and taps the
-count control. Start with an inactive count and the timer page selected. It
+count control. Start with a current, non-retiring class (or no class), an inactive count and the timer page selected. It
 leaves the simulator running. Output directories must be new. They contain
 private preferences/journals, screenshots and timestamped command outcomes;
 keep them out of Git. A command returning is not proof of its visual effect.
@@ -47,6 +47,14 @@ despite a recorded automatic reload request. Another entry in the first run
 rendered normally. This remains a failing visual regression, not a proven fix.
 Home caused `resigned_frontmost`; automatic runtime recovery restarted the
 session with the original class intact. No claim of uninterrupted runtime is made.
-The runner captures early and delayed frames and never labels lifecycle checks
+The runner captures early and delayed frames at all three media stages and never labels lifecycle checks
 a visual pass. Private capture folders are `media` and `media-delayed` under
 `work/support/2026-10-26-second-batch/` on the development Mac.
+
+## Follow-up comparison
+
+[Recovery comparison](../../docs/MEDIA_RECOVERY_COMPARISON.md) records four
+unsuccessful recovery candidates and the distinction between short loading gaps
+and longer blank pages. Setup now waits up to ten seconds for the new class's
+UserDefaults write. Each media stage receives an additional five-second capture;
+this is observation, not an automatic retry or a visual success assertion.

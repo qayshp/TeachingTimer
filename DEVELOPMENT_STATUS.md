@@ -3,6 +3,17 @@
 Updated October 26, 2026. Historical observations are kept separately so that
 previous build states do not read as current facts.
 
+## Media recovery follow-up — production behavior unchanged
+
+The [October 26 recovery comparison](docs/MEDIA_RECOVERY_COMPARISON.md) tested
+stable page identity, a 300 ms native teardown gap, clock-only timeline placement,
+and conditional native-view lifetime. None established reliable recovery; all
+experimental app edits were removed. Longer-wait captures confirm persistent
+blank frames as well as transient loading. Only the regression tooling and
+investigation documentation changed; the app remains build 18, not installed on
+the physical Watch. The native service-loss reproduction still warrants further
+isolation. No new Apple report update was submitted.
+
 ## Build 18 — second reliability/tooling batch (not installed)
 
 Completed October 26, 2026:

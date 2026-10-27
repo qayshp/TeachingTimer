@@ -96,7 +96,11 @@ def main():
     if "teachingClassContext.v1" not in preferences():
         ui("start-menu", "tap", .5, .76)
         ui("confirm-default-class", "tap", .5, .44)
-        time.sleep(1)
+        # UserDefaults can flush after the UI/journal has already accepted Start.
+        # Wait only for this setup prerequisite; do not mistake disk lag for loss.
+        deadline = time.monotonic() + 10
+        while "teachingClassContext.v1" not in preferences() and time.monotonic() < deadline:
+            time.sleep(0.25)
     original_class = preferences().get("teachingClassContext.v1")
     if not original_class:
         raise RuntimeError("Class was not established; inspect captures before continuing")
@@ -119,6 +123,8 @@ def main():
         ui("crown-down-return", "crown", -8); capture("07-return-crown")
     else:
         ui("media", "swipe", .85, .55, .15, .55); capture("03-media-before-fault")
+        time.sleep(5)
+        capture("03b-media-before-fault-after-five-seconds")
         ui("home", "home")
         listing = sim("service-inventory", "spawn", args.simulator, "launchctl", "list")
         service = select_service(listing)
@@ -126,6 +132,8 @@ def main():
         returned = sim("reopen", "launch", args.simulator, bundle)
         time.sleep(2)
         capture("04-media-return")
+        time.sleep(5)
+        capture("04b-media-return-after-five-seconds")
         ui("timer", "swipe", .15, .55, .85, .55); capture("05-timer")
         ui("media-reentry", "swipe", .85, .55, .15, .55); capture("06-media-reentry")
         time.sleep(5)
