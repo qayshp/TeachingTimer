@@ -8,12 +8,12 @@ work and repository changes do not count as physical validation.
 
 | Order | Work | Completion gate |
 | --- | --- | --- |
-| 1 | Reconcile backlog and corrected screenshot claims | Current docs distinguish verified evidence from superseded interpretations. |
-| 2 | Revalidate native-media rendering | Retain original images, OCR and central-content measurements; distinguish Not Playing, possible loading and candidate blank frames from lifecycle checks. |
+| 1 — complete | Reconcile backlog and corrected screenshot claims | Current docs distinguish verified evidence from superseded interpretations. |
+| 2 — complete | Revalidate native-media rendering | Retain original images, OCR and central-content measurements; distinguish Not Playing, possible loading and candidate blank frames from lifecycle checks. |
 | 3 | Explain the default scheduled start | Compare a compact Suggested start cue on SE 3 and Ultra; preserve inference, default 60 minutes and independent custom drafts. |
 | 4 | Review hand/label collisions | Compare selected angles awake/dim; retain both hands foremost and generous targets. Do not adopt a cosmetic change without a legibility benefit. |
 | 5 | Audit maximum text and 12/24-hour layouts | Exercise setup, custom schedule, summary and actions on small/large screens; source-check accessibility labels. Hardware VoiceOver remains separate. |
-| 6 | Apple Always-On documentation follow-up | File the missing-documentation issue requested in FB24696786, cross-reference it, and close the old report as requested. Record exact IDs/status after verification. |
+| 6 — complete | Apple Always-On documentation follow-up | File the missing-documentation issue requested in FB24696786, cross-reference it, and close the old report as requested. FB25347535 submitted; FB24696786 cross-referenced and closed. |
 | 7 | Short coordinated hardware session | Native volume matrix, count cancel/restart while moving, and a connection capture if a failure naturally occurs. Requires a suitable time and device access. |
 | 8 | Separate endurance session | Runtime renewal, Home/return, intentional Stop, persistence/new class, battery and diagnostic cost over a teaching-length run. |
 | 9 | Private TestFlight pilot | Signed upload/install/update, separate-identity state and journal access, and a private support route before inviting more testers. |
@@ -74,3 +74,5 @@ updates, recovery and journal access are proven. See [pilot gates](TESTFLIGHT_PR
 - [Physical tester checklist](TESTER_GUIDE.md)
 
 No issue is closed because its symptom did not recur in a bounded Simulator run.
+
+Original-image audit and fresh media run: [results](MEDIA_IMAGE_AUDIT.md).

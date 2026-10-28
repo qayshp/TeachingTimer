@@ -58,3 +58,30 @@ be disregarded. Physical incidents remain reported and unresolved.
 The October 26 reporting work changed documentation only; the submissions did
 not change the installed app or device settings. See the
 [current project status](../DEVELOPMENT_STATUS.md) for subsequent source/tooling work.
+
+## October 28 roadmap follow-through
+
+- Filed **FB25347535**, “Document Device Hub Lock for Watch Always-On testing,”
+  under Developer Tools & Resources → Developer Documentation. Submission and
+  the new ID were verified at 02:13 PDT. It quotes the current instruction,
+  links both official articles, describes Simulator luminance observations and
+  asks Apple to clarify the supported action/limits. No device-log attachment
+  was needed for this documentation-only report.
+- Cross-referenced it from **FB24696786** and closed that original control-
+  availability report at Apple's September 22 request. This closure does not
+  claim that the new documentation issue is fixed.
+- Updated **FB25305069** at 02:16 PDT after the
+  [original-image audit](MEDIA_IMAGE_AUDIT.md): four October 24 black captures
+  are confirmed, their recovery images contain native controls, and the later
+  comparison's delayed-blank/ranking claims remain withdrawn. One fresh build-21
+  sequence rendered Not Playing in all six captures and passed five lifecycle
+  checks. That is a bounded success, not physical resolution.
+- **FB25329139** currently reads “Investigation complete - Unable to diagnose
+  with current information.” The change time is unknown. Coordinate a fresh
+  failure/recovery capture before sending another connection update.
+
+The other active reports have no new technical Apple reply at the last refresh.
+A check of report status is not a claim that Apple has accepted a diagnosis.
+Private submission/read-back evidence stays under
+`work/support/2026-10-28-next-pass/apple/`. Reports used the maintainer's requested
+writing-style workflow. Neither a physical Watch nor iPhone was queried or changed.

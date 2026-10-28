@@ -60,7 +60,8 @@ Four helper tests check positive text, OCR absence and exclusion of system text.
 Private originals and results are in
 `work/support/2026-10-28-next-pass/media-audit/`. The existing Apple report
 FB25305069 already contains the October 24 originals. A concise clarification
-should preserve that evidence while withdrawing the later variant ranking.
+was submitted at 02:16 PDT, preserving that evidence while withdrawing the later
+variant ranking.
 
 ## Fresh build-21 sequence
 
