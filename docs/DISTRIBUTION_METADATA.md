@@ -7,7 +7,7 @@ packet for a private pilot, not authorization to invite external testers.
 | --- | --- |
 | Name | Teaching Timer |
 | Subtitle | A clock for teaching yoga |
-| Version / candidate build | 1.0 / 21 |
+| Version / candidate build | 1.0 / 22 |
 | Future bundle identifier | net.qays.TeachingTimer |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
 | Support URL | https://github.com/qayshp/TeachingTimer/issues |

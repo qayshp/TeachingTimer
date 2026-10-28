@@ -5,7 +5,7 @@ previous build states do not read as current facts.
 
 ## Current candidate and teaching checkpoint
 
-Source candidate: **build 21**, tested locally; physical teaching checkpoint:
+Source candidate: **build 22**, tested locally; physical teaching checkpoint:
 **build 16**, kept unchanged. [Active roadmap](docs/ROADMAP.md) is the single
 place for completed work, next steps and hardware gates. The
 [builds 17–21 implementation record](docs/history/ROADMAP_BATCHES_17_TO_21.md)
@@ -17,6 +17,21 @@ identity. Build 20 makes refresh acknowledgement neutral; build 21 adds a short
 unreadable-class notice with a direct Start action. Native volume/focus timing,
 media policy, wall-clock hands and count scheduling are unchanged by those last
 two UI changes. [Usability verification](docs/USABILITY_FOLLOWUP_2026-10-28.md).
+
+## Build 22 — current usability follow-through
+
+The default Start card identifies its interval as **Suggested time**. Action
+labels stay within two lines with modest scaling at maximum text; the face's
+short Start fallback announces **Start class**. Quarter-hour inference, default
+60 minutes, separate custom drafts, hands and native session/media behavior
+are unchanged. [Screenshots and review](docs/USABILITY_PASS_22.md).
+
+The hand/icon comparison did not establish a consistent benefit and was removed.
+The original-media audit confirmed four October 24 black frames and their
+recovery images; the later comparison ranking remains withdrawn. One fresh
+build-21 media sequence rendered all six captures and passed its five lifecycle
+checks. Apple received that clarification and the separate documentation report
+**FB25347535**; **FB24696786** was cross-referenced and closed as requested.
 
 ## Evidence that must not be conflated
 
@@ -36,11 +51,16 @@ two UI changes. [Usability verification](docs/USABILITY_FOLLOWUP_2026-10-28.md).
 
 ## Local verification
 
-At build 21, twelve deterministic Swift suites and 44 Python tooling checks
+At build 22, twelve deterministic Swift suites and 48 Python tooling checks
 pass, along with the Simulator build and unsigned development/distribution
-archives. SE 3 passes all 14 essential-action and six focus/lifecycle checks.
-Unreadable-class notice, dismissal/data preservation and fresh Start were checked
-on SE 3 and Ultra. These are local tests; no physical operation was performed.
+archives. All 14 essential-action assertions pass on each of SE 3 and Ultra;
+all six focus/lifecycle assertions pass on SE 3. Four final media captures
+contain Not Playing, and full count-button outlines are present in the
+start/cancel captures on both sizes. These are not phone-audio assertions.
+Latest setup/custom flows were checked at normal/maximum text and
+12/24-hour time on SE 3 and Ultra; maximum-text summaries reach End class by
+scrolling. The unreadable-class notice/data-preservation checks from build 21
+remain separately recorded. These are local tests; no physical operation was performed.
 [Build evidence workflow](docs/BUILD_VERIFICATION.md).
 
 ## Teaching baseline and deployment

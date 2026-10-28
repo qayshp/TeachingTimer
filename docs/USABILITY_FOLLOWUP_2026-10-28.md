@@ -69,3 +69,6 @@ added in this pass.
 
 Private build/UI evidence is under ignored `work/support/2026-10-28-controls/`.
 Only synthetic-data Simulator screenshots are published.
+
+The subsequent [build-22 pass](USABILITY_PASS_22.md) completes the schedule-cue,
+hand-label comparison and Simulator text-size audit; physical gates remain.

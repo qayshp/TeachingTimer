@@ -74,10 +74,14 @@ struct ClassControlsView: View {
                             .font(.headline)
                             Text("60 minutes").font(.caption)
                                 .fixedSize(horizontal: false, vertical: true)
-                            Text(defaultStart.formatted(date: .omitted, time: .shortened) + "–" +
-                                 defaultStart.addingTimeInterval(3600).formatted(date: .omitted, time: .shortened))
-                                .font(.caption)
-                                .fixedSize(horizontal: false, vertical: true)
+                            VStack(spacing: 2) {
+                                Text("Suggested time").font(.caption2)
+                                    .lineLimit(1).minimumScaleFactor(0.65)
+                                Text(defaultStart.formatted(date: .omitted, time: .shortened) + "–" +
+                                     defaultStart.addingTimeInterval(3600).formatted(date: .omitted, time: .shortened))
+                                    .font(.caption)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
                         }
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity, minHeight: 64)
@@ -86,7 +90,7 @@ struct ClassControlsView: View {
                     .buttonStyle(ClassActionStyle(prominent: true))
                     .listRowBackground(Color.clear)
                     .accessibilityLabel("Start 60-minute class")
-                    .accessibilityValue(defaultStart.formatted(date: .omitted, time: .shortened) + " to " +
+                    .accessibilityValue("Suggested time: " + defaultStart.formatted(date: .omitted, time: .shortened) + " to " +
                         defaultStart.addingTimeInterval(3600).formatted(date: .omitted, time: .shortened))
                     .accessibilityIdentifier("confirm-class")
                     classAction("Custom schedule", icon: "slider.horizontal.3") { mode = .adjustNew }
@@ -179,7 +183,8 @@ struct ClassControlsView: View {
         Button(role: role, action: action) {
             HStack(spacing: 8) {
                 Image(systemName: icon).frame(width: 18).accessibilityHidden(true)
-                Text(title).fixedSize(horizontal: false, vertical: true)
+                Text(title).lineLimit(2).minimumScaleFactor(0.75)
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
             }
         }

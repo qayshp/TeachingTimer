@@ -10,9 +10,9 @@ work and repository changes do not count as physical validation.
 | --- | --- | --- |
 | 1 — complete | Reconcile backlog and corrected screenshot claims | Current docs distinguish verified evidence from superseded interpretations. |
 | 2 — complete | Revalidate native-media rendering | Retain original images, OCR and central-content measurements; distinguish Not Playing, possible loading and candidate blank frames from lifecycle checks. |
-| 3 | Explain the default scheduled start | Compare a compact Suggested start cue on SE 3 and Ultra; preserve inference, default 60 minutes and independent custom drafts. |
-| 4 | Review hand/label collisions | Compare selected angles awake/dim; retain both hands foremost and generous targets. Do not adopt a cosmetic change without a legibility benefit. |
-| 5 | Audit maximum text and 12/24-hour layouts | Exercise setup, custom schedule, summary and actions on small/large screens; source-check accessibility labels. Hardware VoiceOver remains separate. |
+| 3 — complete | Explain the default scheduled start | Compare a compact Suggested start cue on SE 3 and Ultra; preserve inference, default 60 minutes and independent custom drafts. |
+| 4 — reviewed | Review hand/label collisions | Compare selected angles awake/dim; retain both hands foremost and generous targets. Do not adopt a cosmetic change without a legibility benefit. |
+| 5 — Simulator audit complete | Audit maximum text and 12/24-hour layouts | Exercise setup, custom schedule, summary and actions on small/large screens; source-check accessibility labels. Hardware VoiceOver remains separate. |
 | 6 — complete | Apple Always-On documentation follow-up | File the missing-documentation issue requested in FB24696786, cross-reference it, and close the old report as requested. FB25347535 submitted; FB24696786 cross-referenced and closed. |
 | 7 | Short coordinated hardware session | Native volume matrix, count cancel/restart while moving, and a connection capture if a failure naturally occurs. Requires a suitable time and device access. |
 | 8 | Separate endurance session | Runtime renewal, Home/return, intentional Stop, persistence/new class, battery and diagnostic cost over a teaching-length run. |
@@ -29,7 +29,7 @@ completed tests. No periodic monitor or automatic installation is scheduled.
 | Original items | Status / remaining work |
 | --- | --- |
 | 1–7 | Teaching checkpoint, documentation separation, retention, device/summary tools, persistence diagnostics and confirmed dead-code cleanup implemented. New device tools still need live validation. |
-| 8 | Simulator lifecycle regression automation implemented. Rendering classifications require the image audit in current item 2. |
+| 8 | Simulator lifecycle regression automation implemented. Original-image audit complete; current bounded run renders. Physical reliability remains unproven. |
 | 9 | Independent native-volume probe built; physical comparison remains current item 7. |
 | 10 | Distribution identity and unsigned archive rehearsal ready. Signed pilot is current item 9. |
 | 11–13 | Physical volume, connection and moving-haptic tests pending; current item 7. |
@@ -76,3 +76,8 @@ updates, recovery and journal access are proven. See [pilot gates](TESTFLIGHT_PR
 No issue is closed because its symptom did not recur in a bounded Simulator run.
 
 Original-image audit and fresh media run: [results](MEDIA_IMAGE_AUDIT.md).
+
+Candidate build 22 adds the schedule cue, two-line action wrapping and face
+Start accessibility label.
+[Usability comparison and limits](USABILITY_PASS_22.md). The icon/label trial was
+not adopted; the existing hands and controls remain.

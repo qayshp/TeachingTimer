@@ -128,7 +128,8 @@ struct SharedClockPage: View {
                     .overlay(Capsule().stroke(.white, lineWidth: 1))
                     .contentShape(Rectangle())
             }
-            .buttonStyle(.plain).accessibilityIdentifier("class-start")
+            .buttonStyle(.plain)
+            .accessibilityLabel("Start class").accessibilityIdentifier("class-start")
         } else {
             HStack(spacing: 4) {
                 Button {
