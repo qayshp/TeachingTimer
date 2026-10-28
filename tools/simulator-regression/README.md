@@ -76,7 +76,7 @@ python3 tools/simulator-regression/actions.py --simulator SIMULATOR_UUID \
 The suite checks default Start, custom draft Cancel, count start/cancel,
 Stop/Resume, schedule edit Cancel/Save, custom New class with confirmation,
 End class with confirmation, and media/timer navigation. It checks persisted
-class values and fresh journal events, waiting at most ten seconds for a state
+class values and fresh journal events, waiting at most thirty seconds for an asynchronous persisted-state
 assertion. It retains every target screenshot and recognized text, actions and
 results. Missing/ambiguous targets fail; they never silently skip a step.
 

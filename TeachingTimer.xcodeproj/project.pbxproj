@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        100000000000000000000022 /* CompanionVolumeControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000022; };
+        100000000000000000000021 /* RefreshableCompanionVolumeControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000021; };
+        100000000000000000000020 /* ClassActionStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000020; };
+        100000000000000000000019 /* ClassControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000019; };
         100000000000000000000018 = {isa = PBXBuildFile; fileRef = 200000000000000000000018; };
         100000000000000000000017 /* VolumeRefreshState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000017; };
         100000000000000000000016 /* MediaReloadPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000016; };
@@ -29,6 +33,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+        200000000000000000000022 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionVolumeControl.swift; sourceTree = "<group>"; };
+        200000000000000000000021 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshableCompanionVolumeControl.swift; sourceTree = "<group>"; };
+        200000000000000000000020 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassActionStyle.swift; sourceTree = "<group>"; };
+        200000000000000000000019 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassControlsView.swift; sourceTree = "<group>"; };
         200000000000000000000018 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceDiagnostics.swift; sourceTree = "<group>"; };
         200000000000000000000017 /* VolumeRefreshState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeRefreshState.swift; sourceTree = "<group>"; };
         200000000000000000000016 /* MediaReloadPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaReloadPolicy.swift; sourceTree = "<group>"; };
@@ -93,6 +101,10 @@
 				200000000000000000000016,
 				200000000000000000000017,
                 200000000000000000000018,
+                200000000000000000000022,
+                200000000000000000000021,
+                200000000000000000000020,
+                200000000000000000000019,
 				200000000000000000000004 /* Info.plist */,
 			);
 			path = TeachingTimer;
@@ -204,6 +216,10 @@
 				100000000000000000000016 /* MediaReloadPolicy.swift in Sources */,
 				100000000000000000000017 /* VolumeRefreshState.swift in Sources */,
                 100000000000000000000018 /* PersistenceDiagnostics.swift in Sources */,
+                100000000000000000000022 /* CompanionVolumeControl.swift in Sources */,
+                100000000000000000000021 /* RefreshableCompanionVolumeControl.swift in Sources */,
+                100000000000000000000020 /* ClassActionStyle.swift in Sources */,
+                100000000000000000000019 /* ClassControlsView.swift in Sources */,
 				100000000000000000000001 /* TeachingTimerApp.swift in Sources */,
 				100000000000000000000002 /* ContentView.swift in Sources */,
 				100000000000000000000003 /* ExtendedRuntimeController.swift in Sources */,
@@ -219,7 +235,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
                 ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -250,7 +266,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
                 ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

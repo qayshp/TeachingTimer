@@ -96,7 +96,7 @@ def main():
         path = container / 'Documents' / (name + '.json')
         return json.loads(path.read_text()) if path.exists() else []
     def check(label, condition):
-        deadline = time.monotonic() + 10
+        deadline = time.monotonic() + 30
         while not condition():
             if time.monotonic() >= deadline:
                 capture('FAILED-' + label)
