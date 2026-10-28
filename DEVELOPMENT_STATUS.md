@@ -25,8 +25,9 @@ two UI changes. [Usability verification](docs/USABILITY_FOLLOWUP_2026-10-28.md).
   missing full-width outline. Experimental drawing changes were removed.
 - Nine delayed media captures attached to Apple contain Not Playing. The
   delayed-black and recovery-ranking claims were corrected in FB25305069 at
-  01:04 PDT on October 28. Earlier Simulator rendering claims need an original-
-  image audit; native callbacks alone cannot establish a visible failure.
+  01:04 PDT on October 28. The original October 24 black captures are now confirmed by an
+  [image audit](docs/MEDIA_IMAGE_AUDIT.md); native callbacks alone cannot
+  establish a visible failure.
 - Physical black-media reports and intermittent volume failures remain valid
   unresolved observations. Neither correction dismisses those experiences.
 - Lifecycle checks verify host/class/control state only. Focus return, a moving
@@ -90,8 +91,8 @@ are preserved privately; see [the teaching checkpoint](docs/TEACHING_CHECKPOINT.
 - Retaining the volume widget avoided the controlled Simulator focus regression.
   Focus-call returns and animated native feedback do not prove phone-volume
   commands, audible playback, or actual Crown ownership.
-- Earlier view-only recovery trials reported recovery after induced Simulator
-  service loss; their rendering classifications remain subject to image audit. Physical blank media has occurred during classes;
+- Original view-only recovery trials show native content after induced Simulator
+  service loss, confirmed by the original-image audit. Physical blank media has occurred during classes;
   force-closing/reopening recovered it in user reports. Two later successful
   classes are encouraging but do not establish a permanent fix.
 - The count arc advances in reduced luminance in Simulator and physical reports.

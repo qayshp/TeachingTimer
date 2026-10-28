@@ -92,3 +92,11 @@ English/default-text-size test, not a portable XCTest suite. Do not run two UI
 sequences concurrently or interact with Device Hub during a run. A screenshot
 still needs human review; state assertions do not prove visible controls, native
 media pixels, Crown ownership, phone playback or tactile delivery.
+
+## Original media-image audit
+
+Use `media_evidence.py --output NEW_DIRECTORY ORIGINAL.png ...` for read-only
+OCR and central-content measurements, with original SHA-256 hashes. It never
+infers rendering failure from missing text alone or success from callbacks.
+The [October 28 audit](../../docs/MEDIA_IMAGE_AUDIT.md) confirms the original
+October 24 black captures and withdraws the later delayed-frame interpretation.
