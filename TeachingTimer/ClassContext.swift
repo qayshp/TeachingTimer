@@ -56,6 +56,7 @@ struct ClassContext: Codable, Equatable {
 @MainActor
 final class ClassStore: ObservableObject {
     @Published private(set) var context: ClassContext?
+    @Published private(set) var needsRecoveryNotice = false
     private let defaults: UserDefaults
     private let key = "teachingClassContext.v1"
     private var persistenceEvents: [PersistenceEvent] = []
@@ -65,16 +66,21 @@ final class ClassStore: ObservableObject {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         context = PersistenceDiagnostics.load(ClassContext.self, key: key, defaults: defaults, events: &persistenceEvents)
+        needsRecoveryNotice = persistenceEvents.contains { $0.name == "persistence_read_failed" }
     }
+    /// Acknowledgement changes presentation only; original/backup values remain.
+    func acknowledgeRecoveryNotice() { needsRecoveryNotice = false }
     func establishIfNeeded(at date: Date = Date(), durationMinutes: Int = 60) {
         guard context == nil else { return }
         context = ClassContext(pressedAt: date, durationMinutes: durationMinutes)
+        needsRecoveryNotice = false
         PersistenceDiagnostics.save(context, key: key, defaults: defaults, events: &persistenceEvents)
     }
     /// Explicit user confirmation may replace a class before the retirement grace ends.
     /// The UI must stop the old count and handle runtime intent separately.
     func begin(at date: Date = Date(), scheduledStart: Date, durationMinutes: Int) {
         context = ClassContext(pressedAt: date, durationMinutes: durationMinutes, scheduledStart: scheduledStart)
+        needsRecoveryNotice = false
         persist()
     }
 
@@ -90,7 +96,7 @@ final class ClassStore: ObservableObject {
         PersistenceDiagnostics.save(context, key: key, defaults: defaults, events: &persistenceEvents)
     }
     func reset() {
-        context = nil; defaults.removeObject(forKey: key)
+        context = nil; needsRecoveryNotice = false; defaults.removeObject(forKey: key)
         persistenceEvents.append(PersistenceEvent(name: "persistence_removed", details: ["store": key, "source": "explicit_reset_or_retirement"]))
     }
 

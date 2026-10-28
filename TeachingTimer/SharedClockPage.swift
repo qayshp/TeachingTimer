@@ -51,7 +51,7 @@ struct SharedClockPage: View {
                     .allowsHitTesting(false)
                 RefreshableCompanionVolumeControl(
                     layout: layout,
-                    isFocused: crownIsActive && classSheet == nil,
+                    isFocused: crownIsActive && classSheet == nil && !classStore.needsRecoveryNotice,
                     backgroundRevision: volumeBackgroundRevision,
                     diagnosticSnapshot: volumeDiagnosticSnapshot,
                     recordDiagnostic: { [weak diagnosticSession = session] event, details in
@@ -73,6 +73,15 @@ struct SharedClockPage: View {
         .sheet(item: $classSheet) { _ in
             ClassControlsView(session: session, classStore: classStore, landmarks: landmarks)
         }
+        .alert("Class not restored", isPresented: Binding(
+            get: { classStore.needsRecoveryNotice },
+            set: { if !$0 { classStore.acknowledgeRecoveryNotice() } }
+        )) {
+            Button("Start class") { classSheet = ClassSheetRequest() }
+            Button("Later", role: .cancel) { classStore.acknowledgeRecoveryNotice() }
+        } message: {
+            Text("Start a new class to continue.")
+        }
 #if DEBUG
         .onAppear {
             // Visual check only: opens a draft, never starts a class or runtime.
@@ -89,6 +98,7 @@ struct SharedClockPage: View {
     private var volumeDiagnosticSnapshot: [String: String] {
         ["lastViewTimerPageSelected": String(crownIsActive),
          "lastViewClassSheetRequested": String(classSheet != nil),
+         "lastViewClassRecoveryNotice": String(classStore.needsRecoveryNotice),
          "lastViewLuminanceReduced": String(dimmed)]
     }
 

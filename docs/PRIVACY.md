@@ -1,6 +1,6 @@
 # Privacy and diagnostics
 
-Last reviewed October 28, 2026, against the build-19 source.
+Last reviewed October 28, 2026, against the build-21 source.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does

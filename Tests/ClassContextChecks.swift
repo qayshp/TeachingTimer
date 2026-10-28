@@ -96,24 +96,34 @@ struct ClassContextChecks {
         // Empty preferences and unreadable preferences are different diagnoses.
         store.reset()
         let absent = ClassStore(defaults: defaults)
+        assert(!absent.needsRecoveryNotice)
         assert(absent.takePersistenceEvents().first?.details["state"] == "absent")
         assert(absent.takePersistenceEvents().isEmpty)
         let corruptBytes = Data("keep these exact bytes".utf8)
         defaults.set(corruptBytes, forKey: "teachingClassContext.v1")
         let broken = ClassStore(defaults: defaults)
+        assert(broken.needsRecoveryNotice)
         let failure = broken.takePersistenceEvents().first!
+        assert(broken.needsRecoveryNotice) // Draining diagnostics must not hide the notice.
         assert(failure.name == "persistence_read_failed" && failure.details["state"] == "unreadable")
         assert(failure.details["backupReadBack"] == "true")
         let recoveryKey = "teachingClassContext.v1.unreadable.v1"
         assert(defaults.dictionary(forKey: recoveryKey)?["bytes"] as? Data == corruptBytes)
         let capturedAt = defaults.dictionary(forKey: recoveryKey)?["capturedAt"] as? Date
+        broken.acknowledgeRecoveryNotice()
+        assert(!broken.needsRecoveryNotice)
+        assert(defaults.data(forKey: "teachingClassContext.v1") == corruptBytes)
+        assert(ClassStore(defaults: defaults).needsRecoveryNotice)
         _ = ClassStore(defaults: defaults)
         assert(defaults.dictionary(forKey: recoveryKey)?["capturedAt"] as? Date == capturedAt)
         broken.begin(at: date(31), scheduledStart: date(30), durationMinutes: 60)
+        assert(!broken.needsRecoveryNotice)
+        assert(!ClassStore(defaults: defaults).needsRecoveryNotice)
         assert(ClassStore(defaults: defaults).context == broken.context)
         assert(defaults.dictionary(forKey: recoveryKey)?["bytes"] as? Data == corruptBytes)
         defaults.set("unexpected preference type", forKey: "teachingClassContext.v1")
         let wrongType = ClassStore(defaults: defaults)
+        assert(wrongType.needsRecoveryNotice)
         assert(wrongType.takePersistenceEvents().first?.details["state"] == "unexpected_type")
         let backupBytes = defaults.dictionary(forKey: recoveryKey)!["bytes"] as! Data
         let propertyList = try! PropertyListSerialization.propertyList(from: backupBytes, format: nil) as! [String: String]

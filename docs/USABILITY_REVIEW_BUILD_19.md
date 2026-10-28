@@ -69,6 +69,14 @@ Other native-media and physical volume bugs remain open.
    earlier broader checks do not substitute for these tasks. A private support
    route and the TestFlight journal-access pilot also remain prerequisites.
 
+## Follow-through: builds 20–21
+
+Items 2–3 are implemented and described in the [usability follow-up](USABILITY_FOLLOWUP_2026-10-28.md).
+The refresh acknowledgement is neutral, and unreadable class timing has a brief
+notice and direct Start action. Item 1 was corrected after raw-image inspection;
+no rendering experiment was retained. Hand placement, schedule inference,
+count semantics and hardware-validation tasks remain as described above.
+
 ## Suggested next development pass
 
 Start with targeted rendering evidence from item 1 and the small feedback/error

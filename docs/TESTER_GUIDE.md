@@ -46,6 +46,11 @@ its timing and stops the session/count. Neither is the same as Stop session.
 An old class also retires 30 minutes after its scheduled end; no new class starts
 silently. Editing the schedule preserves the original Start timestamp.
 
+If saved timing cannot be read, **Class not restored** offers **Start class**
+for a fresh draft or **Later**. Dismissing it preserves the stored recovery data;
+starting a new class replaces current timing while retaining the recovery copy.
+A normal first launch or a successfully restored class does not show this notice.
+
 ## Report something useful
 
 Record the app build, Watch/watchOS version, the action just before the problem,

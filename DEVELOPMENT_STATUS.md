@@ -3,10 +3,30 @@
 Updated October 28, 2026. Historical observations are kept separately so that
 previous build states do not read as current facts.
 
+## Builds 20–21 — usability and evidence correction
+
+Build 16 remains on the physical Watch; all work used disposable simulators.
+Build 20 replaces success-looking volume refresh feedback with a brief outline
+and “Refresh requested.” Native focus/identity/timing are unchanged; all six
+SE 3 focus regression checks pass. Build 21 adds a concise unreadable-class
+notice with Start class/Later, preserving original/backup values on dismissal.
+[Changes and validation](docs/USABILITY_FOLLOWUP_2026-10-28.md).
+
+The control-disappearance claim from the previous screenshot review was wrong.
+The original PNGs contain those controls. A bounded 99-frame comparison found
+no missing full-width count outlines; OCR warnings require review for hand
+occlusion. Timeline/compositing experiments were removed. This is not a new
+rendering fix or proof against other intermittent failures.
+
+A related audit found Not Playing in all nine delayed PNGs attached to the
+October 28 Apple media comparison. That delayed-blank/variant-ranking conclusion
+was corrected in FB25305069 at 01:04 PDT. Physical black-media/volume incidents
+remain unresolved; earlier Simulator rendering claims need revalidation.
+
 ## Roadmap 22–25 — candidate build 19, comparison and tester preparation
 
 The physical Watch remains on **build 16**. No physical-device query, install,
-launch or log collection was performed. Current source is **build 19**.
+launch or log collection was performed. That batch produced **build 19**.
 
 22. Checked the installed runtime gate for the isolated hand-transition probe.
     Xcode 27.1 still has watchOS 27.0 SDK/runtime (24R362); there is no newer local
