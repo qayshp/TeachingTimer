@@ -45,6 +45,12 @@ spacing; obsolete groups are skipped rather than replayed across the next
 landmark or after completion. The arc keeps its original timing. See
 [late-pulse behavior and Simulator checks](docs/HAPTIC_DELAYS.md).
 
+For a first test, use the [tester quick start](docs/TESTER_GUIDE.md) and read
+[privacy and diagnostic sharing](docs/PRIVACY.md).
+The [build 16 versus 19 comparison](docs/BUILD_16_VS_19.md) includes real
+SE 3/Ultra screenshots, known rendering failures and a
+[prioritized usability review](docs/USABILITY_REVIEW_BUILD_19.md).
+
 ## Class options
 
 Tap **Class**, at the upper left, to:
