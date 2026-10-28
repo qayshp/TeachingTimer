@@ -7,11 +7,11 @@ Simulator results, physical observations and unverified mitigations.
 
 | GitHub issue | Apple feedback | Current boundary |
 | --- | --- | --- |
-| [#1 Blank native media](https://github.com/qayshp/TeachingTimer/issues/1) | FB25305069 | Preventive native-view refresh helps some cases; not reliably fixed. Timer-return rendering failures are separately described, not assumed to have the same cause. |
+| [#1 Blank native media](https://github.com/qayshp/TeachingTimer/issues/1) | FB25305069 | Preventive native-view refresh helps some cases; not reliably fixed. Original October 24 black frames are verified; later delayed-frame and missing-timer-control interpretations were corrected. |
 | [#2 Crown volume response](https://github.com/qayshp/TeachingTimer/issues/2) | FB25329167 | Retained control/refocus avoids a controlled regression; physical reliability remains unproven. |
 | [#3 Unexpected audio silencing](https://github.com/qayshp/TeachingTimer/issues/3) | Draft only | Playback continues; a recorded zero-volume request does not establish the initiating fault. |
 | [#4 Always-On seconds-hand backstep](https://github.com/qayshp/TeachingTimer/issues/4) | FB25329087 | Minimal Simulator probe reproduces; no speculative time correction added. |
-| [#5 Watch developer connection failures](https://github.com/qayshp/TeachingTimer/issues/5) | FB25329139 | Discovery, journal transfer, system-log collection and installation are separate success criteria. |
+| [#5 Watch developer connection failures](https://github.com/qayshp/TeachingTimer/issues/5) | FB25329139 | Apple could not diagnose with current information; coordinated failure/recovery evidence remains needed. |
 | [#6 Paired Simulator media discovery](https://github.com/qayshp/TeachingTimer/issues/6) | FB25294079 | No known-working companion-media baseline; Apple support clarification remains needed. |
 
 The [bug form](../.github/ISSUE_TEMPLATE/bug_report.yml) asks for versions,
@@ -25,3 +25,6 @@ Keep symptoms separate unless evidence establishes a shared cause. A page
 callback is not proof of rendered pixels; a focus call or moving ring is not
 proof of a volume command, selected endpoint or audible output. Successful
 Simulator runs do not close physical-device bugs.
+
+Issues #1 and #5 were updated on October 28 to match the image audit and Apple
+connection-report status. Both project issues remain open.

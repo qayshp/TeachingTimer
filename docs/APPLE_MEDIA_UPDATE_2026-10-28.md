@@ -5,8 +5,9 @@ comparison package contain “Not Playing” according to Vision OCR. The origin
 claim that those captures remained completely black was wrong. The follow-up
 asks Apple to disregard that conclusion and the recovery ranking based on it.
 Saved read-back and the submitted thread confirm the correction. Physical
-black-media reports remain; earlier controlled Simulator rendering claims need
-revalidation. The description below records the original, superseded submission.
+black-media reports remain. The original October 24 black/recovery frames have
+since been confirmed by the [image audit](MEDIA_IMAGE_AUDIT.md), clarified to
+Apple at 02:16 PDT. The description below records the original, superseded submission.
 
 Submitted to existing **FB25305069** through Feedback Assistant. The saved
 follow-up text was read back and matched the prepared text. FeedbackCore

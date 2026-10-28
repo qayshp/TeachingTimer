@@ -5,8 +5,10 @@ contain “Not Playing” according to OCR. They were incorrectly interpreted as
 black during visual review. They do not demonstrate delayed blank media or
 support the recovery ranking below. The lifecycle observations remain separate
 evidence. A correction was submitted to FB25305069 at 01:04 PDT. Physical reports
-remain valid; the Simulator rendering conclusions require revalidation.
-The comparison table is retained as a superseded investigation record.
+remain valid; the later comparison cannot establish persistent blanks.
+The comparison table is retained as a superseded investigation record. The
+[original-image audit](MEDIA_IMAGE_AUDIT.md) confirms the older October 24
+black frames and recovery images, but not this later variant ranking.
 
 ## Outcome
 
@@ -34,12 +36,13 @@ continued in the captured journals; this does not prove physical haptic delivery
 No candidate changed the volume adapter or its focus requests. Actual paired-phone
 volume responsiveness was not testable in this unpaired setup.
 
-Early screenshots alone are insufficient: the baseline's initial black page
-later rendered normally. The runner now takes an additional screenshot five
+Early screenshots alone are insufficient; their former black-page labels
+were not supported by the audited images. The runner now takes an additional screenshot five
 seconds after each initial-entry, background-return and reentry capture.
-A black delayed capture is a lower bound, not a claim of indefinite failure.
+A candidate black delayed capture would require direct pixel review and would
+only bound the observed duration; none was confirmed in the audited delayed set.
 
-## Comparisons
+## Superseded visual interpretations — not current findings
 
 | Variant | Change | Observation |
 | --- | --- | --- |
@@ -66,9 +69,9 @@ It does not suppress failures or rewrite class data to make a check pass.
 
 ## Next useful work
 
-1. Extend the independent native-view fixture to reproduce this exact fault
-   sequence with a minimal two-page host. First confirm that the longer blank
-   survives there without TeachingTimer's timeline and controllers.
+1. Use the confirmed October 24 fault sequence as a baseline, with original
+   pixels and controls verified before each recovery comparison. The current
+   build-21 bounded rerun rendered all six sampled media frames.
 2. Capture native service termination/relaunch and rendered frames together,
    including a no-fault comparison. Keep callback success separate from pixels.
 3. The comparison was [submitted to FB25305069 on October 28](APPLE_MEDIA_UPDATE_2026-10-28.md).

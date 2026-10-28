@@ -42,8 +42,8 @@ be disregarded. Physical incidents remain reported and unresolved.
   regression. A smaller volume-only sample and physical mitigation validation
   are still needed. Ring feedback does not prove paired-iPhone audio response,
   Crown ownership, or a silencing fix. See [focus comparison](SIMULATOR_VOLUME_FOCUS.md).
-- **Black media:** earlier view-only trials reported recovery; their image
-  classifications need revalidation.
+- **Black media:** original October 24 black/recovery frames are confirmed by
+  the image audit; later comparison rankings were withdrawn.
   Current refresh is preventive, not blank-view detection. Two successful
   physical classes do not prove resolution. Capture any recurrence and compare
   standalone Now Playing when practical. See [service recovery](NOW_PLAYING_SERVICE_RECOVERY.md).
@@ -65,8 +65,8 @@ not change the installed app or device settings. See the
   under Developer Tools & Resources → Developer Documentation. Submission and
   the new ID were verified at 02:13 PDT. It quotes the current instruction,
   links both official articles, describes Simulator luminance observations and
-  asks Apple to clarify the supported action/limits. No device-log attachment
-  was needed for this documentation-only report.
+  asks Apple to clarify the supported action/limits. The evidence was included in the text and links. An attachment-button attempt
+  failed in Feedback Assistant; no attachment was submitted or claimed.
 - Cross-referenced it from **FB24696786** and closed that original control-
   availability report at Apple's September 22 request. This closure does not
   claim that the new documentation issue is fixed.

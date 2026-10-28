@@ -137,10 +137,10 @@ An intermittent black media page has been reported during classes on a physical
 SE 3 with a paired iPhone. Native media refresh runs on page entry and eligible
 background return; ordinary wrist wakes do not trigger it. This is preventive
 recovery, not failure detection, and physical reliability remains unproven.
-The earlier Simulator visual interpretations are being revalidated after an
-[image-evidence correction](docs/APPLE_MEDIA_UPDATE_2026-10-28.md): delayed
-captures described as black actually contain Not Playing. They cannot establish
-a reliable recovery ranking or the physical trigger.
+An [original-image audit](docs/MEDIA_IMAGE_AUDIT.md) confirms the October 24
+black captures and recovery images. Later delayed captures described as black
+actually contain Not Playing; they cannot establish a recovery ranking or the
+physical trigger. The Apple report has been clarified.
 In an October 22 physical-class report, the media page stayed completely black
 and its Crown volume was unusable, while the timer and timer-page volume worked
 with Apple Music on iPhone → AirPlay → WiiM. No cause has been established.
@@ -210,3 +210,5 @@ class or journal is migrated simply by building the distribution identity.
 Known bugs and evidence gaps are tracked in [GitHub issues](https://github.com/qayshp/TeachingTimer/issues)
 and the [issue/Apple-feedback index](docs/ISSUE_TRACKER.md). Please use the bug
 form and keep raw device logs and personal diagnostics out of public reports.
+
+Current remaining work and physical/TestFlight gates: [active roadmap](docs/ROADMAP.md).
