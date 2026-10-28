@@ -133,15 +133,14 @@ establishes physical-watch cadence or how the vibrations feel while teaching.
 See [Device Hub testing boundaries](docs/DEVICE_HUB_TESTING.md) for the current
 Simulator sound-output limitation, physical-device remote input, and the next
 seconds-hand transition investigation.
-An intermittent blank page has been observed in Simulator (including the
-pre-review build) and reported during classes on a physical SE 3 with a paired
-iPhone. It is not a Simulator-only limitation. See the current verification
-notes. Recreating only the native media view recovered controlled service-loss
-failures without restarting the app. Build 8 applies that refresh on page entry
-and return from the background; ordinary wrist wakes do not trigger it. This is
-preventive recovery, not failure detection. Physical recovery still needs
-validation, and the original physical trigger is unknown. See the
-[reproduction and recovery results](docs/NOW_PLAYING_SERVICE_RECOVERY.md).
+An intermittent black media page has been reported during classes on a physical
+SE 3 with a paired iPhone. Native media refresh runs on page entry and eligible
+background return; ordinary wrist wakes do not trigger it. This is preventive
+recovery, not failure detection, and physical reliability remains unproven.
+The earlier Simulator visual interpretations are being revalidated after an
+[image-evidence correction](docs/APPLE_MEDIA_UPDATE_2026-10-28.md): delayed
+captures described as black actually contain Not Playing. They cannot establish
+a reliable recovery ranking or the physical trigger.
 In an October 22 physical-class report, the media page stayed completely black
 and its Crown volume was unusable, while the timer and timer-page volume worked
 with Apple Music on iPhone → AirPlay → WiiM. No cause has been established.

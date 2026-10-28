@@ -1,5 +1,13 @@
 # Apple media follow-up — October 28, 2026
 
+**Correction submitted at 01:04 PDT:** all nine delayed PNGs in the attached
+comparison package contain “Not Playing” according to Vision OCR. The original
+claim that those captures remained completely black was wrong. The follow-up
+asks Apple to disregard that conclusion and the recovery ranking based on it.
+Saved read-back and the submitted thread confirm the correction. Physical
+black-media reports remain; earlier controlled Simulator rendering claims need
+revalidation. The description below records the original, superseded submission.
+
 Submitted to existing **FB25305069** through Feedback Assistant. The saved
 follow-up text was read back and matched the prepared text. FeedbackCore
 reported attachment upload completion at 00:03:30 PDT.

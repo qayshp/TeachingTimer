@@ -1,8 +1,16 @@
 # Native media recovery comparison — October 26, 2026
 
+**Correction, October 28:** the nine delayed PNGs later attached to Apple all
+contain “Not Playing” according to OCR. They were incorrectly interpreted as
+black during visual review. They do not demonstrate delayed blank media or
+support the recovery ranking below. The lifecycle observations remain separate
+evidence. A correction was submitted to FB25305069 at 01:04 PDT. Physical reports
+remain valid; the Simulator rendering conclusions require revalidation.
+The comparison table is retained as a superseded investigation record.
+
 ## Outcome
 
-No reliable replacement for the existing recovery behavior was established.
+No candidate was adopted, and no reliable recovery ranking was established.
 Experimental app changes were removed. TeachingTimer's class, runtime, landmark,
 Crown focus, and native-media implementation remain at the build-18 baseline.
 Only the regression tooling and this evidence record changed.

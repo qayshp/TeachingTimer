@@ -38,6 +38,11 @@ phone media source, an unchanged volume ring is inconclusive.
 
 ## October 26, 2026 evidence
 
+**October 28 correction:** the nine delayed images included in the later Apple
+comparison contain Not Playing. Their earlier black-frame classification was
+incorrect. The historical visual conclusions below require revalidation against
+original pixels; callbacks and OCR warnings alone cannot establish failure.
+
 Build 18 / Xcode 27.1, watchOS 27.0 SE 3 40 mm: both sequences passed lifecycle
 checks, preserving the host, class and native volume-control instance. Home and
 refresh screenshots showed no visible volume-ring change in this unpaired setup.

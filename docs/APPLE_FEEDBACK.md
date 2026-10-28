@@ -19,6 +19,9 @@ No new Apple submission is implied by creating those issues.
 On October 28, [FB25305069 received the recovery comparison](APPLE_MEDIA_UPDATE_2026-10-28.md),
 including delayed captures and failed recovery candidates. Submission/read-back
 and attachment upload completed. Other report states are unchanged.
+At 01:04 PDT a correction was submitted: the nine delayed captures actually
+contain Not Playing, so the delayed-blank and variant-ranking claims should
+be disregarded. Physical incidents remain reported and unresolved.
 
 ## Remaining evidence gaps
 
