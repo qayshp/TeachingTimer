@@ -4,6 +4,10 @@ October 28, 2026. Based on the [side-by-side captures](BUILD_16_VS_19.md), curre
 source and essential-action checks on SE 3 40 mm and Ultra 4 49 mm. These are
 recommendations, not additional implemented changes or a physical-class test.
 
+The initial missing-control finding in this review was incorrect; the original
+PNG evidence contains those controls. See the [investigation and correction](TIMER_CONTROL_INVESTIGATION.md).
+Other native-media and physical volume bugs remain open.
+
 ## What is working well
 
 - Start class is the clear primary action, with duration and suggested interval
@@ -23,17 +27,12 @@ recommendations, not additional implemented changes or a physical-class test.
 
 ## Recommended order
 
-1. **Investigate disappearing timer controls before adding polish.** Build 16's
-   SE 3 awake count capture lacks Class; build 19's Ultra awake count capture
-   lacks Stop count. Subsequent Lock frames show those controls. The captures
-   do not establish duration or whether the invisible targets still respond.
-   A teacher must
-   be able to stop a count without guessing where an invisible target is.
-   Add screenshot-content checks to the regression sequence and isolate this
-   rendering/lifecycle behavior in a small fixture. Do not conflate it with the
-   native-media bug or change volume ownership speculatively. This is the most
-   consequential new observation from the comparison, although similar timer
-   failures predate this batch.
+1. **Require direct image evidence for a rendering failure.** The original
+   interpretation of the SE 3/Ultra screenshots was wrong. OCR and button-outline
+   checks confirm controls in those files. New bounded capture tooling flags
+   uncertain frames for review without calling them failures automatically.
+   No reliable disappearing-control reproduction or rendering fix was established.
+   Future native timer/media failures still need separate investigation.
 2. **Make refresh acknowledgement more honest.** A checkmark and “Control
    refreshed” follow return from `focus()`, not confirmation that Crown input or
    sound recovered. Prefer a neutral, brief “Refresh requested” accessibility

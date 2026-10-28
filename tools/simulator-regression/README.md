@@ -61,6 +61,12 @@ this is observation, not an automatic retry or a visual success assertion.
 
 ## Essential teaching actions
 
+For bounded count/Lock/wake captures, use `timer_controls.py` with the same
+`--simulator`, `--app`, `--output` and explicit `--reset-test-app` arguments.
+It supports default-size SE 3 40 mm and Ultra 4 49 mm captures. OCR and count
+outline measurements flag frames for review; they never prove disappearance,
+touchability or native audio behavior. See the [investigation and correction](../../docs/TIMER_CONTROL_INVESTIGATION.md).
+
 `actions.py` is a separate destructive-to-test-data regression on a **disposable**
 Watch Simulator named `TeachingTimer Regression…`. It requires explicit
 `--reset-test-app` because it uninstalls/reinstalls only TeachingTimer on that

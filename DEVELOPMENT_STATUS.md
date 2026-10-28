@@ -29,12 +29,10 @@ launch or log collection was performed. Current source is **build 19**.
     and bounded lifecycle evidence. Upload completion was verified. Other
     reports had no meaningful new evidence and received no duplicate updates.
 
-**Visual caveat:** comparison captures show the Class control missing in one
-awake build-16 SE 3 frame and Stop count missing in one awake build-19 Ultra
-frame. Both reappear in subsequent Lock captures. Duration and touch response
-are unknown; similar timer-control failures predate the refactor. No new fix
-for blank media, timer rendering, volume silencing or hand backstep is claimed.
-The review recommendations are not implemented changes.
+**Correction:** the earlier comparison misidentified controls as missing in
+individual screenshot previews. The original PNGs contain those controls, as
+confirmed by OCR and outline checks. [Investigation](docs/TIMER_CONTROL_INVESTIGATION.md).
+This does not resolve the separately documented black-media/volume bugs.
 
 ## Roadmap 18–21 — tests, automation and public tracking
 

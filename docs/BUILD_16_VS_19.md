@@ -7,6 +7,16 @@ The new candidate preserves the teaching UI. Changes since 16 primarily improve
 diagnostic retention, persistence diagnostics, automated checks and maintainability.
 It does not establish a new fix for media, Crown volume or the hand backstep.
 
+## Correction after the October 28 investigation
+
+The original review incorrectly described controls as missing in the build-16
+SE 3 and build-19 Ultra count frames. The stored PNGs contain the controls:
+OCR reads Class in the SE 3 image and Class/Stop count in the Ultra image;
+pixel checks find the Ultra button outline. Their Git object hashes confirm
+these are the same files originally published. The earlier visual interpretation
+was wrong. This is not a reproduced app defect or evidence against the refactor.
+[Follow-up method and results](TIMER_CONTROL_INVESTIGATION.md).
+
 ## Comparison method
 
 - Rebuilt the immutable `teaching-build-16` tag (`be1e37e`) with Xcode 27.1.
@@ -33,15 +43,14 @@ It does not establish a new fix for media, Crown volume or the hand backstep.
 | State | Build 16 | Build 19 |
 | --- | --- | --- |
 | Start menu | ![16 SE 3 Start](images/build16-vs19/16-se3-start-menu.png) | ![19 SE 3 Start](images/build16-vs19/19-se3-start-menu.png) |
-| Count, awake | ![16 SE 3 count; Class control missing in this frame](images/build16-vs19/16-se3-count.png) | ![19 SE 3 count](images/build16-vs19/19-se3-count.png) |
+| Count, awake | ![16 SE 3 count](images/build16-vs19/16-se3-count.png) | ![19 SE 3 count](images/build16-vs19/19-se3-count.png) |
 | Count, Lock / reduced luminance | ![16 SE 3 dim count](images/build16-vs19/16-se3-dim-count.png) | ![19 SE 3 dim count](images/build16-vs19/19-se3-dim-count.png) |
 | Native media | ![16 SE 3 Not Playing](images/build16-vs19/16-se3-media.png) | ![19 SE 3 Not Playing](images/build16-vs19/19-se3-media.png) |
 
 The start menu keeps its large primary action and outlined custom action.
 The dim face preserves the two hand weights, scheduled-end wedge, inner arc
-and large Stop count target. **Build 16's awake count frame lacks the Class
-control, which reappears in the subsequent dim frame.** This is a real captured
-rendering defect, not an intentional difference in design.
+and large Stop count target. Foreground hands can cross labels, which can also
+prevent OCR from recognizing the full label in individual frames.
 
 ## Ultra 4 49 mm
 
@@ -49,18 +58,12 @@ rendering defect, not an intentional difference in design.
 | --- | --- | --- |
 | Start menu | ![16 Ultra Start](images/build16-vs19/16-ultra-start-menu.png) | ![19 Ultra Start](images/build16-vs19/19-ultra-start-menu.png) |
 | Active class | ![16 Ultra active class](images/build16-vs19/16-ultra-active.png) | ![19 Ultra active class](images/build16-vs19/19-ultra-active.png) |
-| Count, awake | ![16 Ultra count](images/build16-vs19/16-ultra-count.png) | ![19 Ultra count; Stop count control missing in this frame](images/build16-vs19/19-ultra-count.png) |
+| Count, awake | ![16 Ultra count](images/build16-vs19/16-ultra-count.png) | ![19 Ultra count](images/build16-vs19/19-ultra-count.png) |
 | Count, Lock / reduced luminance | ![16 Ultra dim count](images/build16-vs19/16-ultra-dim-count.png) | ![19 Ultra dim count](images/build16-vs19/19-ultra-dim-count.png) |
 
-**Build 19's awake count capture is missing the Stop count control while the
-inner arc is visible.** The preceding active-class frame has its count button;
-the subsequent Lock frame restores Stop count. The screenshot records a failure,
-not a successful rendering check. Similar missing timer controls were observed
-before this split, including build 16 in the SE 3 comparison above; a shared
-cause with black native media remains unproven. This warrants focused rendering
-isolation, not a claim that the refactor introduced or fixed it.
-These individual frames do not establish the duration of the disappearance or
-whether the invisible controls still respond to touches.
+The Ultra count control is present in the stored awake and dim frames. The
+original missing-control description was corrected after inspecting the raw
+image data, as recorded above.
 
 The new Ultra dim capture also shows the deliberate tradeoff of foreground
 hands: a hand can cross the button label. The hands must remain foremost; moving
@@ -107,8 +110,8 @@ physical audio route, actual volume value or tactile pulse was verified here.
   and native volume instance. These are state checks, not pixel/audio checks.
 - Native media rendered Not Playing in these four comparison captures. This
   does not reverse the known intermittent black-media reproduction.
-- Visual review found the missing timer controls described above. Automated
-  state passes cannot certify the whole interface as reliable.
+- Follow-up image checks corrected the original missing-control interpretation.
+  Automated state passes still cannot certify the whole interface as reliable.
 
 Keep build 16 for the planned class as requested. Candidate 19 is a tested
 maintenance candidate, not a demonstrated cure for the known teaching bugs.
