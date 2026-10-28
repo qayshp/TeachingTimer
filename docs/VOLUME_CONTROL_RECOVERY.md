@@ -212,3 +212,12 @@ The paired-Simulator audio path still does not provide validated companion
 volume control, so this is not a reproduction or proven fix of the mute bug.
 See [incident evidence](MEDIA_INCIDENT_2026-10-23.md) and
 [diagnostic event meanings](INTERFACE_DIAGNOSTICS.md).
+
+## Build 20: neutral refresh acknowledgement
+
+The refresh icon stays visible and briefly gains an outline after the native
+focus call returns. Accessibility says “Refresh requested” instead of “Control
+refreshed.” This acknowledges the attempt without claiming input/audio recovery.
+Native widget identity, focus calls, settling times, tap area and immediate
+media-return path are unchanged. The SE 3 focus regression passed all six
+lifecycle assertions; actual iPhone volume remains a physical test.

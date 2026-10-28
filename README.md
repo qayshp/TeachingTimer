@@ -29,9 +29,9 @@ Apple reports and remaining evidence gaps: [feedback status](docs/APPLE_FEEDBACK
 4. Turn the **Digital Crown** for the paired iPhone's volume. Swipe left for
    Apple's **Now Playing** controls; swipe right to return.
    If timer-page volume stops behaving normally, **tap the volume display** to
-   refresh its native control, then try the Crown again. A brief checkmark
-   confirms the control was refreshed, not that sound recovered. If the phone
-   is already at zero, turn the Crown up; refreshing does not raise volume.
+   refresh its native control, then try the Crown again. A brief ring around the
+   refresh icon acknowledges the request; it does not confirm sound recovered.
+   If the phone is already at zero, turn the Crown up; refreshing does not raise volume.
 5. Tap **1-min count** (or **Count** on compact layouts). The inner dashed arc
    traces one minute from the tap. Vibrations mark 10/20/30/40/50/60 seconds with
    1/2/3/4/5/6 pulses. Tap **Stop count** to cancel.

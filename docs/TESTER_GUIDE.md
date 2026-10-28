@@ -28,8 +28,8 @@ needs a Watch that supports it. Screen-size simulations are not hardware certifi
 
 - Swipe left for media and right for the clock. Each entry to media recreates
   the native media view, but an intermittent blank-page bug remains.
-- Tap the timer's volume display if Crown volume stops responding. The checkmark
-  means the focus call returned; it does **not** confirm sound recovered.
+- Tap the timer's volume display if Crown volume stops responding. A brief ring
+  acknowledges the refresh request; it does **not** confirm sound recovered.
   If playback continues silently, phone volume controls have recovered it in
   reports. Neither workaround is guaranteed. Avoid repeated blind adjustments.
 - **Class → Stop session** keeps class timing. **Resume** restarts the mindfulness

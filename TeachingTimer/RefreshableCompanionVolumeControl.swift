@@ -50,10 +50,12 @@ struct RefreshableCompanionVolumeControl: View {
                     .accessibilityHidden(true).allowsHitTesting(false)
             }
             if current {
-                Image(systemName: refresh.confirmedGeneration == nil ? "arrow.clockwise" : "checkmark")
+                Image(systemName: "arrow.clockwise")
                 .font(.system(size: 10, weight: .bold))
                 .frame(width: 16, height: 16)
                 .background(Circle().fill(.black))
+                // A ring acknowledges the request; it does not claim audio recovery.
+                .overlay(Circle().stroke(.white, lineWidth: refresh.confirmedGeneration == nil ? 0 : 1))
                 .offset(x: 20, y: 13)
                 .allowsHitTesting(false)
             } else if activation.hasControl {
@@ -72,8 +74,8 @@ struct RefreshableCompanionVolumeControl: View {
         .frame(width: layout.volumeSize.width, height: layout.volumeSize.height)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("iPhone playback volume")
-        .accessibilityValue(!current ? "Preparing volume control" : (refresh.isRefreshing ? "Refreshing control" :
-            (refresh.confirmedGeneration == nil ? "" : "Control refreshed")))
+        .accessibilityValue(!current ? "Preparing volume control" : (refresh.isRefreshing ? "Requesting refresh" :
+            (refresh.confirmedGeneration == nil ? "" : "Refresh requested")))
         .accessibilityHint("Turn the Crown to adjust. Double-tap to refresh the volume control.")
         .accessibilityAddTraits(.isButton)
         .accessibilityAction { requestRefresh() }
