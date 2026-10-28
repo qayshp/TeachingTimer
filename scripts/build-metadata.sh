@@ -7,7 +7,7 @@
 # Xcode build phase: generated product metadata, never source-file mutation.
 set -eu
 revision=${SOURCE_REVISION:-$(git -C "$SRCROOT" rev-parse --short=12 HEAD 2>/dev/null || printf 'source-export')}
-if test -n "$(git -C "$SRCROOT" status --porcelain --untracked-files=no 2>/dev/null)"; then
+if test -n "$(git -C "$SRCROOT" status --porcelain --untracked-files=normal 2>/dev/null)"; then
   revision="$revision-dirty"
 fi
 output="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/BuildInfo.plist"

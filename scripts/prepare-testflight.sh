@@ -49,3 +49,5 @@ print(json.dumps(result, indent=2))
 if not all(checks.values()):
     sys.exit(1)
 PY
+
+python3 scripts/inspect-artifact.py "$output/TeachingTimer.xcarchive" > "$output/artifact-inspection.json"

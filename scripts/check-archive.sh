@@ -8,7 +8,17 @@
 # not App Store validation or permission to install on a physical Watch.
 set -eu
 cd "$(dirname "$0")/.."
-archive_dir=$(mktemp -d /tmp/TeachingTimerArchive.XXXXXX)
+if [ "$#" -gt 1 ]; then
+  printf 'Usage: sh scripts/check-archive.sh [NEW_OUTPUT_DIRECTORY]\n' >&2
+  exit 2
+fi
+if [ "$#" -eq 1 ]; then
+  test ! -e "$1" || { printf 'Output already exists\n' >&2; exit 2; }
+  mkdir -p "$1"
+  archive_dir=$(CDPATH= cd -- "$1" && pwd)
+else
+  archive_dir=$(mktemp -d /tmp/TeachingTimerArchive.XXXXXX)
+fi
 xcodebuild -project TeachingTimer.xcodeproj -scheme TeachingTimer \
   -configuration Release -destination 'generic/platform=watchOS' \
   -archivePath "$archive_dir/TeachingTimer.xcarchive" \
@@ -20,3 +30,5 @@ app="$archive_dir/TeachingTimer.xcarchive/Products/Applications/TeachingTimer.ap
 test -x "$app/TeachingTimer"
 test -f "$app/Info.plist"
 printf 'PASS: archive contains the Watch application: %s\n' "$app"
+
+python3 scripts/inspect-artifact.py "$archive_dir/TeachingTimer.xcarchive" > "$archive_dir/readiness.json"

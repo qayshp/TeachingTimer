@@ -107,9 +107,14 @@ No signing keys or provisioning profiles belong in the repository.
 
 ```sh
 sh scripts/check-tools.sh    # Offline diagnostic tooling checks
-sh scripts/check.sh          # Eleven deterministic model/controller/diagnostic/geometry suites
+sh scripts/check.sh          # Twelve deterministic model/controller/diagnostic/geometry suites
 sh scripts/check-archive.sh  # Unsigned archive must actually contain the app
 ```
+
+For a complete build/archive check with retained logs and source metadata, use
+`python3 scripts/verify-build.py NEW_OUTPUT_DIRECTORY`. See
+[build and release evidence](docs/BUILD_VERIFICATION.md) and the
+[Simulator action suite](tools/simulator-regression/README.md#essential-teaching-actions).
 
 These are standalone Swift checks with WatchKit boundary doubles, not an Xcode
 unit-test target. GitHub Actions also builds the app for Watch Simulator. Use
