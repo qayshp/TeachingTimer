@@ -15,6 +15,7 @@ check() {
     "$check_dir/$check_name"
 }
 check ClassContext TeachingTimer/PersistenceDiagnostics.swift TeachingTimer/ClassContext.swift Tests/ClassContextChecks.swift
+check TimeEdges TeachingTimer/PersistenceDiagnostics.swift TeachingTimer/ClassContext.swift TeachingTimer/LandmarkController.swift Tests/TimeEdgeChecks.swift
 check Landmarks TeachingTimer/LandmarkController.swift Tests/LandmarkChecks.swift
 check RuntimeJournal TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift Tests/RuntimeDiagnosticsChecks.swift
 check VolumeDiagnostics TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/VolumeControlDiagnostics.swift Tests/VolumeControlDiagnosticsChecks.swift
@@ -25,4 +26,4 @@ check LandmarkController -D CONTROLLER_CHECKS TeachingTimer/LandmarkDiagnostics.
 check LandmarkJournal TeachingTimer/LandmarkDiagnostics.swift Tests/LandmarkDiagnosticsChecks.swift
 check Layout TeachingTimer/ClockGeometry.swift TeachingTimer/TimerFaceLayout.swift Tests/TimerFaceLayoutChecks.swift
 check Geometry TeachingTimer/TimerFaceLayout.swift TeachingTimer/ClockGeometry.swift Tests/ClockGeometryChecks.swift
-printf 'All eleven suites passed. Check binaries: %s\n' "$check_dir"
+printf 'All twelve suites passed. Check binaries: %s\n' "$check_dir"
