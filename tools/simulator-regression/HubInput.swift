@@ -64,10 +64,11 @@ let numbers=args.dropFirst(4).compactMap(Double.init)
 guard numbers.count == args.count-4, numbers.allSatisfy({ (0...1).contains($0) }) else { fail("Use normalized display coordinates 0…1") }
 if action == "tap", numbers.count == 2 {
     let p=point(numbers[0],numbers[1]); mouse(.leftMouseDown,p); Thread.sleep(forTimeInterval:0.08); mouse(.leftMouseUp,p)
-} else if action == "swipe", numbers.count == 4 {
+} else if ["swipe", "scroll"].contains(action), numbers.count == 4 {
     let from=point(numbers[0],numbers[1]), to=point(numbers[2],numbers[3]); mouse(.leftMouseDown,from)
     for i in 1...20 {
-        let t=Double(i)/20; mouse(.leftMouseDragged,CGPoint(x:from.x+(to.x-from.x)*t,y:from.y+(to.y-from.y)*t)); Thread.sleep(forTimeInterval:0.015)
+        let t=Double(i)/20; mouse(.leftMouseDragged,CGPoint(x:from.x+(to.x-from.x)*t,y:from.y+(to.y-from.y)*t)); Thread.sleep(forTimeInterval: action == "scroll" ? 0.04 : 0.015)
     }
+    if action == "scroll" { Thread.sleep(forTimeInterval: 0.2) }
     mouse(.leftMouseUp,to)
 } else { fail("Unknown action") }

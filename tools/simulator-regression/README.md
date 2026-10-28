@@ -1,6 +1,6 @@
 # Bounded Device Hub regression captures
 
-Requires macOS Accessibility permission for the invoking terminal/agent, Xcode 27
+The focus/media runner (`run.py`) requires macOS Accessibility permission for the invoking terminal/agent, Xcode 27
 Device Hub open, and an already booted **disposable SE 3 40 mm** simulator named
 `TeachingTimer Regression…`. Never targets physical devices. Keep its display
 visible and do not interact with Device Hub during the short run. UI coordinates
@@ -58,3 +58,32 @@ unsuccessful recovery candidates and the distinction between short loading gaps
 and longer blank pages. Setup now waits up to ten seconds for the new class's
 UserDefaults write. Each media stage receives an additional five-second capture;
 this is observation, not an automatic retry or a visual success assertion.
+
+## Essential teaching actions
+
+`actions.py` is a separate destructive-to-test-data regression on a **disposable**
+Watch Simulator named `TeachingTimer Regression…`. It requires explicit
+`--reset-test-app` because it uninstalls/reinstalls only TeachingTimer on that
+simulator. It never accepts a physical device. Use a normal ad-hoc-signed
+Simulator build: an unsigned app can open yet fail extended-runtime startup.
+
+```sh
+python3 tools/simulator-regression/actions.py --simulator SIMULATOR_UUID \
+  --app /absolute/path/TeachingTimer.app --reset-test-app \
+  --output work/essential-actions-new
+```
+
+The suite checks default Start, custom draft Cancel, count start/cancel,
+Stop/Resume, schedule edit Cancel/Save, custom New class with confirmation,
+End class with confirmation, and media/timer navigation. It checks persisted
+class values and fresh journal events, waiting at most ten seconds for a state
+assertion. It retains every target screenshot and recognized text, actions and
+results. Missing/ambiguous targets fail; they never silently skip a step.
+
+Device Hub does not expose the Watch application's accessibility nodes here.
+Menu targets therefore use screenshot OCR; face controls use screen-relative
+positions because the moving hands can cover their text. This is a local,
+English/default-text-size test, not a portable XCTest suite. Do not run two UI
+sequences concurrently or interact with Device Hub during a run. A screenshot
+still needs human review; state assertions do not prove visible controls, native
+media pixels, Crown ownership, phone playback or tactile delivery.
