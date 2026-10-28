@@ -77,10 +77,8 @@ notice and direct Start action. Item 1 was corrected after raw-image inspection;
 no rendering experiment was retained. Hand placement, schedule inference,
 count semantics and hardware-validation tasks remain as described above.
 
-## Suggested next development pass
+## Current follow-through
 
-Start with targeted rendering evidence from item 1 and the small feedback/error
-improvements in items 2–3, each as a separate reviewed change. Continue the native
-media/volume investigation ahead of decorative polish. Keep the physical build
-16 checkpoint until the maintainer requests an installation; this review alone
-does not authorize one.
+The old next-pass recommendation for feedback and persistence notices is complete
+in builds 20–21. See the [active roadmap](ROADMAP.md) for the remaining image audit,
+schedule cue, hand-label comparison and accessibility/physical pilot gates.

@@ -1,5 +1,11 @@
 # Media-page recovery attempt and class persistence
 
+**Current evidence caution (October 28):** later delayed-blank screenshots were
+misclassified; they contain Not Playing. Historical Simulator rendering claims
+in this record require original-image revalidation. Native service/lifecycle
+logs remain separate evidence; physical black-media reports remain unresolved.
+See the [active roadmap](ROADMAP.md) and [correction](APPLE_MEDIA_UPDATE_2026-10-28.md).
+
 **October 24 update:** a later, deliberate native view-service termination
 reproduced black **media** content twice; host force-close/relaunch restored it
 both times and preserved class timing. See the

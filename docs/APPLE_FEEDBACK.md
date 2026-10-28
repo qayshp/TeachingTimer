@@ -1,6 +1,6 @@
 # Apple feedback status
 
-Verified in Feedback Assistant on October 26, 2026. All submitted attachment
+Refreshed and inspected in Feedback Assistant on October 28, 2026. All submitted attachment
 uploads completed. Submission is not an Apple diagnosis or a verified fix.
 Raw device logs, identifiers, and private evidence packages stay outside Git.
 
@@ -18,7 +18,9 @@ No new Apple submission is implied by creating those issues.
 
 On October 28, [FB25305069 received the recovery comparison](APPLE_MEDIA_UPDATE_2026-10-28.md),
 including delayed captures and failed recovery candidates. Submission/read-back
-and attachment upload completed. Other report states are unchanged.
+and attachment upload completed. The connection report now reads “Investigation complete - Unable to diagnose
+with current information”; no change timestamp was established. The other four
+submitted reports remain Open, with no new technical reply found.
 At 01:04 PDT a correction was submitted: the nine delayed captures actually
 contain Not Playing, so the delayed-blank and variant-ranking claims should
 be disregarded. Physical incidents remain reported and unresolved.
@@ -40,7 +42,8 @@ be disregarded. Physical incidents remain reported and unresolved.
   regression. A smaller volume-only sample and physical mitigation validation
   are still needed. Ring feedback does not prove paired-iPhone audio response,
   Crown ownership, or a silencing fix. See [focus comparison](SIMULATOR_VOLUME_FOCUS.md).
-- **Black media:** view-only recreation recovered two induced service failures.
+- **Black media:** earlier view-only trials reported recovery; their image
+  classifications need revalidation.
   Current refresh is preventive, not blank-view detection. Two successful
   physical classes do not prove resolution. Capture any recurrence and compare
   standalone Now Playing when practical. See [service recovery](NOW_PLAYING_SERVICE_RECOVERY.md).

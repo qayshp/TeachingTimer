@@ -1,5 +1,11 @@
 # Native Now Playing service-loss reproduction
 
+**Current evidence caution (October 28):** later delayed-blank screenshots were
+misclassified; they contain Not Playing. Historical Simulator rendering claims
+in this record require original-image revalidation. Native service/lifecycle
+logs remain separate evidence; physical black-media reports remain unresolved.
+See the [active roadmap](ROADMAP.md) and [correction](APPLE_MEDIA_UPDATE_2026-10-28.md).
+
 October 26 follow-ups added view-only recovery trials, automatic refresh,
 physical observations, and the zero-volume event ordering. All attachment
 uploads completed. See [Apple feedback status](APPLE_FEEDBACK.md).

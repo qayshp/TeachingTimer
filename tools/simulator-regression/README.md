@@ -44,23 +44,17 @@ incorrect. The historical visual conclusions below require revalidation against
 original pixels; callbacks and OCR warnings alone cannot establish failure.
 
 Build 18 / Xcode 27.1, watchOS 27.0 SE 3 40 mm: both sequences passed lifecycle
-checks, preserving the host, class and native volume-control instance. Home and
-refresh screenshots showed no visible volume-ring change in this unpaired setup.
-The media-service-loss run rendered Not Playing on first reopen, but the next
-media entry was black. A repeat run retained the black page after five seconds,
-despite a recorded automatic reload request. Another entry in the first run
-rendered normally. This remains a failing visual regression, not a proven fix.
-Home caused `resigned_frontmost`; automatic runtime recovery restarted the
-session with the original class intact. No claim of uninterrupted runtime is made.
-The runner captures early and delayed frames at all three media stages and never labels lifecycle checks
-a visual pass. Private capture folders are `media` and `media-delayed` under
-`work/support/2026-10-26-second-batch/` on the development Mac.
+checks, preserving host, class and native volume-control instance. Home caused
+`resigned_frontmost`; automatic recovery restarted runtime with the class intact.
+The historical black-page interpretation is withdrawn pending an original-image
+audit. No actual phone-volume or continuous-runtime success follows from this.
+Private original captures are under `work/support/2026-10-26-second-batch/`.
 
 ## Follow-up comparison
 
 [Recovery comparison](../../docs/MEDIA_RECOVERY_COMPARISON.md) records four
-unsuccessful recovery candidates and the distinction between short loading gaps
-and longer blank pages. Setup now waits up to ten seconds for the new class's
+experimental candidates and superseded visual classifications. No reliable
+recovery ranking was established. Setup now waits up to ten seconds for the new class's
 UserDefaults write. Each media stage receives an additional five-second capture;
 this is observation, not an automatic retry or a visual success assertion.
 
