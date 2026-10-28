@@ -13,9 +13,9 @@ The type names, view hierarchy, state ownership, modifier order and native
 control creation/update/removal sequence are unchanged. Three file-private
 types become internal so the original call sites can refer to them. No new
 wrapper view, identity key, timer, focus request or state model was introduced.
-Reassembling the extracted text matches the prior file after only those three
-access-level substitutions. The Xcode target includes the new source files;
-the candidate is identified as build 19.
+Reassembling the extracted text matches the prior file after those three
+access-level substitutions and ignoring trailing file-boundary whitespace. The
+Xcode target includes the new source files; the candidate is identified as build 19.
 
 All twelve Swift suites, forty Python checks, the Simulator build and unsigned
 archives pass. The SE 3 essential-action suite and focused Home/refresh/media

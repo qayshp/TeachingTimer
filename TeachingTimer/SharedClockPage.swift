@@ -168,4 +168,3 @@ struct SharedClockPage: View {
 private struct ClassSheetRequest: Identifiable {
     let id = UUID()
 }
-
