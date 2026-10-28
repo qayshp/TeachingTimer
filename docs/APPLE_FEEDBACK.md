@@ -13,6 +13,9 @@ Raw device logs, identifiers, and private evidence packages stay outside Git.
 | **FB25294079** | Paired Simulator cannot discover/control iPhone media | Updated with the bounded Watch-local experiment and the outstanding Simulator-support question. |
 | **Draft only; no submitted FB ID** | Unexpected silencing during native volume adjustment | Saved in Feedback Assistant with the October 23 timeline and focused Watch/iPhone excerpts. |
 
+Project follow-up is now tracked in [six public GitHub issues](ISSUE_TRACKER.md).
+No new Apple submission is implied by creating those issues.
+
 ## Remaining evidence gaps
 
 - **Seconds hand:** the minimal probe reproduces in Simulator; the physical
@@ -42,5 +45,6 @@ Raw device logs, identifiers, and private evidence packages stay outside Git.
   displayed starting level, precise endpoint state, and a deterministic trigger
   remain missing. See [physical incident](MEDIA_INCIDENT_2026-10-23.md).
 
-This reporting work changed documentation only. TeachingTimer remains build 16;
-the submissions did not change the installed app or device settings.
+The October 26 reporting work changed documentation only; the submissions did
+not change the installed app or device settings. See the
+[current project status](../DEVELOPMENT_STATUS.md) for subsequent source/tooling work.

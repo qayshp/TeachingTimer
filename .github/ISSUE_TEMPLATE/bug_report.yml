@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a problem with timing, controls, media or development tooling.
+title: ""
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check the existing issues first. Describe what you saw, even if you cannot reproduce it reliably.
+        This is public: do not attach raw device logs, journals, account details or device identifiers. A cropped screenshot or sanitized excerpt is useful.
+  - type: input
+    id: environment
+    attributes:
+      label: App and Watch versions
+      description: App build, Watch model/size and watchOS version. For Simulator issues, include Xcode and runtime versions.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What happened?
+      description: Actions immediately before the problem, what you expected, and what appeared instead. Note whether this was a physical Watch or Simulator.
+    validations:
+      required: true
+  - type: textarea
+    id: frequency
+    attributes:
+      label: Frequency and recovery
+      description: Once, occasionally or every time? Did switching pages, returning to the app, refreshing volume, or reopening help? Do not interrupt a class just to test recovery.
+  - type: textarea
+    id: media
+    attributes:
+      label: Media context, if relevant
+      description: Phone or Watch playback; audio app; Bluetooth, AirPlay or wired output; whether playback continued silently; whether standalone Now Playing worked.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Cropped screenshots, short non-personal excerpts, related issue or Apple feedback ID. Say what was directly observed versus inferred.

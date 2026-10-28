@@ -1,7 +1,34 @@
 # Teaching Timer — current verification
 
-Updated October 26, 2026. Historical observations are kept separately so that
+Updated October 27, 2026. Historical observations are kept separately so that
 previous build states do not read as current facts.
+
+## Roadmap 18–21 — tests, automation and public tracking
+
+Completed without changing the production app's teaching/session/media behavior.
+The physical Watch remains on its last verified **build 16**; no physical-device
+installation, launch or diagnostic collection was performed in this batch.
+
+18. Added [time-edge regression checks](docs/TIME_EDGE_TESTS.md): DST gaps/folds,
+    fractional timezones, year rollover, persisted instants, retirement boundaries
+    and clock-correction-independent landmark projection. All twelve Swift suites pass.
+19. Added a [bounded essential-action UI suite](docs/ESSENTIAL_ACTION_CHECKS.md).
+    SE 3 40 mm and Ultra 4 49 mm each passed all 14 state assertions; final
+    reviewed captures rendered the expected menus, native Not Playing and timer.
+    An earlier SE 3 timer-return capture again lacked controls despite retained
+    class/page state. The intermittent rendering problem remains open.
+20. Added [build/release evidence automation](docs/BUILD_VERIFICATION.md), retained
+    failure logs and toolchain/source metadata, archive/symbol inspection and a
+    separate signed-artifact gate. The local ad-hoc Simulator build and both
+    unsigned archives pass. All 40 Python tooling tests pass. Untracked source
+    now marks generated revision metadata dirty; ignored artifacts do not.
+21. Created [six public issues](docs/ISSUE_TRACKER.md) and a concise bug-report
+    form, linking five submitted Apple reports and keeping silencing draft-only.
+    No new Apple submission or report update was made in this batch.
+
+The app remains build 18 in source. These tests do not establish actual iPhone
+volume response, physical haptic delivery or a fix for intermittent native UI.
+The two disposable Watch simulators remain running for manual inspection.
 
 ## Media recovery follow-up — production behavior unchanged
 

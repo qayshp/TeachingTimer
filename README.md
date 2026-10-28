@@ -201,3 +201,7 @@ terms and [Mozilla's FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) for guidan
 Future distribution uses `net.qays.TeachingTimer` (qays.net). The current
 Xcode development installation keeps `com.qayshp.TeachingTimer`; no existing
 class or journal is migrated simply by building the distribution identity.
+
+Known bugs and evidence gaps are tracked in [GitHub issues](https://github.com/qayshp/TeachingTimer/issues)
+and the [issue/Apple-feedback index](docs/ISSUE_TRACKER.md). Please use the bug
+form and keep raw device logs and personal diagnostics out of public reports.
