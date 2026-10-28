@@ -1,7 +1,40 @@
 # Teaching Timer — current verification
 
-Updated October 27, 2026. Historical observations are kept separately so that
+Updated October 28, 2026. Historical observations are kept separately so that
 previous build states do not read as current facts.
+
+## Roadmap 22–25 — candidate build 19, comparison and tester preparation
+
+The physical Watch remains on **build 16**. No physical-device query, install,
+launch or log collection was performed. Current source is **build 19**.
+
+22. Checked the installed runtime gate for the isolated hand-transition probe.
+    Xcode 27.1 still has watchOS 27.0 SDK/runtime (24R362); there is no newer local
+    Watch runtime for a useful comparison. Hardware work is deferred.
+    [Recorded limit](docs/ALWAYS_ON_HAND_TRANSITION.md).
+23. Mechanically [split shared presentation](docs/VIEW_SPLIT.md) into class UI,
+    button style, refresh UI and WatchKit adapter files. Stable view identity,
+    shared state, native lifecycle and focus order are preserved. All twelve
+    Swift suites, 40 Python checks, Simulator build and both unsigned archives
+    pass. SE 3 and Ultra pass all 14 action assertions; SE 3 passes all six focus
+    lifecycle assertions. These do not certify pixel rendering or phone audio.
+24. Added a [tester guide](docs/TESTER_GUIDE.md), [privacy/diagnostics explanation](docs/PRIVACY.md),
+    [distribution metadata draft](docs/DISTRIBUTION_METADATA.md), actual
+    [build 16 versus 19 screenshots](docs/BUILD_16_VS_19.md) and a
+    [usability review](docs/USABILITY_REVIEW_BUILD_19.md). No TestFlight upload or
+    invitations; signed install/update/journal access and physical validation
+    remain pilot gates.
+25. [Updated FB25305069](docs/APPLE_MEDIA_UPDATE_2026-10-28.md) with the four
+    unsuccessful media-recovery experiments, delayed captures, source variants
+    and bounded lifecycle evidence. Upload completion was verified. Other
+    reports had no meaningful new evidence and received no duplicate updates.
+
+**Visual caveat:** comparison captures show the Class control missing in one
+awake build-16 SE 3 frame and Stop count missing in one awake build-19 Ultra
+frame. Both reappear in subsequent Lock captures. Duration and touch response
+are unknown; similar timer-control failures predate the refactor. No new fix
+for blank media, timer rendering, volume silencing or hand backstep is claimed.
+The review recommendations are not implemented changes.
 
 ## Roadmap 18–21 — tests, automation and public tracking
 
@@ -26,8 +59,8 @@ installation, launch or diagnostic collection was performed in this batch.
     form, linking five submitted Apple reports and keeping silencing draft-only.
     No new Apple submission or report update was made in this batch.
 
-The app remains build 18 in source. These tests do not establish actual iPhone
-volume response, physical haptic delivery or a fix for intermittent native UI.
+At completion of that batch, source was build 18. Those tests do not establish
+actual iPhone volume response, physical haptic delivery or a fix for intermittent native UI.
 The two disposable Watch simulators remain running for manual inspection.
 
 ## Media recovery follow-up — production behavior unchanged
@@ -37,9 +70,10 @@ stable page identity, a 300 ms native teardown gap, clock-only timeline placemen
 and conditional native-view lifetime. None established reliable recovery; all
 experimental app edits were removed. Longer-wait captures confirm persistent
 blank frames as well as transient loading. Only the regression tooling and
-investigation documentation changed; the app remains build 18, not installed on
-the physical Watch. The native service-loss reproduction still warrants further
-isolation. No new Apple report update was submitted.
+investigation documentation changed; that batch retained build 18 and did not
+install on the physical Watch. The native service-loss reproduction still
+warrants further isolation. It was subsequently included in the
+[October 28 Apple follow-up](docs/APPLE_MEDIA_UPDATE_2026-10-28.md).
 
 ## Build 18 — second reliability/tooling batch (not installed)
 

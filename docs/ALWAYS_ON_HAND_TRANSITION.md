@@ -127,3 +127,14 @@ four-cycle run contained 298 captured video frames. TeachingTimer's separate
 journal confirmed a running runtime throughout the full-app candidate's
 Lock/unlock pass. The final Simulator app was restored to the committed media
 recovery build with its original hand rendering. No physical installation occurred.
+
+## October 28 roadmap follow-through
+
+The selected Xcode 27.1 installation currently supplies the watchOS 27.0 SDK
+and only the watchOS 27.0 Simulator runtime (24R362). No useful newer-runtime
+comparison is available locally. The independent probe and reproduction method
+remain ready for that comparison. No physical Watch was touched, no new hand
+workaround was introduced, and no duplicate unchanged observation was sent to
+FB25329087. This does not establish that a newer runtime is unavailable from Apple;
+it records the installed test environment. The newer-runtime/hardware part of
+roadmap item 22 remains deferred.

@@ -63,8 +63,8 @@ It does not suppress failures or rewrite class data to make a check pass.
    survives there without TeachingTimer's timeline and controllers.
 2. Capture native service termination/relaunch and rendered frames together,
    including a no-fault comparison. Keep callback success separate from pixels.
-3. Add the comparison to existing Apple report **FB25305069** when requested.
-   No Feedback Assistant update was submitted in this investigation.
+3. The comparison was [submitted to FB25305069 on October 28](APPLE_MEDIA_UPDATE_2026-10-28.md).
+   No update had been submitted during the original October 26 investigation.
 4. Keep the current teaching build available. Do not add periodic blind reloads,
    app restarts, private APIs, or a replacement of the working volume control on
    the strength of these results.

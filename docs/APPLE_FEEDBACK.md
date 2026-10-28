@@ -16,6 +16,10 @@ Raw device logs, identifiers, and private evidence packages stay outside Git.
 Project follow-up is now tracked in [six public GitHub issues](ISSUE_TRACKER.md).
 No new Apple submission is implied by creating those issues.
 
+On October 28, [FB25305069 received the recovery comparison](APPLE_MEDIA_UPDATE_2026-10-28.md),
+including delayed captures and failed recovery candidates. Submission/read-back
+and attachment upload completed. Other report states are unchanged.
+
 ## Remaining evidence gaps
 
 - **Seconds hand:** the minimal probe reproduces in Simulator; the physical
