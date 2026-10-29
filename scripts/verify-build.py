@@ -53,6 +53,7 @@ def main():
         ('developer-directory', ['xcode-select', '-p']),
         ('sdks', ['xcodebuild', '-showsdks']),
         ('swift', ['xcrun', 'swift', '--version']),
+        ('repository', ['python3', 'scripts/check-repository.py']),
         ('models', ['sh', 'scripts/check.sh']),
         ('tools', ['sh', 'scripts/check-tools.sh']),
         ('simulator', ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimer',

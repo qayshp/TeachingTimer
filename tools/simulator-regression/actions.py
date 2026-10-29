@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 import plistlib
 import subprocess
 import time
-from run import checked
+from run import checked, reset_test_app
 
 BUNDLE = 'com.qayshp.TeachingTimer'
 KEY = 'teachingClassContext.v1'
@@ -57,7 +57,7 @@ def main():
     if not pid.isdigit():
         raise RuntimeError('Expected one Device Hub')
     # Explicit opt-in above; an existing test class is deliberately discarded.
-    subprocess.run(['xcrun', 'simctl', 'uninstall', args.simulator, BUNDLE], capture_output=True)
+    reset_test_app(args.simulator, BUNDLE)
     checked('xcrun', 'simctl', 'install', args.simulator, args.app.resolve())
     checked('xcrun', 'simctl', 'launch', args.simulator, BUNDLE)
     time.sleep(2)

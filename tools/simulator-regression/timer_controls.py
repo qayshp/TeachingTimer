@@ -14,7 +14,8 @@ import plistlib
 import subprocess
 import time
 from actions import choose_text
-from run import checked
+from count_evidence import locked_count_evidence
+from run import checked, events_after, reset_test_app
 
 BUNDLE = 'com.qayshp.TeachingTimer'
 
@@ -62,7 +63,7 @@ def main():
         checked(out / 'hub-input', pid, args.simulator, *values)
         time.sleep(1)
     ui('home')  # Leave any prior dimmed app before replacing the disposable copy.
-    subprocess.run(['xcrun', 'simctl', 'uninstall', args.simulator, BUNDLE], capture_output=True)
+    reset_test_app(args.simulator, BUNDLE)
     checked('xcrun', 'simctl', 'install', args.simulator, args.app.resolve())
     checked('xcrun', 'simctl', 'launch', args.simulator, BUNDLE)
     time.sleep(2)
@@ -71,9 +72,9 @@ def main():
     def events(name):
         path = container / 'Documents' / (name + '.json')
         return json.loads(path.read_text()) if path.exists() else []
-    def wait_event(name, event, offset=0):
+    def wait_event(name, event, baseline=None):
         until = time.monotonic() + 20
-        while not any(e['event'] == event for e in events(name)[offset:]):
+        while not any(e['event'] == event for e in events_after(baseline or [], events(name))):
             if time.monotonic() > until:
                 raise RuntimeError('Missing event ' + event)
             time.sleep(.2)
@@ -104,22 +105,54 @@ def main():
             time.sleep(1)
     sample('ready', False, 3)
     for cycle in range(2):
-        offset = len(events('LandmarkDiagnostics'))
+        baseline = events('LandmarkDiagnostics')
         ui('tap', .5, .76)
-        wait_event('LandmarkDiagnostics', 'landmark_started', offset)
+        wait_event('LandmarkDiagnostics', 'landmark_started', baseline)
         sample(f'count-{cycle}', True, 6)
         ui('lock')
         sample(f'locked-{cycle}', True, 4)
         ui('tap', .5, .5)  # Wake without leaving the teaching face.
         sample(f'awake-{cycle}', True, 3)
-        offset = len(events('LandmarkDiagnostics'))
+        baseline = events('LandmarkDiagnostics')
         ui('tap', .5, .76)
-        wait_event('LandmarkDiagnostics', 'landmark_ended', offset)
+        wait_event('LandmarkDiagnostics', 'landmark_ended', baseline)
         sample(f'cancelled-{cycle}', False, 2)
+    # Exercise a complete real-duration count while locked, distinct from the
+    # cancellation captures. Submission logs do not establish tactile delivery.
+    baseline = events('LandmarkDiagnostics')
+    ui('tap', .5, .76)
+    wait_event('LandmarkDiagnostics', 'landmark_started', baseline)
+    starts = [e for e in events_after(baseline, events('LandmarkDiagnostics')) if e['event'] == 'landmark_started']
+    if len(starts) != 1:
+        raise RuntimeError('Expected one fresh full-count run')
+    run_id = starts[0]['details']['runID']
+    ui('lock')
+    until = time.monotonic() + 85
+    completion = None
+    while time.monotonic() < until:
+        matching = [e for e in events_after(baseline, events('LandmarkDiagnostics'))
+                    if e['event'] == 'landmark_ended' and e['details'].get('runID') == run_id]
+        if matching:
+            completion = matching[-1]
+            break
+        time.sleep(.5)
+    screenshot('full-count-locked-finish')
+    ui('tap', .5, .5)
+    screenshot('full-count-awake-finish')
+    if not completion or completion['details'].get('reason') != 'completed':
+        raise RuntimeError('Locked count did not complete normally within bounded wait')
+    configuration = starts[0]['details']
+    expected_end = int(configuration['landmarkCount']) * (float(configuration['intervalSeconds']) + float(configuration['pulseSpacing']))
+    if float(completion['details'].get('elapsedSeconds', 0)) < expected_end:
+        raise RuntimeError('Count ended before its final pulse-group completion deadline')
+    lock_evidence = locked_count_evidence(events('InterfaceDiagnostics'), starts[0], completion)
+    (out / 'full-count-evidence.json').write_text(json.dumps(lock_evidence, indent=2))
     for name in ['RuntimeDiagnostics', 'InterfaceDiagnostics', 'LandmarkDiagnostics']:
         (out / (name + '.json')).write_text(json.dumps(events(name), indent=2))
-    result = dict(build=info['CFBundleVersion'], deviceType=selected[0]['deviceTypeIdentifier'],
-        frames=len(frames), reviewWarnings=sum(bool(f['missing']) for f in frames),
+    if not lock_evidence['verified']:
+        raise RuntimeError('Count completed, but locked-state evidence was not confirmed; see full-count-evidence.json')
+    result = dict(lockedCountEvidence=lock_evidence, build=info['CFBundleVersion'], deviceType=selected[0]['deviceTypeIdentifier'],
+        fullCountCompleted=True, completion=completion, frames=len(frames), reviewWarnings=sum(bool(f['missing']) for f in frames),
         outlineWarnings=sum(f['outline']['review'] for f in frames),
         visualResult='REVIEW_FRAMES_REQUIRED', audioAndCrown='unverified')
     (out / 'result.json').write_text(json.dumps(result, indent=2))

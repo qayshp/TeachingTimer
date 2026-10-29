@@ -19,6 +19,31 @@ def checked(*args, timeout=30):
     return subprocess.run([str(x) for x in args], check=True, capture_output=True, text=True, timeout=timeout).stdout.strip()
 
 
+def reset_test_app(simulator, bundle):
+    """An uninstall error must not silently turn a fresh-state test into a reuse."""
+    def installed():
+        raw = checked("xcrun", "simctl", "listapps", simulator)
+        # simctl emits an OpenStep plist, not necessarily XML/binary. Python's
+        # plistlib does not parse that format; Apple's plutil accepts all three.
+        converted = subprocess.run(["plutil", "-convert", "json", "-o", "-", "--", "-"],
+                                   input=raw, text=True, capture_output=True, check=True, timeout=30)
+        return json.loads(converted.stdout)
+    if bundle in installed():
+        checked("xcrun", "simctl", "uninstall", simulator, bundle)
+    if bundle in installed():
+        raise RuntimeError("Test app remains installed after reset")
+
+
+def events_after(baseline, current):
+    """Use the last observed event, not a length offset invalidated by retention."""
+    if not baseline:
+        return current
+    matches = [i for i, event in enumerate(current) if event == baseline[-1]]
+    if len(matches) != 1:
+        raise ValueError("Journal boundary lost or ambiguous; cannot establish fresh events")
+    return current[matches[0] + 1:]
+
+
 def select_service(output):
     labels = []
     for line in output.splitlines():
@@ -140,7 +165,7 @@ def main():
         capture("06b-media-after-five-seconds")
         ui("timer-finish", "swipe", .15, .55, .85, .55); capture("07-final")
     final = journal()
-    new = final[len(baseline):]
+    new = events_after(baseline, final)
     checks = {
         "sameHostPID": returned.rsplit(":", 1)[-1].strip() == host_pid,
         "sameClassBytes": preferences().get("teachingClassContext.v1") == original_class,
