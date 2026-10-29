@@ -5,7 +5,7 @@ previous build states do not read as current facts.
 
 ## Current candidate and teaching checkpoint
 
-Source candidate: **build 22**, tested locally; physical teaching checkpoint:
+Source candidate: **build 23**, tested locally; physical teaching checkpoint:
 **build 16**, kept unchanged. [Active roadmap](docs/ROADMAP.md) is the single
 place for completed work, next steps and hardware gates. The
 [builds 17–21 implementation record](docs/history/ROADMAP_BATCHES_17_TO_21.md)
@@ -185,3 +185,11 @@ battery impact. No new physical validation is implied by Mac-only checks.
 - [Volume focus comparison](docs/SIMULATOR_VOLUME_FOCUS.md)
 - [Native media recovery](docs/NOW_PLAYING_SERVICE_RECOVERY.md)
 - [Always-On hand investigation](docs/ALWAYS_ON_HAND_TRANSITION.md)
+
+## Build 23 — physical candidate
+
+Build 23 packages the build-22 app behavior and October 29 maintenance work for
+physical testing, at the maintainer’s request. The version bump introduces no
+new runtime/media policy. Installation outcome is recorded separately; build 16
+remains the preserved rollback checkpoint. The dimmed-relaunch finding above
+is unresolved.
