@@ -1,13 +1,13 @@
 # Distribution metadata draft
 
-Prepared October 28, 2026. Not submitted to App Store Connect. This is a review
+Updated October 29, 2026. Not submitted to App Store Connect. This is a review
 packet for a private pilot, not authorization to invite external testers.
 
 | Field | Draft |
 | --- | --- |
 | Name | Teaching Timer |
 | Subtitle | A clock for teaching yoga |
-| Version / candidate build | 1.0 / 22 |
+| Version / development candidate | 1.0 / 23; no TestFlight candidate uploaded |
 | Future bundle identifier | net.qays.TeachingTimer |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
 | Support URL | https://github.com/qayshp/TeachingTimer/issues |
@@ -55,3 +55,23 @@ in public feedback.
 - Complete the signed upload, install/update and journal-access pilot in
   [TestFlight preparation](TESTFLIGHT_PREPARATION.md). No upload, registration,
   tester invitation or physical installation is performed by these documents.
+
+## Current candidate review
+
+Build 23 is installed as the development identity `com.qayshp.TeachingTimer`.
+It retains build 22's interface and production behavior; classroom validation is
+pending. This is not evidence of a signed distribution upload or TestFlight install.
+
+- **Screenshot set:** the [current teaching face](images/current/se3-teaching-face.png)
+  was captured on the SE 3 Simulator during October 29 build-22 verification.
+  The [setup screenshots](USABILITY_PASS_22.md) show the retained interface on
+  SE 3 and Ultra. These are development evidence, not approved store assets;
+  the face includes the Simulator's disconnected-phone indicator.
+- **Privacy review:** [Privacy](PRIVACY.md) describes local journals and voluntary
+  sharing. This documentation pass introduces no collection or behavior change.
+  Final App Store declarations still require review against the distribution binary.
+- **Support:** GitHub issues are suitable for sanitized bug descriptions only.
+  A private diagnostic intake route and App Store review contact are not yet
+  configured or verified. Do not ask testers to attach raw journals publicly.
+- **Pilot gates:** signed upload, separate-identity state handling, install/update,
+  journal retrieval and private support must be verified before invitations.

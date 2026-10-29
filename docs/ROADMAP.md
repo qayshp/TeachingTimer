@@ -1,8 +1,10 @@
 # Active roadmap
 
-Updated October 28, 2026. The maintainer approved this list, with one hard limit:
-**do not install on the physical Watch; preserve teaching build 16.** Simulator
-work and repository changes do not count as physical validation.
+Updated October 29, 2026. The earlier hold on physical installation was superseded
+by explicit authorization: build 23 is now installed and launched. Its classroom
+validation is pending; build 16 remains a preserved rollback checkpoint. Further
+physical installations require authorization. Simulator work and repository
+changes do not count as physical validation.
 
 ## Current work order
 
@@ -77,7 +79,7 @@ No issue is closed because its symptom did not recur in a bounded Simulator run.
 
 Original-image audit and fresh media run: [results](MEDIA_IMAGE_AUDIT.md).
 
-Candidate build 22 adds the schedule cue, two-line action wrapping and face
+Build 23 retains the build-22 additions: the schedule cue, two-line action wrapping and face
 Start accessibility label.
 [Usability comparison and limits](USABILITY_PASS_22.md). The icon/label trial was
 not adopted; the existing hands and controls remain.
@@ -90,3 +92,4 @@ start and the app retained manual-recovery intent. Preserve the failed-run
 journal and distinguish this from an awake relaunch. Investigate startup
 eligibility/deferred recovery separately; intentional Stop and bounded retries
 remain constraints. No physical reproduction or production policy fix is claimed.
+Tracked as [issue #7](https://github.com/qayshp/TeachingTimer/issues/7).

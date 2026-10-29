@@ -12,6 +12,11 @@ until you have tested a build in your own teaching conditions.
 Start with the [documentation index](docs/README.md) for current behavior,
 testing tools, Apple reports, and dated investigation records.
 
+<img src="docs/images/current/se3-teaching-face.png" alt="Teaching face on the SE 3: class menu, native volume, wall-clock hands and one-minute count" width="240">
+
+*SE 3 40 mm Simulator, October 29, build 22 interface retained in build 23.
+The red disconnected-phone indicator is Simulator state, not a teaching feature.*
+
 ## Quick start
 
 1. Tap **Start class**, check the proposed time range, then tap the solid white

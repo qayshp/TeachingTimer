@@ -5,8 +5,10 @@ previous build states do not read as current facts.
 
 ## Current candidate and teaching checkpoint
 
-Source candidate: **build 23**, tested locally; physical teaching checkpoint:
-**build 16**, kept unchanged. [Active roadmap](docs/ROADMAP.md) is the single
+Current source and installed physical-Watch build: **1.0 (23)**. Installation
+and launch were verified October 29; classroom validation of build 23 is pending.
+**Build 16** remains the preserved classroom-tested rollback checkpoint, not the
+currently installed version. [Active roadmap](docs/ROADMAP.md) is the single
 place for completed work, next steps and hardware gates. The
 [builds 17–21 implementation record](docs/history/ROADMAP_BATCHES_17_TO_21.md)
 preserves earlier batch reports without treating them as current conclusions.
@@ -20,7 +22,9 @@ two UI changes. [Usability verification](docs/USABILITY_FOLLOWUP_2026-10-28.md).
 
 ## October 29 maintenance review
 
-Production app source and build number remain at build 22. Documentation is now
+The maintenance verification below used build 22. The subsequent release pass
+bumped the version to build 23 without changing production behavior and installed
+it on the Watch; see the deployment record below. Documentation is now
 indexed by purpose and evidence age; deterministic and interactive regression
 coverage has expanded. See the [repository review](docs/REPOSITORY_REVIEW_2026-10-29.md)
 and [automation map](docs/AUTOMATION.md). The maintainer reports build 16 worked
@@ -48,7 +52,7 @@ new log capture or evidence that intermittent bugs are resolved.
   base. The maintenance changes are tests, tooling and documentation. No physical
   device was contacted. Both test simulators finish with their sessions stopped.
 
-## Build 22 — current usability follow-through
+## Build 22 — usability changes retained in build 23
 
 The default Start card identifies its interval as **Suggested time**. Action
 labels stay within two lines with modest scaling at maximum text; the face's

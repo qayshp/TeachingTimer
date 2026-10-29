@@ -76,6 +76,8 @@ process. A separate investigation should establish whether startup eligibility
 can be deferred safely without defeating intentional Stop or retry limits.
 No runtime policy was changed in this maintenance pass.
 
+Tracked separately as [issue #7](https://github.com/qayshp/TeachingTimer/issues/7).
+
 ## Remaining boundaries
 
 No claim of exhaustive coverage is made. Hardware Crown ownership, real iPhone
