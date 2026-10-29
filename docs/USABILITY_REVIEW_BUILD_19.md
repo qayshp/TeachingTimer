@@ -80,5 +80,8 @@ count semantics and hardware-validation tasks remain as described above.
 ## Current follow-through
 
 The old next-pass recommendation for feedback and persistence notices is complete
-in builds 20–21. See the [active roadmap](ROADMAP.md) for the remaining image audit,
-schedule cue, hand-label comparison and accessibility/physical pilot gates.
+in builds 20–21. The [build 22 follow-through](USABILITY_PASS_22.md) adds the
+schedule cue and action-label/accessibility improvements, and records the
+hand-label comparison that did not justify a redesign. The image audit is also
+complete. See the [active roadmap](ROADMAP.md) for physical and distribution
+gates; those remain distinct from the completed Simulator work.

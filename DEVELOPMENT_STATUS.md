@@ -1,6 +1,6 @@
 # Teaching Timer — current verification
 
-Updated October 28, 2026. Historical observations are kept separately so that
+Updated October 29, 2026. Historical observations are kept separately so that
 previous build states do not read as current facts.
 
 ## Current candidate and teaching checkpoint
@@ -17,6 +17,36 @@ identity. Build 20 makes refresh acknowledgement neutral; build 21 adds a short
 unreadable-class notice with a direct Start action. Native volume/focus timing,
 media policy, wall-clock hands and count scheduling are unchanged by those last
 two UI changes. [Usability verification](docs/USABILITY_FOLLOWUP_2026-10-28.md).
+
+## October 29 maintenance review
+
+Production app source and build number remain at build 22. Documentation is now
+indexed by purpose and evidence age; deterministic and interactive regression
+coverage has expanded. See the [repository review](docs/REPOSITORY_REVIEW_2026-10-29.md)
+and [automation map](docs/AUTOMATION.md). The maintainer reports build 16 worked
+well in the October 28 class around 1:15 p.m.; that is a user observation, not a
+new log capture or evidence that intermittent bugs are resolved.
+
+### October 29 verification results
+
+- All 12 Swift suites and 80 Python tests pass. Repository consistency checks,
+  Simulator build and unsigned development/distribution archive checks pass.
+- SE 3 and Ultra each pass 14 essential actions and 33 count/Lock captures;
+  all outline measurements are present. OCR flags 29 SE 3 and 6 Ultra frames
+  for review, not missing-control diagnoses. Representative locked frames and
+  the SE 3 native Not Playing screen were visually inspected.
+- SE 3 passes all six focus/lifecycle assertions. Both simulators complete the
+  full count at about 64.82/64.81 seconds. Retrospective validation of original
+  journals confirms reduced luminance at +2 seconds and no recorded wake before
+  completion. The final runner now requires that evidence automatically.
+- Awake process-relaunch tests pass on both sizes for automatic running-class
+  recovery and intentional Stop, with the saved class unchanged. The initial
+  dimmed SE 3 relaunch was rejected by watchOS and saved manual-recovery intent;
+  it remains a separate [open finding](docs/REPOSITORY_REVIEW_2026-10-29.md#locked-relaunch-observation).
+- Original run manifests/captures remain private. The test app is build 22 from
+  `68bf84a7897f-dirty`; production source/configuration is unchanged from that
+  base. The maintenance changes are tests, tooling and documentation. No physical
+  device was contacted. Both test simulators finish with their sessions stopped.
 
 ## Build 22 — current usability follow-through
 
@@ -49,9 +79,9 @@ checks. Apple received that clarification and the separate documentation report
   volume ring, a haptic submission or a view callback does not prove actual
   phone volume, tactile delivery or rendered content.
 
-## Local verification
+## October 28 build-22 verification snapshot
 
-At build 22, twelve deterministic Swift suites and 48 Python tooling checks
+At that checkpoint, twelve deterministic Swift suites and 48 Python tooling checks
 pass, along with the Simulator build and unsigned development/distribution
 archives. All 14 essential-action assertions pass on each of SE 3 and Ultra;
 all six focus/lifecycle assertions pass on SE 3. Four final media captures

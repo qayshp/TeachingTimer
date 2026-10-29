@@ -3,8 +3,38 @@
 Keep changes small and run `sh scripts/check.sh`, `sh scripts/check-tools.sh`,
 plus a Watch Simulator build.
 The project has no external package dependencies. Xcode's scheme does not
-contain an XCTest target; the script compiles and runs eleven standalone suites.
+contain an XCTest target; the script compiles and runs standalone Swift suites.
 Do not claim hardware validation from a simulator or WatchKit test double.
+See the [automation map](docs/AUTOMATION.md) for coverage and the combined
+interactive Simulator runner. `python3 scripts/check-repository.py` checks
+published local links, source notices and structured files without device access.
+
+## Repository layout
+
+- `TeachingTimer/`: production watchOS source, assets and privacy manifest.
+- `TeachingTimer.xcodeproj/` and `Configurations/`: shared project/build settings;
+  keep developer-specific Xcode state and signing material out of Git.
+- `Tests/`: deterministic Swift checks, WatchKit boundary doubles and Python
+  tooling tests. New tests should check behavior or failure handling rather than
+  duplicate implementation details.
+- `scripts/`: local/CI build checks, artifact inspection and diagnostic tools.
+- `tools/`: isolated native probes and opt-in interactive Simulator runners.
+  These are not production dependencies.
+- `docs/`: maintained guides, dated evidence and curated Simulator images;
+  use the [documentation index](docs/README.md) to find the current authority.
+- Ignored `work/` and `outputs/`: private captures, local experiments, generated
+  builds and evidence. Inventory before cleanup; never delete a known-good
+  signed checkpoint or irreplaceable incident capture as routine tidying.
+
+## Documentation maintenance
+
+Keep current behavior in the README/tester guide, current verification in
+`DEVELOPMENT_STATUS.md`, and remaining work in `docs/ROADMAP.md`. Add new guides
+to the documentation index. Dated investigations describe the source and tools
+used then; do not silently rewrite their counts, versions or observations to
+match a later build. Put corrections prominently in the affected record and
+link the supporting audit. Use relative links within the repository, and never
+publish private capture paths as downloadable evidence or commit raw journals.
 
 ## Preserve these boundaries
 

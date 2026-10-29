@@ -9,7 +9,8 @@ Built around real teaching on Apple Watch SE 3. Still experimental—especially
 timed vibrations and automatic runtime renewal. Keep a backup timing method
 until you have tested a build in your own teaching conditions.
 
-Apple reports and remaining evidence gaps: [feedback status](docs/APPLE_FEEDBACK.md).
+Start with the [documentation index](docs/README.md) for current behavior,
+testing tools, Apple reports, and dated investigation records.
 
 ## Quick start
 
@@ -38,8 +39,9 @@ Apple reports and remaining evidence gaps: [feedback status](docs/APPLE_FEEDBACK
 
 The initial acknowledgement is distinct from the `.directionUp` timing pulses.
 Pulses within a group are scheduled 0.8 seconds apart. The sixth group begins at 60 seconds,
-its last pulse is scheduled at 64 seconds, and the arc's scheduled endpoint is
-64.8 seconds. watchOS can deliver completion callbacks later.
+its last pulse is scheduled at 64 seconds, and the run's scheduled end is 64.8 seconds.
+The arc reaches a full minute at 60 seconds and remains visible until that endpoint.
+watchOS can deliver completion callbacks later.
 Build 14 removes the run-wide late-haptic shutdown. Late pulses continue with
 spacing; obsolete groups are skipped rather than replayed across the next
 landmark or after completion. The arc keeps its original timing. See
@@ -47,9 +49,10 @@ landmark or after completion. The arc keeps its original timing. See
 
 For a first test, use the [tester quick start](docs/TESTER_GUIDE.md) and read
 [privacy and diagnostic sharing](docs/PRIVACY.md).
-The [build 16 versus 19 comparison](docs/BUILD_16_VS_19.md) includes real
-SE 3/Ultra screenshots, known rendering failures and a
-[prioritized usability review](docs/USABILITY_REVIEW_BUILD_19.md).
+The [build 22 usability review](docs/USABILITY_PASS_22.md) shows the latest
+menu changes and their verification limits. The historical
+[build 16 versus 19 comparison](docs/BUILD_16_VS_19.md) retains its original
+SE 3/Ultra screenshots and the correction to the initial missing-control claim.
 
 ## Class options
 
@@ -86,9 +89,10 @@ See [runtime recovery](docs/RUNTIME_RECOVERY.md) for validation and boundaries.
 
 ## Screenshots
 
-Actual watchOS 27 simulator captures, not mockups. Native volume may appear
+Historical watchOS 27 Simulator captures, not mockups. Native volume may appear
 unavailable without a paired media source. These images do not prove physical
-Always-On, Crown responsiveness, or haptic delivery.
+Always-On, Crown responsiveness, or haptic delivery. They illustrate the teaching
+face across sizes; use the build-specific reviews below for newer menu changes.
 
 | SE 3 · 40 mm | Series 11 · 46 mm | Ultra 3 · 49 mm |
 | --- | --- | --- |
@@ -98,9 +102,11 @@ More checks: [maximum text on SE 3](docs/images/se-40-large-text.png),
 [class setup](docs/images/class-setup.png), [locked count](docs/images/se-40-locked.png).
 The Ultra example uses a 75-minute class; the other examples use 60 minutes.
 
-Build 15's revised action buttons and current setup screens are shown in the
+Build 15's revised action buttons and then-current setup screens are shown in the
 [October 26 usability review](docs/USABILITY_REVIEW_2026-10-26.md), including
-maximum-text checks on SE 3, Series 12, and Ultra 4.
+maximum-text checks on SE 3, Series 12, and Ultra 4. The
+[build 22 review](docs/USABILITY_PASS_22.md) shows the added Suggested time cue
+and maximum-text checks on SE 3 and Ultra.
 
 ## Build and test
 
@@ -112,8 +118,9 @@ Apple development team and a unique bundle identifier under Signing & Capabiliti
 No signing keys or provisioning profiles belong in the repository.
 
 ```sh
+python3 scripts/check-repository.py # Published links, configuration and source checks
 sh scripts/check-tools.sh    # Offline diagnostic tooling checks
-sh scripts/check.sh          # Twelve deterministic model/controller/diagnostic/geometry suites
+sh scripts/check.sh          # Deterministic model/controller/diagnostic/geometry suites
 sh scripts/check-archive.sh  # Unsigned archive must actually contain the app
 ```
 

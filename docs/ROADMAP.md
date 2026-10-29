@@ -10,7 +10,7 @@ work and repository changes do not count as physical validation.
 | --- | --- | --- |
 | 1 — complete | Reconcile backlog and corrected screenshot claims | Current docs distinguish verified evidence from superseded interpretations. |
 | 2 — complete | Revalidate native-media rendering | Retain original images, OCR and central-content measurements; distinguish Not Playing, possible loading and candidate blank frames from lifecycle checks. |
-| 3 — complete | Explain the default scheduled start | Compare a compact Suggested start cue on SE 3 and Ultra; preserve inference, default 60 minutes and independent custom drafts. |
+| 3 — complete | Explain the default scheduled start | Added the compact Suggested time cue on SE 3 and Ultra; preserved inference, default 60 minutes and independent custom drafts. |
 | 4 — reviewed | Review hand/label collisions | Compare selected angles awake/dim; retain both hands foremost and generous targets. Do not adopt a cosmetic change without a legibility benefit. |
 | 5 — Simulator audit complete | Audit maximum text and 12/24-hour layouts | Exercise setup, custom schedule, summary and actions on small/large screens; source-check accessibility labels. Hardware VoiceOver remains separate. |
 | 6 — complete | Apple Always-On documentation follow-up | File the missing-documentation issue requested in FB24696786, cross-reference it, and close the old report as requested. FB25347535 submitted; FB24696786 cross-referenced and closed. |
@@ -81,3 +81,12 @@ Candidate build 22 adds the schedule cue, two-line action wrapping and face
 Start accessibility label.
 [Usability comparison and limits](USABILITY_PASS_22.md). The icon/label trial was
 not adopted; the existing hands and controls remain.
+
+## October 29 regression follow-up
+
+The [repository review](REPOSITORY_REVIEW_2026-10-29.md#locked-relaunch-observation)
+records a locked Simulator relaunch where watchOS rejected automatic runtime
+start and the app retained manual-recovery intent. Preserve the failed-run
+journal and distinguish this from an awake relaunch. Investigate startup
+eligibility/deferred recovery separately; intentional Stop and bounded retries
+remain constraints. No physical reproduction or production policy fix is claimed.
