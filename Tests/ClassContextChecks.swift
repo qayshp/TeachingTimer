@@ -16,6 +16,17 @@ struct ClassContextChecks {
         for (input, expected) in [(31, 30), (37, 30), (42, 30), (43, 45), (44, 45), (45, 45), (0, 0)] {
             assert(ClassContext.inferredStart(for: date(input), calendar: calendar) == date(expected))
         }
+        // Every quarter boundary uses the same late-start bias, including
+        // subsecond taps just before the :13 cutoff and the next whole hour.
+        for minute in 0..<60 {
+            let quarter = minute / 15 * 15
+            let expectedMinute = minute % 15 >= 13 ? quarter + 15 : quarter
+            let expected = date(0).addingTimeInterval(Double(expectedMinute * 60))
+            for seconds in [0.0, 0.001, 59.999] {
+                let pressed = date(minute).addingTimeInterval(seconds)
+                assert(ClassContext.inferredStart(for: pressed, calendar: calendar) == expected)
+            }
+        }
         assert(ClassContext.inferredStart(for: date(42, 59), calendar: calendar) == date(30))
         assert(ClassContext.inferredStart(for: date(59), calendar: calendar) == date(59).addingTimeInterval(60))
         let context = ClassContext(pressedAt: date(37, 23), durationMinutes: 75, calendar: calendar)

@@ -46,7 +46,9 @@ final class WKExtendedRuntimeSession {
             WKApplication.shared().applicationState = .active
             return ExtendedRuntimeController(journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)))
         }
-        let diagnosticDefaults = UserDefaults(suiteName: "PersistenceIntent." + UUID().uuidString)!
+        let diagnosticSuite = "PersistenceIntent." + UUID().uuidString
+        let diagnosticDefaults = UserDefaults(suiteName: diagnosticSuite)!
+        defer { diagnosticDefaults.removePersistentDomain(forName: diagnosticSuite) }
         let absentIntent = RuntimeIntentStore(defaults: diagnosticDefaults)
         assert(absentIntent.takePersistenceEvents().first?.details["state"] == "absent")
         diagnosticDefaults.set(Data("broken-intent".utf8), forKey: "teachingRuntimeIntent.v1")
@@ -68,6 +70,30 @@ final class WKExtendedRuntimeSession {
         assert(!RuntimeRenewalRules.isExpirationError(warned: false, expiration: now, now: now, domain: "RBSAssertionErrorDomain", code: 1))
         assert(!RuntimeRenewalRules.isExpirationError(warned: true, expiration: now, now: now, domain: "other", code: 1))
         assert(!RuntimeRenewalRules.isExpirationError(warned: true, expiration: now, now: now, domain: "RBSAssertionErrorDomain", code: 2))
+        // Boundary values and every eligibility gate matter: background,
+        // explicit Stop and manual policy must never permit an early handoff.
+        for remaining in [0.0, 0.001, 20.0, 20.001] {
+            for warned in [false, true] {
+                for active in [false, true] {
+                    for automatic in [false, true] {
+                        for stopped in [false, true] {
+                            let eligible = warned && active && automatic && !stopped
+                                && remaining > 0 && remaining <= 20
+                            assert(RuntimeRenewalRules.canHandoff(warned: warned,
+                                expiration: now.addingTimeInterval(remaining), now: now,
+                                active: active, automatic: automatic, stopped: stopped) == eligible)
+                        }
+                    }
+                }
+            }
+        }
+        assert(!RuntimeRenewalRules.canHandoff(warned: true, expiration: nil, now: now,
+            active: true, automatic: true, stopped: false))
+        for delta in [-2.001, -2.0, 0.0, 30.0, 30.001] {
+            assert(RuntimeRenewalRules.isExpirationError(warned: true,
+                expiration: now.addingTimeInterval(-delta), now: now,
+                domain: "RBSAssertionErrorDomain", code: 1) == (delta >= -2 && delta <= 30))
+        }
         // Early active handoff: no overlap, only one invalidate request.
         let early = try controller()
         assert(early.actionTitle(hasClass: false) == "Start class")

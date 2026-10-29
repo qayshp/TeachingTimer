@@ -7,12 +7,15 @@
 # Deterministic model/controller checks. No simulator or Watch is changed.
 set -eu
 cd "$(dirname "$0")/.."
-check_dir=$(mktemp -d /tmp/TeachingTimerChecks.XXXXXX)
+check_dir=$(mktemp -d "${TMPDIR:-/tmp}/TeachingTimerChecks.XXXXXX")
+trap 'rm -rf "$check_dir"' EXIT
+suite_count=0
 check() {
     check_name=$1
     shift
     swiftc "$@" -o "$check_dir/$check_name"
     "$check_dir/$check_name"
+    suite_count=$((suite_count + 1))
 }
 check ClassContext TeachingTimer/PersistenceDiagnostics.swift TeachingTimer/ClassContext.swift Tests/ClassContextChecks.swift
 check TimeEdges TeachingTimer/PersistenceDiagnostics.swift TeachingTimer/ClassContext.swift TeachingTimer/LandmarkController.swift Tests/TimeEdgeChecks.swift
@@ -26,4 +29,4 @@ check LandmarkController -D CONTROLLER_CHECKS TeachingTimer/LandmarkDiagnostics.
 check LandmarkJournal TeachingTimer/LandmarkDiagnostics.swift Tests/LandmarkDiagnosticsChecks.swift
 check Layout TeachingTimer/ClockGeometry.swift TeachingTimer/TimerFaceLayout.swift Tests/TimerFaceLayoutChecks.swift
 check Geometry TeachingTimer/TimerFaceLayout.swift TeachingTimer/ClockGeometry.swift Tests/ClockGeometryChecks.swift
-printf 'All twelve suites passed. Check binaries: %s\n' "$check_dir"
+printf 'All %s Swift suites passed. Temporary binaries removed on exit.\n' "$suite_count"

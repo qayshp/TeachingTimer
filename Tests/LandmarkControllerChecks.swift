@@ -54,6 +54,27 @@ final class WKInterfaceDevice {
         model.diagnosticContext = { ["runtimePhase": "running", "sceneState": "inactive"] }
         let device = WKInterfaceDevice.current()
 
+        // Reject malformed future presets before changing state, writing a run,
+        // scheduling work, or submitting even the acknowledgement haptic.
+        for schedule in [LandmarkSchedule(intervalSeconds: .nan),
+                         LandmarkSchedule(landmarkCount: 0),
+                         LandmarkSchedule(pulseSpacing: 2)] {
+            model.start(configuration: .init(schedule: schedule))
+            await drain()
+            assert(!model.isActive && model.result == .ready)
+            assert(device.submissions.isEmpty && clock.waits.isEmpty)
+        }
+        model.start(); await drain()
+        let originalStartAngle = model.startAngle
+        let originalWait = clock.waits.first!.0
+        let submittedAtStart = device.submissions.count
+        model.start(configuration: .init(hapticsEnabled: false)); await drain()
+        assert(model.isActive && model.configuration.hapticsEnabled)
+        assert(model.startAngle == originalStartAngle)
+        assert(clock.waits.count == 1 && clock.waits.first!.0 == originalWait)
+        assert(device.submissions.count == submittedAtStart)
+        model.cancel(); clock.advanceNext(); await drain()
+
         // Cancel partway into group 5, then group 6. Resume a stale suspended
         // task after the fresh run has started: it must submit no old pulses.
         for group in [5, 6] {
@@ -146,6 +167,16 @@ final class WKInterfaceDevice {
         assert(!model.isActive && model.result == .completed)
         assert(device.submissions.count == beforeSilent)
         assert(defaults.string(forKey: "landmarkResult.v2") == "completed")
+        // Cancel an arc-only run, then restart before its old completion wakes.
+        // The old completion must neither end the new run nor submit haptics.
+        model.start(configuration: .init(hapticsEnabled: false)); await drain()
+        model.cancel()
+        model.start(); await drain()
+        let freshAck = device.submissions.count
+        clock.advanceNext(); await drain() // Old silent completion is now stale.
+        assert(model.isActive && model.result == .running)
+        assert(device.submissions.count == freshAck)
+        model.cancel(); clock.advanceNext(); await drain()
         // Legacy saved outcomes remain readable after removing unreachable live state.
         defaults.set("completedWithoutVibrations", forKey: "landmarkResult.v2")
         assert(LandmarkController(defaults: defaults, journal: journal).result == .completedWithoutVibrations)
