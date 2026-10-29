@@ -193,3 +193,10 @@ physical testing, at the maintainer’s request. The version bump introduces no
 new runtime/media policy. Installation outcome is recorded separately; build 16
 remains the preserved rollback checkpoint. The dimmed-relaunch finding above
 is unresolved.
+
+Build 23 installation and installed-version verification succeeded on October 29.
+The first attempt failed with DDI service errors; the bounded retry installed it.
+The initial launch was unconfirmed; a launch-only retry succeeded. Private
+evidence: `work/support/2026-10-29-build23/`. Physical class validation remains
+pending. Build 16 remains preserved for rollback, but is no longer the installed
+build. The signed profile expires October 13, 2027 at 06:37:14 UTC.
