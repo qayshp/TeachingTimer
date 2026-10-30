@@ -222,3 +222,38 @@ CoreDevice profiles on Mac/phone/Watch, a Watch sysdiagnose profile, reproductio
 and Mac/Watch diagnostics. See the linked DTS guidance above. Profiles increase
 evidence; they are not a proven connectivity repair. No such profiles were
 installed by this investigation.
+
+### October 29: screen sharing and Device Hub collection
+
+After repeated tunnel/collector failures while both devices were already awake
+and nearby, the maintainer opened working screen-sharing sessions for both in
+Device Hub. Subsequent Watch and phone diagnostic-file inventories succeeded.
+Command-line sysdiagnose still returned `CoreDeviceCLISupport.DiagnoseError 0`.
+This separates restored file access from capture initiation; screen sharing is
+an observed recovery step, not a proven cure or universal requirement.
+
+The successful alternative for the iPhone was Device Hub **More Actions → Collect
+sysdiagnose…**, accept the capture privacy notice, and select a private local
+folder. The Watch initially showed a loading indicator and no collection action;
+after its view finished loading, the same action became available and started
+its capture. Do not select Unpair or stop screen sharing to find this action.
+
+For future attempts, try an existing working screen-sharing session and wait for
+the selected physical device to finish loading before using its diagnostic menu.
+Do not keep issuing new captures while Device Hub says Collecting or an on-device
+IN_PROGRESS capture exists. Transfer, archive validation and incident-time
+coverage still need separate verification.
+
+The iPhone GUI archive downloaded and validated (403,195,442 bytes; 897 system
+logarchive files). Its 24-hour range included the class, but only 92 messages
+remained for 10:30–11:40 Pacific and the targeted media/volume query returned no
+matches. This does not disprove the observed symptoms. The saved class journal
+identifies build 16 on watchOS 27.2 (24S118); the phone capture is iOS 27.2
+(24B119). Do not silently reuse earlier OS versions in a new incident report.
+Raw captures remain private, outside Git.
+
+The Watch GUI transfer also completed and validated (149,925,719 bytes; 602
+system-logarchive files). Unlike the phone, its class interval retained 121,499
+records, including TeachingTimer and NanoNowPlayingViewService. Both captures
+are saved locally; collection success does not itself diagnose the media bugs.
+No additional administrator prompt was needed for the successful GUI route.
