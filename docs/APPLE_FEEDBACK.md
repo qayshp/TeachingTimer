@@ -85,3 +85,13 @@ A check of report status is not a claim that Apple has accepted a diagnosis.
 Private submission/read-back evidence stays under
 `work/support/2026-10-28-next-pass/apple/`. Reports used the maintainer's requested
 writing-style workflow. Neither a physical Watch nor iPhone was queried or changed.
+
+## October 30 paired-Simulator follow-up
+
+Sent a concise follow-up to **FB25294079** explaining that absent paired media
+control blocks meaningful playback-progress, volume and recovery testing. Asked
+whether NowPlayingView and companion WKInterfaceVolumeControl are supported
+between paired simulators, whether setup is missing, and what alternative Apple
+recommends or requires physical devices. Referenced the existing clean-pair/native
+local-audio fixture. Submission is visible in the report at 00:51 Pacific; status
+remains Open. This is an outgoing follow-up, not an Apple response or new evidence.
