@@ -7,7 +7,7 @@ packet for a private pilot, not authorization to invite external testers.
 | --- | --- |
 | Name | Teaching Timer |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 / 23; no TestFlight candidate uploaded |
+| Version / development candidate | 1.0 / 24; no TestFlight candidate uploaded |
 | Future bundle identifier | net.qays.TeachingTimer |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
 | Support URL | https://github.com/qayshp/TeachingTimer/issues |
@@ -58,7 +58,8 @@ in public feedback.
 
 ## Current candidate review
 
-Build 23 is installed as the development identity `com.qayshp.TeachingTimer`.
+Build 24 is the source candidate, with bounded media wake refresh pending physical
+validation. Build 23 is installed as the development identity `com.qayshp.TeachingTimer`.
 It retains build 22's interface and production behavior; classroom validation is
 pending. This is not evidence of a signed distribution upload or TestFlight install.
 

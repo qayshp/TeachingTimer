@@ -93,3 +93,10 @@ journal and distinguish this from an awake relaunch. Investigate startup
 eligibility/deferred recovery separately; intentional Stop and bounded retries
 remain constraints. No physical reproduction or production policy fix is claimed.
 Tracked as [issue #7](https://github.com/qayshp/TeachingTimer/issues/7).
+
+## Media progress recovery
+
+Build 24 adds [bounded long-dimmed wake refresh](MEDIA_WAKE_REFRESH.md) for
+[frozen song progress (#8)](https://github.com/qayshp/TeachingTimer/issues/8).
+Build 23 remains installed. Physical progress recovery, audio continuity and
+Crown response remain validation gates; this issue is not closed by policy tests.

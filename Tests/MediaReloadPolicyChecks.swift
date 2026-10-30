@@ -36,6 +36,37 @@ struct MediaReloadPolicyChecks {
         assert(policy.didSelectMedia() == .pageEntry)
         assert(policy.didBecomeActive(mediaIsSelected: true) == nil)
 
-        print("PASS: media entry/foreground refresh, wrist-wake stability, timer deferral and callback ordering")
+        for activeFirst in [true, false] {
+            var wake = MediaReloadPolicy()
+            assert(wake.didSelectMedia(now: 0) == .pageEntry)
+            assert(wake.displayChanged(isActive: false, isDimmed: true, mediaIsSelected: true, now: 100) == nil)
+            assert(wake.displayChanged(isActive: activeFirst, isDimmed: activeFirst, mediaIsSelected: true, now: 130) == nil)
+            assert(wake.displayChanged(isActive: true, isDimmed: false, mediaIsSelected: true, now: 130) == .longDimmedWake)
+            assert(wake.displayChanged(isActive: true, isDimmed: false, mediaIsSelected: true, now: 131) == nil)
+            // A second long interval inside the cooldown is consumed without a delayed refresh.
+            assert(wake.displayChanged(isActive: false, isDimmed: true, mediaIsSelected: true, now: 135) == nil)
+            assert(wake.displayChanged(isActive: true, isDimmed: false, mediaIsSelected: true, now: 165) == nil)
+            assert(wake.displayChanged(isActive: true, isDimmed: false, mediaIsSelected: true, now: 200) == nil)
+        }
+        for duration in [29.999, 30.0, 120.0] {
+            var wake = MediaReloadPolicy()
+            _ = wake.displayChanged(isActive: false, isDimmed: true, mediaIsSelected: true, now: 10)
+            assert(wake.displayChanged(isActive: true, isDimmed: false, mediaIsSelected: true, now: 10 + duration) == (duration >= 30 ? .longDimmedWake : nil))
+        }
+        var wake = MediaReloadPolicy()
+        _ = wake.displayChanged(isActive: false, isDimmed: true, mediaIsSelected: false, now: 0)
+        assert(wake.displayChanged(isActive: true, isDimmed: false, mediaIsSelected: false, now: 100) == nil)
+        assert(wake.didSelectMedia(now: 101) == .pageEntry)
+        _ = wake.displayChanged(isActive: false, isDimmed: true, mediaIsSelected: true, now: 110)
+        wake.didEnterBackground()
+        assert(wake.didBecomeActive(mediaIsSelected: true, now: 200) == .backgroundReturn)
+        assert(wake.displayChanged(isActive: true, isDimmed: false, mediaIsSelected: true, now: 200) == nil)
+        _ = wake.displayChanged(isActive: false, isDimmed: true, mediaIsSelected: true, now: 210)
+        assert(wake.didSelectMedia(now: 250) == .pageEntry)
+        assert(wake.displayChanged(isActive: true, isDimmed: false, mediaIsSelected: true, now: 251) == nil)
+        _ = wake.displayChanged(isActive: false, isDimmed: true, mediaIsSelected: true, now: 260)
+        assert(wake.displayChanged(isActive: true, isDimmed: false, mediaIsSelected: true, now: 310) == .longDimmedWake)
+
+        print("PASS: long-dimmed wake threshold, cooldown, callback ordering, navigation deduplication; media entry/foreground refresh, wrist-wake stability, timer deferral and callback ordering")
     }
 }

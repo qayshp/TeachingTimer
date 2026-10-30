@@ -193,6 +193,8 @@ that the original watchOS failure has been prevented.
 
 ## Automatic refresh: build 8
 
+Historical policy below; [build 24 adds bounded long-dimmed wake refresh](MEDIA_WAKE_REFRESH.md).
+
 Build 8 uses the same narrow native-view identity change automatically on each
 deliberate timer → media selection, and on an active return after the app has
 actually entered the background if media is still selected. Returning to the

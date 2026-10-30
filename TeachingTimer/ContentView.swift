@@ -63,7 +63,7 @@ struct ContentView: View {
 
                 NowPlayingView()
                     // Recreate only the native media host on bounded entry/return
-                    // events, never on ordinary wrist wakes.
+                    // events and eligible long-dimmed wakes.
                     // The timer page, volume adapter, and shared state retain identity.
                     .id(mediaViewGeneration)
                     .containerBackground(.black, for: .tabView)
@@ -104,6 +104,7 @@ struct ContentView: View {
             session.synchronizeClass(classStore.context)
             session.applicationBecameActive()
             recordInterfaceEvent("interface_appeared")
+            refreshMediaAfterEligibleWake()
         }
         .onDisappear { recordInterfaceEvent("interface_disappeared") }
         .onChange(of: page) { old, new in
@@ -114,6 +115,7 @@ struct ContentView: View {
         }
         .onChange(of: dimmed) { old, _ in
             recordInterfaceEvent("luminance_changed", details: ["previousLuminanceReduced": String(old)])
+            refreshMediaAfterEligibleWake()
         }
         .task(id: ClassTaskKey(context: classStore.context, clockRevision: classClockRevision)) {
             // Use actual wall time, never a potentially pre-rendered timeline
@@ -147,6 +149,15 @@ struct ContentView: View {
                     recreateMedia(reason: reason)
                 }
             }
+            refreshMediaAfterEligibleWake()
+        }
+    }
+
+    private func refreshMediaAfterEligibleWake() {
+        if let reason = mediaReloadPolicy.displayChanged(
+            isActive: scenePhase == .active, isDimmed: dimmed,
+            mediaIsSelected: page == .nowPlaying) {
+            recreateMedia(reason: reason)
         }
     }
 

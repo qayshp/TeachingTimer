@@ -5,7 +5,7 @@ previous build states do not read as current facts.
 
 ## Current candidate and teaching checkpoint
 
-Current source and installed physical-Watch build: **1.0 (23)**. Installation
+Current source candidate: **1.0 (24)**; installed physical-Watch build: **1.0 (23)**. Installation
 and launch were verified October 29; classroom validation of build 23 is pending.
 **Build 16** remains the preserved classroom-tested rollback checkpoint, not the
 currently installed version. [Active roadmap](docs/ROADMAP.md) is the single
@@ -19,6 +19,18 @@ identity. Build 20 makes refresh acknowledgement neutral; build 21 adds a short
 unreadable-class notice with a direct Start action. Native volume/focus timing,
 media policy, wall-clock hands and count scheduling are unchanged by those last
 two UI changes. [Usability verification](docs/USABILITY_FOLLOWUP_2026-10-28.md).
+
+## Build 24 — bounded media wake refresh
+
+After at least 30 seconds of reduced luminance, the selected media page is
+recreated once the scene is active and undimmed, with a 60-second cooldown since
+any media refresh. Page-entry/background recovery consumes pending wake recovery.
+The timer volume widget and its immediate media-return focus path are unchanged;
+class/runtime/count state is retained. No periodic reload or playback command.
+[Frozen-progress issue #8](https://github.com/qayshp/TeachingTimer/issues/8)
+remains open pending physical playback/progress and Crown verification.
+See [policy and verification](docs/MEDIA_WAKE_REFRESH.md).
+Build 24 has not been installed on the physical Watch.
 
 ## October 29 maintenance review
 

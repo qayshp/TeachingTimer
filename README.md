@@ -74,7 +74,10 @@ Tap **Class**, at the upper left, to:
 - **End class** with confirmation, clearing timing and stopping session/count.
 
 Media controls refresh automatically when you swipe into their page, or return
-from the background with media selected. If the page goes black while open,
+from the background with media selected. Build 24 also refreshes on an active,
+undimmed wake after at least 30 seconds dimmed, provided the last media refresh
+was at least 60 seconds ago. This bounded recovery targets stale song progress;
+it does not detect a failure or send playback commands. If the page goes black while open,
 swipe to the timer and back. Class, session, and count continue; no Class-menu
 action is needed.
 
