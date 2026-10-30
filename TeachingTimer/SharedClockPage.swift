@@ -31,7 +31,7 @@ struct SharedClockPage: View {
                 Button { classSheet = ClassSheetRequest() } label: {
                     HStack(spacing: 3) {
                         Text("Class")
-                        Image(systemName: "chevron.down").font(.system(size: 8, weight: .bold))
+                        Image(systemName: "gearshape").font(.system(size: 8, weight: .bold))
                     }
                     .font(.system(size: min(labelSize, 14), weight: .semibold))
                     .padding(.horizontal, 7).padding(.vertical, 5)
@@ -40,7 +40,7 @@ struct SharedClockPage: View {
                     .frame(width: 64, height: 44).contentShape(Rectangle())
                 }
                     .buttonStyle(.plain).position(x: 38, y: 23)
-                    .accessibilityLabel("Class options").accessibilityIdentifier("class-options")
+                    .accessibilityLabel("Class options and settings").accessibilityIdentifier("class-options")
                 // The edge-to-edge dial stays visible over the Class capsule.
                 // These drawing layers must not intercept the button's touches.
                 clockFace(layer: .dial).allowsHitTesting(false)
@@ -85,7 +85,7 @@ struct SharedClockPage: View {
 #if DEBUG
         .onAppear {
             // Visual check only: opens a draft, never starts a class or runtime.
-            if ProcessInfo.processInfo.arguments.contains("--show-class-setup") {
+            if ProcessInfo.processInfo.arguments.contains("--show-class-setup") || ProcessInfo.processInfo.arguments.contains("--show-settings") {
                 classSheet = ClassSheetRequest()
             }
         }

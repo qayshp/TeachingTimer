@@ -1,11 +1,11 @@
 # Teaching Timer — current verification
 
-Updated October 29, 2026. Historical observations are kept separately so that
+Updated October 30, 2026. Historical observations are kept separately so that
 previous build states do not read as current facts.
 
 ## Current candidate and teaching checkpoint
 
-Current source candidate: **1.0 (24)**; installed physical-Watch build: **1.0 (23)**. Installation
+Current source candidate: **1.0 (25)**; installed physical-Watch build: **1.0 (23)**. Installation
 and launch were verified October 29; classroom validation of build 23 is pending.
 **Build 16** remains the preserved classroom-tested rollback checkpoint, not the
 currently installed version. [Active roadmap](docs/ROADMAP.md) is the single
@@ -19,6 +19,15 @@ identity. Build 20 makes refresh acknowledgement neutral; build 21 adds a short
 unreadable-class notice with a direct Start action. Native volume/focus timing,
 media policy, wall-clock hands and count scheduling are unchanged by those last
 two UI changes. [Usability verification](docs/USABILITY_FOLLOWUP_2026-10-28.md).
+
+## Build 25 — Settings
+
+A dedicated Settings screen is available before and during class through the
+Class button, now labeled with a gear. It exposes the existing persistent Count
+vibrations and Minutes left preferences. Vibration changes apply to the next
+count; active count, runtime, class and native volume logic are unchanged.
+[Settings screenshots and verification](docs/SETTINGS_PASS_25.md). Build 25 has
+not been installed on the physical Watch.
 
 ## Build 24 — bounded media wake refresh
 

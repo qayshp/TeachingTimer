@@ -59,6 +59,8 @@ menu changes and their verification limits. The historical
 [build 16 versus 19 comparison](docs/BUILD_16_VS_19.md) retains its original
 SE 3/Ultra screenshots and the correction to the initial missing-control claim.
 
+See the [build 25 Settings pass](docs/SETTINGS_PASS_25.md) for screenshots.
+
 ## Class options
 
 Tap **Class**, at the upper left, to:
@@ -69,8 +71,11 @@ Tap **Class**, at the upper left, to:
 - **Stop session / Resume session** without clearing the class. When the session
   is off, an outlined **Resume** control is also available directly on the face.
   Either menu action returns to the face immediately.
-- Turn **Count vibrations** off for future visual-only counts, or enable the
-  optional **Minutes left** label. Both count modes use the same arc timing.
+- Open **Settings** before or during a class. Turn **Count vibrations** off for
+  future visual-only counts, or enable the optional **Minutes left** label.
+  Preferences persist across launches and classes. An active count keeps its
+  current vibration setting; the change applies to the next count. Music and
+  system alerts are unaffected. Both count modes use the same arc timing.
 - **End class** with confirmation, clearing timing and stopping session/count.
 
 Media controls refresh automatically when you swipe into their page, or return

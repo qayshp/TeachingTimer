@@ -8,7 +8,7 @@ import WatchKit
 
 /// Secondary management UI owns its draft and dismissal; runtime state remains independent.
 struct ClassControlsView: View {
-    enum Mode: Hashable { case summary, create, adjustNew, edit }
+    enum Mode: Hashable { case summary, create, adjustNew, edit, settings }
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
     @ObservedObject var landmarks: LandmarkController
@@ -25,7 +25,24 @@ struct ClassControlsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if mode == .summary, let current = classStore.context {
+                if mode == .settings {
+                    Section {
+                        Toggle("Count vibrations", isOn: $countVibrationsEnabled)
+                            .accessibilityIdentifier("settings-count-vibrations")
+                    } footer: {
+                        Text("Off: visual counts only. Applies to the next count.")
+                    }
+                    Section {
+                        Toggle("Minutes left", isOn: $showRemainingMinutes)
+                            .accessibilityIdentifier("settings-minutes-left")
+                    } footer: {
+                        Text("Show minutes remaining on the timer face.")
+                    }
+                    Section {
+                        Text("Saved for future classes. Music and system alerts are unchanged.")
+                            .font(.caption)
+                    }
+                } else if mode == .summary, let current = classStore.context {
                     Section {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(current.scheduledStart.formatted(date: .omitted, time: .shortened) + "–" +
@@ -33,6 +50,7 @@ struct ClassControlsView: View {
                                 .font(.headline).fixedSize(horizontal: false, vertical: true)
                             Text("\(current.durationMinutes) minutes").font(.caption)
                             if !session.statusText.isEmpty { Text(session.statusText).font(.caption) }
+                            if !landmarks.lastResult.isEmpty { Text(landmarks.lastResult).font(.caption) }
                         }
                     }
                     Section {
@@ -54,12 +72,7 @@ struct ClassControlsView: View {
                         classAction("New class", icon: "plus") { prepareNew() }
                             .accessibilityIdentifier("new-class")
                     }
-                    Section("Count & display") {
-                        Toggle("Count vibrations", isOn: $countVibrationsEnabled)
-                        Text("Applies to the next count. Timing may vary if watchOS delays a vibration.").font(.caption)
-                        Toggle("Minutes left", isOn: $showRemainingMinutes)
-                        if !landmarks.lastResult.isEmpty { Text(landmarks.lastResult).font(.caption) }
-                    }
+                    settingsAction
                     Section {
                         classAction("End class", icon: "xmark.circle", role: .destructive) { confirmEnd = true }
                             .accessibilityIdentifier("end-class")
@@ -95,6 +108,7 @@ struct ClassControlsView: View {
                     .accessibilityIdentifier("confirm-class")
                     classAction("Custom schedule", icon: "slider.horizontal.3") { mode = .adjustNew }
                         .accessibilityIdentifier("adjust-class-schedule")
+                    settingsAction
                 } else {
                     Section("Scheduled start") {
                         if !Calendar.current.isDateInToday(start) {
@@ -132,9 +146,12 @@ struct ClassControlsView: View {
             // A different task starts at its first row, not the summary's old
             // scroll offset. Only this Form is recreated; shared app state stays.
             .id(mode)
-            .navigationTitle(mode == .summary ? "Class" : (mode == .create ? "Start" : "Time"))
+            .navigationTitle(mode == .settings ? "Settings" : (mode == .summary ? "Class" : (mode == .create ? "Start" : "Time")))
             .toolbar { ToolbarItem(placement: .cancellationAction) {
-                Button(mode == .summary ? "Done" : "Cancel") { dismiss() }
+                Button(mode == .settings ? "Back" : (mode == .summary ? "Done" : "Cancel")) {
+                    if mode == .settings { mode = classStore.context == nil ? .create : .summary }
+                    else { dismiss() }
+                }
             } }
         }
 #if DEBUG
@@ -150,6 +167,7 @@ struct ClassControlsView: View {
         .onAppear {
             if classStore.context == nil { prepareNew() }
 #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--show-settings") { mode = .settings }
             if ProcessInfo.processInfo.arguments.contains("--show-class-setup") {
                 prepareNew()
                 if ProcessInfo.processInfo.arguments.contains("--show-class-adjustments") {
@@ -176,6 +194,13 @@ struct ClassControlsView: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: { Text("Clears timing and stops the session and count.") }
+    }
+
+    private var settingsAction: some View {
+        Section {
+            classAction("Settings", icon: "gearshape") { mode = .settings }
+                .accessibilityIdentifier("open-settings")
+        }
     }
 
     private func classAction(_ title: String, icon: String, prominent: Bool = false,
