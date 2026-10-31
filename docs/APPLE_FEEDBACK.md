@@ -95,3 +95,20 @@ between paired simulators, whether setup is missing, and what alternative Apple
 recommends or requires physical devices. Referenced the existing clean-pair/native
 local-audio fixture. Submission is visible in the report at 00:51 Pacific; status
 remains Open. This is an outgoing follow-up, not an Apple response or new evidence.
+
+## October 30 — frozen native song progress
+
+Filed **FB25379883**, “NowPlayingView progress freezes while Pause and volume
+still work,” through Feedback Assistant. Submission was acknowledged at 23:43
+PDT; FeedbackCore confirmed all attachment uploads complete at 23:44:02
+(task 128032842). Attached the validated incident Watch sysdiagnose and a compact
+evidence package containing three app journals, correlation notes, validation
+metadata and sparse phone media-log excerpts. Raw files remain private.
+
+The report distinguishes working Pause/volume from incorrect progress, temporary
+recovery and recurrence during one song. It labels the 14:58–15:00 recollection
+as approximate and 15:01/15:02 page cycles as candidate recoveries, not measured
+freeze timestamps. It requests targeted logging/reproduction guidance, links
+Simulator blocker FB25294079 and distinguishes blank-page FB25305069. No claim
+of deterministic reproduction, root cause or validated build-25 mitigation.
+See [incident assessment](MEDIA_PROGRESS_INCIDENT_2026-10-30.md).

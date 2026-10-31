@@ -3,8 +3,9 @@
 Physical SE 3, build 23, watchOS 27.2 (24S118). The maintainer reported frozen
 song status/progress during class, restored by swiping pages. Exact symptom onset
 and which switches were recovery attempts remain unconfirmed. Times below are
-Pacific daylight time. No new Apple submission or device action was made for
-this saved-data analysis.
+Pacific daylight time. No device action was made for this saved-data analysis. A subsequent report,
+FB25379883, was submitted October 30 with this evidence; see
+[Apple feedback status](APPLE_FEEDBACK.md).
 
 ## Evidence
 
