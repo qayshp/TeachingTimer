@@ -78,10 +78,12 @@ reproduces whole-second backsteps without media, session, or landmark code, usin
 both Path and Canvas. Fixed anchors and constant color did not reliably help.
 See [recorded transition experiments](ALWAYS_ON_HAND_TRANSITION.md).
 
-The next useful step is a separate Apple report with that minimal project and a
-short Lock/unlock video showing the reversal. Compare the same fixture on a newer
-watchOS Simulator runtime when one is available locally. This Mac currently has
-only watchOS 27.0 installed (iOS 27.1 is not a newer Watch runtime).
+Apple report FB25329087 already includes the minimal project and transition
+evidence. The next comparison should use the newest compatible installed Watch
+runtime. On October 31, Xcode 27.2 and watchOS 27.2 (24S118) are available, along
+with iOS 27.2 for paired-phone work. The older 27.0 observations above remain
+historical evidence. Follow the [runtime selection policy](../AGENTS.md); no
+Simulator was created or booted for this inventory.
 
 No speculative hand-rendering change is included in builds 14/15. In particular,
 substituting wall `Date.now` for supplied future timeline dates or globally

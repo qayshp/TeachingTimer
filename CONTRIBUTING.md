@@ -50,6 +50,13 @@ publish private capture paths as downloadable evidence or commit raw journals.
 - The native companion volume adapter's focus/resign sequence is regression-sensitive.
   Restore focus after sheets and Now Playing; test on a real paired Watch/iPhone.
 
+## Simulator versions
+
+Follow the [runtime policy](AGENTS.md). Select the newest available compatible
+iOS/watchOS runtimes from the current Xcode; discover identifiers live. Create
+devices only when a task needs them. Old test UUIDs and runtime versions in dated
+evidence are not instructions to recreate that environment.
+
 ## Visual checks
 
 Check SE 3 40 mm first, then a larger Series and Ultra. Check class creation,
