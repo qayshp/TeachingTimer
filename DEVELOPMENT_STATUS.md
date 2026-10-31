@@ -6,8 +6,8 @@ previous build states do not read as current facts.
 ## Current candidate and teaching checkpoint
 
 Current source candidate: **1.0 (25)**; installed physical-Watch build: **1.0 (25)**. Installation and version query
-were verified October 30. Launch was rejected while the Watch was in nightstand
-mode; launch and classroom validation of build 25 remain pending.
+were verified October 30. Launch subsequently succeeded after the maintainer unlocked the Watch while
+it remained on its charger. Classroom validation of build 25 remains pending.
 **Build 16** remains the preserved classroom-tested rollback checkpoint, not the
 currently installed version. [Active roadmap](docs/ROADMAP.md) is the single
 place for completed work, next steps and hardware gates. The
@@ -247,3 +247,7 @@ by restarting Device Hub screen sharing, pressing its virtual Crown and entering
 the passcode there. The nightstand rejection does not establish that removing
 the Watch from its charger is necessary. A subsequent CLI launch timed out; it
 did not confirm launch or repeat the nightstand rejection.
+
+A further launch-only retry succeeded October 30 (`launch-final.json` in the
+private deployment evidence). Build 25 installation, version verification and
+launch are now confirmed; no reinstall was performed for launch recovery.
