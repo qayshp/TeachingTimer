@@ -60,3 +60,25 @@ It still lacks exact onset, a video of frozen progress while audio advances,
 visible elapsed-time values, and a deterministic reproduction. Keep it separate
 from blank media and volume defects. Track progress in
 [issue #8](https://github.com/qayshp/TeachingTimer/issues/8).
+
+## Maintainer clarification after log review
+
+The maintainer recalls two occurrences during the same song near the end of the
+second class, believed to run 14:00–15:00. Estimated symptom time is around
+14:58–15:00, not an exact timestamp. They were watching song progress to pause at
+the song's end. Refreshing the view restored useful progress temporarily, then
+another refresh was needed. They do not recall whether it also happened earlier
+in this class or during the other class.
+
+This makes the 15:01:37–38 and 15:02:17–19 page cycles plausible matches for the
+two recoveries, but neither those exact matches nor the role of the 15:06 cycle
+is confirmed. Importantly, view recreation did not provide lasting recovery in
+this user-observed episode. The clarification does not establish that playback
+or the Pause command itself failed; the confirmed symptom is stale song status/
+progress requiring view refresh while timing a pause.
+
+The journal also records a short wake at 15:01:53–55, then reduced luminance until
+a later wake. A recurrence after a shorter dim interval could fall outside build
+25's long-dim threshold or refresh cooldown. Exact recurrence timing is unknown,
+so this is a limitation to test, not a demonstrated failure of build 25, which
+was installed after these classes.
