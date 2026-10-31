@@ -40,7 +40,7 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 
 ## Verification and deployment boundaries
 
-Build 26 passes 12 Swift suites, 84 Python tests, repository validation, Simulator
+Build 26 passes 12 Swift suites, 85 Python tests, repository validation, Simulator
 compilation and unsigned development/distribution archive rehearsals. Interactive
 Settings navigation remains pending: Simulator discovery timed out. No physical
 installation or playback test was performed.

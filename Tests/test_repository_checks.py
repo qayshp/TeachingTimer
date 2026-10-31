@@ -70,6 +70,14 @@ class RepositoryChecks(unittest.TestCase):
         self.write('scripts/check.sh', '# SPDX-License-Identifier: MPL-2.0\ncheck New Tests/NewChecks.swift')
         self.assertEqual(checker.check_files(self.root, names), [])
 
+    def test_raw_captures_and_journals_cannot_escape_work_exclusion(self):
+        names = [self.write('RuntimeDiagnostics.json', '[]'),
+                 self.write('capture.tar.gz', 'private'),
+                 self.write('system_logs.logarchive/metadata', 'private')]
+        errors = checker.check_files(self.root, names)
+        self.assertEqual(len(errors), 3)
+        self.assertTrue(all('must not be published' in error for error in errors))
+
     def test_python_syntax_errors_fail(self):
         name = self.write('tool.py', '# SPDX-License-Identifier: MPL-2.0\nif True print(1)')
         self.assertIn('SyntaxError', checker.check_files(self.root, [name])[0])

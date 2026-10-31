@@ -1,8 +1,8 @@
 # Active roadmap
 
-Updated October 29, 2026. The earlier hold on physical installation was superseded
-by explicit authorization: build 23 is now installed and launched. Its classroom
-validation is pending; build 16 remains a preserved rollback checkpoint. Further
+Updated October 31, 2026. Build 25 is installed and launched; its Settings and
+media wake-refresh classroom validation is pending. Build 26 is the source
+candidate from this cleanup. Build 16 remains a preserved rollback checkpoint. Further
 physical installations require authorization. Simulator work and repository
 changes do not count as physical validation.
 

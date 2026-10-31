@@ -41,3 +41,12 @@ DerivedData*/
 # Python diagnostic-tool bytecode
 __pycache__/
 *.py[cod]
+
+# Raw diagnostic captures remain local even outside work/
+*.logarchive/
+*.tar
+*.tar.gz
+RuntimeDiagnostics.json
+InterfaceDiagnostics.json
+LandmarkDiagnostics.json
+BuildInfo.plist

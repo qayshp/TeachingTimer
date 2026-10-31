@@ -60,8 +60,8 @@ in public feedback.
 
 Build 26 is the source candidate. Build 25, including settings and bounded media
 wake refresh, is installed as the development identity `com.qayshp.TeachingTimer`.
-It retains build 22's interface and production behavior; classroom validation is
-pending. This is not evidence of a signed distribution upload or TestFlight install.
+It retains the clock/native-control baseline and adds Settings and bounded wake
+refresh; classroom validation of those changes is pending. This is not evidence of a signed distribution upload or TestFlight install.
 
 - **Screenshot set:** the [Settings-era teaching face](images/settings-25/se3-face.png)
   was captured on the SE 3 Simulator during build-25 verification.

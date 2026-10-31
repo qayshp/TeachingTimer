@@ -16,6 +16,8 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 LINK = re.compile(r'!?\[[^\]\n]*\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+"[^"\n]*")?\s*\)')
 HTML_LINK = re.compile(r'<(?:img|a)\b[^>]*?\b(?:src|href)=["\']([^"\']+)["\']', re.I)
+PRIVATE_NAMES = {'RuntimeDiagnostics.json', 'InterfaceDiagnostics.json', 'LandmarkDiagnostics.json', 'BuildInfo.plist'}
+PRIVATE_SUFFIXES = ('.p12', '.p8', '.mobileprovision', '.provisionprofile', '.tar', '.tar.gz', '.log')
 SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml'}
 
 
@@ -28,7 +30,7 @@ def check_files(root, paths):
         if not path.is_file():
             errors.append(f'{name}: tracked file missing')
             continue
-        if name.startswith(('work/', 'outputs/')) or any(part in {'xcuserdata', '__pycache__'} for part in path.parts) or path.suffix in {'.p12', '.p8', '.mobileprovision', '.provisionprofile'}:
+        if name.startswith(('work/', 'outputs/')) or any(part in {'xcuserdata', '__pycache__'} for part in path.parts) or path.name in PRIVATE_NAMES or name.endswith(PRIVATE_SUFFIXES) or any(part.endswith(('.app', '.xcarchive', '.logarchive', '.dSYM')) for part in path.parts):
             errors.append(f'{name}: private/generated artifact must not be published')
         try:
             if path.suffix == '.json':
