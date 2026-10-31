@@ -82,3 +82,13 @@ a later wake. A recurrence after a shorter dim interval could fall outside build
 25's long-dim threshold or refresh cooldown. Exact recurrence timing is unknown,
 so this is a limitation to test, not a demonstrated failure of build 25, which
 was installed after these classes.
+
+## Confirmed scope of the symptom
+
+The maintainer explicitly confirmed that Pause and volume control worked during
+this episode. The song-progress indicator was incorrect relative to the audible
+position in the song. They needed that indicator to decide when to pause, rather
+than to recover a failed Pause command. Preserve this as a progress-display/time
+synchronization symptom with working transport and volume controls, not a
+completely unresponsive media page. This does not distinguish stale rendering
+from stale elapsed-time metadata.
