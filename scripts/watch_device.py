@@ -44,7 +44,7 @@ class Session:
     def save(self):
         save_json(self.output / "operation.json", self.manifest)
 
-    def command(self, stage, arguments, device=True, limit=None):
+    def command(self, stage, arguments, device=True, limit=None, trailing=()):
         remaining = self.deadline - time.monotonic()
         step = {"stage": stage, "startedAt": utc_now(), "status": "not_started"}
         self.manifest["steps"].append(step)
@@ -60,6 +60,7 @@ class Session:
         if device:
             command += ["--device", self.device]
         command += ["--timeout", str(timeout), "--json-output", str(result_path)]
+        command += list(trailing)
         step.update(command=command, status="running", timeoutSeconds=timeout,
                     console=console_path.name, result=result_path.name)
         self.save()
@@ -204,8 +205,8 @@ def install(session, app, expected, attempts, launch):
             return 2
         if matching and result["ok"]:
             if launch:
-                started = session.command("launch", ["device", "process", "launch",
-                                                       expected["bundleIdentifier"]])
+                started = session.command("launch", ["device", "process", "launch"],
+                                          trailing=[expected["bundleIdentifier"]])
                 pid = started["data"].get("result", {}).get("process", {}).get("processIdentifier")
                 if not started["ok"] or not isinstance(pid, int) or pid <= 0:
                     session.finish("installed_launch_unconfirmed",

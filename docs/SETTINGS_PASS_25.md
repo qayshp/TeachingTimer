@@ -1,6 +1,8 @@
 # Settings — build 25
 
-October 30, 2026. Simulator UI pass; not installed on the physical Watch.
+October 30, 2026. Simulator UI pass; not installed during that pass.
+Later that day build 25 was installed and version-verified; physical validation
+remains pending. See [current status](../DEVELOPMENT_STATUS.md).
 
 ## Design
 

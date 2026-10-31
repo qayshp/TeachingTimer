@@ -5,8 +5,9 @@ previous build states do not read as current facts.
 
 ## Current candidate and teaching checkpoint
 
-Current source candidate: **1.0 (25)**; installed physical-Watch build: **1.0 (23)**. Installation
-and launch were verified October 29; classroom validation of build 23 is pending.
+Current source candidate: **1.0 (25)**; installed physical-Watch build: **1.0 (25)**. Installation and version query
+were verified October 30. Launch was rejected while the Watch was in nightstand
+mode; launch and classroom validation of build 25 remain pending.
 **Build 16** remains the preserved classroom-tested rollback checkpoint, not the
 currently installed version. [Active roadmap](docs/ROADMAP.md) is the single
 place for completed work, next steps and hardware gates. The
@@ -26,8 +27,8 @@ A dedicated Settings screen is available before and during class through the
 Class button, now labeled with a gear. It exposes the existing persistent Count
 vibrations and Minutes left preferences. Vibration changes apply to the next
 count; active count, runtime, class and native volume logic are unchanged.
-[Settings screenshots and verification](docs/SETTINGS_PASS_25.md). Build 25 has
-not been installed on the physical Watch.
+[Settings screenshots and verification](docs/SETTINGS_PASS_25.md). Build 25 was
+installed October 30; physical settings/media-refresh validation is pending.
 
 ## Build 24 — bounded media wake refresh
 
@@ -39,7 +40,7 @@ class/runtime/count state is retained. No periodic reload or playback command.
 [Frozen-progress issue #8](https://github.com/qayshp/TeachingTimer/issues/8)
 remains open pending physical playback/progress and Crown verification.
 See [policy and verification](docs/MEDIA_WAKE_REFRESH.md).
-Build 24 has not been installed on the physical Watch.
+Build 24 was not installed separately; its policy is included in installed build 25.
 
 ## October 29 maintenance review
 
@@ -225,3 +226,18 @@ The initial launch was unconfirmed; a launch-only retry succeeded. Private
 evidence: `work/support/2026-10-29-build23/`. Physical class validation remains
 pending. Build 16 remains preserved for rollback, but is no longer the installed
 build. The signed profile expires October 13, 2027 at 06:37:14 UTC.
+
+## October 30 deployment and collection
+
+Build 25 (`b304882`) was signed, installed and independently version-verified.
+The first launch helper invocation was rejected locally because options followed
+the bundle identifier; the helper now puts all tool options first, with a
+regression assertion. A corrected direct launch reached the Watch and was denied
+with “Cannot launch apps while in nightstand mode.” No reinstall is needed.
+
+Before installation, all three journals were retrieved and parsed. Runtime and
+interface copies needed retries after tunnel timeouts; count history copied on
+the first attempt. They retain October 30 class activity on build 23. The user
+reported the Watch was locked and nearby, and Device Hub screen sharing was not
+connecting. Successful file copies and installation do not imply screen sharing
+or app launch is available. Raw records remain private under `work/support/`.

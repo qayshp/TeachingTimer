@@ -126,6 +126,10 @@ class WatchDeviceTests(unittest.TestCase):
         session = self.session()
         self.assertEqual(wd.install(session, Path("fixture.app"), EXPECTED, 1, True), 0)
         self.assertEqual(session.manifest["status"], "installed_and_launched")
+        launch = self.operations(["device", "process", "launch"])[0]
+        # Apple treats tokens after the bundle as app arguments, not tool options.
+        self.assertEqual(launch[-1], EXPECTED["bundleIdentifier"])
+        self.assertLess(launch.index("--device"), launch.index(EXPECTED["bundleIdentifier"]))
 
     def test_launch_failure_does_not_reinstall(self):
         self.service.launch_ok = False
