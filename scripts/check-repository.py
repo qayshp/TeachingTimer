@@ -15,6 +15,7 @@ from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 LINK = re.compile(r'!?\[[^\]\n]*\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+"[^"\n]*")?\s*\)')
+HTML_LINK = re.compile(r'<(?:img|a)\b[^>]*?\b(?:src|href)=["\']([^"\']+)["\']', re.I)
 SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml'}
 
 
@@ -42,8 +43,9 @@ def check_files(root, paths):
             elif path.suffix == '.md':
                 # Examples inside fenced code are not links in the rendered document.
                 body = re.sub(r'^```[^\n]*\n.*?^```\s*$', '', path.read_text(), flags=re.M | re.S)
-                for match in LINK.finditer(body):
-                    target = match[1].strip('<>')
+                targets = [m[1].strip('<>') for m in LINK.finditer(body)]
+                targets.extend(HTML_LINK.findall(body))
+                for target in targets:
                     url = urlsplit(target)
                     if url.scheme or url.netloc or not url.path:
                         continue
@@ -57,6 +59,14 @@ def check_files(root, paths):
                         errors.append(f'{name}: link is not in published repository: {target}')
         except (ValueError, OSError, UnicodeError, SyntaxError, plistlib.InvalidFileException) as error:
             errors.append(f'{name}: {type(error).__name__}: {error}')
+    # Every top-level guide needs an entry point; dated subdirectories remain archives.
+    if 'docs/README.md' in published:
+        index = (root / 'docs/README.md').read_text()
+        indexed = {unquote(urlsplit(m[1].strip('<>')).path) for m in LINK.finditer(index)}
+        for name in sorted(published):
+            if name.startswith('docs/') and name.count('/') == 1 and name.endswith('.md') and name != 'docs/README.md':
+                if name[len('docs/') :] not in indexed:
+                    errors.append(f'{name}: guide is not linked from docs/README.md')
     # A newly added standalone Swift suite must not silently miss CI execution.
     runner = root / 'scripts/check.sh'
     if runner.is_file():

@@ -30,7 +30,7 @@ completed tests. No periodic monitor or automatic installation is scheduled.
 
 | Original items | Status / remaining work |
 | --- | --- |
-| 1–7 | Teaching checkpoint, documentation separation, retention, device/summary tools, persistence diagnostics and confirmed dead-code cleanup implemented. New device tools still need live validation. |
+| 1–7 | Teaching checkpoint, documentation separation, retention, device/summary tools, persistence diagnostics and confirmed dead-code cleanup implemented. Journal copying, install/version verification and launch have live evidence; connection reliability remains unresolved. |
 | 8 | Simulator lifecycle regression automation implemented. Original-image audit complete; current bounded run renders. Physical reliability remains unproven. |
 | 9 | Independent native-volume probe built; physical comparison remains current item 7. |
 | 10 | Distribution identity and unsigned archive rehearsal ready. Signed pilot is current item 9. |
@@ -98,5 +98,11 @@ Tracked as [issue #7](https://github.com/qayshp/TeachingTimer/issues/7).
 
 Build 24 adds [bounded long-dimmed wake refresh](MEDIA_WAKE_REFRESH.md) for
 [frozen song progress (#8)](https://github.com/qayshp/TeachingTimer/issues/8).
-Build 23 remains installed. Physical progress recovery, audio continuity and
+Build 25 is installed and launched; build 26 cleanup is not installed. Physical progress recovery, audio continuity and
 Crown response remain validation gates; this issue is not closed by policy tests.
+
+## October 31 preparation
+
+Follow [publishing readiness](PUBLISHING_READINESS.md) for distribution gates and
+the [supervised physical-media plan](PHYSICAL_MEDIA_TEST_PLAN.md) for the next
+coordinated session. The overnight idea is retained; no run is scheduled.

@@ -5,6 +5,9 @@ It needs watchOS 26 or later. The core clock works without phone music; iPhone
 volume requires a paired iPhone and an available media connection. Always-On
 needs a Watch that supports it. Screen-size simulations are not hardware certification.
 
+There is no public beta link yet. Install a maintainer-provided build or build
+from source using the [README](../README.md#build-and-contribute).
+
 ## Try it before teaching
 
 1. Open **Start class**. Check the suggested start and end, then press the large
@@ -17,7 +20,7 @@ needs a Watch that supports it. Screen-size simulations are not hardware certifi
    a misleading single-revolution progress line.
 3. Tap **1-min count** to try the inner arc. It starts from the tap and takes one
    minute to fill. Groups of 1–6 vibrations begin at 10–60 seconds; the final
-   group finishes after the minute. Tap again to stop. **Class → Count vibrations**
+   group finishes after the minute. Tap again to stop. **Class → Settings → Count vibrations**
    turns vibrations off for the next run. Delivery can be late or skipped by the
    system, so do not depend on it as an exact pacing signal.
 4. With phone music already playing, try the Crown and both pages before class.
@@ -26,8 +29,10 @@ needs a Watch that supports it. Screen-size simulations are not hardware certifi
 
 ## During a class
 
-- Swipe left for media and right for the clock. Each entry to media recreates
-  the native media view, but an intermittent blank-page bug remains.
+- Swipe left for media and right for the clock. Each entry recreates the native
+  media view. If song progress is wrong or the page is blank, swipe away and back.
+  Pause and volume can still work while progress is stale. Build 25 also refreshes
+  after eligible longer dimmed intervals; this is not a proven fix.
 - Tap the timer's volume display if Crown volume stops responding. A brief ring
   acknowledges the refresh request; it does **not** confirm sound recovered.
   If playback continues silently, phone volume controls have recovered it in

@@ -42,6 +42,19 @@ class RepositoryChecks(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn('missing.md', errors[0])
 
+    def test_html_images_and_links_require_published_targets(self):
+        names = [self.write('README.md', '<img src="docs/face.png"> <a href="docs/guide.md">Guide</a>'),
+                 self.write('docs/face.png', '')]
+        self.assertEqual(len(checker.check_files(self.root, names)), 1)
+        names.append(self.write('docs/guide.md', 'Guide'))
+        self.assertEqual(checker.check_files(self.root, names), [])
+
+    def test_top_level_guides_must_be_indexed(self):
+        names = [self.write('docs/README.md', '# Map'), self.write('docs/GUIDE.md', 'Guide')]
+        self.assertIn('not linked', checker.check_files(self.root, names)[0])
+        self.write('docs/README.md', '[Guide](GUIDE.md)')
+        self.assertEqual(checker.check_files(self.root, names), [])
+
     def test_malformed_configuration_and_missing_notice(self):
         names = [self.write('config.json', '{bad'), self.write('Info.plist', 'broken'), self.write('tool.py', 'print(1)')]
         errors = checker.check_files(self.root, names)

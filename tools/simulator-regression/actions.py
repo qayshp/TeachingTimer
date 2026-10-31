@@ -115,6 +115,8 @@ def main():
     ui('tap', .5, .5)  # Wake a previously dimmed disposable simulator; no face action here.
     # A modified draft must not silently change the default class.
     ui('tap', .5, .76)
+    tap('settings-before-class', 'Settings', scroll=True)
+    dismiss()  # Back to the same new-class draft.
     tap('custom-draft', 'Custom', 'Custom schedule', scroll=True)
     tap('later-draft', '+15 min')
     dismiss()
@@ -148,6 +150,9 @@ def main():
     edited = context()
     menu()
     tap('new-class', 'New class', '+ New class', scroll=True)
+    tap('settings-in-replacement-draft', 'Settings', scroll=True)
+    dismiss()
+    check('settings-keeps-existing-class', lambda: context() == edited)
     tap('new-custom', 'Custom', 'Custom schedule', scroll=True)
     tap('earlier-new', '−15 min', '-15 min')
     tap('start-custom', 'Start class', scroll=True)

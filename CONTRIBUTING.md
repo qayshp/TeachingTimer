@@ -60,6 +60,7 @@ and `--show-now-playing` aid inspection without automatically starting services.
 inspect its secondary editor. These Debug-only flags do not start a class or
 runtime, clear a saved class, or bypass replacement confirmation.
 Check hands pointing through controls and markers at all four quarter-hours.
+`--show-settings` opens Settings without starting a class.
 Record what was actually observed in `DEVELOPMENT_STATUS.md`.
 
 The icon is original, deterministic drawing code. Regenerate it from the root
@@ -90,3 +91,17 @@ Contributions to this project are under the [Mozilla Public License 2.0](LICENSE
 Preserve existing license notices and add the MPL notice to new source files.
 Before including third-party material, verify license compatibility and retain
 its required notices; do not relabel someone else's work as MPL.
+
+## Maintaining public and private records
+
+Every top-level guide belongs in the documentation index. Label dated evidence
+with build, environment and limitations; update current status when deployment
+changes instead of rewriting historical results. Repository checks validate local
+Markdown/HTML image links and guide coverage.
+
+Private artifacts use ignored `work/` folders. Follow
+[local artifact organization](docs/LOCAL_ARTIFACTS.md); inventory before removing
+generated outputs and preserve original journals/captures and signed checkpoints.
+See [publishing readiness](docs/PUBLISHING_READINESS.md) and the
+[supervised device plan](docs/PHYSICAL_MEDIA_TEST_PLAN.md) before distribution or
+physical automation work.

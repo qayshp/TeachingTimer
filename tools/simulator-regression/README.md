@@ -160,3 +160,8 @@ and relaunches again. A three-second observation must show restored Stop without
 an automatic start. It leaves the simulator's class intact and session stopped.
 Screenshots, original journal/preferences snapshots and artifact identity are
 retained. This shares the suite's exclusive Device Hub lock.
+
+The essential-action runner also opens Settings before the first class and from
+a replacement-class draft. Back must preserve the draft; saved timing must remain
+unchanged until confirmation. These checks use the same disposable-simulator
+guards as other actions.

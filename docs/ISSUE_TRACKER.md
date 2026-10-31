@@ -13,6 +13,8 @@ Simulator results, physical observations and unverified mitigations.
 | [#4 Always-On seconds-hand backstep](https://github.com/qayshp/TeachingTimer/issues/4) | FB25329087 | Minimal Simulator probe reproduces; no speculative time correction added. |
 | [#5 Watch developer connection failures](https://github.com/qayshp/TeachingTimer/issues/5) | FB25329139 | Apple could not diagnose with current information; coordinated failure/recovery evidence remains needed. |
 | [#6 Paired Simulator media discovery](https://github.com/qayshp/TeachingTimer/issues/6) | FB25294079 | No known-working companion-media baseline; Apple support clarification remains needed. |
+| [#7 Runtime recovery after dimmed relaunch](https://github.com/qayshp/TeachingTimer/issues/7) | Not separately filed | Simulator start rejection retained manual intent; physical reproduction pending. |
+| [#8 Frozen song progress](https://github.com/qayshp/TeachingTimer/issues/8) | FB25379883 | Pause/volume worked; view refresh helped temporarily. Build 25 adds bounded wake recovery, pending classroom validation. |
 
 The [bug form](../.github/ISSUE_TEMPLATE/bug_report.yml) asks for versions,
 actions, observed results, recovery and relevant audio-route context. Do not

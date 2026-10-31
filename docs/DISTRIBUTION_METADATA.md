@@ -1,13 +1,13 @@
 # Distribution metadata draft
 
-Updated October 29, 2026. Not submitted to App Store Connect. This is a review
+Updated October 31, 2026. Not submitted to App Store Connect. This is a review
 packet for a private pilot, not authorization to invite external testers.
 
 | Field | Draft |
 | --- | --- |
 | Name | Teaching Timer |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 / 25; no TestFlight candidate uploaded |
+| Version / development candidate | 1.0 / 26; no TestFlight candidate uploaded |
 | Future bundle identifier | net.qays.TeachingTimer |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
 | Support URL | https://github.com/qayshp/TeachingTimer/issues |
@@ -58,18 +58,18 @@ in public feedback.
 
 ## Current candidate review
 
-Build 24 is the source candidate, with bounded media wake refresh pending physical
-validation. Build 23 is installed as the development identity `com.qayshp.TeachingTimer`.
+Build 26 is the source candidate. Build 25, including settings and bounded media
+wake refresh, is installed as the development identity `com.qayshp.TeachingTimer`.
 It retains build 22's interface and production behavior; classroom validation is
 pending. This is not evidence of a signed distribution upload or TestFlight install.
 
-- **Screenshot set:** the [current teaching face](images/current/se3-teaching-face.png)
-  was captured on the SE 3 Simulator during October 29 build-22 verification.
+- **Screenshot set:** the [Settings-era teaching face](images/settings-25/se3-face.png)
+  was captured on the SE 3 Simulator during build-25 verification.
   The [setup screenshots](USABILITY_PASS_22.md) show the retained interface on
   SE 3 and Ultra. These are development evidence, not approved store assets;
   the face includes the Simulator's disconnected-phone indicator.
 - **Privacy review:** [Privacy](PRIVACY.md) describes local journals and voluntary
-  sharing. This documentation pass introduces no collection or behavior change.
+  sharing. This cleanup introduces no new collection; Settings return navigation is fixed.
   Final App Store declarations still require review against the distribution binary.
 - **Support:** GitHub issues are suitable for sanitized bug descriptions only.
   A private diagnostic intake route and App Store review contact are not yet

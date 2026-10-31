@@ -14,6 +14,7 @@ struct ClassControlsView: View {
     @ObservedObject var landmarks: LandmarkController
     @Environment(\.dismiss) private var dismiss
     @State private var mode: Mode = .summary
+    @State private var settingsReturnMode: Mode = .summary
     @State private var start = Date()
     @State private var defaultStart = Date()
     @State private var duration = 60
@@ -146,11 +147,13 @@ struct ClassControlsView: View {
             // A different task starts at its first row, not the summary's old
             // scroll offset. Only this Form is recreated; shared app state stays.
             .id(mode)
-            .navigationTitle(mode == .settings ? "Settings" : (mode == .summary ? "Class" : (mode == .create ? "Start" : "Time")))
+            .navigationTitle(navigationTitle)
             .toolbar { ToolbarItem(placement: .cancellationAction) {
-                Button(mode == .settings ? "Back" : (mode == .summary ? "Done" : "Cancel")) {
-                    if mode == .settings { mode = classStore.context == nil ? .create : .summary }
-                    else { dismiss() }
+                Button(closeButtonTitle) {
+                    if mode == .settings {
+                        if settingsReturnMode == .summary && classStore.context == nil { prepareNew() }
+                        else { mode = settingsReturnMode }
+                    } else { dismiss() }
                 }
             } }
         }
@@ -167,7 +170,7 @@ struct ClassControlsView: View {
         .onAppear {
             if classStore.context == nil { prepareNew() }
 #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--show-settings") { mode = .settings }
+            if ProcessInfo.processInfo.arguments.contains("--show-settings") { openSettings() }
             if ProcessInfo.processInfo.arguments.contains("--show-class-setup") {
                 prepareNew()
                 if ProcessInfo.processInfo.arguments.contains("--show-class-adjustments") {
@@ -196,9 +199,31 @@ struct ClassControlsView: View {
         } message: { Text("Clears timing and stops the session and count.") }
     }
 
+    private var navigationTitle: String {
+        switch mode {
+        case .settings: "Settings"
+        case .summary: "Class"
+        case .create: "Start"
+        case .adjustNew, .edit: "Time"
+        }
+    }
+
+    private var closeButtonTitle: String {
+        switch mode {
+        case .settings: "Back"
+        case .summary: "Done"
+        case .create, .adjustNew, .edit: "Cancel"
+        }
+    }
+
+    private func openSettings() {
+        settingsReturnMode = mode
+        mode = .settings
+    }
+
     private var settingsAction: some View {
         Section {
-            classAction("Settings", icon: "gearshape") { mode = .settings }
+            classAction("Settings", icon: "gearshape", action: openSettings)
                 .accessibilityIdentifier("open-settings")
         }
     }

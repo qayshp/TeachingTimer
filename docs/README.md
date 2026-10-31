@@ -32,6 +32,19 @@ installation or a physical-device test.
 | [Native volume probe](../tools/native-volume-probe/README.md) | Isolated companion-volume experiment. |
 | [Timeline probe](../tools/timeline-clock-probe/README.md) | Isolated Always-On clock experiment. |
 
+## Current additions
+
+- [Publishing readiness](PUBLISHING_READINESS.md): onboarding and outstanding release gates.
+- [Supervised physical media plan](PHYSICAL_MEDIA_TEST_PLAN.md): preparation only; no run scheduled.
+- [Settings pass](SETTINGS_PASS_25.md): build 25 screenshots and limits.
+- [Media wake refresh](MEDIA_WAKE_REFRESH.md): current bounded recovery policy.
+- [October 29 progress incident](MEDIA_PROGRESS_INCIDENT_2026-10-29.md) and
+  [October 30 progress incident](MEDIA_PROGRESS_INCIDENT_2026-10-30.md): physical reports and log correlations.
+- [Repository maintenance, October 29](REPOSITORY_REVIEW_2026-10-29.md) and
+  [October 31 cleanup](REPOSITORY_REVIEW_2026-10-31.md): scope, results and remaining work.
+
+- [Local artifacts](LOCAL_ARTIFACTS.md): private catalogs, evidence and generated outputs.
+
 ## State and diagnostics
 
 | Document | Purpose |
@@ -92,6 +105,7 @@ behavior:
 
 - [Prototype notes](history/PROTOTYPE_NOTES.md)
 - [Original review notes](history/REVIEW_NOTES.md)
+- [Verification through build 25](history/VERIFICATION_THROUGH_BUILD_25.md)
 - [Verification through build 16](history/VERIFICATION_THROUGH_BUILD_16.md)
 - [Roadmap batches 17–21](history/ROADMAP_BATCHES_17_TO_21.md)
 

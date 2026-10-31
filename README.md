@@ -1,210 +1,99 @@
 # Teaching Timer
 
-A small, watchOS-only clock for teaching yoga: a prominent ticking second hand,
-scheduled class progress, one-minute landmark counts, and native iPhone music
-controls. No iPhone companion app, workout tracking, heart-rate collection,
+A watchOS-only clock for teaching yoga: prominent wall-clock hands, scheduled
+class progress, one-minute visual counts with optional vibrations, and native
+media controls. No iPhone companion app, workout tracking, heart-rate collection,
 account, advertising, or analytics.
 
-Built around real teaching on Apple Watch SE 3. Still experimental—especially
-timed vibrations and automatic runtime renewal. Keep a backup timing method
-until you have tested a build in your own teaching conditions.
+Built around real teaching on Apple Watch SE 3. This is still an experimental
+app with known media, volume and Always-On issues. Test it before relying on it
+in class and keep another timing method available.
 
-Start with the [documentation index](docs/README.md) for current behavior,
-testing tools, Apple reports, and dated investigation records.
+<img src="docs/images/settings-25/se3-face.png" alt="Build 25 SE 3 Simulator teaching face with Class and gear, native volume and wall-clock hands" width="240">
 
-<img src="docs/images/current/se3-teaching-face.png" alt="Teaching face on the SE 3: class menu, native volume, wall-clock hands and one-minute count" width="240">
+*Build 25, SE 3 40 mm Simulator. The disconnected-phone symbol is Simulator state.
+The installed build and current source candidate are listed in
+[current verification](DEVELOPMENT_STATUS.md).*
 
-*SE 3 40 mm Simulator, October 29, build 22 interface retained in build 23.
-The red disconnected-phone indicator is Simulator state, not a teaching feature.*
+## Try it
 
-## Quick start
+There is no public TestFlight invitation or App Store release yet. To build it,
+use the instructions below. New testers should read the
+[first-class guide](docs/TESTER_GUIDE.md) and [privacy notes](docs/PRIVACY.md).
 
-1. Tap **Start class**, check the proposed time range, then tap the solid white
-   **Start class** button (**Start** in compact text layouts). It starts a 60-minute class.
-   For a different schedule, choose **Custom schedule**, adjust **−15 min / +15 min**
-   and **60 / 75 minutes**, then **Start class**.
-   Custom edits never change the default. **Default schedule** returns to the original
-   suggestion; **Cancel** closes without saving. The outlined **Class ⌄** button opens class options.
-2. Read the long, thin hand for wall-clock seconds and the shorter, thicker hand
-   for wall-clock minutes. Both stay in front of the controls. The system clock
-   remains at the top right.
-3. The inward white wedge marks scheduled class end. For a 60-minute class,
-   the heavier outer line shows the time still to come; the light dotted section
-   shows the past. The future line ends at scheduled finish, but the wedge stays.
-   A 75-minute class has the wedge without a potentially misleading one-hour arc.
-4. Turn the **Digital Crown** for the paired iPhone's volume. Swipe left for
-   Apple's **Now Playing** controls; swipe right to return.
-   If timer-page volume stops behaving normally, **tap the volume display** to
-   refresh its native control, then try the Crown again. A brief ring around the
-   refresh icon acknowledges the request; it does not confirm sound recovered.
-   If the phone is already at zero, turn the Crown up; refreshing does not raise volume.
-5. Tap **1-min count** (or **Count** on compact layouts). The inner dashed arc
-   traces one minute from the tap. Vibrations mark 10/20/30/40/50/60 seconds with
-   1/2/3/4/5/6 pulses. Tap **Stop count** to cancel.
+1. Tap **Start class**, check **Suggested time**, then confirm the 60-minute class.
+   **Custom schedule** changes only this class: adjust its start and choose 60 or
+   75 minutes. When starting early, check the suggested quarter-hour carefully.
+2. Read the long thin hand for wall-clock seconds and the shorter thick hand for
+   minutes. The inward wedge marks scheduled end. A 60-minute class also shows
+   the remaining interval around the perimeter; 75 minutes uses the end wedge only.
+3. Turn the **Digital Crown** for paired-iPhone volume. Swipe left for Apple's
+   **Now Playing** page; swipe right for the clock. Native media can select Watch
+   playback, so check the source before class.
+4. Tap **1-min count** for an inner arc timed from your tap. Groups of 1–6 pulses
+   mark 10–60 seconds; the last group finishes at about 64.8 seconds. Tap again
+   to stop. Haptics may be late or skipped by watchOS.
+5. Tap **Class** (with the gear) → **Settings** to turn **Count vibrations** off
+   for the next count or enable **Minutes left**. Both preferences persist.
 
-The initial acknowledgement is distinct from the `.directionUp` timing pulses.
-Pulses within a group are scheduled 0.8 seconds apart. The sixth group begins at 60 seconds,
-its last pulse is scheduled at 64 seconds, and the run's scheduled end is 64.8 seconds.
-The arc reaches a full minute at 60 seconds and remains visible until that endpoint.
-watchOS can deliver completion callbacks later.
-Build 14 removes the run-wide late-haptic shutdown. Late pulses continue with
-spacing; obsolete groups are skipped rather than replayed across the next
-landmark or after completion. The arc keeps its original timing. See
-[late-pulse behavior and Simulator checks](docs/HAPTIC_DELAYS.md).
+**Stop session / Resume session** affects the mindfulness runtime while retaining
+class timing. **End class** clears timing and stops session/count. **New class**
+creates another schedule with confirmation. An old class retires 30 minutes after
+scheduled end; a new class never starts silently.
 
-For a first test, use the [tester quick start](docs/TESTER_GUIDE.md) and read
-[privacy and diagnostic sharing](docs/PRIVACY.md).
-The [build 22 usability review](docs/USABILITY_PASS_22.md) shows the latest
-menu changes and their verification limits. The historical
-[build 16 versus 19 comparison](docs/BUILD_16_VS_19.md) retains its original
-SE 3/Ultra screenshots and the correction to the initial missing-control claim.
+## When something goes wrong
 
-See the [build 25 Settings pass](docs/SETTINGS_PASS_25.md) for screenshots.
+- Frozen song progress or blank media: swipe to the timer and back to recreate
+  the native media view. Progress has recurred after temporary recovery. Eligible
+  long-dimmed wakes also refresh automatically; this does not detect a failure.
+- Timer Crown volume: tap the native volume display to request refresh; returning
+  from media is another recovery path. A visual acknowledgement does not prove
+  focus or sound recovered. If playback is silent, the iPhone's volume controls
+  have restored it in reported cases.
+- **Session off**: use **Resume**. Intentional Stop stays stopped across reopening;
+  automatic recovery is bounded and watchOS may reject it.
 
-## Class options
+The [known-issue map](docs/ISSUE_TRACKER.md) keeps symptoms and mitigations
+separate. [Report a problem](https://github.com/qayshp/TeachingTimer/issues/new/choose)
+with build/OS, what happened, approximate time and recovery. Do not interrupt a
+class to gather evidence or post raw diagnostics publicly.
 
-Tap **Class**, at the upper left, to:
+## Build and contribute
 
-- **Edit schedule** without resetting the original Start timestamp or services.
-- Start a **New class**, including back-to-back classes. Confirmation replaces
-  the schedule and stops the old count; an active runtime can continue.
-- **Stop session / Resume session** without clearing the class. When the session
-  is off, an outlined **Resume** control is also available directly on the face.
-  Either menu action returns to the face immediately.
-- Open **Settings** before or during a class. Turn **Count vibrations** off for
-  future visual-only counts, or enable the optional **Minutes left** label.
-  Preferences persist across launches and classes. An active count keeps its
-  current vibration setting; the change applies to the next count. Music and
-  system alerts are unaffected. Both count modes use the same arc timing.
-- **End class** with confirmation, clearing timing and stopping session/count.
-
-Media controls refresh automatically when you swipe into their page, or return
-from the background with media selected. Build 24 also refreshes on an active,
-undimmed wake after at least 30 seconds dimmed, provided the last media refresh
-was at least 60 seconds ago. This bounded recovery targets stale song progress;
-it does not detect a failure or send playback commands. If the page goes black while open,
-swipe to the timer and back. Class, session, and count continue; no Class-menu
-action is needed.
-
-The suggested start uses the previous quarter-hour at minutes 0–12 after it and
-the next quarter-hour at minutes 13–14. Check it when preparing early: 1:10
-suggests 1:00, so choose +15 for a 1:15 class. A class retires automatically
-30 minutes after scheduled end. It does not silently start another class.
-
-Reopening an ongoing class automatically resumes its mindfulness session if
-it was meant to be running, including after force-quitting the app. An explicit
-**Stop session** stays stopped across reopening until you choose **Resume**.
-Class timing is preserved in both cases; a count does not restart automatically.
-If watchOS rejects recovery, use **Resume** rather than expecting repeated retries.
-On the first upgrade from a build that did not save session intent, an existing
-class needs one explicit **Resume**; new classes save intent automatically.
-See [runtime recovery](docs/RUNTIME_RECOVERY.md) for validation and boundaries.
-
-## Screenshots
-
-Historical watchOS 27 Simulator captures, not mockups. Native volume may appear
-unavailable without a paired media source. These images do not prove physical
-Always-On, Crown responsiveness, or haptic delivery. They illustrate the teaching
-face across sizes; use the build-specific reviews below for newer menu changes.
-
-| SE 3 · 40 mm | Series 11 · 46 mm | Ultra 3 · 49 mm |
-| --- | --- | --- |
-| <img src="docs/images/se-40.png" width="162" alt="SE 3 teaching face with active count"> | <img src="docs/images/series-46.png" width="208" alt="Series 11 teaching face with active count"> | <img src="docs/images/ultra-49.png" width="211" alt="Ultra 3 teaching face"> |
-
-More checks: [maximum text on SE 3](docs/images/se-40-large-text.png),
-[class setup](docs/images/class-setup.png), [locked count](docs/images/se-40-locked.png).
-The Ultra example uses a 75-minute class; the other examples use 60 minutes.
-
-Build 15's revised action buttons and then-current setup screens are shown in the
-[October 26 usability review](docs/USABILITY_REVIEW_2026-10-26.md), including
-maximum-text checks on SE 3, Series 12, and Ultra 4. The
-[build 22 review](docs/USABILITY_PASS_22.md) shows the added Suggested time cue
-and maximum-text checks on SE 3 and Ultra.
-
-## Build and test
-
-Requires Xcode with the watchOS 26 SDK or later; this iteration was checked
-locally with Xcode 27.1 / watchOS 27 Simulator and in GitHub Actions. Deployment
-target is watchOS 26. Open `TeachingTimer.xcodeproj`, select the TeachingTimer
-scheme and a Watch simulator, and Run. For your own physical Watch, select your
-Apple development team and a unique bundle identifier under Signing & Capabilities.
-No signing keys or provisioning profiles belong in the repository.
+Requires Xcode with watchOS 26 SDK or later; the current local toolchain is Xcode
+27.1. Deployment target is watchOS 26. Open `TeachingTimer.xcodeproj`, choose the
+TeachingTimer scheme and a Watch simulator, and Run. For your own physical Watch,
+select your development team and a unique bundle identifier under Signing &
+Capabilities. Credentials, profiles and user-specific Xcode state stay out of Git.
 
 ```sh
-python3 scripts/check-repository.py # Published links, configuration and source checks
-sh scripts/check-tools.sh    # Offline diagnostic tooling checks
-sh scripts/check.sh          # Deterministic model/controller/diagnostic/geometry suites
-sh scripts/check-archive.sh  # Unsigned archive must actually contain the app
+python3 scripts/check-repository.py
+sh scripts/check-tools.sh
+sh scripts/check.sh
+python3 scripts/verify-build.py work/verification-new
 ```
 
-For a complete build/archive check with retained logs and source metadata, use
-`python3 scripts/verify-build.py NEW_OUTPUT_DIRECTORY`. See
-[build and release evidence](docs/BUILD_VERIFICATION.md) and the
-[Simulator action suite](tools/simulator-regression/README.md#essential-teaching-actions).
+The final command repeats the offline checks, builds for Simulator and rehearses
+unsigned development/distribution archives. It does not install or upload.
+Interactive Simulator checks need Device Hub and are run separately.
 
-These are standalone Swift checks with WatchKit boundary doubles, not an Xcode
-unit-test target. GitHub Actions also builds the app for Watch Simulator. Use
-normal local/ad-hoc Simulator signing for runtime interaction: an entirely
-unsigned build was rejected by WatchKit on the tested simulator.
+Start with [contributor setup](CONTRIBUTING.md), the
+[documentation map](docs/README.md), [automation coverage](docs/AUTOMATION.md),
+and [publishing readiness](docs/PUBLISHING_READINESS.md).
+The [Settings review](docs/SETTINGS_PASS_25.md) and
+[form-factor checks](docs/FORM_FACTOR_VALIDATION.md) include labeled Simulator
+screenshots. They do not certify physical audio, haptics or Always-On cadence.
 
 In Xcode 27 Device Hub, **Controls → Lock (⌘L)** exercises reduced-luminance
-Always-On. Simulator haptic requests may sound as Mac speaker chimes. Neither
-establishes physical-watch cadence or how the vibrations feel while teaching.
-See [Device Hub testing boundaries](docs/DEVICE_HUB_TESTING.md) for the current
-Simulator sound-output limitation, physical-device remote input, and the next
-seconds-hand transition investigation.
-An intermittent black media page has been reported during classes on a physical
-SE 3 with a paired iPhone. Native media refresh runs on page entry and eligible
-background return; ordinary wrist wakes do not trigger it. This is preventive
-recovery, not failure detection, and physical reliability remains unproven.
-An [original-image audit](docs/MEDIA_IMAGE_AUDIT.md) confirms the October 24
-black captures and recovery images. Later delayed captures described as black
-actually contain Not Playing; they cannot establish a recovery ranking or the
-physical trigger. The Apple report has been clarified.
-In an October 22 physical-class report, the media page stayed completely black
-and its Crown volume was unusable, while the timer and timer-page volume worked
-with Apple Music on iPhone → AirPlay → WiiM. No cause has been established.
+Always-On in Simulator. Haptic requests can sound as Mac speaker chimes.
+[Testing boundaries](docs/DEVICE_HUB_TESTING.md) explain the limits.
 
-For bounded journal copying and verified installation, see
-[local diagnostic tools](docs/DIAGNOSTIC_TOOLS.md).
+## Privacy
 
-## Runtime, privacy, and limitations
-
-Mindfulness `WKExtendedRuntimeSession` keeps the app useful in the foreground.
-It is not a HealthKit workout. Renewal is attempted near expiration when active,
-or after eligible interruption on return; **Resume** remains the fallback.
-Automatic renewal and one-second Always-On are not guaranteed on every Watch/OS.
-
-The timer-page volume control has also intermittently silenced playback, with
-both AirPlay and USB audio reported. The maintainer reports that playback keeps
-running; raising volume with the iPhone's buttons or Control Center restores
-sound. This is a reported recovery, not a diagnosed cause or guaranteed workaround.
-[Tap-to-refresh volume recovery](docs/VOLUME_CONTROL_RECOVERY.md) now retains
-the native widget and cycles its Crown focus after a quarter-second pause.
-Build 13 also retains it through background returns, addressing a reproduced
-Simulator focus/feedback failure associated with the earlier replacement path.
-Ordinary media-to-timer focus stays immediate. Actual iPhone-volume recovery and
-the separate silencing issue still need physical validation. Automatic native
-media refresh remains separate from volume refresh.
-Blank media and unintended silencing are the highest-priority bugs; the brief
-seconds-hand backstep on dimming is lower priority. Test volume before class
-and keep the phone's controls available.
-
-Preferences, class context, and bounded runtime/count journals stay in the app's
-local container. There is no automatic upload. Journals contain timestamps,
-random run/control/request IDs, app/build versions, scene/page/dimming changes,
-volume-focus lifecycle calls, and runtime errors—not track names, audio-route
-identifiers, volume values, or health data. Corrupt journals are preserved
-separately before logging resumes. Review/redact logs before publishing them
-in an issue.
-
-See [interface diagnostics](docs/INTERFACE_DIAGNOSTICS.md) for event meanings and
-what to record if the face goes blank or volume becomes silent. These events
-distinguish lifecycle calls and recovery requests from actual audio behavior;
-neither a completed refresh nor a returned focus call proves sound recovered.
-
-See [current verification and physical checks](DEVELOPMENT_STATUS.md),
-[contributor notes](CONTRIBUTING.md), and [historical engineering notes](docs/history/PROTOTYPE_NOTES.md).
+Preferences, class context and bounded diagnostic journals stay in the app's
+container. There is no automatic upload. App journals contain lifecycle/timing
+and error information; system diagnostics can contain much more private data.
+Review and minimize any diagnostic sharing. See [privacy](docs/PRIVACY.md).
 
 ## License
 
