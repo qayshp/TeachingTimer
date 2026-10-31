@@ -29,7 +29,8 @@ guard let row = find(window, where: { text($0,kAXRoleAttribute) == "AXRow" && fi
 guard AXUIElementSetAttributeValue(row,kAXSelectedAttribute as CFString,kCFBooleanTrue) == .success else { fail("Cannot select simulator") }
 AXUIElementSetAttributeValue(app,kAXFrontmostAttribute as CFString,kCFBooleanTrue)
 AXUIElementPerformAction(window,kAXRaiseAction as CFString)
-Thread.sleep(forTimeInterval: 0.3)
+// Let Device Hub finish selecting/rendering the device before sending input.
+Thread.sleep(forTimeInterval: 1.0)
 func press(_ e: AXUIElement) { guard AXUIElementPerformAction(e,kAXPressAction as CFString) == .success else { fail("AX press failed") } }
 let action = args[3]
 if action == "home" {
@@ -63,7 +64,7 @@ if action == "crown" {
 let numbers=args.dropFirst(4).compactMap(Double.init)
 guard numbers.count == args.count-4, numbers.allSatisfy({ (0...1).contains($0) }) else { fail("Use normalized display coordinates 0…1") }
 if action == "tap", numbers.count == 2 {
-    let p=point(numbers[0],numbers[1]); mouse(.leftMouseDown,p); Thread.sleep(forTimeInterval:0.08); mouse(.leftMouseUp,p)
+    let p=point(numbers[0],numbers[1]); mouse(.mouseMoved,p); Thread.sleep(forTimeInterval: 0.15); mouse(.leftMouseDown,p); Thread.sleep(forTimeInterval:0.08); mouse(.leftMouseUp,p)
 } else if ["swipe", "scroll"].contains(action), numbers.count == 4 {
     let from=point(numbers[0],numbers[1]), to=point(numbers[2],numbers[3]); mouse(.leftMouseDown,from)
     for i in 1...20 {

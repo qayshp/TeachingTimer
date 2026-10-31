@@ -29,10 +29,13 @@ installation or a physical-device test.
 | [Time-edge checks](TIME_EDGE_TESTS.md) | Scheduled-time, clock-change and monotonic-count cases. |
 | [Essential-action run](ESSENTIAL_ACTION_CHECKS.md) | Build 18 action sequence and historical results; use current status for later runs. |
 | [Form-factor validation](FORM_FACTOR_VALIDATION.md) | Dated multi-size visual checks, not hardware certification. |
+| [Phone audio fixture](../tools/phone-audio-probe/README.md) | Bounded native playback and remote-command evidence, independent of TeachingTimer. |
 | [Native volume probe](../tools/native-volume-probe/README.md) | Isolated companion-volume experiment. |
 | [Timeline probe](../tools/timeline-clock-probe/README.md) | Isolated Always-On clock experiment. |
 
 ## Current additions
+
+- [Build 26 on newer runtimes](RUNTIME_27_2_VALIDATION.md): 15-action pass, input-helper adjustment and paired-media test limits.
 
 - [Publishing readiness](PUBLISHING_READINESS.md): onboarding and outstanding release gates.
 - [Supervised physical media plan](PHYSICAL_MEDIA_TEST_PLAN.md): preparation only; no run scheduled.

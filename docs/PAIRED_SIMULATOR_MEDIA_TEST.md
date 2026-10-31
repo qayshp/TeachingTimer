@@ -75,3 +75,10 @@ iPhone companion for TeachingTimer.
 Private fixture, screenshots, journal excerpts, and class snapshots:
 `work/support/2026-10-22-paired-media/` (ignored). Related:
 [verified original-Simulator sequence](EXACT_LOCK_REENTRY_TEST.md).
+
+## October 31 newer-runtime check
+
+A dedicated iOS/watchOS 27.2 pair still did not establish companion media in
+TeachingTimer during bounded native phone playback. See the
+[new run and its narrower evidence limits](RUNTIME_27_2_VALIDATION.md). This does
+not resolve the Apple support question or reproduce the physical progress bug.

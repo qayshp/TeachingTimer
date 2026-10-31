@@ -59,6 +59,7 @@ def main():
         ('simulator', ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimer',
                        '-configuration', 'Debug', '-sdk', 'watchsimulator', '-derivedDataPath', str(output / 'DerivedData'),
                        '-resultBundlePath', str(output / 'Simulator.xcresult'), 'CODE_SIGN_IDENTITY=-', 'DEVELOPMENT_TEAM=', 'build']),
+        ('phone-audio-probe', ['sh', 'tools/phone-audio-probe/build.sh', str(output / 'phone-audio-probe')]),
         ('archive', ['sh', 'scripts/check-archive.sh', str(output / 'development-archive')]),
         ('distribution-rehearsal', ['sh', 'scripts/prepare-testflight.sh', str(output / 'distribution-archive')]),
     ]

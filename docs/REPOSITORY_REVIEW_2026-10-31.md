@@ -62,3 +62,7 @@ canonical checkout and ignored work directory hold this review's files.
 Repository guards now also reject raw journal/archive/log files accidentally
 added outside work/. The final Python run includes 85 tests; the full combined
 build run preceded the additional guard test and passed its then-84 tests.
+
+Subsequent verification: the [watchOS 27.2 action pass](RUNTIME_27_2_VALIDATION.md)
+resolves the interactive Settings-navigation gap recorded above. The earlier
+timeout and initial ineffective input remain in the private evidence.

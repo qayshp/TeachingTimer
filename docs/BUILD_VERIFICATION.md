@@ -4,7 +4,9 @@ Run `python3 scripts/verify-build.py NEW_OUTPUT_DIRECTORY` from the repository.
 The directory must not exist. This command never installs or uploads an app. The Simulator build uses
 local ad-hoc signing; both device archives remain unsigned. It records the exact source commit and dirty state, selected Xcode path,
 Xcode/Swift versions and installed SDKs, then runs repository consistency and model/tool checks,
-Simulator build, development archive and future distribution-identity archive.
+Simulator build, isolated phone audio-fixture build, development archive and
+future distribution-identity archive. The fixture build generates audio locally
+and never launches playback.
 
 Every step has its own log and status in `verification.json`. Failed commands
 and timeouts remain failures; their partial output is retained. Simulator build

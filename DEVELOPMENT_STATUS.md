@@ -5,7 +5,7 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (26): repository cleanup and Settings return-navigation fix; build/offline verification passed; interactive navigation pending. |
+| Source candidate | 1.0 (26): repository cleanup and Settings return-navigation fix; build/offline and SE 3 interactive action verification passed. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | Build 23, October 30: Pause and volume worked; song progress became stale twice near class end and recovered temporarily after page switching. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
@@ -41,9 +41,10 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 ## Verification and deployment boundaries
 
 Build 26 passes 12 Swift suites, 85 Python tests, repository validation, Simulator
-compilation and unsigned development/distribution archive rehearsals. Interactive
-Settings navigation remains pending: Simulator discovery timed out. No physical
-installation or playback test was performed.
+compilation and unsigned development/distribution archive rehearsals. The subsequent [watchOS 27.2 action run](docs/RUNTIME_27_2_VALIDATION.md) passes
+all 15 assertions, including Settings return. Initial discovery/input problems
+were addressed in the test helper. No physical installation or playback test
+was performed.
 The [supervised device-test plan](docs/PHYSICAL_MEDIA_TEST_PLAN.md) is a proposal;
 no unattended run is scheduled.
 
