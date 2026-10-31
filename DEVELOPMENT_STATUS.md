@@ -241,3 +241,9 @@ the first attempt. They retain October 30 class activity on build 23. The user
 reported the Watch was locked and nearby, and Device Hub screen sharing was not
 connecting. Successful file copies and installation do not imply screen sharing
 or app launch is available. Raw records remain private under `work/support/`.
+
+The maintainer subsequently unlocked the Watch while it remained on the charger
+by restarting Device Hub screen sharing, pressing its virtual Crown and entering
+the passcode there. The nightstand rejection does not establish that removing
+the Watch from its charger is necessary. A subsequent CLI launch timed out; it
+did not confirm launch or repeat the nightstand rejection.
