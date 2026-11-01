@@ -1,13 +1,13 @@
 # Teaching Timer — current verification
 
-Updated October 31, 2026. This is the authority for current build and validation
+Updated with the October 31 classroom report. This is the authority for current build and validation
 status. Dated investigations describe their original builds, not current behavior.
 
 | Item | Status |
 | --- | --- |
 | Source candidate | 1.0 (26): repository cleanup and Settings return-navigation fix; build/offline and SE 3 interactive action verification passed. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
-| Latest classroom evidence | Build 23, October 30: Pause and volume worked; song progress became stale twice near class end and recovered temporarily after page switching. |
+| Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
 | Distribution | No TestFlight upload or public release. Distribution identifier: `net.qays.TeachingTimer`; development: `com.qayshp.TeachingTimer`. |
 
@@ -22,8 +22,10 @@ status. Dated investigations describe their original builds, not current behavio
   This is prevention, not failure detection. [Policy](docs/MEDIA_WAKE_REFRESH.md).
 - Persistent class timing, runtime intent and monotonic counts remain independent.
   Intentional Stop survives reopening; a rejected recovery exposes Resume.
-- Build 25 settings and wake-refresh classroom reliability remain unvalidated.
-  A settings toggle or completed focus callback is not proof of physical effects.
+- Build 25 Settings has positive classroom validation on October 31. The progress
+  freeze still recurred; the wake-refresh mitigation is not established as a fix.
+  Actual trigger eligibility at that recurrence is unknown without fresh journals.
+  A returned focus callback alone remains insufficient proof of physical effects.
 
 ## Open priorities
 
