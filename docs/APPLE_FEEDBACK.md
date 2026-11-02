@@ -1,8 +1,40 @@
 # Apple feedback status
 
-Refreshed and inspected in Feedback Assistant on October 28, 2026. All submitted attachment
-uploads completed. Submission is not an Apple diagnosis or a verified fix.
-Raw device logs, identifiers, and private evidence packages stay outside Git.
+Last inspected in Feedback Assistant on November 2, 2026, read-only. Submission
+is not an Apple diagnosis or a verified fix. Raw device logs, identifiers and
+private evidence packages stay outside Git. Earlier attachment/submission
+results are recorded in the dated history below.
+
+## November 2 current status
+
+| Report | Scope | Displayed resolution |
+| --- | --- | --- |
+| **FB25379883** | Frozen native song progress | Open |
+| **FB25294079** | Paired Simulator media discovery/control | Open |
+| **FB25305069** | Blank embedded native media | Open |
+| **FB25347535** | Device Hub Lock documentation | Open |
+| **FB25329167** | Native companion-volume Crown focus | Open |
+| **FB25329087** | Always-On seconds-hand backstep | Open |
+| **FB25329139** | Watch developer connection failures | Investigation complete - Unable to diagnose with current information |
+
+The six Open reports' visible author/date lists contain the existing maintainer
+messages; no new technical Apple reply was found. The connection report shows
+an **Apple Feedback** message dated **October 28, 2026 at 15:28**, as displayed.
+That establishes the message's displayed time, not when its resolution changed.
+
+The existing Apple request asks for a fresh reproduction, ideally using the
+[CoreDevice logging profile](https://developer.apple.com/bug-reporting/profiles-and-logs/?name=CoreDevice),
+then `xcrun devicectl diagnose`. Its output should include host and relevant-device
+sysdiagnoses; collect missing captures separately. This is an older request
+observed during today's inspection, not a new response or a completed collection.
+
+The [watchOS 27.2 clock-probe comparison](ALWAYS_ON_HAND_TRANSITION.md) reproduced
+the backstep and remains local evidence for FB25329087; it has **not** been sent
+to Apple. No report, follow-up, attachment, new request or device action was made
+during this review. Private UI text captures are retained under
+`work/support/2026-11-02-v1-review/apple-status/`.
+
+## October 26–28 reporting history
 
 | Report | Scope | October 26 action |
 | --- | --- | --- |
@@ -13,7 +45,7 @@ Raw device logs, identifiers, and private evidence packages stay outside Git.
 | **FB25294079** | Paired Simulator cannot discover/control iPhone media | Updated with the bounded Watch-local experiment and the outstanding Simulator-support question. |
 | **Draft only; no submitted FB ID** | Unexpected silencing during native volume adjustment | Saved in Feedback Assistant with the October 23 timeline and focused Watch/iPhone excerpts. |
 
-Project follow-up is now tracked in [six public GitHub issues](ISSUE_TRACKER.md).
+Project follow-up is tracked in [public GitHub issues](ISSUE_TRACKER.md).
 No new Apple submission is implied by creating those issues.
 
 On October 28, [FB25305069 received the recovery comparison](APPLE_MEDIA_UPDATE_2026-10-28.md),
@@ -29,8 +61,9 @@ be disregarded. Physical incidents remain reported and unresolved.
 
 - **Seconds hand:** the minimal probe reproduces in Simulator; the physical
   symptom is similar, but that probe was not tested on hardware. A fresh
-  transition-time diagnostic and a newer watchOS runtime comparison remain
-  useful. See [transition investigation](ALWAYS_ON_HAND_TRANSITION.md).
+  physical transition-time diagnostic remains useful. The November 2 watchOS
+  27.2 comparison is now complete locally but has not been submitted; see
+  [transition investigation](ALWAYS_ON_HAND_TRANSITION.md).
 - **Connection:** the Watch was already unlocked, fully awake, and on top of the
   laptop during the October 26 failure. The same build 16 installed on retry,
   with no restart, re-pairing, trust prompt, or settings change. The command
