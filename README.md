@@ -36,7 +36,7 @@ use the instructions below. New testers should read the
 5. Tap **Class** (with the gear) → **Settings** to turn **Count vibrations** off
    for the next count or enable **Minutes left**. Both preferences persist.
    **Help**, **Privacy**, and **About** are also in Settings, including the app
-   version, recovery guidance, source/license, and public issue link.
+   version, recovery guidance, source/license, and private support contact.
 
 **Stop session / Resume session** affects the mindfulness runtime while retaining
 class timing. **End class** clears timing and stops session/count. **New class**
@@ -56,7 +56,7 @@ scheduled end; a new class never starts silently.
   automatic recovery is bounded and watchOS may reject it.
 
 The [known-issue map](docs/ISSUE_TRACKER.md) keeps symptoms and mitigations
-separate. [Report a problem](https://github.com/qayshp/TeachingTimer/issues/new/choose)
+separate. [Contact support](SUPPORT.md)
 with build/OS, what happened, approximate time and recovery. Do not interrupt a
 class to gather evidence or post raw diagnostics publicly.
 

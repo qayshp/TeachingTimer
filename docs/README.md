@@ -12,6 +12,7 @@ installation or a physical-device test.
 | Document | Purpose |
 | --- | --- |
 | [Tester guide](TESTER_GUIDE.md) | Before-class checks, everyday controls and recovery choices. |
+| [Support](../SUPPORT.md) | Private email for a short report; public issues are optional and journals are not attached automatically. |
 | [Privacy](PRIVACY.md) | Local storage, retention and diagnostic sharing boundaries. |
 | [Contributor guide](../CONTRIBUTING.md) | Repository layout, behavior boundaries and maintenance rules. |
 | [Teaching checkpoint](TEACHING_CHECKPOINT.md) | Preserved build 16 provenance and private recovery artifacts. |
@@ -41,7 +42,7 @@ installation or a physical-device test.
 - [Build 26 on newer runtimes](RUNTIME_27_2_VALIDATION.md): 15-action pass, input-helper adjustment and paired-media test limits.
 
 - [Publishing readiness](PUBLISHING_READINESS.md): onboarding and outstanding release gates.
-- [Private support intake](PRIVATE_SUPPORT_PLAN.md): pilot procedure, pending contact/delivery gate.
+- [Private support intake](PRIVATE_SUPPORT_PLAN.md): verified inbound email, handling procedure and remaining reply/attachment/export checks.
 - [Supervised physical media plan](PHYSICAL_MEDIA_TEST_PLAN.md): preparation only; no run scheduled.
 - [Settings and information pages](SETTINGS_PASS_25.md): build 25 preferences and
   build 27 Help/Privacy/About screenshots and limits.

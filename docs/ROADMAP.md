@@ -3,9 +3,9 @@
 Updated November 2, 2026. Build 25 is installed and launched; October 31 classroom
 feedback confirms Settings/volume worked, while song progress still stalled and
 page switching recovered it. Build 27 adds Help/Privacy/About in Settings to the
-source. Build 28 adds separate TestFlight packaging/export validation. Its signed
-internal-only export is locally verified after developer agreement acceptance;
-upload and physical pilot remain pending. Build 16 remains a preserved rollback
+source. Build 29 is Ready to Test / Internal after signed upload and processing;
+only the maintainer is invited, with automatic distribution off. Build 30 adds
+private support and navigation refinements. The physical pilot remains pending. Build 16 remains a preserved rollback
 checkpoint. Further physical installations require authorization. Simulator work
 and repository changes do not count as physical validation.
 
@@ -23,7 +23,7 @@ and repository changes do not count as physical validation.
 | 8 | Separate endurance session | Runtime renewal, Home/return, intentional Stop, persistence/new class, battery and diagnostic cost over a teaching-length run. |
 | 9 | Private TestFlight pilot | Signed upload/install/update, separate-identity state and journal access, and a private support route before inviting more testers. |
 | 10 | Ordinary teaching observations | Early/late/consecutive classes, New Class discoverability and counting groups of 4–6 pulses. Avoid adding teaching UI before the observations justify it. |
-| 11 | Seconds-hand transition comparison | Use the isolated probe on a newer Watch runtime or in a planned physical session. No speculative time clamping. |
+| 11 | Seconds-hand transition comparison | Fixed-anchor probe reproduces backsteps on watchOS 27.2; preserve transition evidence for the existing report. Physical comparison remains pending. No speculative time clamping. |
 
 Items 1–6 are the Mac-only batch. Items 7–10 depend on coordination, actual wear
 or the distribution pilot; approval of the roadmap does not turn those into
@@ -36,14 +36,14 @@ completed tests. No periodic monitor or automatic installation is scheduled.
 | 1–7 | Teaching checkpoint, documentation separation, retention, device/summary tools, persistence diagnostics and confirmed dead-code cleanup implemented. Journal copying, install/version verification and launch have live evidence; connection reliability remains unresolved. |
 | 8 | Simulator lifecycle regression automation implemented. Original-image audit complete; current bounded run renders. Physical reliability remains unproven. |
 | 9 | Independent native-volume probe built; physical comparison remains current item 7. |
-| 10 | Separate distribution identity, unsigned rehearsal and local signed internal-only export verified. Upload/install/update and journal-access pilot remain current item 9. |
+| 10 | Separate distribution identity, signed export and build-29 upload/processing verified. Install/update and journal-access pilot remain current item 9. |
 | 11–13 | Physical volume, connection and moving-haptic tests pending; current item 7. |
 | 14–15 | Runtime endurance and battery/logging cost pending; current item 8. |
 | 16–17 | Simulator usability checks exist; physical accessibility and ordinary schedule-use observations pending. |
 | 18–21 | Time-edge tests, essential-action checks, build/release evidence and public issues implemented. |
-| 22 | Clock probe and Apple report exist. watchOS 27.2 (24S118) is now available and has app/action evidence; a controlled clock-probe comparison and physical transition test remain pending. |
+| 22 | Clock probe and Apple report exist. The fixed-anchor probe reproduces backsteps on watchOS 27.2 (24S118); preserve that comparison for the existing report. Physical transition testing remains pending. |
 | 23 | Mechanical presentation split complete; shared state/native lifecycle retained. |
-| 24 | Tester/privacy guides and metadata draft ready. Signed pilot, support route and actual beta screenshots remain prerequisites for broader testing. |
+| 24 | Tester/privacy guides and metadata draft ready; build 29 processed and support inbound delivery verified. Physical beta install/update, journal access and support reply/attachment checks remain prerequisites for broader testing. |
 | 25 | Apple follow-up is ongoing. The October 28 media correction was submitted; connection status and requested documentation follow-up need tracking. |
 
 The older 14-point usability/public-code review is largely implemented: reserved

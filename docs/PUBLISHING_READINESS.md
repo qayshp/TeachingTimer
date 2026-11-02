@@ -1,7 +1,8 @@
 # Publishing readiness
 
-Reviewed November 2, 2026. A signed internal-only build-28 export is verified
-locally; upload, TestFlight installation, invitations and release remain pending.
+Reviewed November 2, 2026. Build 29 is Ready to Test / Internal in App Store
+Connect; only the maintainer is invited. Installation/update, wider testing and
+public release remain pending. Source build 30 adds support/navigation refinements.
 [Current verification](../DEVELOPMENT_STATUS.md) owns build/install status.
 
 ## New user entry points
@@ -20,9 +21,9 @@ support procedures from historical engineering notes.
 | Gate | Evidence / next action |
 | --- | --- |
 | Names and identifiers | App Store Connect record **Teaching Timer Beta** created for `net.qays.TeachingTimer`; Teaching Timer was unavailable. Its Watch payload is `net.qays.TeachingTimer.watchkitapp`. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Distribution provisioning succeeded. |
-| Build integrity | Offline checks and unsigned archives pass; the signed build-28 export passed local package, profile, signature and entitlement checks. This does not establish Apple server acceptance. Repeat checks for any changed candidate. |
-| Paid-team signing / App Store Connect | Agreement gate resolved, local distribution export verified and app record created. Complete metadata and upload as part of the authorized self-pilot. |
-| Private tester support | Confirm a private contact and delivery before invitations. An email address does not export Watch journals. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
+| Build integrity | Offline checks and unsigned archives pass; build 29 passed local package/profile/signature checks and Apple processing. Repeat checks for changed candidates; processing is not a physical test. |
+| Paid-team signing / App Store Connect | Agreement gate resolved, app record created, build 29 processed, maintainer-only group configured without automatic distribution. Complete the physical self-pilot when available. |
+| Private tester support | [Private email support](../SUPPORT.md) is configured and inbound delivery is verified. Outbound alias replies and diagnostic attachment delivery remain untested. An email address does not export Watch journals. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | Development container copies work intermittently. TestFlight container access and a tester-friendly export path remain unresolved. |
 | Install/update pilot | Check separate container, cold start, update, state preservation, runtime intent and recovery on a physical Watch. |
 | Teaching reliability | Build 25 Settings/volume received positive October 31 class feedback; progress still froze and was recovered by swiping. Validate the release candidate and mitigation limits. Prioritize progress, blank media, Crown recovery and silencing. See supervised plan. |
@@ -64,8 +65,8 @@ fixed or that automatic wake refresh prevented every recurrence.
    of hands/marker, class versus session, counts, media recovery and local data,
    plus the running version/build, complete bundled policy/license and website
    addresses/QR codes. Verify camera scanning from the physical display during
-   the pilot; image decoding in Simulator is not a physical camera test. A private
-   support contact and final metadata/privacy review remain outstanding.
+   the pilot; image decoding in Simulator is not a physical camera test. The private
+   support inbox now receives reports; final metadata/privacy review remains outstanding.
 4. **Run the release matrix.** Confirm physical fresh launch, Home/return,
    intentional Stop, force-close class recovery, settings persistence and class
    replacement. Exercise normal phone playback and relevant wired/AirPlay routes
@@ -75,13 +76,15 @@ fixed or that automatic wake refresh prevented every recurrence.
    compatibility test or adjust the support claim rather than assuming only
    watchOS 27.2 results cover it.
 5. **Pilot the real distribution build.** Use `net.qays.TeachingTimer`, preserve
-   the development install, sign/upload when authorized and install via TestFlight.
+   the development install and install via TestFlight when the Watch is available
+   and installation is authorized. Build 29 has passed upload/processing;
+   repeat those checks for the changed candidate.
    Check install/update, separate-container state and journal/support access.
    Begin with the maintainer, then a small external teacher group. External beta
    review is an opportunity to expose runtime-use questions, not a guarantee of
    final store acceptance.
-6. **Finish release materials and support.** Confirm private contact, name and
-   price decision, final icon/screenshots, supported-device wording, privacy,
+6. **Finish release materials and support.** Finalize support handling, the public
+   release name and price, final icon/screenshots, supported-device wording, privacy,
    export/age-rating answers, review instructions, tag and release notes. Use the
    actual signed candidate and store-supported toolchain. Do not advertise
    guaranteed media progress, haptic timing or 1 Hz on every Watch.
@@ -103,8 +106,9 @@ resolved the bare Watch archive's export-method rejection. The account holder
 then accepted the updated developer agreement, resolving Apple's **PLA Update
 available** provisioning gate. The internal-only build-28 IPA exported
 successfully and passed local package, profile, signature and entitlement checks.
-No upload, TestFlight installation or physical update has occurred during this
-preparation. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
+That build-28 export was not uploaded. The later clean build 29 was uploaded and
+processed successfully, with only the maintainer invited. No TestFlight installation
+or physical update has occurred during this preparation. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
 The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) now has a configured
 alias and verified inbound delivery. Outbound reply and diagnostic attachment
 delivery remain pending. These are

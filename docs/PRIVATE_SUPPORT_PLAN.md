@@ -11,17 +11,18 @@ reply behavior or diagnostic attachment delivery as tested.
 
 ## Recommended route
 
-Use a dedicated support email alias in an existing, monitored mailbox. Initial
+Use [teachingtimer@qays.net](mailto:teachingtimer@qays.net), the configured support
+alias in the existing mailbox. [The public support guide](../SUPPORT.md) is
+source build 30's support QR destination. Initial
 reports should contain a description, app/build and OS versions, approximate
 incident time with time zone, the affected page, playback source/output route if
 relevant, and whether page switching or another recovery helped. No journal or
 system capture is needed for the first message.
 
-The maintainer's proposed qays.net domain currently uses iCloud Mail. Add an alias
-at the existing provider; do not replace its MX records or enable another inbound
-mail service merely for this app. Confirm a harmless test message arrives and
-replies work before advertising the route in About, the privacy policy,
-repository support links, or TestFlight's feedback contact.
+The qays.net alias uses the existing iCloud Mail provider. Its address and harmless
+inbound delivery are verified, so it can receive reports now. Outbound replies
+from the alias and diagnostic attachment delivery remain untested. No MX records
+or inbound mail provider were changed.
 
 For this small pilot, email is the initial reporting route. Diagnostic sharing
 remains a separate, deliberate action. The Watch app continues making no
@@ -91,8 +92,8 @@ actual intake practice; optional support sharing is not automatically exempt.
 - [x] Alias configured at the existing mail provider.
 - [x] Harmless inbound test received and its contents verified.
 - [ ] Outbound reply from the alias tested.
-- [ ] Approved address added to About/support QR destination and repository guide.
-- [ ] Privacy/support wording describes actual handling; no automatic uploads.
+- [x] Approved address added to About/support QR destination and repository guide.
+- [x] Privacy/support wording describes actual handling; no automatic uploads.
 - [ ] TestFlight feedback contact matches the monitored route.
 - [ ] Self-pilot separately verifies journal retrieval from the distribution app.
 - [ ] Before wider invitations, verify a tester-usable journal delivery path or

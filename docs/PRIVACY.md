@@ -1,6 +1,6 @@
 # Privacy and diagnostics
 
-Last reviewed November 1, 2026, against the build-27 source.
+Last reviewed November 2, 2026, for the build-30 candidate.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does
@@ -46,6 +46,18 @@ Website destinations show an address and a QR code for a phone camera. Visiting
 GitHub or Mozilla is subject to those websites' policies; no journals or other
 app data are included in these addresses or QR codes.
 
-Questions can be raised through the [project's public issue form](https://github.com/qayshp/TeachingTimer/issues/new/choose)
-without including personal data. A dedicated private support contact must be
-confirmed before broader distribution.
+## Private support
+
+Email [teachingtimer@qays.net](mailto:teachingtimer@qays.net) with a short
+description; no logs are needed to start. The maintainer receives the sender
+address, message and any attachments you choose to send in an iCloud Mail inbox.
+These support messages are separate from the Watch's rolling journals and are
+kept while needed to handle the request. You can ask about removing a report by
+emailing the same address; copies already shared with another recipient or
+retained in backups may have separate lifetimes.
+
+Share only necessary details. The maintainer will ask before forwarding raw
+private evidence to Apple or another party. No journal attachment delivery or
+TestFlight file access is implied by the email route. See [support](../SUPPORT.md)
+for the reporting steps. The [public issue form](https://github.com/qayshp/TeachingTimer/issues/new/choose)
+remains available for sanitized descriptions.

@@ -5,11 +5,11 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (29): queued new-class runtime Start, safe retirement during schedule editing, clearer information pages, and checked TestFlight packaging. |
+| Source candidate | 1.0 (30): private support entry point and accessible Settings Back control, following build 29 runtime-start and schedule-retirement fixes. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Teaching Timer Beta App Store Connect record created. No TestFlight upload or public release yet. Build 28 signed internal-only export verified; build 29 preparation follows the review fixes. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Build 29 (7e9ca4a82324) uploaded and marked Ready to Test / Internal on November 2. Separate Teaching Timer Beta record; no public release or physical Beta install. Build 30 adds support/navigation refinements and is not uploaded yet. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -63,7 +63,7 @@ an update rehearsal, not TestFlight delivery or physical journal-access proof.
 The signed packaged archive passes local signature/resource/symbol checks;
 after the account holder accepted Apple’s agreement, the internal-only
 App Store distribution export passed signature, profile and entitlement checks. No physical
-app was installed, launched or removed. The [private intake plan](docs/PRIVATE_SUPPORT_PLAN.md)
+app was installed, launched, queried or removed during this review. The [private intake plan](docs/PRIVATE_SUPPORT_PLAN.md)
 has a configured alias and verified inbound test; outbound reply and native attachment delivery remain unverified. [Pilot procedure](docs/TESTFLIGHT_PREPARATION.md).
 
 The following remains the prior build-27 UI validation:

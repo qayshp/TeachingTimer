@@ -166,13 +166,20 @@ struct ClassControlsView: View {
             .id(mode)
             .navigationTitle(navigationTitle)
             .toolbar { ToolbarItem(placement: .cancellationAction) {
-                Button(closeButtonTitle) {
+                Button {
                     if mode == .settings {
                         _ = retireOldClass()
                         if classStore.context == nil { handleClearedClass() }
                         mode = settingsReturnMode
                     } else { dismiss() }
+                } label: {
+                    if mode == .settings {
+                        Label("Back", systemImage: "chevron.backward").labelStyle(.iconOnly)
+                    } else {
+                        Text(closeButtonTitle)
+                    }
                 }
+                .accessibilityLabel(closeButtonTitle)
             } }
         }
 #if DEBUG

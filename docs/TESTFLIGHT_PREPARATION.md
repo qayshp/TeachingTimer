@@ -1,7 +1,8 @@
 # TestFlight pilot
 
-Updated November 2, 2026. Build 28 adds distribution packaging and export checks.
-There is no uploaded TestFlight build yet. The physical teaching app is unchanged.
+Updated November 2, 2026. Build 29 passed signed export, upload and Apple processing.
+It is Ready to Test / Internal in the maintainer-only pilot. Build 30 adds support
+and navigation refinements. The physical teaching app is unchanged.
 
 ## Identities and packaging
 
@@ -83,15 +84,27 @@ automation, and no upload occurred.
 The account holder subsequently accepted the agreement. Export of the clean
 `ec809c2f12ed` build-28 archive then succeeded. Both distribution profiles,
 signatures and signed entitlements passed local verification. The IPA is marked
-internal-only; no upload or installation has occurred.
+internal-only; that build-28 artifact was not uploaded or installed.
 
 The App Store Connect **iOS** app record has now been created as **Teaching Timer
 Beta** for `net.qays.TeachingTimer` (the watch-only packaging identity).
-**Teaching Timer** was unavailable. Export compliance, beta contact, upload and
-server validation remain separate checks. Use **TestFlight Internal Only** and
-the maintainer alone for this first pilot; do not enable automatic distribution
-to additional testers. Leave the existing physical teaching installation
+**Teaching Timer** was unavailable. The following upload record establishes
+build-29 processing; final review metadata and the physical pilot are separate
+checks. Use **TestFlight Internal Only** and the maintainer alone for this first
+pilot; do not enable automatic distribution to additional testers. Leave the existing physical teaching installation
 untouched until a separate installation request.
+
+## First uploaded pilot
+
+Build 29, clean revision `7e9ca4a82324`, passed the signed export checks and was
+uploaded November 2 at approximately 12:39 Pacific. App Store Connect subsequently
+showed **Ready to Test**, **Internal**, and a 90-day lifetime. The **Maintainer
+pilot** internal group has automatic distribution disabled and only the account
+holder invited. No external tester, public link or physical installation was
+created. Upload/processing are verified; installation/update and distribution
+journal access below remain unverified. The separate development build 25 remains
+the last confirmed physical installation. Source build 30 adds the private support
+entry point and Settings navigation refinement; it has not been uploaded yet.
 
 ## Self-pilot record
 
@@ -107,7 +120,7 @@ rehearsal must not be recorded as a TestFlight pass.
 | Update through TestFlight | A later beta build preserves class identity/timing, settings and intentional Stop. Verify the new build number. |
 | Journal retrieval | Copy all three journals using the **Watch** identifier below; verify parsed data, bounds and build identity. Record failure accurately if distribution container access is denied. |
 | Teaching behavior | Check awake/wrist-down clock/count, media recovery, companion volume, and a teaching-length runtime/battery run. |
-| Private support | Confirm the chosen address receives a harmless test report before publishing it or inviting testers. Request only necessary diagnostic excerpts. |
+| Private support | Inbound delivery to teachingtimer@qays.net was verified November 2. Verify outbound alias replies and any attachment path separately; request only necessary evidence. |
 
 Try custom journals independently of installation:
 

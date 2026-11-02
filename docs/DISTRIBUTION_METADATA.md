@@ -1,18 +1,18 @@
 # Distribution metadata draft
 
 Updated November 2, 2026. The App Store Connect record **Teaching Timer Beta**
-has been created; no build is uploaded yet. This is the metadata review packet
+has build 29 Ready to Test / Internal, with only the maintainer invited. This is the metadata review packet
 for the private pilot, not a completed store submission or external invitation.
 
 | Field | Draft |
 | --- | --- |
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 / 29; no TestFlight candidate uploaded |
+| Version / development candidate | 1.0 / source 30; build 29 uploaded for the internal pilot |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
-| Support URL | https://github.com/qayshp/TeachingTimer/issues |
+| Support URL | https://github.com/qayshp/TeachingTimer/blob/main/SUPPORT.md |
 | Privacy information | https://github.com/qayshp/TeachingTimer/blob/main/docs/PRIVACY.md |
 | License | MPL-2.0 |
 
@@ -54,21 +54,21 @@ in public feedback.
   disconnected media icons and variable capture times. They are tester/review
   assets, not a finalized App Store screenshot set. Prepare final screenshots
   only after the beta behavior and supported-device claims are validated.
-- Complete the signed upload, install/update and journal-access pilot in
-  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). The locally verified signed
-  export has not been uploaded. This draft does not itself establish upload,
-  tester invitation or physical installation.
+- Complete the install/update and journal-access pilot in
+  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 29 has passed upload
+  and processing, with the maintainer invited. Build 30 is not uploaded yet.
+  Neither source work nor processing establishes physical installation or journal access.
 
 ## Current candidate review
 
-Build 28 is the source candidate, adding Watch-only TestFlight packaging to the
-build-27 teaching behavior. Build 25, including settings and bounded media
+Source build 30 adds private support and accessible Settings navigation to
+build 29, which fixed runtime-start and schedule-retirement races. Build 25, including settings and bounded media
 wake refresh, is installed as the development identity `com.qayshp.TeachingTimer`.
 Build 25 received positive classroom Settings/volume feedback on October 31;
 song progress still stalled and recovered by switching pages. Build 27 adds
 Help/Privacy/About under Settings; that addition has not been installed on the
-physical Watch. Build 28 has a verified local signed internal-only export, but no
-App Store Connect upload or TestFlight installation.
+physical Watch. Build 29 is Ready to Test / Internal in App Store Connect. No TestFlight
+installation has been verified.
 
 - **Screenshot set:** the [Settings-era teaching face](images/settings-25/se3-face.png)
   was captured on the SE 3 Simulator during build-25 verification.
@@ -76,11 +76,12 @@ App Store Connect upload or TestFlight installation.
   SE 3 and Ultra. These are development evidence, not approved store assets;
   the face includes the Simulator's disconnected-phone indicator.
 - **Privacy review:** [Privacy](PRIVACY.md) describes local journals and voluntary
-  sharing. The new offline information pages introduce no new collection and
+  support email. The information pages do not add automatic collection and
   provide the full privacy policy and MPL license offline in Settings.
   Final App Store declarations still require review against the distribution binary.
 - **Support:** GitHub issues are suitable for sanitized bug descriptions only.
   A private support alias has verified inbound delivery; outbound replies and
   tester-facing journal export remain unverified. The review contact is pending. Do not ask testers to attach raw journals publicly.
-- **Pilot gates:** signed upload, separate-identity state handling, install/update,
-  journal retrieval and private support must be verified before invitations.
+- **Wider pilot gates:** verify separate-identity state handling, install/update,
+  journal retrieval and support handling before inviting additional testers.
+  The current owner-only invitation does not establish those results.

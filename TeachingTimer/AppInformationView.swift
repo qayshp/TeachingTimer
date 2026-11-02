@@ -106,7 +106,12 @@ struct AppInformationView: View {
             } header: {
                 Text("Support")
             } footer: {
-                Text("GitHub issues are public. Include your app version and what happened, without private logs.")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Email for private support:")
+                    Text("teachingtimer@qays.net")
+                        .font(.caption2).lineLimit(1).minimumScaleFactor(0.5)
+                    Text("Include your app version and a short description. No logs are needed to start.")
+                }
             }
             Section {
                 InformationWebsiteLink(key: "source")
@@ -148,6 +153,14 @@ private struct InformationWebsite: Decodable {
 private struct InformationWebsiteLink: View {
     let key: String
 
+    private var navigationTitle: String {
+        switch key {
+        case "support": "Support"
+        case "privacy": "Privacy"
+        default: "Source"
+        }
+    }
+
     private var qrCode: CGImage? {
         guard let file = Bundle.main.url(forResource: key, withExtension: "png", subdirectory: "Information"),
               let source = CGImageSourceCreateWithURL(file as CFURL, nil) else { return nil }
@@ -175,9 +188,9 @@ private struct InformationWebsiteLink: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     if key == "support" {
-                        Section { Text("GitHub sign-in is needed to submit an issue. Keep private logs out of public reports.") }
+                        Section { Text("This page has the private support email. No GitHub account is needed to email support. Journals are not attached automatically.") }
                     }
-                }.navigationTitle(site.title)
+                }.navigationTitle(navigationTitle)
             }
         } else {
             Text("Website address unavailable in this copy.")

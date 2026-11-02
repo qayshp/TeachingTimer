@@ -45,8 +45,10 @@ The separate App Store Connect record is **Teaching Timer Beta**, with store
 container `net.qays.TeachingTimer`. Apple rejected “Teaching Timer” as already
 used; the public release name remains a decision. The Watch payload stays
 `net.qays.TeachingTimer.watchkitapp`; development remains
-`com.qayshp.TeachingTimer`. The pilot is internal-only; no external testers or
-public release are configured.
+`com.qayshp.TeachingTimer`. Build 29 is Ready to Test / Internal after upload and processing. The
+maintainer-only group has manual distribution and one invited account holder; no
+external testers or public release are configured. Build 30 adds support and
+accessibility refinements.
 
 The approved support alias was added to the existing iCloud custom domain.
 Existing routing and catch-all settings were retained. A harmless inbound test was received and verified. Outbound reply verification
@@ -73,29 +75,56 @@ unsigned development/distribution archive pipeline. The Python suite passes 102
 tests after adding retirement fixtures and explicit export-declaration checks.
 All ten SE 3 retirement assertions pass for build 29: old editor redirect,
 Settings return, explicit new Start, custom draft preservation, and cleanup.
-Screenshots were reviewed separately. Final signed source revision and server
-acceptance must be recorded in current status when complete. Raw captures, build products and account evidence remain
+Screenshots were reviewed separately. Build 29's clean signed revision
+`7e9ca4a82324` and successful Apple processing are recorded in current status;
+repeat verification for candidate 30. Raw captures, build products and account evidence remain
 private under ignored `work/`.
 
 Next independent work:
 
-1. Finish candidate UI cases, including retirement, small/large layouts and
-   accessibility text. Review pixels separately from callback/state assertions.
-2. Build and inspect a clean signed candidate, upload internal-only, and verify
-   Apple's processing result. Do not install on the physical Watch during use.
+1. Finish candidate-30 build and resource verification. The retirement and
+   layout checks below have separate state assertions and reviewed screenshots;
+   retain both forms of evidence when changing the candidate.
+2. Build 29 has passed clean signed export, upload and Apple processing. Repeat
+   those checks for build 30; do not install on the physical Watch during use.
 3. Reproduce [issue #7](https://github.com/qayshp/TeachingTimer/issues/7) on the
    current Simulator before changing recovery. An October 29 journal shows native
    active state, inactive/dimmed scene, then WatchKit activation error code 3.
    The app persists manual recovery after that failed start. Investigate a
    scene-ready deferred attempt or one exact-error retry while preserving Stop;
    do not convert old unexplained manual-recovery intent into automatic starts.
-4. Repeat the isolated seconds-hand transition probe on watchOS 27.2. Do not
-   clamp system timeline dates or claim the newer OS fixed it without evidence.
-5. Complete verified support delivery and a supervised physical file-sharing /
+4. The isolated fixed-anchor probe reproduced two backsteps on watchOS 27.2.
+   Preserve the [exact evidence and qualifications](ALWAYS_ON_HAND_TRANSITION.md#november-2-watchos-272-comparison)
+   for the existing Apple report; do not clamp system timeline dates.
+5. Verify outbound support replies and arrange a supervised physical file-sharing /
    TestFlight install-update-journal pilot when the devices are available.
+   Inbound email receipt is already verified.
 
 The [publishing gates](PUBLISHING_READINESS.md) remain: actual runtime-use guidance,
 minimum watchOS compatibility, physical teaching/accessibility validation,
 release metadata and privacy review, and a small teacher pilot. Known native
 media/volume defects remain separate tracked symptoms with recovery guidance;
 this review has not established their root causes or closed them.
+
+## Build 30 usability follow-up
+
+Default setup/face captures were reviewed across SE 3 40/44 mm, Series 12 42/46 mm
+and Ultra 4 49 mm on watchOS 27.2. Maximum-text Settings was checked on the small
+SE 3 and Ultra. On SE 3 the custom Back capsule obscured Settings; the icon-only
+chevron keeps the same return action and accessible Back label. Cancel/Done retain
+their distinct text. The maximum-text custom Cancel/Time header fits unchanged.
+Back returned to the same fresh setup in the targeted test.
+
+| Build 29, maximum text | Build 30, maximum text |
+| --- | --- |
+| ![Back obscures Settings on SE 3](images/v1-review/se3-settings-29-maximum.png) | ![Chevron leaves Settings readable on SE 3](images/v1-review/se3-settings-30-maximum.png) |
+
+About now provides the verified private email and a support QR. The address stays
+on one line; the QR page uses the short Support navigation title. Its code was
+decoded from the actual SE 3 screenshot to the configured support-page URL. Native
+Back returned to About. Physical camera scanning and attachment delivery remain
+unverified; the probe is still isolated and not a feature of TeachingTimer.
+
+| Offline email | Phone support link |
+| --- | --- |
+| ![Private support email in About](images/v1-review/se3-support-email-30.png) | ![Support-page QR on SE 3](images/v1-review/se3-support-30.png) |

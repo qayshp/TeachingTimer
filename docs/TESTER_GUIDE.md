@@ -62,8 +62,9 @@ Record the app build, Watch/watchOS version, the action just before the problem,
 and what recovered it. For media, include phone versus Watch playback, audio
 route, and whether playback continued silently. A screenshot helps distinguish
 an empty native media view from a black page. Do not interrupt teaching merely
-to gather evidence. Use the [issue tracker](ISSUE_TRACKER.md); never post raw
-journals or system logs publicly. See [privacy and diagnostics](PRIVACY.md).
+to gather evidence. [Email support](../SUPPORT.md) with a short description, or
+use the [issue tracker](ISSUE_TRACKER.md) for a sanitized public report. Never
+post raw journals or system logs publicly. See [privacy and diagnostics](PRIVACY.md).
 
 The [current limitations](../DEVELOPMENT_STATUS.md) remain part of the beta.
 Wider invitations should follow the [private distribution pilot](TESTFLIGHT_PREPARATION.md).
@@ -73,9 +74,9 @@ Wider invitations should follow the [private distribution pilot](TESTFLIGHT_PREP
 Open **Class → Settings** before or during a class. **Help** explains the clock,
 class/session controls, counts and media recovery. **Privacy** explains local
 data and sharing, with the full policy bundled offline. **About** shows the running
-version/build, public support, source code and the complete MPL 2.0 license.
+version/build, private support contact, source code and the complete MPL 2.0 license.
 Website destinations show an address and a QR code to scan with your phone. Public
 GitHub issues are for sanitized reports, not raw journals or system logs.
 There is currently no in-app journal export or upload. A support link or QR code
-does not send diagnostics; begin with a description and await a private support
-route before sharing files.
+does not send diagnostics; begin with a description and arrange any file sharing
+with the maintainer separately.
