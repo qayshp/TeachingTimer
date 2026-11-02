@@ -5,11 +5,11 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (34): combines a stable epoch schedule with build 33's narrow display normalization. The app compiles and passes 21 UI-action assertions plus a locked six-group count. A runtime-active video has no measured backward-tick candidate in 764 analyzed frames. Signed release/upload and physical validation remain pending; build 33 is the available owner pilot. |
+| Source candidate | 1.0 (34), clean source `ee054de666c3`: combines a stable epoch schedule with narrow display normalization. All 13 Swift suites, 117 Python tests, 21 UI-action assertions, locked-count verification and CI pass. Bounded video shows no measured backward step. Signed archive/export, Apple processing and owner-pilot assignment are complete; physical validation remains open. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Build 33 (`12772ccabb44`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29, 31 and 32 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Build 34 (`ee054de666c3`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29, 31, 32 and 33 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -61,8 +61,13 @@ backward-tick candidates; original frames confirm sampled dim/wake transitions
 and forward minute rollover. A locked count completed six groups at 64.82272075 s
 with runtime running and scene inactive. Its control/arc captures were reviewed;
 logged group completion does not prove physical haptic delivery. These bounded
-results do not establish a physical fix. Signed release/upload for build 34
-remain pending; build 33's completed release record below is unchanged.
+results do not establish a physical fix. Clean source
+`ee054de666c34274d3fe200d0f69d698c50c97b7` passed signed archive/export and
+[CI](https://github.com/qayshp/TeachingTimer/actions/runs/41541943839), including
+13 Swift suites and 117 Python tests. Upload completed November 2 at 15:02:59 PST;
+Apple shows Ready to Test / Internal. Build notes and assignment survived reload;
+the manual Maintainer pilot has one tester and five assigned builds. Physical
+build 25 remains untouched, and physical Beta checks remain open.
 
 Build 33's [clock comparison](docs/ALWAYS_ON_HAND_TRANSITION.md#build-33-candidate--bounded-simulator-validation)
 captures raw Dates one representable step below a whole second. The shared

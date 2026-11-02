@@ -323,6 +323,9 @@ captures show visible controls and advancing monochrome count progress. Logged
 group completion is not proof of physical haptic delivery.
 
 These bounded integration results support the combined candidate, not a
-guarantee for every transition or physical Watch. Signed release/upload for
-build 34 remain pending. Build 33 remains the available owner pilot; physical
-build 25 is untouched. No new Apple update or physical fix is claimed.
+guarantee for every transition or physical Watch. Build 34's clean source
+`ee054de666c34274d3fe200d0f69d698c50c97b7` passed signed archive/export,
+[CI](https://github.com/qayshp/TeachingTimer/actions/runs/41541943839), upload and
+Apple processing. It is Ready to Test / Internal and assigned to the manual
+owner pilot; notes and assignment survived reload. Physical build 25 is
+untouched. No new Apple update or physical fix is claimed.
