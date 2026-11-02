@@ -5,7 +5,7 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (34), clean source `ee054de666c3`: combines a stable epoch schedule with narrow display normalization. All 13 Swift suites, 117 Python tests, 21 UI-action assertions, locked-count verification and CI pass. Bounded video shows no measured backward step. Signed archive/export, Apple processing and owner-pilot assignment are complete; physical validation remains open. |
+| Source candidate | 1.0 (35): bundled Privacy copy replaces a repository-relative support path with the actual Settings → About → Contact support route. App behavior is unchanged from build 34. Bundled rendering and final size-matrix checks are pending; build 34 remains the verified owner pilot. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
