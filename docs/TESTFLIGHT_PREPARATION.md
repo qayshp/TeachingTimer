@@ -58,6 +58,13 @@ checked; an expired, wildcard, development, device-limited or enterprise profile
 is not accepted as a TestFlight export. Neither command uploads or installs.
 Private builds, provisioning material and raw logs remain in ignored `work/`.
 
+Build 29 declares `ITSAppUsesNonExemptEncryption = NO` in both payloads, and
+package checks require the actual plist Boolean. The source has no custom or
+third-party cryptography; it relies on Apple system services. Reassess this
+declaration if dependencies or data-transfer behavior change. See Apple's
+[export-declaration key](https://developer.apple.com/documentation/bundleresources/information-property-list/itsappusesnonexemptencryption)
+and [export-compliance guidance](https://developer.apple.com/documentation/Security/complying-with-encryption-export-regulations).
+
 A signed development archive is not a distribution export. A verified local IPA
 is not Apple server validation or proof of successful TestFlight installation.
 `readiness.json` keeps those stages separate, including on failures.

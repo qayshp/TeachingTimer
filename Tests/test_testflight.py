@@ -18,7 +18,8 @@ spec.loader.exec_module(pilot)
 
 class TestFlightChecks(unittest.TestCase):
     def package(self):
-        container = dict(CFBundleIdentifier=pilot.CONTAINER_ID, CFBundleVersion='28', CFBundleShortVersionString='1.0')
+        container = dict(CFBundleIdentifier=pilot.CONTAINER_ID, CFBundleVersion='28', CFBundleShortVersionString='1.0',
+                         ITSAppUsesNonExemptEncryption=False)
         watch = dict(container, CFBundleIdentifier=pilot.WATCH_ID, WKWatchOnly=True,
                      WKApplication=True, WKBackgroundModes=['mindfulness'])
         return container, watch
@@ -67,6 +68,21 @@ class TestFlightChecks(unittest.TestCase):
         checks = pilot.package_checks(container, watch)
         for key in ('versionsMatch', 'noCompanionRequirement', 'watchOnly', 'mindfulnessRuntime'):
             self.assertFalse(checks[key], key)
+
+    def test_both_payloads_require_explicit_export_compliance_declaration(self):
+        for kind in ('container', 'watch'):
+            for value in (None, True, 0):
+                with self.subTest(kind=kind, value=value):
+                    container, watch = self.package()
+                    payload = container if kind == 'container' else watch
+                    if value is None:
+                        payload.pop('ITSAppUsesNonExemptEncryption')
+                    else:
+                        payload['ITSAppUsesNonExemptEncryption'] = value
+                    checks = pilot.package_checks(container, watch)
+                    self.assertFalse(checks[kind + 'ExportComplianceDeclared'])
+                    other = 'watch' if kind == 'container' else 'container'
+                    self.assertTrue(checks[other + 'ExportComplianceDeclared'])
 
     def test_app_store_profile_is_distinct_from_development(self):
         profile = self.profile()

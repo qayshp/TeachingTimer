@@ -34,6 +34,8 @@ build = module('pilot_build', 'verify-build.py')
 def package_checks(container, watch):
     return dict(containerIdentifier=container.get('CFBundleIdentifier') == CONTAINER_ID,
                 watchIdentifier=watch.get('CFBundleIdentifier') == WATCH_ID,
+                containerExportComplianceDeclared=container.get('ITSAppUsesNonExemptEncryption') is False,
+                watchExportComplianceDeclared=watch.get('ITSAppUsesNonExemptEncryption') is False,
                 watchOnly=watch.get('WKWatchOnly') is True,
                 watchApplication=watch.get('WKApplication') is True,
                 noCompanionRequirement='WKCompanionAppBundleIdentifier' not in watch,
