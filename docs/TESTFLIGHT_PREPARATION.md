@@ -1,74 +1,128 @@
-# TestFlight preparation and naming
+# TestFlight pilot
 
-Updated October 26, 2026. This is local preparation, not a distributed beta.
+Updated November 2, 2026. Build 28 adds distribution packaging and export checks.
+There is no uploaded TestFlight build yet. The physical teaching app is unchanged.
 
-## Identity
-
-Use the maintainer-owned **qays.net** as the namespace for future distribution.
-It is short, personally owned and independent of a particular GitHub account.
-No DNS or website changes are needed for this local configuration.
+## Identities and packaging
 
 | Purpose | Identifier |
 | --- | --- |
-| Existing development/teaching installation | `com.qayshp.TeachingTimer` |
-| Future TestFlight / App Store application | `net.qays.TeachingTimer` |
-| Isolated native volume fixture | `net.qays.TeachingTimer.VolumeProbe` |
-| Isolated timeline fixture | `net.qays.TeachingTimer.ClockProbe` |
+| Existing development/teaching Watch app | `com.qayshp.TeachingTimer` |
+| App Store Connect record / distribution container | `net.qays.TeachingTimer` |
+| TestFlight Watch app and its data container | `net.qays.TeachingTimer.watchkitapp` |
+| Isolated volume / timeline fixtures | `net.qays.TeachingTimer.VolumeProbe` / `net.qays.TeachingTimer.ClockProbe` |
 
-The product/source name stays `TeachingTimer`; the display name remains
-**Teaching Timer**. Normal Debug and Release builds keep the existing development
-identifier. `Configurations/TestFlight.xcconfig` is an explicit opt-in override;
-there is no silent migration of the current Watch installation or preferences.
-The two identities have separate containers, saved classes and journals.
-Production OSLog subsystems now derive from the running app's bundle identifier,
-so development keeps its old subsystem and distribution uses the new one.
-Historical incident documents retain the identifiers actually observed then.
+Normal Debug/Release builds retain the development identity and **Teaching Timer**
+name. The `TeachingTimerTestFlight` scheme selects the `TestFlight` configuration;
+its Watch app is named **Teaching Timer Beta** to distinguish it on the Watch.
+It has separate saved classes, settings and journals. Installing it does not
+migrate the development app's data. Do not remove the development app to test it.
 
-Apple supports [watch-only TestFlight distribution](https://help.apple.com/xcode/mac/current/en.lproj/devaba4602fd.html).
-Choose the final identifier before uploading: Apple says it cannot be changed in
-App Store Connect after the first build upload ([distribution preparation](https://help.apple.com/xcode/mac/current/en.lproj/dev91fe7130a.html)).
-No identifier registration or name availability has been checked with the account.
+Apple's installed Xcode 27.2 Watch-only template includes an empty
+`com.apple.product-type.application.watchapp2-container` target. Build 28 follows
+that packaging: an iOS distribution stub embeds the single-target Watch app.
+There is no iPhone app UI, companion functionality, or additional source code.
+The Watch retains `WKWatchOnly = YES`, its mindfulness mode, and no
+`WKCompanionAppBundleIdentifier`. The outer identifier is the Watch identifier's
+prefix. This refines the earlier proposed bare `net.qays.TeachingTimer` Watch ID;
+no TestFlight installation previously used that ID.
 
-## Local rehearsal
+Why this was needed: exporting the old bare Watch archive with
+`method=app-store-connect` failed because Xcode offered only release-testing,
+enterprise and debugging. The packaged archive reaches distribution provisioning.
+Apple documents [watch-only distribution](https://help.apple.com/xcode/mac/current/en.lproj/devaba4602fd.html);
+see also the [related Apple Developer Forums report](https://developer.apple.com/forums/thread/817223).
+The implementation follows the installed template, not a conversion to a
+companion app.
+
+## Rehearsal and signed preparation
+
+Unsigned CI/local check (no account access):
 
 ```sh
 sh scripts/prepare-testflight.sh work/testflight-rehearsal-new
 ```
 
-Requires Xcode and a new destination directory. It creates a Release archive
-with the distribution identifier, **without signing, provisioning changes,
-upload, installation or launch**. It validates the app binary, identifier,
-Watch-only declarations, mindfulness background mode and symbols. `readiness.json`
-records build/version and the unverified gates. Private generated files stay in
-ignored `work/`; never commit signing material or raw device logs.
+Signed, local internal-only export (permits automatic provisioning):
 
-Build 18 passed this structural rehearsal on Xcode 27.1. This is not App Store
-validation, beta review, or physical runtime/media verification.
+```sh
+sh scripts/prepare-testflight.sh --signed work/testflight-pilot-new
+```
 
-## Pilot gates before relying on it for a class
+Both require a new output directory and preserve logs and `readiness.json`.
+The signed path archives with the separate scheme, verifies Watch resources and
+matching symbols, then asks Xcode for an App Store Connect export. The export is
+marked **TestFlight Internal Only**, retains the explicit build number, and
+includes symbols. Both embedded profiles/signatures and exact identities are
+checked; an expired, wildcard, development, device-limited or enterprise profile
+is not accepted as a TestFlight export. Neither command uploads or installs.
+Private builds, provisioning material and raw logs remain in ignored `work/`.
 
-1. Preserve a known-good development app and its journals. Keep the existing
-   teaching installation available until the distribution build is validated.
-2. Register the explicit identifier on the paid team and create the App Store
-   Connect record when distribution is requested. Confirm version/build,
-   signing, privacy disclosures, beta instructions, and applicable export
-   declarations. Use the override for the signed archive too; do not upload the
-   ordinary development-identifier archive by mistake.
-3. Validate and upload a signed archive, then install through a private TestFlight
-   pilot. Confirm cold launch, saved-class recovery, intentional Stop, wrist-down
-   clock/count behavior, media return and companion volume on the physical Watch.
-4. Test **journal access separately**. Xcode 27.1 `devicectl device info apps
-   --help` describes container access in terms of Xcode-installed development
-   apps; our successful development copies do not prove TestFlight copies work.
-   Try the new identifier explicitly. If access fails, design a user-triggered
-   export path before relying on TestFlight for incident investigations. Do not
-   add an iPhone companion or network service merely to assume this is solved.
-5. Verify system-log collection independently. TestFlight crash/feedback reports
-   do not replace the custom runtime/interface/landmark journals or guarantee a
-   reliable developer tunnel. Easier app delivery would not fix device-log
-   connection failures. See [diagnostic tools and access limits](DIAGNOSTIC_TOOLS.md).
+A signed development archive is not a distribution export. A verified local IPA
+is not Apple server validation or proof of successful TestFlight installation.
+`readiness.json` keeps those stages separate, including on failures.
 
-Apple's [tester instructions](https://testflight.apple.com/) describe installation
-and feedback, including watch-only apps. This project has not yet completed that
-pilot. No App Store Connect record, signed distribution export, upload, tester
-invitation or physical installation was performed in this batch.
+## Current account gate
+
+On November 2, the correctly packaged build-28 archive signed successfully.
+Distribution export then failed with Apple's **“PLA Update available”** response:
+the account holder must review and accept the latest Apple Developer Program
+License Agreement. Xcode also reported missing App Store profiles for the outer
+and Watch identifiers. Recheck provisioning after agreement acceptance; do not
+assume the profile messages are an independent certificate problem. No certificate
+was revoked, no agreement was accepted by automation, and no upload occurred.
+
+After the account gate clears, prepare a new clean-commit signed export. Confirm
+registration of both identifiers and an App Store Connect **iOS** app record for
+`net.qays.TeachingTimer` (the watch-only packaging identity). Name availability,
+record creation, export compliance, beta contact and server validation remain
+separate checks. Use **TestFlight Internal Only** and the maintainer alone for
+this first pilot; do not enable automatic distribution to additional testers.
+
+## Self-pilot record
+
+Record the actual build, date, OS versions and result for every row. A Simulator
+rehearsal must not be recorded as a TestFlight pass.
+
+| Check | Required observation |
+| --- | --- |
+| Preserve teaching install | Development identifier/build and journals remain present; do not delete it. |
+| Install from TestFlight | Beta app appears separately and cold-launches without Xcode. |
+| Establish independent state | Start a test class in Beta, note exact/scheduled times, and choose settings. Development state stays unchanged. |
+| Relaunch | Beta restores the same class. Intentional Stop remains stopped; running intent attempts recovery. |
+| Update through TestFlight | A later beta build preserves class identity/timing, settings and intentional Stop. Verify the new build number. |
+| Journal retrieval | Copy all three journals using the **Watch** identifier below; verify parsed data, bounds and build identity. Record failure accurately if distribution container access is denied. |
+| Teaching behavior | Check awake/wrist-down clock/count, media recovery, companion volume, and a teaching-length runtime/battery run. |
+| Private support | Confirm the chosen address receives a harmless test report before publishing it or inviting testers. Request only necessary diagnostic excerpts. |
+
+Try custom journals independently of installation:
+
+```sh
+xcrun devicectl device copy from --device WATCH_IDENTIFIER \
+  --domain-type appDataContainer \
+  --domain-identifier net.qays.TeachingTimer.watchkitapp \
+  --source Documents/RuntimeDiagnostics.json \
+  --destination PRIVATE_DIRECTORY/RuntimeDiagnostics.json
+```
+
+Repeat for `InterfaceDiagnostics.json` and `LandmarkDiagnostics.json`. Use the
+bounded connection workflow in [diagnostic tools](DIAGNOSTIC_TOOLS.md).
+Development copies do not prove TestFlight container access. If access fails,
+record the error and evaluate a user-triggered export before depending on beta
+journals. TestFlight feedback/crash reports do not include these custom files
+automatically. System-log collection remains a separate workflow with its existing
+connection limits. See [Apple's TestFlight instructions](https://testflight.apple.com/).
+
+## November 2 Simulator rehearsal
+
+On the already booted SE 3 40 mm, watchOS 27.2 (24S118), a distribution-identity
+Simulator app installed beside the development app and started a fresh class.
+After an intentional Stop, an update from a synthetic build 27 to build 28 of
+the same candidate source preserved exact class values and stopped intent.
+The runtime did not restart. The Simulator moved the Beta container directory during the update while
+preserving its saved data. The development container, preferences and other
+checked files were unchanged; its runtime journal added two scene transitions
+when Beta first opened. The app's runtime
+journal parsed successfully after updating. This verifies the bundle separation
+and a Simulator update/relaunch; it does not verify Apple's TestFlight transport,
+physical Crown/audio, or distribution-profile container access.

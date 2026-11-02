@@ -17,7 +17,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Teaching Timer</string>
+	<string>$(TEACHING_TIMER_DISPLAY_NAME)</string>
 	<key>WKBackgroundModes</key>
 	<array>
 		<string>mindfulness</string>

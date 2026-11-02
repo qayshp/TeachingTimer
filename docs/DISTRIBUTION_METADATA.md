@@ -1,14 +1,15 @@
 # Distribution metadata draft
 
-Updated November 1, 2026. Not submitted to App Store Connect. This is a review
+Updated November 2, 2026. Not submitted to App Store Connect. This is a review
 packet for a private pilot, not authorization to invite external testers.
 
 | Field | Draft |
 | --- | --- |
 | Name | Teaching Timer |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 / 27; no TestFlight candidate uploaded |
-| Future bundle identifier | net.qays.TeachingTimer |
+| Version / development candidate | 1.0 / 28; no TestFlight candidate uploaded |
+| App Store Connect bundle identifier | net.qays.TeachingTimer |
+| Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
 | Support URL | https://github.com/qayshp/TeachingTimer/issues |
 | Privacy information | https://github.com/qayshp/TeachingTimer/blob/main/docs/PRIVACY.md |
@@ -58,7 +59,8 @@ in public feedback.
 
 ## Current candidate review
 
-Build 27 is the source candidate. Build 25, including settings and bounded media
+Build 28 is the source candidate, adding Watch-only TestFlight packaging to the
+build-27 teaching behavior. Build 25, including settings and bounded media
 wake refresh, is installed as the development identity `com.qayshp.TeachingTimer`.
 Build 25 received positive classroom Settings/volume feedback on October 31;
 song progress still stalled and recovered by switching pages. Build 27 adds

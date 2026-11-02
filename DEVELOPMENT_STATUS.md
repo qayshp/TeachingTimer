@@ -1,15 +1,15 @@
 # Teaching Timer — current verification
 
-Updated November 1, 2026, retaining the October 31 classroom report. This is the authority for current build and validation
+Updated November 2, 2026, retaining the October 31 classroom report. This is the authority for current build and validation
 status. Dated investigations describe their original builds, not current behavior.
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (27): Help, Privacy and About under Settings; build/offline checks and all 21 SE 3 interactive action assertions passed. |
+| Source candidate | 1.0 (28): separate Watch-only TestFlight packaging and checked internal-only export tooling. Teaching behavior remains the build-27 source baseline. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | No TestFlight upload or public release. Distribution identifier: `net.qays.TeachingTimer`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | No TestFlight upload or public release. Packaged archive signs locally; distribution export is blocked by Apple’s pending Program License Agreement. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -43,6 +43,22 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 [roadmap](docs/ROADMAP.md), and [publishing readiness](docs/PUBLISHING_READINESS.md).
 
 ## Verification and deployment boundaries
+
+Build 28 passes all 12 Swift suites and 95 Python tests, including rejection of
+incorrect/development distribution profiles and wrong package identities.
+The packaged unsigned archive and distribution-identity Watch Simulator build
+pass. A simulated 27→28 update (two build numbers of the same candidate source)
+preserves the exact class timing and intentional Stop without restarting runtime;
+the separate development app’s preferences and other files remain unchanged. Its
+runtime journal records two scene transitions when Beta opens. The Simulator
+moves the Beta container directory during the update without losing saved data. This is
+an update rehearsal, not TestFlight delivery or physical journal-access proof.
+The signed packaged archive passes local signature/resource/symbol checks, but
+Apple’s agreement gate prevents an App Store distribution export. No physical
+app was installed, launched or removed. The [private intake plan](docs/PRIVATE_SUPPORT_PLAN.md)
+awaits the approved address and a delivery test. [Pilot procedure](docs/TESTFLIGHT_PREPARATION.md).
+
+The following remains the prior build-27 UI validation:
 
 Build 27 passes 12 Swift suites, 87 Python tests, repository validation, Simulator
 compilation and unsigned development/distribution archive rehearsals on Xcode

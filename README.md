@@ -114,7 +114,8 @@ terms and [Mozilla's FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) for guidan
 - [Persistence failure diagnostics](docs/PERSISTENCE_DIAGNOSTICS.md)
 - [TestFlight identity preparation and diagnostic-access gates](docs/TESTFLIGHT_PREPARATION.md)
 
-Future distribution uses `net.qays.TeachingTimer` (qays.net). The current
+Distribution packaging uses `net.qays.TeachingTimer` (qays.net), with Watch payload
+`net.qays.TeachingTimer.watchkitapp`. The current
 Xcode development installation keeps `com.qayshp.TeachingTimer`; no existing
 class or journal is migrated simply by building the distribution identity.
 

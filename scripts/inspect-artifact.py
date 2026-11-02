@@ -27,15 +27,39 @@ def information_resources_present(app):
         return False
 
 
+def application_paths(path):
+    """Return the Watch payload and optional Apple watch-only distribution stub."""
+    if path.suffix != '.xcarchive':
+        return path, None
+    metadata_path = path / 'Info.plist'
+    relative = (plistlib.loads(metadata_path.read_bytes()).get('ApplicationProperties', {})
+                .get('ApplicationPath', 'Applications/TeachingTimer.app')) if metadata_path.exists() else 'Applications/TeachingTimer.app'
+    products = (path / 'Products').resolve()
+    top = (products / relative).resolve()
+    if not top.is_relative_to(products):
+        raise ValueError('Archive application path leaves Products')
+    watches = list(top.glob('Watch/*.app'))
+    if not watches:
+        return top, None
+    if len(watches) != 1:
+        raise ValueError('Expected exactly one Watch app in the distribution container')
+    return watches[0], top
+
+
 def inspect(path):
     archive = path if path.suffix == '.xcarchive' else None
-    app = archive / 'Products/Applications/TeachingTimer.app' if archive else path
+    app, container = application_paths(path)
     info = plistlib.loads((app / 'Info.plist').read_bytes())
     metadata = app / 'BuildInfo.plist'
     revision = plistlib.loads(metadata.read_bytes()).get('revision') if metadata.exists() else None
     checks = {'watchOnly': info.get('WKWatchOnly') is True,
               'binaryPresent': (app / info['CFBundleExecutable']).is_file(),
               'revisionRecorded': bool(revision)}
+    container_info = plistlib.loads((container / 'Info.plist').read_bytes()) if container else None
+    if container_info:
+        checks.update(containerIdentifierIsWatchPrefix=info['CFBundleIdentifier'].startswith(container_info['CFBundleIdentifier'] + '.'),
+                      containerVersionMatches=all(info[key] == container_info[key] for key in ('CFBundleVersion', 'CFBundleShortVersionString')),
+                      noCompanionRequirement='WKCompanionAppBundleIdentifier' not in info)
     # Preserve inspection of historical teaching checkpoints from before these pages.
     if int(info['CFBundleVersion']) >= 27:
         checks['informationResourcesPresent'] = information_resources_present(app)
@@ -54,7 +78,9 @@ def inspect(path):
         def uuids(result):
             return {line.split()[1] for line in result.stdout.decode().splitlines() if line.startswith('UUID:')}
         checks['symbolsMatchBinary'] = binary_uuids.returncode == symbol_uuids.returncode == 0 and bool(uuids(binary_uuids)) and uuids(binary_uuids) == uuids(symbol_uuids)
-    return {'bundleIdentifier': info['CFBundleIdentifier'], 'version': info['CFBundleShortVersionString'],
+    return {'bundleIdentifier': info['CFBundleIdentifier'],
+            'containerBundleIdentifier': container_info['CFBundleIdentifier'] if container_info else None,
+            'version': info['CFBundleShortVersionString'],
             'build': info['CFBundleVersion'], 'revision': revision, 'checks': checks,
             'signatureValid': signature, 'unexpiredEmbeddedProfile': valid_profile,
             'profileExpires': expires.isoformat() + 'Z' if expires else None,

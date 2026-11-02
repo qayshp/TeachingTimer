@@ -18,7 +18,7 @@ support procedures from historical engineering notes.
 
 | Gate | Evidence / next action |
 | --- | --- |
-| Names and identifiers | Teaching Timer; `net.qays.TeachingTimer` for distribution. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Name availability/registration not confirmed. |
+| Names and identifiers | Teaching Timer; `net.qays.TeachingTimer` for the store container and `net.qays.TeachingTimer.watchkitapp` for its Watch payload. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Name availability/registration not confirmed. |
 | Build integrity | Rehearse unsigned development and distribution archives with `scripts/verify-build.py`. This does not establish signing or store acceptance. |
 | Paid-team signing / App Store Connect | Confirm team, register identifier, create record, validate signed archive and upload when explicitly requested. |
 | Private tester support | Confirm a private contact before invitations. Public issues must not receive raw logs. No contact address is invented here. |
@@ -93,3 +93,15 @@ performed while recording this plan.
 References: [runtime categories](https://developer.apple.com/documentation/WatchKit/using-extended-runtime-sessions),
 [review guidelines](https://developer.apple.com/app-store/review/guidelines/),
 [TestFlight](https://developer.apple.com/testflight/).
+
+## November 2 pilot preparation
+
+Build 28 adds Apple's Watch-only distribution container, a separate TestFlight
+scheme/configuration, and checks for the signed internal-only export. The bare
+Watch archive's export-method rejection is resolved by packaging. Development
+signing succeeds; App Store provisioning is currently blocked by Apple's
+**PLA Update available** response, requiring account-holder agreement acceptance.
+No upload, TestFlight installation or physical update has occurred.
+[Preparation, current gate and pilot checklist](TESTFLIGHT_PREPARATION.md).
+The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) awaits the approved
+address and a real delivery test. These remain release gates, not completed tests.
