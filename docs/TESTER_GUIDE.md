@@ -76,3 +76,6 @@ data and sharing, with the full policy bundled offline. **About** shows the runn
 version/build, public support, source code and the complete MPL 2.0 license.
 Website destinations show an address and a QR code to scan with your phone. Public
 GitHub issues are for sanitized reports, not raw journals or system logs.
+There is currently no in-app journal export or upload. A support link or QR code
+does not send diagnostics; begin with a description and await a private support
+route before sharing files.

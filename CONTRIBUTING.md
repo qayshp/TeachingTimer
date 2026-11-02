@@ -91,6 +91,11 @@ also records Git revision (including a dirty suffix) and UTC build time in
 `BuildInfo.plist`; launch journals include both. Source exports can supply
 `SOURCE_REVISION` to that phase. `scripts/check-archive.sh` verifies the app is
 present, but is not signed export, TestFlight, App Store privacy, or review approval.
+For distribution, use the separate `TeachingTimerTestFlight` scheme and follow
+[the signed export/pilot procedure](docs/TESTFLIGHT_PREPARATION.md). It keeps the
+development identity intact and checks the outer distribution container plus
+the embedded Watch app. A successful local export is not an upload or an
+installation through TestFlight.
 Do not amend known-good teaching checkpoints or install on someone's Watch
 without an explicit request.
 

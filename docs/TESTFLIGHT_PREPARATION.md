@@ -65,24 +65,26 @@ is not Apple server validation or proof of successful TestFlight installation.
 ## Account gate resolved November 2
 
 On November 2, the correctly packaged build-28 archive signed successfully.
-Distribution export then failed with Apple's **“PLA Update available”** response:
-the account holder must review and accept the latest Apple Developer Program
-License Agreement. Xcode also reported missing App Store profiles for the outer
-and Watch identifiers. Recheck provisioning after agreement acceptance; do not
-assume the profile messages are an independent certificate problem. No certificate
-was revoked, no agreement was accepted by automation, and no upload occurred.
+Distribution export initially failed with Apple's **“PLA Update available”**
+response, requiring the account holder to accept the latest Apple Developer
+Program License Agreement. Xcode also reported missing App Store profiles for
+the outer and Watch identifiers. Provisioning was retried after agreement
+acceptance rather than treating those profile messages as an independent
+certificate problem. No certificate was revoked, no agreement was accepted by
+automation, and no upload occurred.
 
 The account holder subsequently accepted the agreement. Export of the clean
 `ec809c2f12ed` build-28 archive then succeeded. Both distribution profiles,
 signatures and signed entitlements passed local verification. The IPA is marked
 internal-only; no upload or installation has occurred.
 
-Next, Confirm
-registration of both identifiers and an App Store Connect **iOS** app record for
-`net.qays.TeachingTimer` (the watch-only packaging identity). Name availability,
-record creation, export compliance, beta contact and server validation remain
-separate checks. Use **TestFlight Internal Only** and the maintainer alone for
-this first pilot; do not enable automatic distribution to additional testers.
+The App Store Connect **iOS** app record has now been created as **Teaching Timer
+Beta** for `net.qays.TeachingTimer` (the watch-only packaging identity).
+**Teaching Timer** was unavailable. Export compliance, beta contact, upload and
+server validation remain separate checks. Use **TestFlight Internal Only** and
+the maintainer alone for this first pilot; do not enable automatic distribution
+to additional testers. Leave the existing physical teaching installation
+untouched until a separate installation request.
 
 ## Self-pilot record
 
@@ -114,9 +116,12 @@ Repeat for `InterfaceDiagnostics.json` and `LandmarkDiagnostics.json`. Use the
 bounded connection workflow in [diagnostic tools](DIAGNOSTIC_TOOLS.md).
 Development copies do not prove TestFlight container access. If access fails,
 record the error and evaluate a user-triggered export before depending on beta
-journals. TestFlight feedback/crash reports do not include these custom files
-automatically. System-log collection remains a separate workflow with its existing
-connection limits. See [Apple's TestFlight instructions](https://testflight.apple.com/).
+journals. The app has no tester-facing journal export/upload control; a support
+email address or QR code alone cannot attach its private files. TestFlight
+feedback/crash reports do not include these custom files automatically. The
+[private intake plan](PRIVATE_SUPPORT_PLAN.md) tracks this separate gate.
+System-log collection remains a separate workflow with its existing connection
+limits. See [Apple's TestFlight instructions](https://testflight.apple.com/).
 
 ## November 2 Simulator rehearsal
 
@@ -124,10 +129,10 @@ On the already booted SE 3 40 mm, watchOS 27.2 (24S118), a distribution-identity
 Simulator app installed beside the development app and started a fresh class.
 After an intentional Stop, an update from a synthetic build 27 to build 28 of
 the same candidate source preserved exact class values and stopped intent.
-The runtime did not restart. The Simulator moved the Beta container directory during the update while
-preserving its saved data. The development container, preferences and other
-checked files were unchanged; its runtime journal added two scene transitions
-when Beta first opened. The app's runtime
-journal parsed successfully after updating. This verifies the bundle separation
-and a Simulator update/relaunch; it does not verify Apple's TestFlight transport,
-physical Crown/audio, or distribution-profile container access.
+The runtime did not restart. The Simulator moved the Beta container directory
+during the update while preserving its saved data. The development container,
+preferences and other checked files were unchanged; its runtime journal added
+two scene transitions when Beta first opened. The app's runtime journal parsed successfully after
+updating. This verifies bundle separation and a Simulator update/relaunch; it
+does not verify Apple's TestFlight transport, physical Crown/audio, or
+distribution-profile container access.

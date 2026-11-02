@@ -5,11 +5,11 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (28): separate Watch-only TestFlight packaging and checked internal-only export tooling. Teaching behavior remains the build-27 source baseline. |
+| Source candidate | 1.0 (29): queued new-class runtime Start, safe retirement during schedule editing, clearer information pages, and checked TestFlight packaging. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | No TestFlight upload or public release. Signed internal-only IPA exported and locally verified after agreement acceptance. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Teaching Timer Beta App Store Connect record created. No TestFlight upload or public release yet. Build 28 signed internal-only export verified; build 29 preparation follows the review fixes. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -44,7 +44,14 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 
 ## Verification and deployment boundaries
 
-Build 28 passes all 12 Swift suites and 95 Python tests, including rejection of
+The build-29 [v1 review](docs/V1_READINESS_REVIEW.md) passes 12 Swift suites,
+102 Python checks, app compilation and the full unsigned build/archive pipeline
+(the final export-declaration metadata is checked again in its signed archive).
+All ten SE 3 retirement assertions pass with reviewed screenshots. Native volume
+and media implementation ordering is unchanged. A fresh build-28 baseline action
+run passed all 21 assertions before those narrow changes.
+
+The prior build 28 passed all 12 Swift suites and 95 Python tests, including rejection of
 incorrect/development distribution profiles and wrong package identities.
 The packaged unsigned archive and distribution-identity Watch Simulator build
 pass. A simulated 27→28 update (two build numbers of the same candidate source)
@@ -53,11 +60,11 @@ the separate development app’s preferences and other files remain unchanged. I
 runtime journal records two scene transitions when Beta opens. The Simulator
 moves the Beta container directory during the update without losing saved data. This is
 an update rehearsal, not TestFlight delivery or physical journal-access proof.
-The signed packaged archive passes local signature/resource/symbol checks, but
-the account holder subsequently accepted Apple’s agreement and the internal-only
+The signed packaged archive passes local signature/resource/symbol checks;
+after the account holder accepted Apple’s agreement, the internal-only
 App Store distribution export passed signature, profile and entitlement checks. No physical
 app was installed, launched or removed. The [private intake plan](docs/PRIVATE_SUPPORT_PLAN.md)
-awaits the approved address and a delivery test. [Pilot procedure](docs/TESTFLIGHT_PREPARATION.md).
+has a configured alias and verified inbound test; outbound reply and native attachment delivery remain unverified. [Pilot procedure](docs/TESTFLIGHT_PREPARATION.md).
 
 The following remains the prior build-27 UI validation:
 

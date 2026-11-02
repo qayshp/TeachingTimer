@@ -16,7 +16,7 @@ app, symbols and inspection report. Artifacts from a dirty tree are explicitly
 marked and should not be presented as an exact clean-commit release.
 
 GitHub Actions uses the same command on its available macOS 26 runner. It records
-its actual toolchain rather than claiming to use the development Mac's Xcode 27.1.
+its actual toolchain rather than assuming it matches the development Mac.
 It retains verification logs, metadata and Simulator results for 14 days, even
 on failure. It does not upload application archives, signing profiles, private
 journals or device captures. Workflow actions are pinned to commit hashes.

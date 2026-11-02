@@ -138,3 +138,12 @@ workaround was introduced, and no duplicate unchanged observation was sent to
 FB25329087. This does not establish that a newer runtime is unavailable from Apple;
 it records the installed test environment. The newer-runtime/hardware part of
 roadmap item 22 remains deferred.
+
+## November 2 status
+
+The October 28 runtime limitation above is historical. Xcode 27.2 and watchOS
+27.2 (24S118) are now available locally; the [newer-runtime app pass](RUNTIME_27_2_VALIDATION.md)
+records UI/action and paired-media checks. It did not repeat this clock-probe
+experiment. A controlled transition comparison on that runtime and a physical
+Watch remain open; neither app UI success nor a newer installed SDK proves the
+seconds-hand backstep is fixed.

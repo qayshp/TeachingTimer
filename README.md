@@ -62,9 +62,11 @@ class to gather evidence or post raw diagnostics publicly.
 
 ## Build and contribute
 
-Requires Xcode with watchOS 26 SDK or later; the current local toolchain is Xcode
-27.1. Deployment target is watchOS 26. Open `TeachingTimer.xcodeproj`, choose the
-TeachingTimer scheme and a Watch simulator, and Run. For your own physical Watch,
+Requires Xcode with watchOS 26 SDK or later. Deployment target is watchOS 26;
+the [current verification record](DEVELOPMENT_STATUS.md) lists the tested toolchain
+and OS versions. Follow the [Simulator runtime policy](AGENTS.md) when choosing
+a runtime. Open `TeachingTimer.xcodeproj`, choose the TeachingTimer scheme and
+a Watch simulator, and Run. For your own physical Watch,
 select your development team and a unique bundle identifier under Signing &
 Capabilities. Credentials, profiles and user-specific Xcode state stay out of Git.
 

@@ -1,13 +1,14 @@
 # Distribution metadata draft
 
-Updated November 2, 2026. Not submitted to App Store Connect. This is a review
-packet for a private pilot, not authorization to invite external testers.
+Updated November 2, 2026. The App Store Connect record **Teaching Timer Beta**
+has been created; no build is uploaded yet. This is the metadata review packet
+for the private pilot, not a completed store submission or external invitation.
 
 | Field | Draft |
 | --- | --- |
-| Name | Teaching Timer |
+| App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 / 28; no TestFlight candidate uploaded |
+| Version / development candidate | 1.0 / 29; no TestFlight candidate uploaded |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
@@ -40,8 +41,8 @@ in public feedback.
 
 ## Before a pilot or store submission
 
-- Confirm the name's availability, account/team, private support/review contact,
-  category, age-rating questionnaire and applicable export answers. Do not
+- Confirm account/team, private support/review contact, category,
+  age-rating questionnaire and applicable export answers. Do not
   invent contact details or mark declarations complete from this draft.
 - Review privacy answers against the final binary and how support diagnostics
   will actually be received. Apple says optional disclosure has specific
@@ -54,8 +55,9 @@ in public feedback.
   assets, not a finalized App Store screenshot set. Prepare final screenshots
   only after the beta behavior and supported-device claims are validated.
 - Complete the signed upload, install/update and journal-access pilot in
-  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). No upload, registration,
-  tester invitation or physical installation is performed by these documents.
+  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). The locally verified signed
+  export has not been uploaded. This draft does not itself establish upload,
+  tester invitation or physical installation.
 
 ## Current candidate review
 
@@ -65,7 +67,8 @@ wake refresh, is installed as the development identity `com.qayshp.TeachingTimer
 Build 25 received positive classroom Settings/volume feedback on October 31;
 song progress still stalled and recovered by switching pages. Build 27 adds
 Help/Privacy/About under Settings; that addition has not been installed on the
-physical Watch. This is not evidence of a signed distribution upload or TestFlight install.
+physical Watch. Build 28 has a verified local signed internal-only export, but no
+App Store Connect upload or TestFlight installation.
 
 - **Screenshot set:** the [Settings-era teaching face](images/settings-25/se3-face.png)
   was captured on the SE 3 Simulator during build-25 verification.
@@ -77,7 +80,7 @@ physical Watch. This is not evidence of a signed distribution upload or TestFlig
   provide the full privacy policy and MPL license offline in Settings.
   Final App Store declarations still require review against the distribution binary.
 - **Support:** GitHub issues are suitable for sanitized bug descriptions only.
-  A private diagnostic intake route and App Store review contact are not yet
-  configured or verified. Do not ask testers to attach raw journals publicly.
+  A private support alias has verified inbound delivery; outbound replies and
+  tester-facing journal export remain unverified. The review contact is pending. Do not ask testers to attach raw journals publicly.
 - **Pilot gates:** signed upload, separate-identity state handling, install/update,
   journal retrieval and private support must be verified before invitations.

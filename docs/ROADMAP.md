@@ -3,10 +3,11 @@
 Updated November 2, 2026. Build 25 is installed and launched; October 31 classroom
 feedback confirms Settings/volume worked, while song progress still stalled and
 page switching recovered it. Build 27 adds Help/Privacy/About in Settings to the
-source. Build 28 adds separate TestFlight packaging/export validation; a signed internal-only export is locally verified after developer agreement
-acceptance; upload and physical pilot remain pending. Build 16 remains a preserved rollback checkpoint. Further
-physical installations require authorization. Simulator work and repository
-changes do not count as physical validation.
+source. Build 28 adds separate TestFlight packaging/export validation. Its signed
+internal-only export is locally verified after developer agreement acceptance;
+upload and physical pilot remain pending. Build 16 remains a preserved rollback
+checkpoint. Further physical installations require authorization. Simulator work
+and repository changes do not count as physical validation.
 
 ## Current work order
 
@@ -35,12 +36,12 @@ completed tests. No periodic monitor or automatic installation is scheduled.
 | 1–7 | Teaching checkpoint, documentation separation, retention, device/summary tools, persistence diagnostics and confirmed dead-code cleanup implemented. Journal copying, install/version verification and launch have live evidence; connection reliability remains unresolved. |
 | 8 | Simulator lifecycle regression automation implemented. Original-image audit complete; current bounded run renders. Physical reliability remains unproven. |
 | 9 | Independent native-volume probe built; physical comparison remains current item 7. |
-| 10 | Distribution identity and unsigned archive rehearsal ready. Signed pilot is current item 9. |
+| 10 | Separate distribution identity, unsigned rehearsal and local signed internal-only export verified. Upload/install/update and journal-access pilot remain current item 9. |
 | 11–13 | Physical volume, connection and moving-haptic tests pending; current item 7. |
 | 14–15 | Runtime endurance and battery/logging cost pending; current item 8. |
 | 16–17 | Simulator usability checks exist; physical accessibility and ordinary schedule-use observations pending. |
 | 18–21 | Time-edge tests, essential-action checks, build/release evidence and public issues implemented. |
-| 22 | Clock probe and Apple report exist. New runtime/hardware comparison pending. Only watchOS 27.0 (24R362) is installed locally at this review. |
+| 22 | Clock probe and Apple report exist. watchOS 27.2 (24S118) is now available and has app/action evidence; a controlled clock-probe comparison and physical transition test remain pending. |
 | 23 | Mechanical presentation split complete; shared state/native lifecycle retained. |
 | 24 | Tester/privacy guides and metadata draft ready. Signed pilot, support route and actual beta screenshots remain prerequisites for broader testing. |
 | 25 | Apple follow-up is ongoing. The October 28 media correction was submitted; connection status and requested documentation follow-up need tracking. |
@@ -100,8 +101,11 @@ Tracked as [issue #7](https://github.com/qayshp/TeachingTimer/issues/7).
 
 Build 24 adds [bounded long-dimmed wake refresh](MEDIA_WAKE_REFRESH.md) for
 [frozen song progress (#8)](https://github.com/qayshp/TeachingTimer/issues/8).
-Build 25 is installed and launched; build 26 cleanup is not installed. Physical progress recovery, audio continuity and
-Crown response remain validation gates; this issue is not closed by policy tests.
+Build 25 is installed and launched. The October 31 class report includes another
+progress stall recovered by switching pages; it does not establish whether an
+automatic refresh was eligible or attempted. Physical progress recovery, audio
+continuity and Crown response remain validation gates; policy tests do not close
+this issue. See [current verification](../DEVELOPMENT_STATUS.md) for later candidates.
 
 ## October 31 preparation
 

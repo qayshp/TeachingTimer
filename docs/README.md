@@ -32,8 +32,11 @@ installation or a physical-device test.
 | [Phone audio fixture](../tools/phone-audio-probe/README.md) | Bounded native playback and remote-command evidence, independent of TeachingTimer. |
 | [Native volume probe](../tools/native-volume-probe/README.md) | Isolated companion-volume experiment. |
 | [Timeline probe](../tools/timeline-clock-probe/README.md) | Isolated Always-On clock experiment. |
+| [Diagnostic sharing probe](../tools/diagnostic-share-probe/README.md) | Synthetic native file sharing; delivery remains unverified. |
 
 ## Current additions
+
+- [V1 readiness review](V1_READINESS_REVIEW.md): current iterative audit, fixes, evidence and release gates.
 
 - [Build 26 on newer runtimes](RUNTIME_27_2_VALIDATION.md): 15-action pass, input-helper adjustment and paired-media test limits.
 
@@ -100,7 +103,8 @@ image as the current build or infer successful audio/haptics from visible contro
 ## Distribution preparation
 
 - [TestFlight preparation](TESTFLIGHT_PREPARATION.md): separate application
-  identity, unsigned rehearsal and outstanding signed-pilot/journal-access gates.
+  identity, unsigned rehearsal, verified local signed export and outstanding
+  upload/install/journal-access gates.
 - [Distribution metadata draft](DISTRIBUTION_METADATA.md): review before any upload.
 
 ## Historical archive

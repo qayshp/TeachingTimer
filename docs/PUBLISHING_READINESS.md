@@ -1,7 +1,8 @@
 # Publishing readiness
 
-Reviewed November 1, 2026. Preparation only: no registration, upload, invitation or
-release. [Current verification](../DEVELOPMENT_STATUS.md) owns build/install status.
+Reviewed November 2, 2026. A signed internal-only build-28 export is verified
+locally; upload, TestFlight installation, invitations and release remain pending.
+[Current verification](../DEVELOPMENT_STATUS.md) owns build/install status.
 
 ## New user entry points
 
@@ -18,10 +19,10 @@ support procedures from historical engineering notes.
 
 | Gate | Evidence / next action |
 | --- | --- |
-| Names and identifiers | Teaching Timer; `net.qays.TeachingTimer` for the store container and `net.qays.TeachingTimer.watchkitapp` for its Watch payload. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Name availability/registration not confirmed. |
-| Build integrity | Rehearse unsigned development and distribution archives with `scripts/verify-build.py`. This does not establish signing or store acceptance. |
-| Paid-team signing / App Store Connect | Confirm team, register identifier, create record, validate signed archive and upload when explicitly requested. |
-| Private tester support | Confirm a private contact before invitations. Public issues must not receive raw logs. No contact address is invented here. |
+| Names and identifiers | App Store Connect record **Teaching Timer Beta** created for `net.qays.TeachingTimer`; Teaching Timer was unavailable. Its Watch payload is `net.qays.TeachingTimer.watchkitapp`. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Distribution provisioning succeeded. |
+| Build integrity | Offline checks and unsigned archives pass; the signed build-28 export passed local package, profile, signature and entitlement checks. This does not establish Apple server acceptance. Repeat checks for any changed candidate. |
+| Paid-team signing / App Store Connect | Agreement gate resolved, local distribution export verified and app record created. Complete metadata and upload as part of the authorized self-pilot. |
+| Private tester support | Confirm a private contact and delivery before invitations. An email address does not export Watch journals. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | Development container copies work intermittently. TestFlight container access and a tester-friendly export path remain unresolved. |
 | Install/update pilot | Check separate container, cold start, update, state preservation, runtime intent and recovery on a physical Watch. |
 | Teaching reliability | Build 25 Settings/volume received positive October 31 class feedback; progress still froze and was recovered by swiping. Validate the release candidate and mitigation limits. Prioritize progress, blank media, Crown recovery and silencing. See supervised plan. |
@@ -87,8 +88,8 @@ fixed or that automatic wake refresh prevented every recurrence.
 
 A successful self-pilot plus several real classes by a few new users is a useful
 release criterion, not an Apple requirement or a substitute for the matrix.
-No app feature, registration, upload, device action or external message was
-performed while recording this plan.
+The self-pilot may proceed when its gates pass. Preserve the current physical
+teaching installation; it is not part of the authorized distribution work.
 
 References: [runtime categories](https://developer.apple.com/documentation/WatchKit/using-extended-runtime-sessions),
 [review guidelines](https://developer.apple.com/app-store/review/guidelines/),
@@ -97,15 +98,14 @@ References: [runtime categories](https://developer.apple.com/documentation/Watch
 ## November 2 pilot preparation
 
 Build 28 adds Apple's Watch-only distribution container, a separate TestFlight
-scheme/configuration, and checks for the signed internal-only export. The bare
-Watch archive's export-method rejection is resolved by packaging. Development
-signing succeeds; App Store provisioning is currently blocked by Apple's
-**PLA Update available** response, requiring account-holder agreement acceptance.
-No upload, TestFlight installation or physical update has occurred.
-[Preparation, current gate and pilot checklist](TESTFLIGHT_PREPARATION.md).
-The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) awaits the approved
-address and a real delivery test. These remain release gates, not completed tests.
-
-November 2 follow-up: the account holder accepted the updated agreement. The
-internal-only build-28 IPA exported successfully and passed local package,
-profile, signature and entitlement checks. Upload/install remain pending.
+scheme/configuration, and checks for the signed internal-only export. Packaging
+resolved the bare Watch archive's export-method rejection. The account holder
+then accepted the updated developer agreement, resolving Apple's **PLA Update
+available** provisioning gate. The internal-only build-28 IPA exported
+successfully and passed local package, profile, signature and entitlement checks.
+No upload, TestFlight installation or physical update has occurred during this
+preparation. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
+The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) now has a configured
+alias and verified inbound delivery. Outbound reply and diagnostic attachment
+delivery remain pending. These are
+release gates, not completed tests.
