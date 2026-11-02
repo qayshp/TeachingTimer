@@ -5,7 +5,7 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (31): scene-readiness guard passed one matched dimmed-relaunch/wake Simulator comparison, 12 Swift suites and 107 Python tests. Clean revision 9da154876eeb passed signed archive/export, upload and Apple processing. Build 30 supplies private support and accessible Settings Back; build 29 fixed explicit Start and schedule-retirement races. |
+| Source candidate | 1.0 (32): queued explicit Start now also waits for scene/native readiness. Artifact/export checks verify the bundled privacy manifest. All 12 Swift suites, 110 Python tests, Simulator compilation and 21 UI-action assertions pass. Clean signed release checks are pending; build 31 remains the available owner pilot. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
@@ -47,6 +47,22 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 [roadmap](docs/ROADMAP.md), and [publishing readiness](docs/PUBLISHING_READINESS.md).
 
 ## Verification and deployment boundaries
+
+Build 32 extends the existing readiness guard to an explicit Start queued while
+an old runtime invalidates. The new boundary-double tests exercise both
+invalidation/readiness orders and cancellation through Stop, reset, replacement
+or retirement. These are deterministic tests, including injected error paths,
+not another observed WatchKit rejection in Simulator. Direct immediate Start,
+native media/volume and count behavior are unchanged.
+
+The added privacy-manifest validator checks the actual Watch app in archives
+and exported IPAs against the reviewed declarations. The existing build-31
+archive/export already passes: this closes a verification gap, not a discovered
+shipped privacy defect. Build 32 passes all 12 Swift suites, 110 Python tests
+and Simulator compilation. All 21 UI-action assertions pass; reviewed Help,
+active-clock, Stop/Resume and native Not Playing captures show no visual
+regression in those views. This is not paired-media or physical validation.
+Clean signed release checks remain pending. Physical build 25 remains untouched.
 
 Build 31 passes all 12 Swift suites, including scene/native readiness and early
 handoff checks, 107 Python tests and the Debug Simulator build. In one matched inactive/dimmed

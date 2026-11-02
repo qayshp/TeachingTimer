@@ -145,3 +145,31 @@ unverified; the probe is still isolated and not a feature of TeachingTimer.
 | Offline email | Phone support link |
 | --- | --- |
 | ![Private support email in About](images/v1-review/se3-support-email-30.png) | ![Support-page QR on SE 3](images/v1-review/se3-support-30.png) |
+
+## Build 32 bounded follow-up
+
+The source candidate is build 32; build 31 remains the available owner pilot.
+The physical Watch remains untouched on build 25.
+
+- **Queued explicit Start:** the readiness check now also covers an explicit
+  request waiting for the previous runtime's invalidation. Deterministic
+  boundary-double tests pass for both readiness/invalidation orders and for
+  cancellation by Stop, reset, replacement or retirement. Injected error paths
+  are synthetic tests, not a new observed Simulator rejection. Direct immediate
+  Start, native media/volume and count behavior are unchanged.
+- **Privacy artifact verification:** archive inspection and exported-IPA checks
+  now verify the actual Watch privacy manifest against the reviewed declarations.
+  The existing build-31 archive/export already passes. This closes a verification
+  gap rather than a shipped privacy defect; it does not establish Apple approval
+  or replace an API-usage/privacy review.
+- **First-use instructions:** README and tester guide explain Beta's separate
+  saved state, Start class versus session, and the arc filling at 60 seconds
+  before count completion near 64.8 seconds, including visual-only counts.
+
+Build 32 compiles for Simulator and passes all 12 Swift suites and 110 Python
+tests. All 21 UI-action assertions pass; Help, active clock, Stop/Resume and native
+Not Playing screenshots were reviewed without a new visual regression in those
+views. This does not establish paired audio or physical behavior. Clean signed
+release checks have not been completed. Prior build-31 Simulator/distribution
+results remain labeled above and do not substitute for the changed candidate's
+validation.

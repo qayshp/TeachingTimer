@@ -10,7 +10,7 @@ for the private pilot, not a completed store submission or external invitation.
 | --- | --- |
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 / 31 at clean source 9da154876eeb; processed and assigned to the owner pilot alongside 29; 30 unassigned |
+| Version / development candidate | 1.0 / source 32 under review; build 31 at clean source 9da154876eeb remains processed and assigned to the owner pilot alongside 29; 30 unassigned |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
@@ -64,6 +64,9 @@ in public feedback.
 
 ## Current candidate review
 
+Source build 32 adds queued explicit-Start readiness and artifact privacy-manifest
+checks; its signed release is pending. Build 31 remains the available owner pilot.
+
 Build 31's scene-readiness guard passes one matched Simulator automatic recovery
 comparison, all 12 Swift suites and 107 Python tests; physical behavior remains unverified.
 Build 30 adds private support and
@@ -95,3 +98,35 @@ installation has been verified.
 - **Wider pilot gates:** verify separate-identity state handling, install/update,
   journal retrieval and support handling before inviting additional testers.
   The current owner-only invitation does not establish those results.
+
+## Runtime-use briefing for Apple — not submitted
+
+Teaching Timer is a standalone Watch clock for a yoga **teacher**, with wall-clock
+hands, scheduled class progress, brief optional vibration counts and Apple's
+native media controls. It has no audio playback engine, workout session or
+HealthKit data collection.
+
+The saved class schedule is separate from its mindfulness extended-runtime
+session. Classes last 60 or 75 minutes; a class retires 30 minutes after its
+scheduled end. Stopping the runtime retains class timing.
+
+The prototype currently attempts automatic runtime replacement only after the
+old session's invalidation is confirmed, and only when native application and
+SwiftUI scene state are active. After an expiration warning, it can invalidate
+the old session during the final 20 seconds and then attempt replacement.
+An explicit-renewal policy exists in code, but there is no user-facing policy
+switch. Manual Resume remains available. Renewal and 1 Hz wrist-down updates
+are not guaranteed.
+
+[Apple's extended-runtime guidance](https://developer.apple.com/documentation/watchkit/using-extended-runtime-sessions)
+describes mindfulness as silent meditation, with frontmost execution and a
+one-hour limit, and says the category must match intended use. Guidance is pending:
+
+1. Does this teacher-facing timing use qualify for mindfulness? If not, which
+   public API is appropriate without inventing a workout or background audio?
+2. Is automatic replacement for a continuing class permitted, including the
+   described expiration handoff, or should each additional session require an
+   explicit user action?
+
+This is a factual inquiry draft, not approval or justification for bypassing
+runtime limits. No request or appointment has been submitted from this brief.
