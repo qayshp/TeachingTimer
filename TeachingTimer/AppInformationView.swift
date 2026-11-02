@@ -44,6 +44,7 @@ struct AppInformationView: View {
             }
             Section("Start a class") {
                 Text("Check the suggested start and end before starting. Custom schedule changes this class only; future classes still default to 60 minutes.")
+                Text("The suggested start usually uses the previous quarter-hour. Use Custom schedule if you are starting early.")
             }
             Section("Session or class?") {
                 Text("Stop session keeps class timing, but wrist-down updates may slow. Resume session restarts it. End class clears timing and stops the session and count.")
@@ -78,7 +79,8 @@ struct AppInformationView: View {
                 Text("End class clears current timing, not diagnostics or settings. Unreadable saved values may have a separate local recovery copy. Removing the app removes its local container; exported or backup copies are separate.")
             }
             Section("Sharing is your choice") {
-                Text("Developer tools can copy journals to a trusted Mac. Share only what is needed. Do not post raw journals or system logs in public GitHub issues.")
+                Text("Developer tools can copy journals from development builds to a trusted Mac. TestFlight access is not yet verified. This app has no journal export or upload.")
+                Text("Share only what is needed. Do not post raw journals or system logs in public GitHub issues.")
                 Text("Apple’s media services and system diagnostics follow your Apple settings. Data you choose to send to Apple or another recipient follows that recipient’s policies.")
             }
             Section {
@@ -94,7 +96,7 @@ struct AppInformationView: View {
         Group {
             Section {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Teaching Timer").font(.headline)
+                    Text(displayName).font(.headline)
                     Text(versionText)
                     Text("A teaching clock for Apple Watch.")
                 }
@@ -117,6 +119,10 @@ struct AppInformationView: View {
                 Text("Read the license here. Website pages show an address and a QR code for your phone.")
             }
         }
+    }
+
+    private var displayName: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "Teaching Timer"
     }
 
     private var versionText: String {
