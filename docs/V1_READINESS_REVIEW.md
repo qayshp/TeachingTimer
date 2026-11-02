@@ -93,8 +93,8 @@ Next independent work:
 1. Preserve the now-completed [issue-7 comparison](RUNTIME_RECOVERY.md#build-31-candidate-comparison):
    one matched candidate trial defers the premature Start and recovers on later
    active wake without error. A second trial did not match initial dimming;
-   Stop comparisons independently retained stopped intent. Class bytes match
-   across all 14 preference captures. This is bounded Simulator evidence, not
+   Stop comparisons independently retained stopped intent. All 14 candidate
+   preference captures matched the baseline class bytes. This is bounded Simulator evidence, not
    a guarantee for arbitrary callback ordering or physical behavior.
 2. Complete signed distribution verification/upload for candidate 31. Builds
    29/30 have already passed export/upload/processing; those passes do not

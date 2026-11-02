@@ -93,8 +93,7 @@ inactive but not dimmed, then became dimmed during observation. It is a separate
 nonmatching trial, not a second reproduction of the same launch condition. Both
 intentional-Stop comparisons retained Stop with no Start before or after wake;
 their initial appearance was not dimmed, so that specific Stop condition remains
-unproven. The same class bytes were preserved across 14 preference captures,
-covering the baseline, update and subsequent stages.
+unproven. All 14 candidate preference captures matched the baseline class bytes.
 
 The wake helper used virtual Crown/Home followed by reopening, rather than a
 passive wrist lift. Each running candidate trial includes two active edges with

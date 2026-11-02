@@ -53,8 +53,8 @@ handoff checks, and the Debug Simulator build. In one matched inactive/dimmed
 relaunch, automatic Start was deferred, running intent survived and a later
 active wake produced a successful runtime-start callback without error. The
 second trial had a different initial luminance state and is not a second matched
-reproduction. Intentional Stop controls made no Start attempt. All 14 captured
-preferences retained identical class bytes. The wake helper used Home/reopen,
+reproduction. Intentional Stop controls made no Start attempt. All 14 candidate
+preference captures matched the baseline class bytes. The wake helper used Home/reopen,
 causing real foreground-loss invalidations between two nonoverlapping starts;
 this is not a claim of one total start or guaranteed recovery for arbitrary
 callback ordering. See [the full comparison and limits](docs/RUNTIME_RECOVERY.md#build-31-candidate-comparison).
