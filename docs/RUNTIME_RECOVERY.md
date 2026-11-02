@@ -115,3 +115,21 @@ The clean build-31 archive at `9da154876eeb` passed signed export and upload;
 Apple processed it as Ready to Test / Internal, and it is available in the
 one-tester owner pilot. This distribution result does not establish TestFlight
 installation/update, journal access or physical recovery behavior.
+
+## Build 32 queued explicit Start guard
+
+An explicit Start may be queued while the previous runtime is still
+invalidating. The scene can become inactive before that old callback arrives,
+even while native application state says active. Build 32 applies the same
+scene/native readiness condition to this deferred path. Direct immediate Start
+is unchanged, and a queued user request still works under user-initiated renewal
+policy. The request remains tied to its class; Stop, reset, replacement or
+retirement cancels it.
+
+All 12 Swift suites pass. Boundary-double checks exercise both callback orders,
+native-versus-scene readiness, duplicate callbacks and cancellation while waiting.
+Injected failures remain synthetic evidence; no new physical or Simulator
+WatchKit rejection is claimed for this queued-Start case. The build-31 matched
+automatic-recovery comparison above remains separate evidence. These tests do
+not add a native activity observer or prove liveness under every real callback
+ordering. Media/volume, count timing and stored class values are unchanged.

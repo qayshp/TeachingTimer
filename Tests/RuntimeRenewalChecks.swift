@@ -289,6 +289,71 @@ final class WKExtendedRuntimeSession {
             queued.applicationBecameActive(); await drain()
             assert(queued.phase == .stopped && WKExtendedRuntimeSession.instances.count == beforeCancelledStart)
         }
+        // A queued explicit Start is still asynchronous: the scene may become
+        // inactive before the old runtime invalidates even while native state
+        // says active. Preserve the request through either callback order and
+        // require both readiness signals before creating its one successor.
+        for activationComesFirst in [false, true] {
+            let queued = try controller()
+            queued.renewalPolicy = .userInitiated // This remains an explicit request.
+            let initial = ClassContext(pressedAt: Date(), scheduledStart: Date())
+            queued.synchronizeClass(initial); queued.start()
+            let ending = WKExtendedRuntimeSession.instances.last!
+            ending.confirmStart(); await drain(); queued.stop()
+            let next = ClassContext(pressedAt: initial.initialStartPressedAt.addingTimeInterval(1), scheduledStart: Date())
+            queued.synchronizeClass(next); queued.start()
+            queued.applicationStateChanged("inactive")
+            let before = WKExtendedRuntimeSession.instances.count
+            queued.applicationBecameActive()
+            assert(WKExtendedRuntimeSession.instances.count == before)
+            if activationComesFirst {
+                queued.applicationStateChanged("active")
+                queued.applicationBecameActive()
+                assert(WKExtendedRuntimeSession.instances.count == before) // Old object still exists.
+                ending.end(.none); await drain()
+            } else {
+                ending.end(.none); await drain()
+                queued.applicationBecameActive(); queued.applicationBecameActive()
+                assert(queued.phase == .stopped && WKExtendedRuntimeSession.instances.count == before)
+                WKApplication.shared().applicationState = .inactive
+                queued.applicationStateChanged("active")
+                queued.applicationBecameActive()
+                assert(WKExtendedRuntimeSession.instances.count == before) // Scene readiness alone is insufficient.
+                WKApplication.shared().applicationState = .active
+                queued.applicationBecameActive()
+            }
+            assert(WKExtendedRuntimeSession.instances.count == before + 1)
+            let successor = WKExtendedRuntimeSession.instances.last!
+            successor.confirmStart(); await drain()
+            queued.applicationBecameActive(); ending.end(.none); await drain()
+            assert(queued.phase == .running && WKExtendedRuntimeSession.instances.last === successor)
+        }
+        // Cancellation after the old invalidation, while scene readiness is
+        // still pending, also wins. No delayed callback may resurrect the Start.
+        for cancellation in ["stop", "reset", "different_class", "retirement"] {
+            let queued = try controller()
+            let initial = ClassContext(pressedAt: Date(), scheduledStart: Date())
+            queued.synchronizeClass(initial); queued.start()
+            let ending = WKExtendedRuntimeSession.instances.last!
+            ending.confirmStart(); await drain(); queued.stop()
+            let next = ClassContext(pressedAt: initial.initialStartPressedAt.addingTimeInterval(1), scheduledStart: Date())
+            queued.synchronizeClass(next); queued.start()
+            queued.applicationStateChanged("inactive")
+            let before = WKExtendedRuntimeSession.instances.count
+            ending.end(.none); await drain()
+            assert(WKExtendedRuntimeSession.instances.count == before)
+            switch cancellation {
+            case "stop": queued.stop()
+            case "reset": queued.synchronizeClass(nil)
+            case "different_class":
+                queued.synchronizeClass(ClassContext(pressedAt: initial.initialStartPressedAt.addingTimeInterval(2), scheduledStart: Date()))
+            default:
+                queued.synchronizeClass(ClassContext(pressedAt: next.initialStartPressedAt, scheduledStart: Date().addingTimeInterval(-10000)))
+            }
+            queued.applicationStateChanged("active")
+            queued.applicationBecameActive(); ending.end(.none); await drain()
+            assert(queued.phase == .stopped && WKExtendedRuntimeSession.instances.count == before)
+        }
         // Process recreation restores *intent*, never a WatchKit object. The
         // same defaults suite models storage shared by successive launches.
         let suite = "TeachingTimerRecoveryChecks." + UUID().uuidString
@@ -451,5 +516,6 @@ final class WKExtendedRuntimeSession {
         print("PASS: early handoff ordering, inactive deferral, observed expiration error, rejected replacement no-loop, explicit reset, manual policy, narrow time/error boundaries, passive UI/runtime correlation")
         print("PASS: explicit new-class Start survives pending old invalidation without overlap; Stop/reset/class changes/retirement cancel it")
         print("PASS: automatic recovery waits for both scene/native readiness; deferred intent survives and Stop/reset/class changes/retirement/manual policy prevent recovery")
+        print("PASS: queued explicit Start waits for scene/native readiness in both invalidation orders, respects user-initiated policy, and cancels while awaiting wake")
     }
 }

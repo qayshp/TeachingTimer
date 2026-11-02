@@ -215,7 +215,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         if startPendingExplicitRequestIfReady() { return }
         if attemptEarlyHandoff() { return }
         guard renewalPending, renewalPolicy == .automatic, runtimeSession == nil, !stopRequested else { return }
-        guard automaticStartIsReady else { return }
+        guard sceneAndApplicationAreActive else { return }
         record("automatic_restart_attempt")
         // Consume the intent before trying: a rejected start keeps the manual
         // fallback rather than retrying on every later scene transition.
@@ -264,7 +264,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         recordPersistenceEvents(intentStore.takePersistenceEvents())
     }
 
-    private var automaticStartIsReady: Bool {
+    private var sceneAndApplicationAreActive: Bool {
         lastSceneState == "active" && WKApplication.shared().applicationState == .active
     }
 
@@ -279,8 +279,9 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
             return false
         }
         // The old invalidation and the next active callback may arrive in either
-        // order. Keep one explicit request until both conditions are satisfied.
-        guard runtimeSession == nil, WKApplication.shared().applicationState == .active else { return true }
+        // order. The user may lower their wrist while invalidation is pending;
+        // native active alone does not establish WatchKit start eligibility.
+        guard runtimeSession == nil, sceneAndApplicationAreActive else { return true }
         pendingExplicitStartClassID = nil
         record("deferred_explicit_start_ready")
         start()
@@ -293,7 +294,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         if earlyHandoffRequested { return true }
         guard RuntimeRenewalRules.canHandoff(
             warned: expirationWarningReceived, expiration: session.expirationDate, now: Date(),
-            active: automaticStartIsReady,
+            active: sceneAndApplicationAreActive,
             automatic: renewalPolicy == .automatic, stopped: stopRequested) else { return false }
         earlyHandoffRequested = true
         renewalPending = true
