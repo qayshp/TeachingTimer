@@ -61,6 +61,12 @@ checked; an expired, wildcard, development, device-limited or enterprise profile
 is not accepted as a TestFlight export. Neither command uploads or installs.
 Private builds, provisioning material and raw logs remain in ignored `work/`.
 
+Signed preparation requires a clean Git checkout, including untracked source.
+It records the full commit in the binary and rechecks the checkout after archive,
+before export. A changed HEAD, new edits or mismatched archive revision stops the
+export. Ignored private build outputs are allowed. Unsigned rehearsals still
+support work in progress; neither mode stages or commits files automatically.
+
 Build 29 declares `ITSAppUsesNonExemptEncryption = NO` in both payloads, and
 package checks require the actual plist Boolean. The source has no custom or
 third-party cryptography; it relies on Apple system services. Reassess this

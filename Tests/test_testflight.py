@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: MPL-2.0
 from datetime import datetime, timedelta
+from contextlib import redirect_stdout
 import hashlib
 import importlib.util
+import io
+import json
 from pathlib import Path
 import plistlib
 import subprocess
@@ -17,7 +20,8 @@ spec.loader.exec_module(pilot)
 
 
 class TestFlightChecks(unittest.TestCase):
-    def package(self):
+    @staticmethod
+    def package():
         container = dict(CFBundleIdentifier=pilot.CONTAINER_ID, CFBundleVersion='28', CFBundleShortVersionString='1.0',
                          ITSAppUsesNonExemptEncryption=False)
         watch = dict(container, CFBundleIdentifier=pilot.WATCH_ID, WKWatchOnly=True,
@@ -188,3 +192,115 @@ class TestFlightChecks(unittest.TestCase):
             with self.assertRaises(ValueError):
                 pilot.export_checks(ipa, root, 'TEAM')
             self.assertFalse((root / 'escape').exists())
+
+
+class SignedSourceChecks(unittest.TestCase):
+    head = 'a' * 40
+
+    def prepare(self, states, *, signed=True, archived_revision=None):
+        """Exercise orchestration with fake Xcode/inspection; no account access."""
+        commands = []
+        inspection = dict(version='1.0', build='31', revision=archived_revision or self.head,
+                          checks={'fixture': True}, signatureValid=True, unexpiredEmbeddedProfile=True)
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'release'
+            def run(name, command, destination, timeout):
+                commands.append((name, command))
+                if name == 'build':
+                    archive = destination / 'TeachingTimer.xcarchive'
+                    container = archive / 'Products/Applications/TeachingTimerDistribution.app'
+                    watch = container / 'Watch/TeachingTimer.app'
+                    watch.mkdir(parents=True)
+                    container_info, watch_info = TestFlightChecks.package()
+                    (container / 'Info.plist').write_bytes(plistlib.dumps(container_info))
+                    (watch / 'Info.plist').write_bytes(plistlib.dumps(watch_info))
+                    (archive / 'Info.plist').write_bytes(plistlib.dumps({'ApplicationProperties': {
+                        'ApplicationPath': 'Applications/TeachingTimerDistribution.app', 'Team': 'TEAM'}}))
+                elif name == 'export':
+                    (destination / 'export').mkdir()
+                    (destination / 'export/candidate.ipa').touch()
+                else:
+                    self.fail('Unexpected account/build operation: ' + name)
+                return dict(name=name, command=command, status='passed')
+            with patch.object(pilot, 'source_state', side_effect=states) as state, \
+                    patch.object(pilot.build, 'run_step', side_effect=run), \
+                    patch.object(pilot.artifact, 'inspect', return_value=inspection), \
+                    patch.object(pilot, 'export_checks', return_value={'passed': True}) as export, \
+                    patch.object(pilot.os, 'umask'), redirect_stdout(io.StringIO()):
+                error = None
+                try:
+                    pilot.main([str(output)] + (['--signed'] if signed else []))
+                except SystemExit as failure:
+                    error = str(failure)
+                report = json.loads((output / 'readiness.json').read_text())
+                return report, error, commands, state.call_count, export.call_count
+
+    def test_signed_dirty_preflight_never_starts_account_or_build_operation(self):
+        report, error, commands, states, exports = self.prepare([{'head': self.head, 'dirty': True}])
+        self.assertIn('clean committed source', error)
+        self.assertTrue(report['failed'])
+        self.assertEqual(commands, [])
+        self.assertEqual((states, exports), (1, 0))
+
+    def test_signed_clean_source_pins_exact_revision_and_checks_again_before_export(self):
+        clean = {'head': self.head, 'dirty': False}
+        report, error, commands, states, exports = self.prepare([clean, clean])
+        self.assertIsNone(error)
+        self.assertEqual([name for name, _ in commands], ['build', 'export'])
+        self.assertIn('SOURCE_REVISION=' + self.head, commands[0][1])
+        self.assertEqual((states, exports), (2, 1))
+        self.assertTrue(report['sourceRevisionVerified'])
+        self.assertEqual(report['sourceBeforeBuild'], report['sourceAfterArchive'])
+        self.assertFalse(report['uploaded'])
+
+    def test_signed_export_stops_for_source_changes_or_wrong_archive_revision(self):
+        clean = {'head': self.head, 'dirty': False}
+        cases = [({'head': self.head, 'dirty': True}, self.head),
+                 ({'head': 'b' * 40, 'dirty': False}, self.head),
+                 (clean, self.head + '-dirty'), (clean, self.head[:12]), (clean, 'b' * 40)]
+        for after, revision in cases:
+            with self.subTest(after=after, revision=revision):
+                report, error, commands, states, exports = self.prepare([clean, after], archived_revision=revision)
+                self.assertIn('refusing export', error)
+                self.assertTrue(report['failed'])
+                self.assertEqual([name for name, _ in commands], ['build'])
+                self.assertEqual((states, exports), (2, 0))
+                self.assertNotIn('sourceRevisionVerified', report)
+
+    def test_unsigned_rehearsal_still_allows_dirty_source(self):
+        report, error, commands, states, exports = self.prepare([], signed=False,
+                                                               archived_revision=self.head[:12] + '-dirty')
+        self.assertIsNone(error)
+        self.assertEqual(report['stage'], 'unsigned_archive_verified')
+        self.assertEqual([name for name, _ in commands], ['build'])
+        self.assertIn('CODE_SIGNING_ALLOWED=NO', commands[0][1])
+        self.assertNotIn('-allowProvisioningUpdates', commands[0][1])
+        self.assertEqual((states, exports), (0, 0))
+
+    def test_git_state_detects_tracked_staged_and_untracked_edits_but_ignores_work(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            def git(*args):
+                return subprocess.run(['git', '-C', str(root), *args], check=True, capture_output=True, text=True).stdout.strip()
+            git('init')
+            (root / '.gitignore').write_text('work/\n')
+            tracked = root / 'source.swift'
+            tracked.write_text('original\n')
+            git('add', '.gitignore', 'source.swift')
+            git('-c', 'user.name=Test', '-c', 'user.email=test@example.invalid',
+                '-c', 'commit.gpgsign=false', 'commit', '-m', 'fixture')
+            with patch.object(pilot, 'ROOT', root):
+                baseline = pilot.source_state()
+                self.assertEqual(baseline, {'head': git('rev-parse', 'HEAD'), 'dirty': False})
+                (root / 'work').mkdir()
+                (root / 'work/build.log').write_text('ignored evidence\n')
+                self.assertEqual(pilot.source_state(), baseline)
+                tracked.write_text('changed\n')
+                self.assertTrue(pilot.source_state()['dirty'])
+                git('add', 'source.swift')
+                self.assertTrue(pilot.source_state()['dirty'])
+                tracked.write_text('original\n')
+                git('add', 'source.swift')
+                self.assertEqual(pilot.source_state(), baseline)
+                (root / 'untracked.swift').write_text('new source\n')
+                self.assertTrue(pilot.source_state()['dirty'])

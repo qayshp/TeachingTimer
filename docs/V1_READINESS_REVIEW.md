@@ -39,6 +39,11 @@ Always-On, distribution installation or App Review acceptance.
   export, newer runtime availability and continued song-progress recurrence.
   Keep dated investigations and their corrections intact.
 
+Signed release preparation also now rejects dirty source before archiving and
+rejects source/commit changes or a mismatched binary revision before export.
+Unsigned rehearsals remain usable during development. All 107 Python tests pass,
+including the signed-source boundaries and ignored-versus-untracked Git fixtures.
+
 ## Account and support preparation
 
 The separate App Store Connect record is **Teaching Timer Beta**, with store

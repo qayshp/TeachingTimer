@@ -3,7 +3,8 @@
 """Create an unsigned rehearsal or a signed, internal-only TestFlight export.
 
 Never uploads, installs, launches, or invites testers. --signed allows Xcode's
-automatic provisioning; account agreements must be accepted by the account owner.
+automatic provisioning and requires unchanged, committed source. Account
+agreements must be accepted by the account owner.
 """
 import argparse
 from datetime import datetime, timezone
@@ -13,6 +14,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import subprocess
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,6 +31,24 @@ def module(name, file):
 
 artifact = module('pilot_artifact', 'inspect-artifact.py')
 build = module('pilot_build', 'verify-build.py')
+
+
+def source_state():
+    """Read Git state without staging anything; ignored build evidence is allowed."""
+    def git(*arguments):
+        return subprocess.run(['git', *arguments], cwd=ROOT, check=True, text=True,
+                              capture_output=True, timeout=30).stdout.strip()
+    return dict(head=git('rev-parse', '--verify', 'HEAD'),
+                dirty=bool(git('status', '--porcelain=v1', '--untracked-files=all')))
+
+
+def verify_signed_source(before, after, archived_revision):
+    if after['dirty']:
+        raise ValueError('Source became dirty during signed preparation; refusing export')
+    if after['head'] != before['head']:
+        raise ValueError('Source HEAD changed during signed preparation; refusing export')
+    if archived_revision != before['head']:
+        raise ValueError('Archive revision does not exactly match the captured clean HEAD; refusing export')
 
 
 def package_checks(container, watch):
@@ -100,11 +120,11 @@ def export_checks(ipa, output, team):
                 and all(all(values.values()) for values in entitlements.values()))
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path, help='New output directory; never overwrites')
     parser.add_argument('--signed', action='store_true', help='Permit automatic provisioning and export an internal-only IPA')
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     os.umask(0o077)
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -122,10 +142,17 @@ def main():
             raise RuntimeError(f'{name} failed; see {output / (name + ".log")}')
     save()
     try:
+        if args.signed:
+            report['sourceBeforeBuild'] = source_state()
+            if report['sourceBeforeBuild']['dirty']:
+                raise ValueError('Signed preparation requires a clean committed source tree; '
+                                 'commit intended changes first and use an ignored or external output directory')
+            save()
         command = ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimerTestFlight',
                    '-configuration', 'TestFlight', '-destination', 'generic/platform=iOS',
                    '-archivePath', str(archive)]
-        command += ['-allowProvisioningUpdates'] if args.signed else ['CODE_SIGNING_ALLOWED=NO']
+        command += (['-allowProvisioningUpdates', 'SOURCE_REVISION=' + report['sourceBeforeBuild']['head']]
+                    if args.signed else ['CODE_SIGNING_ALLOWED=NO'])
         run('build', command + ['archive'])
         inspection = artifact.inspect(archive)
         (output / 'artifact-inspection.json').write_text(json.dumps(inspection, indent=2) + '\n')
@@ -149,6 +176,11 @@ def main():
                            testFlightInternalTestingOnly=True, uploadSymbols=True)
             options_file = output / 'ExportOptions.plist'
             options_file.write_bytes(plistlib.dumps(options))
+            # Recheck immediately before export. The build phase records the
+            # exact captured HEAD (plus -dirty if it saw edits while archiving).
+            report['sourceAfterArchive'] = source_state()
+            verify_signed_source(report['sourceBeforeBuild'], report['sourceAfterArchive'], inspection['revision'])
+            report['sourceRevisionVerified'] = True
             save()
             run('export', ['xcodebuild', '-exportArchive', '-archivePath', str(archive),
                            '-exportOptionsPlist', str(options_file), '-exportPath', str(output / 'export'),
