@@ -4,6 +4,12 @@ Filed October 26 as **FB25329087**, with the standalone probe, recordings,
 frame analysis, and comparison notes. See [Apple feedback status](APPLE_FEEDBACK.md)
 for the remaining capture gaps. No seconds-hand fix is claimed.
 
+**November 2 update:** an exact-value trace now identifies a numerical boundary
+mechanism in the isolated probe. Earlier rounded timestamps could not rule out
+input precision and do not establish stale/composited frames. See the
+[new diagnosis and candidate](#november-2-exact-date-precision-diagnosis);
+the dated investigations below retain their original observations.
+
 ## Report and scope
 
 After the 2 p.m. class, the user reported a brief apparent backward step of the
@@ -187,3 +193,72 @@ The evidence is ready to add to existing **FB25329087**; this November 2 update
 has **not been sent**. Original video, frame measurements, command records and
 analysis remain private under `work/support/2026-11-02-v1-review/clock-probe/`.
 The public PNGs above are unchanged copies of decoded frames 46 and 47.
+
+## November 2: exact Date precision diagnosis
+
+A subsequent fixed-epoch, ordinary-Path probe records the context Date's exact
+reference-time bit pattern and captures the Calendar second once for both its
+hand and diagnostic `S` label. This identifies a numerical mechanism that the
+earlier rounded Unix timestamps concealed. Calendar returns the preceding
+second correctly when a Date is just below the whole-second boundary.
+
+| Evaluation IDs | Exact reference-date seconds | Captured Calendar seconds | Monotonic separation |
+| --- | --- | --- | --- |
+| 175 → 176 | `815350835` → `815350834.99999988` | 35 → 34 | 20.752 ms |
+| 291 → 292 | `815350846.00000012` → `815350845.99999988` | 46 → 45 | 14.769 ms |
+
+The lower values are one representable Double step, **119.209 ns**, below the
+integer. Conversion to the larger Unix-epoch value rounds away this distinction
+before printing; more decimal places cannot restore it. All 234 captured IDs
+(64–297) are consecutive, with no sampled wall/monotonic reversal. Ten dates
+fell one step below a boundary; their Calendar components match the exact values.
+The original trace and saved source remain private under
+`work/support/2026-11-02-v1-review/clock-render-trace-run3/`.
+
+The video shows 276.013° at 19.656667 s and the immediate backward frame at
+19.666667 s, about 270.000°. Labels are still transitioning at that first
+backward frame; they must not be assigned a new evaluation ID from angle alone.
+The unchanged source frames below compare the clearly readable E291/S46 before
+frame with the later E292/S45 frame at 20.185 s, about 270.004°.
+
+| Before: E291, DIM, S46 | After: E292, LIVE, S45 |
+| --- | --- |
+| ![Context label 46 with actual hand second 46](images/v1-review/clock-precision-before.png) | ![Rounded context label still 46 but actual hand second 45](images/v1-review/clock-precision-after.png) |
+
+This explains a backward change in the captured hand input and matches the
+reviewed before/after geometry. It does not require a compositor explanation.
+Evaluation order still differs from display order: this run also prepared
+future views in batches. Neither this result nor those batches establish that
+every historical or physical-Watch jump has the same cause.
+
+### Build 33 candidate — bounded Simulator validation
+
+The stateless [`WallClockDisplay`](../TeachingTimer/WallClockDisplay.swift) helper
+normalizes only an exact integer reference-time value and its immediate
+`nextDown`/`nextUp` neighbors to that integer. Ordinary fractional dates, genuine
+clock corrections and future frames remain valid. Wall-clock minute/second
+hands and the class-progress display share the normalized sample; the timeline
+schedule and raw class/runtime/count state are unchanged. There is no global
+last-date clamp, fresh-`Date()` substitution or new timer.
+
+The probe compares the same helper using `--normalize-second-boundary`;
+default mode retains the raw baseline. In the normalized comparison, 113 of 234
+evaluations again contained a raw Date one representable step below an integer.
+All 113 displayed the corrected whole second, including a live-to-dim transition
+whose raw input changed 16 → 15 while the displayed input stayed at 16. An
+independent replay through the unchanged production helper matched all 234
+logged raw/display components and preserved the original Date bits.
+
+Video analysis measured no backward whole tick across 190 frames over 24.283 s.
+Future-preparation batches still return to current time in request order; those
+are not display regressions and are not clamped. This is a bounded comparison
+with the relevant numerical input exercised, not a guarantee against every
+transition defect. Private evidence is under
+`work/support/2026-11-02-v1-review/clock-render-trace-normalized-run1/`.
+
+Candidate build 33 passes 13 Swift suites, 117 Python tests and all 21 full-app
+Simulator UI-action assertions. Signed release preparation/upload and physical
+validation remain pending; build 32 is still the latest available owner pilot.
+The physical teaching installation remains build 25 and was untouched.
+An Apple follow-up draft records this narrower diagnosis, but this evidence has
+**not been submitted** to FB25329087.

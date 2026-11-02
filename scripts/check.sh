@@ -19,6 +19,7 @@ check() {
 }
 check ClassContext TeachingTimer/PersistenceDiagnostics.swift TeachingTimer/ClassContext.swift Tests/ClassContextChecks.swift
 check TimeEdges TeachingTimer/PersistenceDiagnostics.swift TeachingTimer/ClassContext.swift TeachingTimer/LandmarkController.swift Tests/TimeEdgeChecks.swift
+check WallClockDisplay TeachingTimer/WallClockDisplay.swift TeachingTimer/PersistenceDiagnostics.swift TeachingTimer/ClassContext.swift Tests/WallClockDisplayChecks.swift
 check Landmarks TeachingTimer/LandmarkController.swift Tests/LandmarkChecks.swift
 check RuntimeJournal TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift Tests/RuntimeDiagnosticsChecks.swift
 check VolumeDiagnostics TeachingTimer/LandmarkDiagnostics.swift TeachingTimer/RuntimeDiagnostics.swift TeachingTimer/VolumeControlDiagnostics.swift Tests/VolumeControlDiagnosticsChecks.swift

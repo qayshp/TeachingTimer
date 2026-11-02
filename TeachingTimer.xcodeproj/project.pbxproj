@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        100000000000000000000027 /* WallClockDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000027; };
         100000000000000000000024 = {isa = PBXBuildFile; fileRef = 200000000000000000000024; };
         100000000000000000000025 = {isa = PBXBuildFile; fileRef = 200000000000000000000025; };
         100000000000000000000026 = {isa = PBXBuildFile; fileRef = 200000000000000000000026; };
@@ -38,6 +39,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+        200000000000000000000027 /* WallClockDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallClockDisplay.swift; sourceTree = "<group>"; };
         200000000000000000000024 = {isa = PBXFileReference; lastKnownFileType = folder; path = Information; sourceTree = "<group>"; };
         200000000000000000000025 = {isa = PBXFileReference; lastKnownFileType = text; path = ../docs/PRIVACY.md; sourceTree = "<group>"; };
         200000000000000000000026 = {isa = PBXFileReference; lastKnownFileType = text; path = ../LICENSE; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				200000000000000000000003 /* ExtendedRuntimeController.swift */,
 				200000000000000000000006 /* SharedClockPage.swift */,
 				200000000000000000000008 /* SquircleClockViews.swift */,
+                200000000000000000000027 /* WallClockDisplay.swift */,
 				000000000000000000000950,
 				000000000000000000000951,
 				000000000000000000000952,
@@ -279,6 +282,7 @@
 				100000000000000000000003 /* ExtendedRuntimeController.swift in Sources */,
 				100000000000000000000006 /* SharedClockPage.swift in Sources */,
 				100000000000000000000008 /* SquircleClockViews.swift in Sources */,
+                100000000000000000000027 /* WallClockDisplay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,7 +293,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 33;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
                 ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -321,7 +325,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 33;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
                 ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -378,7 +382,7 @@
             baseConfigurationReference = F0000000000000000000000E;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 32;
+				CURRENT_PROJECT_VERSION = 33;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
                 ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -419,7 +423,7 @@
             isa = XCBuildConfiguration;
             buildSettings = {
                 CODE_SIGN_STYLE = Automatic;
-                CURRENT_PROJECT_VERSION = 32;
+                CURRENT_PROJECT_VERSION = 33;
                 DEVELOPMENT_TEAM = QV8ZH37356;
                 GENERATE_INFOPLIST_FILE = YES;
                 INFOPLIST_KEY_CFBundleDisplayName = "Teaching Timer Beta";
@@ -442,7 +446,7 @@
             isa = XCBuildConfiguration;
             buildSettings = {
                 CODE_SIGN_STYLE = Automatic;
-                CURRENT_PROJECT_VERSION = 32;
+                CURRENT_PROJECT_VERSION = 33;
                 DEVELOPMENT_TEAM = QV8ZH37356;
                 GENERATE_INFOPLIST_FILE = YES;
                 INFOPLIST_KEY_CFBundleDisplayName = "Teaching Timer Beta";
@@ -465,7 +469,7 @@
             isa = XCBuildConfiguration;
             buildSettings = {
                 CODE_SIGN_STYLE = Automatic;
-                CURRENT_PROJECT_VERSION = 32;
+                CURRENT_PROJECT_VERSION = 33;
                 DEVELOPMENT_TEAM = QV8ZH37356;
                 GENERATE_INFOPLIST_FILE = YES;
                 INFOPLIST_KEY_CFBundleDisplayName = "Teaching Timer Beta";

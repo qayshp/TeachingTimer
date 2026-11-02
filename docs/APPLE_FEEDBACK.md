@@ -28,11 +28,18 @@ then `xcrun devicectl diagnose`. Its output should include host and relevant-dev
 sysdiagnoses; collect missing captures separately. This is an older request
 observed during today's inspection, not a new response or a completed collection.
 
-The [watchOS 27.2 clock-probe comparison](ALWAYS_ON_HAND_TRANSITION.md) reproduced
-the backstep and remains local evidence for FB25329087; it has **not** been sent
-to Apple. No report, follow-up, attachment, new request or device action was made
-during this review. Private UI text captures are retained under
+No report, follow-up, attachment, new request or device action was made during
+this Feedback Assistant inspection. Private UI text captures are retained under
 `work/support/2026-11-02-v1-review/apple-status/`.
+
+The subsequent [exact-Date clock investigation](ALWAYS_ON_HAND_TRANSITION.md#november-2-exact-date-precision-diagnosis)
+found context Dates one representable step below whole-second boundaries;
+Calendar correctly selects the preceding second, while Unix conversion hides
+the difference. This narrows the local explanation without establishing a
+compositor defect or the cause of every physical report. Build 33's bounded
+normalized probe corrected the exercised inputs with no measured backward tick;
+physical validation remains open. The evidence and follow-up draft are local
+and have **not been sent** to FB25329087.
 
 ## October 26–28 reporting history
 

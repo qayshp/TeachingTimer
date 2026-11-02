@@ -5,7 +5,7 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (32), clean source `f931c173ab86`: queued explicit Start also waits for scene/native readiness. All 12 Swift suites, 110 Python tests, Simulator compilation, 21 UI-action assertions and CI pass. Signed archive/export verifies the actual Watch privacy manifest; Apple processing and owner-pilot assignment are complete. |
+| Source candidate | 1.0 (33): narrow display normalization addresses the exact-Date boundary mechanism reproduced in the isolated clock probe. All 13 Swift suites, 117 Python tests and 21 full-app Simulator UI-action assertions pass. The normalized probe exercised the input defect without a measured backward tick. Signed release/upload are pending; build 32 remains the available owner pilot. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
@@ -39,7 +39,9 @@ status. Dated investigations describe their original builds, not current behavio
    Class timing survives. Build 31 defers the premature start and recovers on a
    later active wake in one matched Simulator trial. Broader callback orderings
    and physical behavior remain unverified.
-4. Seconds-hand backstep at dim/wake: separate Apple report; no speculative time correction.
+4. Seconds-hand backstep at dim/wake: an exact-Date boundary mechanism is now
+   reproduced in the probe; build 33 passes the bounded normalization comparison.
+   Physical validation and the Apple follow-up remain pending.
 5. Physical TestFlight install/update/journal access, outbound support reply and
    attachment checks, and final publishing/review metadata.
 
@@ -47,6 +49,17 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 [roadmap](docs/ROADMAP.md), and [publishing readiness](docs/PUBLISHING_READINESS.md).
 
 ## Verification and deployment boundaries
+
+Build 33's [clock comparison](docs/ALWAYS_ON_HAND_TRANSITION.md#build-33-candidate--bounded-simulator-validation)
+captures raw Dates one representable step below a whole second. The shared
+display helper normalizes only the integer and its immediate neighbors; it
+does not change the timeline schedule, raw saved timing, runtime, count or native
+controls. The normalized probe corrected all 113 affected inputs among 234
+evaluations; independent replay matched every record. No backward whole tick was
+measured in 190 frames over 24.283 s. All 13 Swift suites, 117 Python tests and
+21 full-app UI-action assertions pass. These bounded Simulator results do not
+establish physical behavior or explain every historical jump. Build 33 has not
+been uploaded; the available pilot and physical installation remain as listed above.
 
 Build 32 extends the existing readiness guard to an explicit Start queued while
 an old runtime invalidates. The new boundary-double tests exercise both

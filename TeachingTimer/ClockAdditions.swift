@@ -35,7 +35,7 @@ struct ClockAdditions: View {
             if showsClassProgress, let context, context.durationMinutes == 60 {
                 // Sample at the hands' whole-second cadence; clamp at either end
                 // so an overdue class never wraps into another full hour.
-                let sampledDate = Date(timeIntervalSince1970: floor(date.timeIntervalSince1970))
+                let sampledDate = WallClockDisplay.wholeSecondDate(date)
                 let progress = min(1, max(0, context.progress(at: sampledDate)))
                 let startMinute = Calendar.current.component(.minute, from: context.scheduledStart)
                 let startAngle = Double(startMinute) * .pi / 30
@@ -108,7 +108,7 @@ struct WallClockMinuteHand: View {
     var body: some View {
         Canvas { graphics, size in
             let center = CGPoint(x: size.width / 2, y: size.height / 2)
-            let components = Calendar.current.dateComponents([.minute, .second], from: date)
+            let components = WallClockDisplay.components(at: date)
             let minute = Double(components.minute ?? 0) + Double(components.second ?? 0) / 60
             let angle = minute * .pi / 30
             let length = min(size.width, size.height) * 0.29

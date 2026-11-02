@@ -12,7 +12,8 @@ probe_sdk=$(xcrun --sdk watchsimulator --show-sdk-path)
 probe_arch=$(uname -m)
 xcrun --sdk watchsimulator swiftc -parse-as-library -sdk "$probe_sdk" \
     -target "$probe_arch-apple-watchos26.0-simulator" \
-    "$probe_source/TimelineClockProbe.swift" -o "$probe_app/TimelineClockProbe"
+    "$probe_source/TimelineClockProbe.swift" \
+    "$probe_source/../../TeachingTimer/WallClockDisplay.swift" -o "$probe_app/TimelineClockProbe"
 cp "$probe_source/Info.plist" "$probe_app/Info.plist"
 codesign --force --sign - "$probe_app"
 printf 'Simulator app: %s\n' "$probe_app"

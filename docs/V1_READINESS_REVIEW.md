@@ -110,9 +110,10 @@ Next independent work:
    until the user authorizes that next step.
 3. Preserve completed retirement/layout assertions and reviewed screenshots as
    regression evidence. These are completed UI checks, not pending redesign work.
-4. The isolated fixed-anchor probe reproduced two backsteps on watchOS 27.2.
-   Preserve the [exact evidence and qualifications](ALWAYS_ON_HAND_TRANSITION.md#november-2-watchos-272-reproduction)
-   for the existing Apple report; do not clamp system timeline dates.
+4. Preserve the [exact-Date diagnosis and bounded candidate comparison](ALWAYS_ON_HAND_TRANSITION.md#november-2-exact-date-precision-diagnosis)
+   for the existing Apple report. Build 33 corrects the exercised numerical
+   boundary mechanism without globally clamping timeline dates; hardware
+   validation and the Apple update remain pending.
 5. Verify outbound support replies and arrange a supervised physical file-sharing /
    TestFlight install-update-journal pilot when the devices are available.
    Inbound email receipt is already verified.
@@ -178,3 +179,19 @@ A source-only minimum-OS audit found all three build configurations target
 watchOS 26. The used APIs checked against the current SDK were available by
 watchOS 10, with no unguarded post-26 API found. This is not execution on the
 minimum OS: no older runtime was installed, and watchOS 26 execution remains pending.
+
+## Build 33 clock-boundary follow-up
+
+An exact-reference-date probe exposed a one-representable-step boundary
+mechanism behind captured backward hand inputs; rounded Unix timestamps had
+hidden it. Build 33's shared display helper normalizes only immediate integer
+neighbors, keeping the schedule and raw class/runtime/count state intact.
+The normalized comparison corrected 113 affected inputs among 234 evaluations;
+independent replay matched all records and 190 video frames over 24.283 s showed
+no measured backward whole tick. All 13 Swift suites, 117 Python tests and 21
+full-app Simulator UI-action assertions pass. See the
+[evidence and limits](ALWAYS_ON_HAND_TRANSITION.md#build-33-candidate--bounded-simulator-validation).
+
+This candidate has not completed signed release/upload. Build 32 remains the
+latest available owner pilot and physical build 25 remains untouched. No
+physical fix or universal cause is established, and no new Apple update was sent.

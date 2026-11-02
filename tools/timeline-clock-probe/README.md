@@ -39,6 +39,9 @@ and yellow/white color for active/reduced luminance. Optional launch arguments:
 - `--constant-color`: keep the hand white in both states.
 - `--moving-anchor`: recompute the next-whole-second schedule anchor when the
   parent body evaluates, matching TeachingTimer's current schedule.
+- `--trace-render`: add the optional two-source rendering diagnostic below.
+- `--normalize-second-boundary`: compare the narrow display-boundary normalization
+  described below. It is off by default; the raw baseline is retained.
 
 For example, restart only the probe in the selected simulator:
 
@@ -53,6 +56,85 @@ about frame ordering, not a guarantee of 1 Hz execution without extended runtime
 Use the supplied timeline date; do not substitute current time or globally clamp
 dates because watchOS may request future frames before they are displayed.
 
+## Optional rendering trace
+
+`--trace-render` leaves the default fixed-epoch schedule and ordinary Path hand
+in place. It adds a **short dashed hand with an open endpoint** for fresh wall
+time sampled during the same timeline-content evaluation. The original long,
+solid hand still uses the supplied context date. Compact labels show the
+evaluation ID (`E`), luminance state, rounded context seconds (`C`), the actual
+drawn integer second (`S`) and sampled wall seconds (`W`). `C` and `W` include
+milliseconds; `C` can conceal sub-second precision that changes `S`.
+Geometry distinguishes the hands even in
+monochrome; the labels may obscure part of a hand and are diagnostic only.
+
+Each evaluation samples wall and monotonic time once and emits one `Logger`
+record in subsystem `net.qays.TeachingTimer.ClockProbe`, category `RenderTrace`.
+It contains that same ID, context/wall epoch timestamps, monotonic seconds since
+the recorder's initialization, cadence and luminance. `context_reference_bits`
+preserves the raw `Date.timeIntervalSinceReferenceDate` Double bit pattern;
+`raw_second` is its Calendar component, `context_second` is the displayed
+component, and `normalized` identifies the comparison mode. Decode the reference
+bits when investigating boundaries: conversion to Unix epoch can round away
+information before formatting, even with more decimal places.
+The immutable snapshot is captured before `GeometryReader`; its stored
+component drives both the hand and `S` label rather than rereading the context
+during layout.
+A lock protects the ID and sampling pair. There is no observable state change,
+additional timer, date clamp or production-app change.
+
+Capture unified logs in a separate terminal before launching the trace variant:
+
+```sh
+xcrun simctl spawn SIMULATOR_UDID log stream --style compact --level info \
+    --predicate 'subsystem == "net.qays.TeachingTimer.ClockProbe" AND category == "RenderTrace"' \
+    > work/clock-render-trace.log
+```
+
+```sh
+xcrun simctl launch --terminate-running-process SIMULATOR_UDID \
+    net.qays.TeachingTimer.ClockProbe --trace-render
+```
+
+Bound the first comparison to two short recordings of about 45 seconds each,
+using the existing default sequence and confirming actual Lock/wake luminance
+changes. Stop the log stream afterward. Correlate decoded visible IDs and hands
+with the log records; video presentation time and monotonic-log time require an
+observed alignment, not an assumption that launch or input timestamps match.
+
+**Evaluation order is not display order.** Always-On can prepare future content
+in batches, so an older evaluation ID appearing later is not inherently an
+error. A fresh `Date()` hand can remain at preparation time while future frames
+display; it is a diagnostic reference, not a correct replacement clock or fix.
+A new evaluation with regressed context time differs from reappearing older
+content, but neither alone proves the internal compositor cause. Logging and
+extra geometry may also affect timing. Compare with the uninstrumented baseline
+and do not interpret a clean short trace as a resolved bug. In particular, the
+rounded Unix labels alone cannot exclude an input-precision explanation.
+
+## Optional boundary normalization
+
+The build script compiles the shared production
+[`WallClockDisplay` helper](../../TeachingTimer/WallClockDisplay.swift) into this
+isolated app. With `--normalize-second-boundary`, the context hand uses a date
+normalized only when its reference-time value is an integer or that integer's
+immediate `nextDown`/`nextUp` neighbor. Other fractions, future dates and genuine
+clock corrections are retained; no last-rendered-date clamp is used. The raw
+context date is still logged. Add both flags for a labeled comparison:
+
+```sh
+xcrun simctl launch --terminate-running-process SIMULATOR_UDID \
+    net.qays.TeachingTimer.ClockProbe --trace-render --normalize-second-boundary
+```
+
+Without the normalization flag, the probe still draws the raw Calendar second.
+The bounded normalized comparison exercised 113 one-step-below-boundary dates
+among 234 evaluations and corrected every displayed component. Independent
+replay matched all 234 records; 190 video frames over 24.283 s showed no measured
+backward whole tick. Build 33 also passes all 21 app UI-action assertions.
+These are Simulator results, not a physical-Watch fix claim or a guarantee
+against every transition defect.
+
 ## November 2, 2026 observation
 
 The default fixed-epoch, ordinary-Path variant reproduced two visually confirmed
@@ -63,11 +145,20 @@ this sequence. Four Lock/tap command pairs did not establish four completed
 display-state cycles. Exact frames and qualifications are in the
 [investigation](../../docs/ALWAYS_ON_HAND_TRANSITION.md#november-2-watchos-272-reproduction).
 
-This is recorded Simulator reproduction with the minimal probe, not a diagnosed
-cause, physical-Watch result or fix. The newer-runtime evidence is ready for the
-existing FB25329087 report; that update has not yet been sent. No other variant
-was run in this bounded pass.
+That first pass established a Simulator reproduction without identifying its
+cause. A later exact-value trace found context Dates one representable Double
+step (119.209 ns) below whole-second boundaries. Calendar correctly returned the
+preceding second, while rounded Unix timestamps appeared unchanged. Captured
+evaluation 291 used second 46; evaluation 292 used second 45, matching the
+reviewed later frames. The same run includes 35 → 34 in the input trace.
+
+This supplies a numerical mechanism for these probe results, not evidence of
+stale composited frames or proof that every physical incident has the same
+cause. See the [precision diagnosis and exact frames](../../docs/ALWAYS_ON_HAND_TRANSITION.md#november-2-exact-date-precision-diagnosis).
+The newer evidence and an Apple follow-up draft remain local; no update has
+been sent to FB25329087.
 
 This is a rendering diagnostic, not a replacement teaching app. There is no
-icon, production packaging, physical-Watch validation, or automatic log capture.
+icon, production packaging or physical-Watch validation. The default variant
+does not log; optional trace output must be captured separately as above.
 The source/build script are MPL-2.0 like the containing repository.

@@ -31,7 +31,7 @@ private struct SquircleClockFace: View {
     let layer: ClockFaceLayer
 
     private var second: Int {
-        Calendar.current.component(.second, from: date)
+        WallClockDisplay.components(at: date).second ?? 0
     }
 
     var body: some View {
