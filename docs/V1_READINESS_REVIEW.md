@@ -50,11 +50,11 @@ The separate App Store Connect record is **Teaching Timer Beta**, with store
 container `net.qays.TeachingTimer`. Apple rejected “Teaching Timer” as already
 used; the public release name remains a decision. The Watch payload stays
 `net.qays.TeachingTimer.watchkitapp`; development remains
-`com.qayshp.TeachingTimer`. Build 34 is Ready to Test / Internal after clean
+`com.qayshp.TeachingTimer`. Build 35 is Ready to Test / Internal after clean
 signed archive/export, upload and processing. It is assigned to the Maintainer
-pilot with one tester, the owner, and manual distribution. Builds 29, 31, 32 and 33 are also
+pilot with one tester, the owner, and manual distribution. Builds 29, 31, 32, 33 and 34 are also
 assigned; build 30 is processed but unassigned. No external testers or public
-release are configured. The build-34 What to Test notes and one-group/one-tester
+release are configured. The build-35 What to Test notes and one-group/one-tester
 assignment were verified after reload in App Store Connect.
 
 Beta Test Information was saved and verified after reload: description and known
@@ -104,7 +104,7 @@ Next independent work:
    Stop comparisons independently retained stopped intent. All 14 candidate
    preference captures matched the baseline class bytes. This is bounded Simulator evidence, not
    a guarantee for arbitrary callback ordering or physical behavior.
-2. Arrange the physical build-34 TestFlight install/update/journal pilot when
+2. Arrange the physical TestFlight install/update/journal pilot when
    authorized and available. Signed export, upload, processing and owner-pilot
    assignment are complete; installation is not. Keep the teaching Watch untouched
    until the user authorizes that next step.
@@ -217,3 +217,51 @@ upload and Apple processing. Build 34 is Ready to Test / Internal; notes and
 assignment survived reload, and the manual pilot has one tester/five builds.
 Physical build 25 is unchanged. Physical Beta checks, outbound support delivery,
 Apple runtime-use guidance and final owner/review decisions remain open.
+
+## Build 35 static layout matrix
+
+Build 35 is also Ready to Test / Internal and assigned to the owner-only manual
+pilot. Signed export, upload, notes and assignment are verified; the
+[artifact ledger](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds) records the exact
+source and checks. Physical build 25 was not contacted or changed.
+
+These original Simulator captures use clean Debug build 35, source
+`b5884e30dd8a`, on watchOS 27.2 (24S118). The five sizes were reviewed for visible
+dial, hands, Class/Settings entry, native volume control and primary action.
+The SE 3 40 mm retains an active class and offers **1-min count**; the other four
+show **Start class** before a class begins. They are layout samples, not matched
+clock times or class states.
+
+| SE 3 · 40 mm | SE 3 · 44 mm | Series 12 · 42 mm | Series 12 · 46 mm | Ultra 4 · 49 mm |
+| --- | --- | --- | --- | --- |
+| ![Build 35 SE 3 40 mm, active class](images/v1-review/build35-se3-40-face.png) | ![Build 35 SE 3 44 mm, before Start](images/v1-review/build35-se3-44-face.png) | ![Build 35 Series 12 42 mm, before Start](images/v1-review/build35-series12-42-face.png) | ![Build 35 Series 12 46 mm, before Start](images/v1-review/build35-series12-46-face.png) | ![Build 35 Ultra 4 49 mm, before Start](images/v1-review/build35-ultra4-49-face.png) |
+
+Maximum-text Settings retains a readable title and Back chevron at both size
+extremes. These samples show different scroll positions: information links on
+the SE 3 and toggles on the Ultra.
+
+| SE 3 · 40 mm · maximum text | Ultra 4 · 49 mm · maximum text |
+| --- | --- |
+| ![SE 3 Settings, Help Privacy and About at maximum text](images/v1-review/build35-se3-40-settings-maximum.png) | ![Ultra Settings, count vibration toggle at maximum text](images/v1-review/build35-ultra4-49-settings-maximum.png) |
+
+The bundled policy now gives **Settings → About → Contact support** directions
+instead of exposing a relative Markdown file path. The
+[SE 3 policy excerpt](images/v1-review/build35-se3-40-policy-support.png) verifies
+that those directions render in the app. It does not add journal export.
+
+A separate build-35 controls run confirmed all six requested dim/wake
+transitions from reported scene/luminance state, with one Lock toggle per
+transition. Its 33 sampled frames had no missing-outline warnings; 17 OCR
+warnings flag text for review because foremost hands can cover it. All 16 labeled
+dim/awake captures agree with their reported state: yellow-hand pixels are absent
+in the nine dim images and present in the seven awake images. Sampled visual
+review, including both count-finish captures, confirms expected controls.
+All six count groups completed near 64.816 seconds with a running runtime and observed locked
+state. This verifies bounded Simulator rendering and scheduling, not tactile or
+audio delivery.
+
+The [capture manifest](images/v1-review/build35-manifest.json) records original
+dimensions and hashes; the PNGs are unchanged. Static layouts do not establish
+physical touch or VoiceOver usability, paired audio/Crown behavior, wrist-down
+updates, haptic delivery, minimum-OS compatibility or TestFlight installation.
+The disconnected-phone symbol is Simulator state, not a layout defect.

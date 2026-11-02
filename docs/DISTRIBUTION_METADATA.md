@@ -1,16 +1,16 @@
 # Distribution metadata draft
 
 Updated November 2, 2026. The App Store Connect record **Teaching Timer Beta**
-has build 34 Ready to Test / Internal and available to the one-tester Maintainer
-pilot. Builds 29, 31, 32 and 33 are also assigned; build 30 is processed but unassigned. Distribution
-remains manual. This is the metadata review packet
-for the private pilot, not a completed store submission or external invitation.
+has a Ready to Test / Internal candidate in the owner-only manual Maintainer
+pilot. See [current verification](../DEVELOPMENT_STATUS.md) for build assignments.
+This is the metadata review packet for the private pilot, not a completed store
+submission or external invitation.
 
 | Field | Draft |
 | --- | --- |
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 (34), clean source `ee054de666c3`, processed and assigned to the owner pilot alongside 29, 31, 32 and 33; 30 unassigned |
+| Version / development candidate | 1.0 (35), clean source `b5884e30dd8a`, processed and assigned to the owner pilot; [artifact record](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds) |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
@@ -57,9 +57,10 @@ in public feedback.
   assets, not a finalized App Store screenshot set. Prepare final screenshots
   only after the beta behavior and supported-device claims are validated.
 - Complete the install/update and journal-access pilot in
-  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 34 passed clean signed
+  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 35 passed clean signed
   archive/export, upload and processing and is assigned to the owner pilot.
-  It also passes 13 Swift suites, 117 Python tests, 21 Simulator UI-action assertions and CI.
+  Its Watch CI passes 13 Swift suites / 117 Python tests, and CodeQL also passes;
+  the clean Debug layout matrix and bounded controls checks are reviewed.
   Neither source work nor processing establishes physical installation or journal access.
 
 ### Privacy decisions before broader distribution
@@ -84,6 +85,13 @@ in public feedback.
   Apple. This checklist records no account answers or legal determination.
 
 ## Current candidate review
+
+Build 35 replaces the bundled policy's relative support path with actual in-app
+navigation directions. Behavior is unchanged from build 34. The clean source's
+signed export, CI, Apple processing, notes and owner-pilot assignment are verified;
+[the gallery](V1_READINESS_REVIEW.md#build-35-static-layout-matrix) records five-size
+layout and bounded dim/wake/count evidence. Subsequent tooling passes 128 Python
+tests, separately from the signed candidate's 117-test source checkpoint.
 
 Build 34 adds a stable schedule anchor to the narrow display normalization.
 Bounded clock/count integration and 21 app UI-action assertions pass. Clean
@@ -111,7 +119,7 @@ song progress still stalled and recovered by switching pages. Build 27 adds
 Help/Privacy/About under Settings; that addition has not been installed on the
 physical Watch. No TestFlight installation has been verified.
 
-- **Screenshot set:** the [Settings-era teaching face](images/settings-25/se3-face.png)
+- **Screenshot set:** the [build-35 five-size gallery](V1_READINESS_REVIEW.md#build-35-static-layout-matrix) includes original captures and hashes. The historical [Settings-era teaching face](images/settings-25/se3-face.png)
   was captured on the SE 3 Simulator during build-25 verification.
   The [setup screenshots](USABILITY_PASS_22.md) show the retained interface on
   SE 3 and Ultra. These are development evidence, not approved store assets;

@@ -1,14 +1,14 @@
 # TestFlight pilot
 
-Updated November 2, 2026. Build 34 passed signed archive/export, upload and Apple
+Updated November 2, 2026. Build 35 passed signed archive/export, upload and Apple
 processing and is Ready to Test / Internal. It is assigned to the manual-distribution
-Maintainer pilot with one tester, the owner. Builds 29, 31, 32 and 33 are also assigned; build 30
-is processed but unassigned. The physical teaching app remains build 25 and is
-untouched; no physical TestFlight installation is verified.
+Maintainer pilot with one tester, the owner. Builds 29, 31, 32, 33 and 34 are also
+assigned; build 30 is processed but unassigned. Physical build 25 was not contacted
+or changed; no physical TestFlight installation is verified.
 
-Build 34 combines a stable clock schedule with build 33's narrow display-boundary
-normalization, retaining the prior readiness, privacy verification and onboarding work.
-Preparation/upload/group assignment are complete;
+Build 35 corrects the bundled policy's support directions; behavior is unchanged
+from build 34's stable clock schedule and build 33's narrow display-boundary
+normalization. Preparation/upload/group assignment are complete;
 the physical self-pilot below remains unverified.
 
 ## Identities and packaging
@@ -179,13 +179,28 @@ archive/export. Its IPA SHA-256 is
 `a94b8505d72eab91df9f111570b778d04dee21d4c0fe4fb358cd5d24915c5e66`.
 Upload completed November 2 at 15:02:59 PST; Apple shows **Ready to Test /
 Internal**. What to Test notes and one-group assignment survived reload.
-The **Maintainer pilot** settings show one tester, five builds (29, 31, 32, 33
+At that checkpoint the **Maintainer pilot** settings showed one tester, five builds (29, 31, 32, 33
 and 34), and **Manual** distribution; 30 remains unassigned. All 13 Swift suites,
 117 Python tests and [CI](https://github.com/qayshp/TeachingTimer/actions/runs/41541943839)
 pass, alongside 21 app UI-action assertions and bounded clock/locked-count checks.
 The recorded Debug integration artifact is distinct from this clean signed
 source; later documentation commits do not alter the artifact's revision.
 Physical installation/update, journal access and teaching validation remain open.
+
+Build 35, clean source `b5884e30dd8ab04c956e629a5f0a5c7864b58c2b`, passed signed
+archive/export, including actual Watch privacy-manifest checks. Its IPA SHA-256 is
+`720b00521812f879ad18eb79199cbaa6e7cf6119afa925e3ae0f93c63461914f`.
+Upload completed November 2 at 15:32:23 PST; Apple shows **Ready to Test /
+Internal**. Exact What to Test notes and one-group/one-tester assignment survived
+reload. **Maintainer pilot** has one owner, six builds (29, 31, 32, 33, 34 and 35)
+and **Manual** distribution; 30 remains unassigned.
+[Watch CI](https://github.com/qayshp/TeachingTimer/actions/runs/41544098376)
+passes 13 Swift suites / 117 Python tests;
+[CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/41544096984) also passes.
+The clean Debug build's [layout matrix and bounded controls run](V1_READINESS_REVIEW.md#build-35-static-layout-matrix)
+verify the support-copy change and sampled rendering. Subsequent tooling passes
+128 Python tests, separately from this signed source checkpoint. The physical
+Watch remains untouched and all physical self-pilot checks below remain open.
 
 ## Self-pilot record
 

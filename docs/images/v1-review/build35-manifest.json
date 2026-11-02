@@ -1,0 +1,84 @@
+{
+  "build": "35",
+  "sourceRevision": "b5884e30dd8ab04c956e629a5f0a5c7864b58c2b",
+  "configuration": "Debug",
+  "sourceWasCleanAtBuild": true,
+  "watchOS": "27.2",
+  "runtimeBuild": "24S118",
+  "imageTreatment": "Original PNG bytes; no crop, resize, annotation or compositing.",
+  "limitations": "Static Simulator layouts; not physical Watch, paired playback, wrist-transition, haptic, accessibility or TestFlight-install validation.",
+  "screens": [
+    {
+      "file": "build35-se3-40-face.png",
+      "sourceBasename": "SE-3-40mm-awake-face.png",
+      "device": "Apple Watch SE 3 40 mm",
+      "widthPixels": 324,
+      "heightPixels": 394,
+      "state": "Retained active class; 1-min count is available.",
+      "sha256": "d55a9c48a64cd432b468900e133e7cecf36c8ad28d41a8946568e4e57a41a4aa"
+    },
+    {
+      "file": "build35-se3-44-face.png",
+      "sourceBasename": "SE-3-44mm-face.png",
+      "device": "Apple Watch SE 3 44 mm",
+      "widthPixels": 368,
+      "heightPixels": 448,
+      "state": "No class started.",
+      "sha256": "4e20d10aecc3fa3b737e60f094279043a6b478e734aac3a9707ab376391d20bb"
+    },
+    {
+      "file": "build35-series12-42-face.png",
+      "sourceBasename": "Series-12-42mm-face.png",
+      "device": "Apple Watch Series 12 42 mm",
+      "widthPixels": 374,
+      "heightPixels": 446,
+      "state": "No class started.",
+      "sha256": "57981486a76593882a65d3d3183c692f5da19ea0d62dd759d387a4d81594541b"
+    },
+    {
+      "file": "build35-series12-46-face.png",
+      "sourceBasename": "Series-12-46mm-face.png",
+      "device": "Apple Watch Series 12 46 mm",
+      "widthPixels": 416,
+      "heightPixels": 496,
+      "state": "No class started.",
+      "sha256": "356ae0a930cb43e7181f0ae7148fce852c66e3d90c617686cecb049ae83778f0"
+    },
+    {
+      "file": "build35-ultra4-49-face.png",
+      "sourceBasename": "Ultra-4-49mm-face.png",
+      "device": "Apple Watch Ultra 4 49 mm",
+      "widthPixels": 422,
+      "heightPixels": 514,
+      "state": "No class started.",
+      "sha256": "f14695511534e4476b1c4afafbee75a90b2d22a02f56cc56ba771640e0024175"
+    },
+    {
+      "file": "build35-se3-40-settings-maximum.png",
+      "sourceBasename": "SE-3-40mm-maximum-settings-awake-3.png",
+      "device": "Apple Watch SE 3 40 mm",
+      "widthPixels": 324,
+      "heightPixels": 394,
+      "state": "Maximum text size; scrolled to Help, Privacy and About.",
+      "sha256": "c9ab7170f2605059f8a44c8f0fb788913657b4853e2aff1ca61b74d0a763eb44"
+    },
+    {
+      "file": "build35-ultra4-49-settings-maximum.png",
+      "sourceBasename": "Ultra-4-49mm-maximum-settings-top.png",
+      "device": "Apple Watch Ultra 4 49 mm",
+      "widthPixels": 422,
+      "heightPixels": 514,
+      "state": "Maximum text size; top of Settings.",
+      "sha256": "ad06283dd21240eeedbc165575fe6a6845cb86403ddeeef3555f75c30a4521d7"
+    },
+    {
+      "file": "build35-se3-40-policy-support.png",
+      "sourceBasename": "SE-3-40mm-full-policy-42.png",
+      "device": "Apple Watch SE 3 40 mm",
+      "widthPixels": 324,
+      "heightPixels": 394,
+      "state": "Scrolled policy excerpt showing in-app support navigation.",
+      "sha256": "0de59fa0074e0f28bc71e723423fca4c7fc9dcd630f04a000b4c7fa4b8ad0784"
+    }
+  ]
+}

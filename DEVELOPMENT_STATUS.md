@@ -5,11 +5,11 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (35): bundled Privacy copy replaces a repository-relative support path with the actual Settings → About → Contact support route. App behavior is unchanged from build 34. Bundled rendering and final size-matrix checks are pending; build 34 remains the verified owner pilot. |
+| Source candidate | 1.0 (35): bundled Privacy copy replaces a repository-relative support path with the actual Settings → About → Contact support route. App behavior is unchanged from build 34. Bundled policy rendering, the five-size static matrix and bounded dim/wake/count controls checks pass. Clean source `b5884e30dd8a` is assigned to the owner pilot. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Build 34 (`ee054de666c3`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29, 31, 32 and 33 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Build 35 (`b5884e30dd8a`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29, 31, 32, 33 and 34 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -51,6 +51,26 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 
 ## Verification and deployment boundaries
 
+Build 35 changes only the bundled policy's support directions over build 34.
+Clean source `b5884e30dd8ab04c956e629a5f0a5c7864b58c2b` passed signed
+archive/export, actual Watch privacy-manifest checks,
+[Watch CI](https://github.com/qayshp/TeachingTimer/actions/runs/41544098376)
+(13 Swift suites / 117 Python tests) and
+[CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/41544096984).
+Upload completed November 2 at 15:32:23 PST. Apple shows Ready to Test / Internal;
+notes and assignment survived reload, and the manual Maintainer pilot has one
+owner and six assigned builds. See the [artifact ledger](docs/TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds).
+
+The clean Debug build's [five-size gallery](docs/V1_READINESS_REVIEW.md#build-35-static-layout-matrix)
+includes small/large maximum-text Settings and the rendered policy directions.
+A separate strengthened controls run observed all six requested dim/wake
+transitions, sampled 33 frames and completed all six count groups near 64.816 s
+with runtime/locked-state evidence. Subsequent tooling has 128 passing Python
+tests; those additions are not part of the signed build's 117-test source
+checkpoint. These checks do not establish physical haptic/audio delivery,
+TestFlight installation/update or journal access. Physical build 25 was not
+contacted or changed; its last confirmed state remains the historical record above.
+
 Build 34's [anchor comparison](docs/ALWAYS_ON_HAND_TRANSITION.md#build-34-follow-up-stable-schedule-anchor)
 keeps precision normalization enabled in both variants. Moving anchoring produced
 two matched input/pixel backsteps; the fixed epoch produced none. Each was one
@@ -66,7 +86,7 @@ results do not establish a physical fix. Clean source
 [CI](https://github.com/qayshp/TeachingTimer/actions/runs/41541943839), including
 13 Swift suites and 117 Python tests. Upload completed November 2 at 15:02:59 PST;
 Apple shows Ready to Test / Internal. Build notes and assignment survived reload;
-the manual Maintainer pilot has one tester and five assigned builds. Physical
+at that checkpoint the manual Maintainer pilot had one tester and five assigned builds. Physical
 build 25 remains untouched, and physical Beta checks remain open.
 
 Build 33's [clock comparison](docs/ALWAYS_ON_HAND_TRANSITION.md#build-33-candidate--bounded-simulator-validation)
