@@ -11,7 +11,7 @@ in class and keep another timing method available.
 
 <img src="docs/images/settings-25/se3-face.png" alt="Build 25 SE 3 Simulator teaching face with Class and gear, native volume and wall-clock hands" width="240">
 
-*Build 25, SE 3 40 mm Simulator. The disconnected-phone symbol is Simulator state.
+*Build 25, SE 3 40 mm Simulator, before starting a class. The disconnected-phone symbol is Simulator state.
 The installed build and current source candidate are listed in
 [current verification](DEVELOPMENT_STATUS.md).*
 
@@ -31,14 +31,16 @@ use the instructions below. New testers should read the
    **Now Playing** page; swipe right for the clock. Native media can select Watch
    playback, so check the source before class.
 4. Tap **1-min count** for an inner arc timed from your tap. Groups of 1–6 pulses
-   mark 10–60 seconds; the last group finishes at about 64.8 seconds. Tap again
-   to stop. Haptics may be late or skipped by watchOS.
+   mark 10–60 seconds. The arc fills at 60 seconds; the count normally ends at
+   about 64.8 seconds, allowing time for the final group. Tap again to stop.
+   Haptics may be late or skipped by watchOS.
 5. Tap **Class** (with the gear) → **Settings** to turn **Count vibrations** off
    for the next count or enable **Minutes left**. Both preferences persist.
    **Help**, **Privacy**, and **About** are also in Settings, including the app
    version, recovery guidance, source/license, and private support contact.
 
-**Stop session / Resume session** affects the mindfulness runtime while retaining
+**Start class** also requests a mindfulness session to help keep the app available
+during class. **Stop session / Resume session** affects that runtime while retaining
 class timing. **End class** clears timing and stops session/count. **New class**
 creates another schedule with confirmation. An old class retires 30 minutes after
 scheduled end; a new class never starts silently.
