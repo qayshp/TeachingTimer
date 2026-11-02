@@ -38,6 +38,7 @@ installation or a physical-device test.
 - [Build 26 on newer runtimes](RUNTIME_27_2_VALIDATION.md): 15-action pass, input-helper adjustment and paired-media test limits.
 
 - [Publishing readiness](PUBLISHING_READINESS.md): onboarding and outstanding release gates.
+- [Private support intake](PRIVATE_SUPPORT_PLAN.md): pilot procedure, pending contact/delivery gate.
 - [Supervised physical media plan](PHYSICAL_MEDIA_TEST_PLAN.md): preparation only; no run scheduled.
 - [Settings and information pages](SETTINGS_PASS_25.md): build 25 preferences and
   build 27 Help/Privacy/About screenshots and limits.
