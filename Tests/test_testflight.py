@@ -33,13 +33,16 @@ class TestFlightChecks(unittest.TestCase):
                     Entitlements={'application-identifier': 'TEAM.' + pilot.WATCH_ID,
                                   'get-task-allow': False, 'beta-reports-active': True})
 
-    def exported_package(self, root):
+    def exported_package(self, root, manifest=(ROOT / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes()):
         ipa = root / 'candidate.ipa'
         container, watch = self.package()
         with zipfile.ZipFile(ipa, 'w') as archive:
             archive.writestr('Payload/TeachingTimerDistribution.app/Info.plist', plistlib.dumps(container))
             archive.writestr('Payload/TeachingTimerDistribution.app/Watch/TeachingTimer.app/Info.plist',
                              plistlib.dumps(watch))
+            if manifest is not None:
+                archive.writestr('Payload/TeachingTimerDistribution.app/Watch/TeachingTimer.app/PrivacyInfo.xcprivacy',
+                                 manifest)
         return ipa
 
     def export_command(self, *args):
@@ -154,6 +157,25 @@ class TestFlightChecks(unittest.TestCase):
                     self.assertFalse(result['passed'])
                     # Good profiles must not mask the actual signature failure.
                     self.assertTrue(all(all(values.values()) for values in result['profiles'].values()))
+
+    def test_export_rejects_missing_malformed_or_unreviewed_watch_privacy_manifest(self):
+        reviewed = plistlib.loads((ROOT / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes())
+        wrong_reason = plistlib.loads(plistlib.dumps(reviewed))
+        wrong_reason['NSPrivacyAccessedAPITypes'][1]['NSPrivacyAccessedAPITypeReasons'] = ['8FFB.1']
+        for manifest in (None, b'not a plist', b'<?xml version="1.0"?><plist><dict>',
+                         plistlib.dumps(dict(reviewed, NSPrivacyTracking=True)), plistlib.dumps(wrong_reason)):
+            with self.subTest(manifest=manifest), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                ipa = self.exported_package(root, manifest)
+                with patch.object(pilot.artifact, 'command', side_effect=self.export_command):
+                    result = pilot.export_checks(ipa, root, 'TEAM')
+                self.assertFalse(result['passed'])
+                self.assertFalse(result['checks']['watchPrivacyManifestMatchesPolicy'])
+                self.assertTrue(all(value for key, value in result['checks'].items()
+                                    if key != 'watchPrivacyManifestMatchesPolicy'))
+                self.assertTrue(all(result['signatures'].values()))
+                self.assertTrue(all(all(values.values()) for values in result['profiles'].values()))
+                self.assertTrue(all(all(values.values()) for values in result['entitlements'].values()))
 
     def test_archive_locates_watch_payload_without_changing_legacy_paths(self):
         with tempfile.TemporaryDirectory() as folder:

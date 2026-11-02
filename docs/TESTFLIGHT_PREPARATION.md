@@ -6,6 +6,10 @@ Maintainer pilot with one tester, the owner. Build 29 is also assigned; build 30
 is processed but unassigned. The physical teaching app remains build 25 and is
 untouched; no physical TestFlight installation is verified.
 
+Source build 32 is under review for queued-Start readiness, privacy-manifest
+verification and onboarding clarification. Build 31 remains the available pilot
+until the changed source passes its own clean signed release checks.
+
 ## Identities and packaging
 
 | Purpose | Identifier |
@@ -60,6 +64,13 @@ includes symbols. Both embedded profiles/signatures and exact identities are
 checked; an expired, wildcard, development, device-limited or enterprise profile
 is not accepted as a TestFlight export. Neither command uploads or installs.
 Private builds, provisioning material and raw logs remain in ignored `work/`.
+
+From build-32 tooling, archive inspection and the exported IPA must both contain
+the expected Watch privacy manifest: no tracking or declared collection, plus
+the reviewed UserDefaults and system-boot-time reasons. Missing, malformed,
+duplicate or unexpected declarations fail the check. This is a package-policy
+consistency check, not an API-usage audit or Apple privacy approval. The previously
+exported build 31 already passes it; no privacy defect was found in that artifact.
 
 Signed preparation requires a clean Git checkout, including untracked source.
 It records the full commit in the binary and rechecks the checkout after archive,

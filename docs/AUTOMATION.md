@@ -22,7 +22,13 @@ complete verification for a candidate. The output directory must be new.
 | Repository | Tracked local Markdown targets, source notices, Python syntax, JSON/plist parsing, standalone Swift suite wiring and private/generated-file exclusions. | Does not validate remote URLs or Markdown heading fragments, prove legal compliance, or inspect ignored private evidence. |
 | Swift models/controllers | Class anchoring/persistence, clock edges, geometry/layout, runtime intent/renewal, landmark deadlines/cancellation/restart, journal retention and volume/media policies. | Standalone executables use WatchKit boundary doubles; they cannot establish watchOS acceptance or physical effects. |
 | Python tooling | Device command failures/retries, journal summaries, build inspection, action/evidence classification and suite result handling. | Device/process boundaries are faked. Test success is not a successful transfer or deployment. |
-| Build/archive | Simulator compilation, website QR decoding, bundled policy/license/website resource checks, and structural inspection of development and future distribution archives. | Unsigned archive success is not signed distribution, installation, launch or App Store validation. QR decoding is not a physical camera test. |
+| Build/archive | Simulator compilation, website QR decoding, bundled policy/license/website resources, exact reviewed privacy-manifest declarations, and structural inspection of development/distribution archives. Signed export checks inspect the Watch manifest again in the IPA. | Manifest comparison is not an API-usage audit or Apple privacy approval. Unsigned success is not signed distribution, installation or App Store validation. QR decoding is not a physical camera test. |
+
+The manifest check rejects missing, unreadable or changed tracking/data-collection
+declarations and omitted, duplicate or unexpected required-reason entries. Update
+the reviewed policy and validator together when data or API use changes. Build 31's
+existing archive/export already has the expected manifest; build 32 adds enforcement
+at both artifact boundaries rather than correcting a shipped privacy declaration.
 
 GitHub Actions runs the noninteractive verification with its recorded toolchain.
 See [build evidence](BUILD_VERIFICATION.md) for retained artifacts. It does not
@@ -71,7 +77,8 @@ journals and logs private under ignored `work/`.
 - Simulator Lock can exercise reduced luminance. It does not establish display
   cadence, physical haptics, wet-finger usability, battery use or class-length
   runtime reliability on a Watch.
-- Build 16 remains the physical teaching checkpoint. Simulator reset authority
+- Build 16 remains a preserved rollback checkpoint; [current status](../DEVELOPMENT_STATUS.md)
+  identifies the actual installed build. Simulator reset authority
   does not authorize a Watch install. Signed/TestFlight deployment and journal
   access remain separately verified workflows.
 

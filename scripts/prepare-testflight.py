@@ -100,6 +100,7 @@ def export_checks(ipa, output, team):
     watch = watches[0]
     checks = package_checks(plistlib.loads((container / 'Info.plist').read_bytes()),
                             plistlib.loads((watch / 'Info.plist').read_bytes()))
+    checks['watchPrivacyManifestMatchesPolicy'] = artifact.privacy_manifest_matches_policy(watch)
     signatures = {}
     profiles = {}
     entitlements = {}

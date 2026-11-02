@@ -1,9 +1,13 @@
 # SPDX-License-Identifier: MPL-2.0
 import importlib.util
 from pathlib import Path
+import plistlib
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('verify_build', Path(__file__).resolve().parents[1] / 'scripts/verify-build.py')
 build = importlib.util.module_from_spec(spec)
@@ -30,6 +34,75 @@ artifact = importlib.util.module_from_spec(inspect_spec)
 inspect_spec.loader.exec_module(artifact)
 
 class ArtifactChecks(unittest.TestCase):
+    def test_privacy_manifest_requires_reviewed_policy_and_valid_schema(self):
+        root = Path(__file__).resolve().parents[1]
+        reviewed = plistlib.loads((root / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes())
+        with tempfile.TemporaryDirectory() as folder:
+            app = Path(folder)
+            path = app / 'PrivacyInfo.xcprivacy'
+            path.write_bytes(plistlib.dumps(reviewed))
+            self.assertTrue(artifact.privacy_manifest_matches_policy(app))
+            reordered = dict(reviewed, NSPrivacyAccessedAPITypes=list(reversed(reviewed['NSPrivacyAccessedAPITypes'])))
+            path.write_bytes(plistlib.dumps(reordered, fmt=plistlib.FMT_BINARY))
+            self.assertTrue(artifact.privacy_manifest_matches_policy(app))
+            cases = [
+                [],
+                {key: value for key, value in reviewed.items() if key != 'NSPrivacyTracking'},
+                dict(reviewed, NSPrivacyTracking=True),
+                dict(reviewed, NSPrivacyTracking=0),
+                dict(reviewed, NSPrivacyTrackingDomains=['example.invalid']),
+                dict(reviewed, NSPrivacyCollectedDataTypes=[{}]),
+                dict(reviewed, NSPrivacyCollectedDataTypes={}),
+                dict(reviewed, NSPrivacyAccessedAPITypes={}),
+                dict(reviewed, NSPrivacyAccessedAPITypes=[]),
+                dict(reviewed, NSPrivacyAccessedAPITypes=[reviewed['NSPrivacyAccessedAPITypes'][0]] * 2),
+                dict(reviewed, unexpectedKey=[]),
+            ]
+            for field, value in [('NSPrivacyAccessedAPITypeReasons', []),
+                                 ('NSPrivacyAccessedAPITypeReasons', 'CA92.1'),
+                                 ('NSPrivacyAccessedAPITypeReasons', ['1C8F.1']),
+                                 ('NSPrivacyAccessedAPITypeReasons', ['CA92.1', 'CA92.1']),
+                                 ('NSPrivacyAccessedAPIType', 'NSPrivacyAccessedAPICategoryDiskSpace'),
+                                 ('unexpectedKey', [])]:
+                entries = [dict(item) for item in reviewed['NSPrivacyAccessedAPITypes']]
+                entries[0][field] = value
+                cases.append(dict(reviewed, NSPrivacyAccessedAPITypes=entries))
+            for index, invalid in enumerate(cases):
+                with self.subTest(case=index):
+                    path.write_bytes(plistlib.dumps(invalid))
+                    self.assertFalse(artifact.privacy_manifest_matches_policy(app))
+
+    def test_archive_rejects_missing_or_malformed_bundled_privacy_manifest(self):
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as folder:
+            archive = Path(folder) / 'TeachingTimer.xcarchive'
+            app = archive / 'Products/Applications/TeachingTimer.app'
+            app.mkdir(parents=True)
+            info = dict(CFBundleIdentifier='com.qayshp.TeachingTimer', CFBundleShortVersionString='1.0',
+                        CFBundleVersion='31', CFBundleExecutable='TeachingTimer', WKWatchOnly=True)
+            (app / 'Info.plist').write_bytes(plistlib.dumps(info))
+            (app / 'TeachingTimer').touch()
+            (app / 'BuildInfo.plist').write_bytes(plistlib.dumps({'revision': 'abcdef'}))
+            shutil.copytree(root / 'TeachingTimer/Information', app / 'Information')
+            shutil.copy2(root / 'LICENSE', app / 'LICENSE')
+            shutil.copy2(root / 'docs/PRIVACY.md', app / 'PRIVACY.md')
+            manifest = app / 'PrivacyInfo.xcprivacy'
+            cases = [None, b'not a plist', b'<?xml version="1.0"?><plist><dict>',
+                     plistlib.dumps({'NSPrivacyTracking': False}),
+                     (root / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes()]
+            for index, contents in enumerate(cases):
+                with self.subTest(case=index):
+                    if contents is not None:
+                        manifest.write_bytes(contents)
+                    with patch.object(artifact, 'command', return_value=subprocess.CompletedProcess(
+                            [], 0, b'UUID: FIXTURE (arm64) fixture\n', b'')):
+                        result = artifact.inspect(archive)
+                    expected = index == len(cases) - 1
+                    self.assertEqual(result['checks']['privacyManifestMatchesPolicy'], expected)
+                    self.assertEqual(all(result['checks'].values()), expected)
+                    self.assertTrue(all(value for key, value in result['checks'].items()
+                                        if key != 'privacyManifestMatchesPolicy'))
+
     def test_information_pages_require_documents_and_qr_assets(self):
         import shutil
         root = Path(__file__).resolve().parents[1]
@@ -66,6 +139,8 @@ class ArtifactChecks(unittest.TestCase):
             (app / 'Info.plist').write_bytes(plistlib.dumps(info))
             (app / 'TeachingTimer').touch()
             (app / 'BuildInfo.plist').write_bytes(plistlib.dumps({'revision': 'abcdef-dirty'}))
+            shutil.copy2(Path(__file__).resolve().parents[1] / 'TeachingTimer/PrivacyInfo.xcprivacy',
+                         app / 'PrivacyInfo.xcprivacy')
             with patch.object(artifact, 'command', return_value=subprocess.CompletedProcess([], 1, b'', b'')):
                 result = artifact.inspect(app)
             self.assertTrue(all(result['checks'].values()))

@@ -7,10 +7,43 @@ import json
 from pathlib import Path
 import plistlib
 import subprocess
+from xml.parsers.expat import ExpatError
 
 
 def command(*args):
     return subprocess.run(list(map(str, args)), capture_output=True, timeout=30)
+
+
+def privacy_manifest_matches_policy(app):
+    """Check the bundled manifest against TeachingTimer's reviewed policy.
+
+    This is deliberately narrower than Apple's schema. Revisit this check and
+    TeachingTimer/PrivacyInfo.xcprivacy together if data use or required APIs
+    change; passing it is not an API-usage audit or App Store approval.
+    """
+    try:
+        manifest = plistlib.loads((app / 'PrivacyInfo.xcprivacy').read_bytes())
+    except (OSError, ValueError, plistlib.InvalidFileException, ExpatError):
+        return False
+    if not isinstance(manifest, dict) or set(manifest) != {
+            'NSPrivacyTracking', 'NSPrivacyTrackingDomains',
+            'NSPrivacyCollectedDataTypes', 'NSPrivacyAccessedAPITypes'}:
+        return False
+    if (manifest['NSPrivacyTracking'] is not False
+            or manifest['NSPrivacyTrackingDomains'] != []
+            or manifest['NSPrivacyCollectedDataTypes'] != []):
+        return False
+    expected = [
+        {'NSPrivacyAccessedAPIType': 'NSPrivacyAccessedAPICategoryUserDefaults',
+         'NSPrivacyAccessedAPITypeReasons': ['CA92.1']},
+        {'NSPrivacyAccessedAPIType': 'NSPrivacyAccessedAPICategorySystemBootTime',
+         'NSPrivacyAccessedAPITypeReasons': ['35F9.1']},
+    ]
+    entries = manifest['NSPrivacyAccessedAPITypes']
+    # Order is immaterial, but omissions, duplicates and additional declarations
+    # require review rather than silently changing the shipped privacy policy.
+    return (isinstance(entries, list) and len(entries) == len(expected)
+            and all(entries.count(item) == 1 for item in expected))
 
 
 def information_resources_present(app):
@@ -54,7 +87,8 @@ def inspect(path):
     revision = plistlib.loads(metadata.read_bytes()).get('revision') if metadata.exists() else None
     checks = {'watchOnly': info.get('WKWatchOnly') is True,
               'binaryPresent': (app / info['CFBundleExecutable']).is_file(),
-              'revisionRecorded': bool(revision)}
+              'revisionRecorded': bool(revision),
+              'privacyManifestMatchesPolicy': privacy_manifest_matches_policy(app)}
     container_info = plistlib.loads((container / 'Info.plist').read_bytes()) if container else None
     if container_info:
         checks.update(containerIdentifierIsWatchPrefix=info['CFBundleIdentifier'].startswith(container_info['CFBundleIdentifier'] + '.'),
