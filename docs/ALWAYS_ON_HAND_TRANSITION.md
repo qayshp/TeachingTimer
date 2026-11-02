@@ -139,11 +139,51 @@ FB25329087. This does not establish that a newer runtime is unavailable from App
 it records the installed test environment. The newer-runtime/hardware part of
 roadmap item 22 remains deferred.
 
-## November 2 status
+## November 2: watchOS 27.2 reproduction
 
 The October 28 runtime limitation above is historical. Xcode 27.2 and watchOS
 27.2 (24S118) are now available locally; the [newer-runtime app pass](RUNTIME_27_2_VALIDATION.md)
-records UI/action and paired-media checks. It did not repeat this clock-probe
-experiment. A controlled transition comparison on that runtime and a physical
-Watch remain open; neither app UI success nor a newer installed SDK proves the
-seconds-hand backstep is fixed.
+records separate UI/action and paired-media checks. A new SE 3 40 mm recording
+of the standalone clock probe reproduced two backward whole-second ticks. The
+variant used ordinary `Path` drawing, a fixed epoch schedule and yellow/white
+normal/reduced-luminance colors. No TeachingTimer class, runtime, media, volume
+or landmark state was present.
+
+The 39.88-second recording contains 174 samples at 324×394 pixels, with strictly
+increasing presentation timestamps. Bright-pixel hand-angle measurements flagged
+the reversals; the exact decoded before/after and recovery frames were then
+visually inspected. Small rasterization differences were not counted as ticks.
+
+| Video time, before → backward frame | Clockwise angle from 12 o'clock | Return to the previous angle |
+| --- | --- | --- |
+| 12.295 → 12.400 seconds | 54.003° → 47.999°, about −6° | About 0.907 seconds later |
+| 31.715 → 31.722 seconds | 167.994° → 161.999°, about −6° | About 0.587 seconds later |
+
+The first event's exact decoded frames are reproduced below. Both hands are
+white, so this is a geometric reversal rather than solely a color change.
+
+| Before: 12.295 s, about 54° | After: 12.400 s, about 48° |
+| --- | --- |
+| ![White seconds hand before the reversal](images/v1-review/clock27_2-before.png) | ![White seconds hand one tick backward](images/v1-review/clock27_2-after.png) |
+
+**Transition direction matters.** Both reversals occurred just before the hand
+changed from white to yellow, suggesting the wake-side transition in this run.
+The recorded input sequence contains four Lock/tap pairs, but intermediate taps
+did not produce a measured return to yellow. Later Lock commands may have toggled
+the display back toward normal luminance. Input dispatch is not confirmation of
+the resulting screen state: this is not evidence of four completed Lock/wake
+cycles or a wrist-down-only reversal. Command elapsed time was not independently
+calibrated against video time; the frame/color sequence does not depend on that
+alignment.
+
+This newer-runtime result again shows that a moving timeline anchor and
+TeachingTimer's other features are not necessary for the recorded symptom. It
+does not establish whether the cause is stale/future timeline dates, pre-rendered
+frame ordering, snapshots, or another framework behavior. No timeline-date trace
+was collected in this pass, no production fix was adopted, and no physical-Watch
+comparison was performed.
+
+The evidence is ready to add to existing **FB25329087**; this November 2 update
+has **not been sent**. Original video, frame measurements, command records and
+analysis remain private under `work/support/2026-11-02-v1-review/clock-probe/`.
+The public PNGs above are unchanged copies of decoded frames 46 and 47.
