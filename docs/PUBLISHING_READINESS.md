@@ -105,3 +105,7 @@ No upload, TestFlight installation or physical update has occurred.
 [Preparation, current gate and pilot checklist](TESTFLIGHT_PREPARATION.md).
 The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) awaits the approved
 address and a real delivery test. These remain release gates, not completed tests.
+
+November 2 follow-up: the account holder accepted the updated agreement. The
+internal-only build-28 IPA exported successfully and passed local package,
+profile, signature and entitlement checks. Upload/install remain pending.

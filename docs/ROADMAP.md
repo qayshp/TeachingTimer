@@ -3,8 +3,8 @@
 Updated November 2, 2026. Build 25 is installed and launched; October 31 classroom
 feedback confirms Settings/volume worked, while song progress still stalled and
 page switching recovered it. Build 27 adds Help/Privacy/About in Settings to the
-source. Build 28 adds separate TestFlight packaging/export validation; distribution
-provisioning is blocked by a pending developer agreement. Build 16 remains a preserved rollback checkpoint. Further
+source. Build 28 adds separate TestFlight packaging/export validation; a signed internal-only export is locally verified after developer agreement
+acceptance; upload and physical pilot remain pending. Build 16 remains a preserved rollback checkpoint. Further
 physical installations require authorization. Simulator work and repository
 changes do not count as physical validation.
 

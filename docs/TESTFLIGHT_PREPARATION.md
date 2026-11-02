@@ -62,7 +62,7 @@ A signed development archive is not a distribution export. A verified local IPA
 is not Apple server validation or proof of successful TestFlight installation.
 `readiness.json` keeps those stages separate, including on failures.
 
-## Current account gate
+## Account gate resolved November 2
 
 On November 2, the correctly packaged build-28 archive signed successfully.
 Distribution export then failed with Apple's **“PLA Update available”** response:
@@ -72,7 +72,12 @@ and Watch identifiers. Recheck provisioning after agreement acceptance; do not
 assume the profile messages are an independent certificate problem. No certificate
 was revoked, no agreement was accepted by automation, and no upload occurred.
 
-After the account gate clears, prepare a new clean-commit signed export. Confirm
+The account holder subsequently accepted the agreement. Export of the clean
+`ec809c2f12ed` build-28 archive then succeeded. Both distribution profiles,
+signatures and signed entitlements passed local verification. The IPA is marked
+internal-only; no upload or installation has occurred.
+
+Next, Confirm
 registration of both identifiers and an App Store Connect **iOS** app record for
 `net.qays.TeachingTimer` (the watch-only packaging identity). Name availability,
 record creation, export compliance, beta contact and server validation remain

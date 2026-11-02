@@ -87,7 +87,7 @@ def export_checks(ipa, output, team):
         if decoded.returncode != 0:
             raise ValueError('Cannot decode ' + kind + ' distribution profile')
         profiles[kind] = profile_checks(plistlib.loads(decoded.stdout), identifier, team)
-        signed_entitlements = artifact.command('codesign', '-d', '--entitlements', '-', app)
+        signed_entitlements = artifact.command('codesign', '-d', '--entitlements', ':-', app)
         if signed_entitlements.returncode != 0:
             raise ValueError('Cannot inspect ' + kind + ' signed entitlements')
         entitlements[kind] = entitlement_checks(plistlib.loads(signed_entitlements.stdout), identifier, team)

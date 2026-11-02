@@ -9,7 +9,7 @@ status. Dated investigations describe their original builds, not current behavio
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | No TestFlight upload or public release. Packaged archive signs locally; distribution export is blocked by Apple’s pending Program License Agreement. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | No TestFlight upload or public release. Signed internal-only IPA exported and locally verified after agreement acceptance. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -54,7 +54,8 @@ runtime journal records two scene transitions when Beta opens. The Simulator
 moves the Beta container directory during the update without losing saved data. This is
 an update rehearsal, not TestFlight delivery or physical journal-access proof.
 The signed packaged archive passes local signature/resource/symbol checks, but
-Apple’s agreement gate prevents an App Store distribution export. No physical
+the account holder subsequently accepted Apple’s agreement and the internal-only
+App Store distribution export passed signature, profile and entitlement checks. No physical
 app was installed, launched or removed. The [private intake plan](docs/PRIVATE_SUPPORT_PLAN.md)
 awaits the approved address and a delivery test. [Pilot procedure](docs/TESTFLIGHT_PREPARATION.md).
 
