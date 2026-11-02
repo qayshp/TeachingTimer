@@ -119,6 +119,26 @@ physical Watch. No TestFlight installation has been verified.
   journal retrieval and support handling before inviting additional testers.
   The current owner-only invitation does not establish those results.
 
+## Bundled asset provenance
+
+Verified November 2 on the current Mac toolchain: the shipping icon and all three
+website QR images regenerate byte-for-byte from tracked, MPL-noticed source.
+
+| Bundled asset | Source and verification |
+| --- | --- |
+| [App icon](../TeachingTimer/Assets.xcassets/AppIcon.appiconset/AppIcon.png) | [Geometry-only Swift drawing](../scripts/render-icon.swift), with no input artwork. Generator and image originated together in `adc78e3`; the image is unchanged. |
+| Privacy, source and support QR images | [QR generator](../scripts/information-qr.swift) uses [WebLinks.json](../TeachingTimer/Information/WebLinks.json). Regenerated images match and decode to the configured URLs. Physical camera scanning is still unverified. |
+
+The three [generated yoga concepts](design/icon-drafts/README.md) are documented
+drafts outside the app asset catalog. Choosing one is optional; the current
+candidate does not depend on them. This establishes technical provenance, not an
+independent rights determination for every image in the repository.
+
+For the final store screenshot set, retain each selected capture's app revision,
+build, OS, Watch size, original file/hash and any crop or composition. Historical
+investigation screenshots remain dated evidence; do not silently relabel them
+as current release captures.
+
 ## Runtime-use briefing for Apple — not submitted
 
 Teaching Timer is a standalone Watch clock for a yoga **teacher**, with wall-clock

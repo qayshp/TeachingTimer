@@ -30,7 +30,7 @@ support procedures from historical engineering notes.
 | Install/update pilot | Check separate container, cold start, update, state preservation, runtime intent and recovery on a physical Watch. |
 | Teaching reliability | Build 25 Settings/volume received positive October 31 class feedback; progress still froze and was recovered by swiping. Validate the release candidate and mitigation limits. Prioritize progress, blank media, Crown recovery and silencing. See supervised plan. |
 | Accessibility/form factors | Repeat current candidate UI checks on small/large screens. Physical VoiceOver, touch while teaching and Always-On remain separate gates. |
-| Store materials | Review metadata/privacy/export/age-rating answers against the final binary. Prepare screenshots without Simulator artifacts and confirm asset provenance. |
+| Store materials | Shipping icon/QR technical provenance is verified in the [asset record](DISTRIBUTION_METADATA.md#bundled-asset-provenance). Review metadata/privacy/export/age-rating answers against the final binary and prepare a final screenshot set with capture provenance. |
 
 [Metadata draft](DISTRIBUTION_METADATA.md) and [TestFlight procedure](TESTFLIGHT_PREPARATION.md)
 contain details. Keep the validated teaching installation available during the
