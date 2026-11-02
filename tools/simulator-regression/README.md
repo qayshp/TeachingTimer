@@ -102,7 +102,14 @@ this is observation, not an automatic retry or a visual success assertion.
 
 For bounded count/Lock/wake captures, use `timer_controls.py` with the same
 `--simulator`, `--app`, `--output` and explicit `--reset-test-app` arguments.
-It supports default-size SE 3 40 mm and Ultra 4 49 mm captures. A final full-duration count must finish normally while locked; its run ID and
+It supports default-size SE 3 40 mm and Ultra 4 49 mm captures. Dim/wake stages
+require explicit current-launch luminance observations from the app journals,
+ordered by monotonic launch time. The runner sends at most one Controls → Lock
+toggle, waits at most eight seconds for confirmation, and checks reported state
+before and after each labeled screenshot. A tap or inactive scene alone is not
+proof of dimming. Missing, stale or conflicting evidence fails the stage; saved
+transition records establish reported state, while pixels still need review.
+A final full-duration count must finish normally while locked; its run ID and
 completion deadline are checked. OCR and count
 outline measurements flag frames for review; they never prove disappearance,
 touchability or native audio behavior. See the [investigation and correction](../../docs/TIMER_CONTROL_INVESTIGATION.md).

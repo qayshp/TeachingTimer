@@ -8,6 +8,7 @@ audio or focus success is inferred from a journal event. Resets only the test ap
 import argparse
 from datetime import datetime, timezone
 import json
+import math
 import os
 from pathlib import Path
 import plistlib
@@ -18,6 +19,87 @@ from count_evidence import locked_count_evidence
 from run import checked, events_after, reset_test_app
 
 BUNDLE = 'com.qayshp.TeachingTimer'
+
+
+def luminance_observation(runtime, interface, launch_id):
+    """Latest explicit interface state for this launch, not a tap/scene guess.
+
+    Initial appearance is in the operational journal; transitions are in the
+    interface journal. Their ISO timestamps have only one-second resolution,
+    so order by the shared launch's monotonic elapsed field instead.
+    """
+    appearances = [e for e in runtime if e.get('event') == 'interface_appeared']
+    if not appearances or appearances[-1].get('details', {}).get('launchID') != launch_id:
+        return None
+    observations = []
+    for journal, events in [('RuntimeDiagnostics', runtime), ('InterfaceDiagnostics', interface)]:
+        for event in events:
+            fields = event.get('details', {})
+            if (fields.get('launchID') != launch_id or event.get('event') not in
+                    {'interface_appeared', 'luminance_changed', 'scene_state_changed'}):
+                continue
+            if fields.get('luminanceReduced') not in {'true', 'false'}:
+                continue
+            try:
+                elapsed = float(fields['launchElapsedSeconds'])
+            except (KeyError, TypeError, ValueError):
+                return None
+            if not math.isfinite(elapsed) or elapsed < 0:
+                return None
+            observations.append(dict(journal=journal, event=event['event'],
+                timestamp=event.get('timestamp'), launchID=launch_id,
+                launchElapsedSeconds=elapsed, luminanceReduced=fields['luminanceReduced'] == 'true'))
+    if not observations:
+        return None
+    elapsed = max(e['launchElapsedSeconds'] for e in observations)
+    latest = [e for e in observations if e['launchElapsedSeconds'] == elapsed]
+    if len({e['luminanceReduced'] for e in latest}) != 1:
+        return None
+    return latest[-1]
+
+
+def ensure_luminance(reduced, read_journals, toggle, launch_id, *, timeout=8,
+                     monotonic=time.monotonic, sleep=time.sleep, report=None):
+    """Confirm journal state, issuing at most one Controls→Lock toggle if needed.
+
+    Missing or foreign-launch evidence never licenses a blind toggle. After a
+    toggle, only a newer desired observation can confirm it. This establishes
+    reported interface state, not pixel rendering or continuous visibility.
+    """
+    if not launch_id or not 0 < timeout <= 15:
+        raise ValueError('A current launch and a bounded 0–15 second timeout are required')
+    report = report if report is not None else {}
+    report.update(requestedReducedLuminance=reduced, launchID=launch_id,
+                  status='waiting_for_observation', toggleCount=0)
+    deadline = monotonic() + timeout
+    before = None
+    while True:
+        observed = luminance_observation(*read_journals(), launch_id)
+        report['lastObservation'] = observed
+        if observed:
+            if before is None:
+                before = observed
+                report['before'] = before
+                if observed['luminanceReduced'] == reduced:
+                    report.update(status='already_observed', after=observed)
+                    return report
+                report.update(status='toggle_requested', toggleCount=1)
+                try:
+                    toggle()
+                except Exception as error:
+                    report.update(status='failed', error=f'Toggle failed: {error}')
+                    raise
+            elif (observed['launchElapsedSeconds'] > before['launchElapsedSeconds']
+                  and observed['luminanceReduced'] == reduced):
+                report.update(status='confirmed_transition', after=observed)
+                return report
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            reason = ('No current-launch luminance observation' if before is None
+                      else 'No newer desired luminance observation after one toggle')
+            report.update(status='failed', error=reason)
+            raise RuntimeError(reason)
+        sleep(min(.2, remaining))
 
 
 def missing_labels(rows, counting):
@@ -92,14 +174,45 @@ def main():
         raise RuntimeError('Start menu not recognized')
     ui('tap', target['x'], target['y'])
     wait_event('RuntimeDiagnostics', 'runtime_started')
+    runtime_start = [e for e in events('RuntimeDiagnostics') if e['event'] == 'runtime_started'][-1]
+    launch_id = runtime_start['details']['launchID']
+    transitions = []
+    def display_state(reduced, stage):
+        report = dict(requestedStage=stage, requestedAt=datetime.now(timezone.utc).isoformat())
+        transitions.append(report)
+        try:
+            return ensure_luminance(reduced,
+                lambda: (events('RuntimeDiagnostics'), events('InterfaceDiagnostics')),
+                lambda: ui('lock'), launch_id, report=report)
+        finally:
+            (out / 'display-transitions.json').write_text(json.dumps(transitions, indent=2))
+    def observed_state():
+        return luminance_observation(events('RuntimeDiagnostics'), events('InterfaceDiagnostics'), launch_id)
+    def capture_display(name, reduced):
+        evidence = dict(requestedReducedLuminance=reduced, before=observed_state(),
+                        reportedDisplayStateConfirmed=False)
+        def save():
+            (out / (name + '-display-state.json')).write_text(json.dumps(evidence, indent=2))
+        save()
+        if evidence['before'] is None or evidence['before']['luminanceReduced'] != reduced:
+            raise RuntimeError('Requested display state not observed before ' + name)
+        rows = screenshot(name)
+        evidence['after'] = observed_state()
+        evidence['reportedDisplayStateConfirmed'] = (evidence['after'] is not None
+            and evidence['after']['luminanceReduced'] == reduced)
+        save()
+        if not evidence['reportedDisplayStateConfirmed']:
+            raise RuntimeError('Reported display state changed during ' + name)
+        return rows, evidence
     frames = []
-    def sample(stage, counting, count):
+    def sample(stage, counting, count, reduced=None):
         for index in range(count):
             name = f'{len(frames):03d}-{stage}'
             at = datetime.now(timezone.utc).isoformat()
-            rows = screenshot(name)
+            rows, display = capture_display(name, reduced) if reduced is not None else (screenshot(name), None)
             frames.append(dict(file=name+'.png', at=at, stage=stage,
                 missing=missing_labels(rows, counting), text=rows,
+                displayStateEvidence=display,
                 outline=json.loads(checked(out / 'control-outline', out / (name + '.png')))))
             (out / 'frames.json').write_text(json.dumps(frames, indent=2))
             time.sleep(1)
@@ -109,10 +222,10 @@ def main():
         ui('tap', .5, .76)
         wait_event('LandmarkDiagnostics', 'landmark_started', baseline)
         sample(f'count-{cycle}', True, 6)
-        ui('lock')
-        sample(f'locked-{cycle}', True, 4)
-        ui('tap', .5, .5)  # Wake without leaving the teaching face.
-        sample(f'awake-{cycle}', True, 3)
+        display_state(True, f'locked-{cycle}')
+        sample(f'locked-{cycle}', True, 4, reduced=True)
+        display_state(False, f'awake-{cycle}')
+        sample(f'awake-{cycle}', True, 3, reduced=False)
         baseline = events('LandmarkDiagnostics')
         ui('tap', .5, .76)
         wait_event('LandmarkDiagnostics', 'landmark_ended', baseline)
@@ -126,7 +239,7 @@ def main():
     if len(starts) != 1:
         raise RuntimeError('Expected one fresh full-count run')
     run_id = starts[0]['details']['runID']
-    ui('lock')
+    display_state(True, 'full-count-locked')
     until = time.monotonic() + 85
     completion = None
     while time.monotonic() < until:
@@ -136,9 +249,9 @@ def main():
             completion = matching[-1]
             break
         time.sleep(.5)
-    screenshot('full-count-locked-finish')
-    ui('tap', .5, .5)
-    screenshot('full-count-awake-finish')
+    capture_display('full-count-locked-finish', True)
+    display_state(False, 'full-count-awake-finish')
+    capture_display('full-count-awake-finish', False)
     if not completion or completion['details'].get('reason') != 'completed':
         raise RuntimeError('Locked count did not complete normally within bounded wait')
     configuration = starts[0]['details']
