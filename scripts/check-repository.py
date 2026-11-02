@@ -3,7 +3,10 @@
 """Check published repository structure without accessing devices or the network.
 
 Only tracked files are inspected: private work/ evidence and build outputs are
-intentionally excluded. Markdown fragments and remote URLs are not validated.
+intentionally excluded. Local Markdown heading fragments are checked for the
+repository's ATX headings (plain text and inline code), including duplicates.
+Remote URLs, non-Markdown fragments, reference links and custom HTML anchors
+are outside this bounded checker; it is not a general Markdown renderer.
 """
 import json
 from pathlib import Path
@@ -11,6 +14,7 @@ import plistlib
 import re
 import shlex
 import subprocess
+import unicodedata
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,6 +26,52 @@ PRIVATE_SUFFIXES = ('.p12', '.p8', '.mobileprovision', '.provisionprofile', '.ke
 GENERATED_DIRECTORIES = {'build', '.build', 'xcuserdata', '__pycache__'}
 GENERATED_BUNDLES = ('.app', '.xcarchive', '.logarchive', '.dSYM', '.xcresult')
 SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml'}
+FENCE = re.compile(r'^ {0,3}(`{3,}|~{3,})(.*)$')
+HEADING = re.compile(r'^ {0,3}#{1,6}(?:[ \t]+(.*)|[ \t]*)$')
+
+
+def without_fenced_code(text):
+    """Exclude fenced examples from both link and heading discovery."""
+    rendered = []
+    fence = None
+    for line in text.splitlines():
+        match = FENCE.match(line)
+        if fence is not None:
+            if (match and match[1][0] == fence[0] and len(match[1]) >= len(fence)
+                    and not match[2].strip()):
+                fence = None
+            continue
+        if match and (match[1][0] == '~' or '`' not in match[2]):
+            fence = match[1]
+            continue
+        rendered.append(line)
+    return '\n'.join(rendered)
+
+
+def heading_fragments(body):
+    """GitHub IDs for the ATX heading forms used in this repository.
+
+    Formatting backticks and punctuation disappear; hyphens/underscores remain.
+    Spaces become hyphens individually, so removing an em dash can leave two.
+    Duplicate IDs are allocated in document order, including numbered collisions.
+    The caller supplies text with fenced examples already removed.
+    """
+    fragments = set()
+    for line in body.splitlines():
+        match = HEADING.match(line)
+        if not match:
+            continue
+        heading = re.sub(r'[ \t]+#+[ \t]*$', '', match[1] or '').strip()
+        slug = ''.join(character for character in heading.lower()
+                       if character in ' -_' or unicodedata.category(character)[0] in 'LMN')
+        slug = slug.replace(' ', '-')
+        candidate = slug
+        suffix = 0
+        while candidate in fragments:
+            suffix += 1
+            candidate = f'{slug}-{suffix}'
+        fragments.add(candidate)
+    return fragments
 
 
 def private_artifact(name):
@@ -39,6 +89,14 @@ def check_files(root, paths):
     """Return actionable errors; paths are repository-relative tracked names."""
     errors = []
     published = set(paths)
+    documents = {}
+
+    def markdown(relative):
+        if relative not in documents:
+            body = without_fenced_code((root / relative).read_text())
+            documents[relative] = (body, heading_fragments(body))
+        return documents[relative]
+
     for name in sorted(published):
         path = root / name
         if not path.is_file():
@@ -57,15 +115,14 @@ def check_files(root, paths):
                 if 'SPDX-License-Identifier: MPL-2.0' not in '\n'.join(path.read_text().splitlines()[:10]):
                     errors.append(f'{name}: missing MPL source notice')
             elif path.suffix == '.md':
-                # Examples inside fenced code are not links in the rendered document.
-                body = re.sub(r'^```[^\n]*\n.*?^```\s*$', '', path.read_text(), flags=re.M | re.S)
+                body, _ = markdown(name)
                 targets = [m[1].strip('<>') for m in LINK.finditer(body)]
                 targets.extend(HTML_LINK.findall(body))
                 for target in targets:
                     url = urlsplit(target)
-                    if url.scheme or url.netloc or not url.path:
+                    if url.scheme or url.netloc:
                         continue
-                    resolved = (path.parent / unquote(url.path)).resolve()
+                    resolved = (path.parent / unquote(url.path)).resolve() if url.path else path.resolve()
                     try:
                         relative = resolved.relative_to(root.resolve()).as_posix()
                     except ValueError:
@@ -73,6 +130,11 @@ def check_files(root, paths):
                         continue
                     if relative not in published and not any(p.startswith(relative.rstrip('/') + '/') for p in published):
                         errors.append(f'{name}: link is not in published repository: {target}')
+                        continue
+                    if url.fragment and relative in published and resolved.suffix == '.md':
+                        _, fragments = markdown(relative)
+                        if unquote(url.fragment) not in fragments:
+                            errors.append(f'{name}: heading fragment not found in {relative}: {target}')
         except (ValueError, OSError, UnicodeError, SyntaxError, plistlib.InvalidFileException) as error:
             errors.append(f'{name}: {type(error).__name__}: {error}')
     # Every top-level guide needs an entry point; dated subdirectories remain archives.
@@ -98,7 +160,7 @@ def main():
     errors = check_files(ROOT, [p for p in paths if p])
     if errors:
         raise SystemExit('\n'.join(errors))
-    print('Repository checks passed: tracked local Markdown links, JSON/plists, source notices and private-artifact exclusions.')
+    print('Repository checks passed: tracked local Markdown links and heading fragments, JSON/plists, source notices and private-artifact exclusions.')
 
 
 if __name__ == '__main__':

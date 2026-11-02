@@ -19,7 +19,7 @@ complete verification for a candidate. The output directory must be new.
 
 | Layer | Automated coverage | Boundary |
 | --- | --- | --- |
-| Repository | Tracked local Markdown targets, source notices, Python syntax, JSON/plist parsing, standalone Swift suite wiring and private/generated-file exclusions. | Does not validate remote URLs or Markdown heading fragments, prove legal compliance, or inspect ignored private evidence. |
+| Repository | Tracked local Markdown targets and heading fragments, source notices, Python syntax, JSON/plist parsing, standalone Swift suite wiring and private/generated-file exclusions. | Heading checks cover the repository's ATX/plain-text/inline-code forms, including duplicate IDs. Remote URLs, non-Markdown fragments, reference links and other heading syntax remain outside this bounded checker; it is not a general Markdown renderer or legal audit. |
 | Swift models/controllers | Class anchoring/persistence, clock edges, geometry/layout, runtime intent/renewal, landmark deadlines/cancellation/restart, journal retention and volume/media policies. | Standalone executables use WatchKit boundary doubles; they cannot establish watchOS acceptance or physical effects. |
 | Python tooling | Device command failures/retries, journal summaries, build inspection, action/evidence classification and suite result handling. | Device/process boundaries are faked. Test success is not a successful transfer or deployment. |
 | Build/archive | Simulator compilation, website QR decoding, bundled policy/license/website resources, exact reviewed privacy-manifest declarations, and structural inspection of development/distribution archives. Signed export checks inspect the Watch manifest again in the IPA. | Manifest comparison is not an API-usage audit or Apple privacy approval. Unsigned success is not signed distribution, installation or App Store validation. QR decoding is not a physical camera test. |
@@ -29,6 +29,12 @@ declarations and omitted, duplicate or unexpected required-reason entries. Updat
 the reviewed policy and validator together when data or API use changes. Build 31's
 existing archive/export already has the expected manifest; build 32 adds enforcement
 at both artifact boundaries rather than correcting a shipped privacy declaration.
+
+Local heading checks now catch the clock-investigation link typo that file-only
+validation missed. Fixtures cover same-document links, duplicate/colliding IDs,
+encoded fragments and fenced examples. Extend the checker before relying on
+Setext headings, custom HTML anchors or richer heading markup in a linked target.
+Private ignored evidence is outside repository validation.
 
 GitHub Actions runs the noninteractive verification with its recorded toolchain.
 See [build evidence](BUILD_VERIFICATION.md) for retained artifacts. It does not

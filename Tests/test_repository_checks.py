@@ -22,7 +22,7 @@ class RepositoryChecks(unittest.TestCase):
         return name
 
     def test_published_links_and_encoded_paths(self):
-        names = [self.write('docs/readme.md', '[source](../code.py#part) [image](<two words.png>) [section](#section) [site](https://example.com/missing) [folder](../docs/)'),
+        names = [self.write('docs/readme.md', '## Section\n[source](../code.py#part) [image](<two words.png>) [section](#section) [site](https://example.com/missing) [folder](../docs/)'),
                  self.write('code.py', '# SPDX-License-Identifier: MPL-2.0'), self.write('docs/two words.png', '')]
         self.assertEqual(checker.check_files(self.root, names), [])
         self.write('docs/readme.md', '![encoded](two%20words.png)')
