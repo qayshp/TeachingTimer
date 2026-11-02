@@ -22,6 +22,9 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     private var runtimeSession: WKExtendedRuntimeSession?
     private var renewalPending = false
     private var stopRequested = false
+    // An explicit Start may arrive while the previous session is still ending.
+    // Bind it to its class so an old callback cannot start a replacement class.
+    private var pendingExplicitStartClassID: Date?
     private let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "net.qays.TeachingTimer", category: "Runtime")
     private let diagnostics: RuntimeDiagnostics
     private let intentStore: RuntimeIntentStore
@@ -154,8 +157,16 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         if classWasSynchronized {
             guard let classContext, !classContext.shouldRetire(at: Date()) else { return }
         }
-        if !automatically { saveIntent(.running) }
+        if !automatically {
+            saveIntent(.running)
+            if stopRequested, runtimeSession != nil, let classContext {
+                pendingExplicitStartClassID = classContext.initialStartPressedAt
+                record("start_deferred_until_invalidation")
+                return
+            }
+        }
         guard !isActive, runtimeSession == nil else { return }
+        pendingExplicitStartClassID = nil
         let parentID = runtimeID
         automaticReplacement = automatically
         expirationWarningReceived = false
@@ -184,6 +195,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         replacement.start()
     }
     func stop(source: String = "runtime_button", details: [String: String] = [:]) {
+        pendingExplicitStartClassID = nil
         saveIntent(.stopped)
         record("stop_requested", extra: details.merging(["source": source]) { _, source in source })
         stopRequested = true
@@ -200,6 +212,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
             recordPersistenceEvents(intentStore.takePersistenceEvents())
             return
         }
+        if startPendingExplicitRequestIfReady() { return }
         if attemptEarlyHandoff() { return }
         guard renewalPending, renewalPolicy == .automatic, runtimeSession == nil, !stopRequested else { return }
         guard WKApplication.shared().applicationState == .active else { return }
@@ -217,6 +230,9 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         classContext = context
         classWasSynchronized = true
         guard changed else { return }
+        if pendingExplicitStartClassID != context?.initialStartPressedAt {
+            pendingExplicitStartClassID = nil
+        }
         guard let context, !context.shouldRetire(at: Date()) else {
             if isActive || renewalPending { stop(source: "recovery_no_current_class") }
             intentStore.save(nil)
@@ -246,6 +262,25 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         guard let context = classContext else { return }
         intentStore.save(RuntimeIntent(classID: context.initialStartPressedAt, state: state))
         recordPersistenceEvents(intentStore.takePersistenceEvents())
+    }
+
+    @discardableResult
+    private func startPendingExplicitRequestIfReady() -> Bool {
+        guard let requestedClassID = pendingExplicitStartClassID else { return false }
+        guard let classContext, classContext.initialStartPressedAt == requestedClassID,
+              !classContext.shouldRetire(at: Date()),
+              intentStore.value?.classID == requestedClassID,
+              intentStore.value?.state == .running else {
+            pendingExplicitStartClassID = nil
+            return false
+        }
+        // The old invalidation and the next active callback may arrive in either
+        // order. Keep one explicit request until both conditions are satisfied.
+        guard runtimeSession == nil, WKApplication.shared().applicationState == .active else { return true }
+        pendingExplicitStartClassID = nil
+        record("deferred_explicit_start_ready")
+        start()
+        return true
     }
 
     @discardableResult
@@ -330,7 +365,11 @@ extension ExtendedRuntimeController: WKExtendedRuntimeSessionDelegate {
                     (earlyEnd ? "early_handoff" : (expirationError ? "expiration_associated_error" : reasonName)))])
             runtimeSession = nil
             earlyHandoffRequested = false
-            if stopRequested { phase = .stopped; return }
+            if stopRequested {
+                phase = .stopped
+                startPendingExplicitRequestIfReady()
+                return
+            }
             needsRestart = true
             if eligible {
                 phase = reason == .expired ? .expired : .interrupted

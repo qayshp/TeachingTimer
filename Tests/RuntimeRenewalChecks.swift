@@ -199,6 +199,74 @@ final class WKExtendedRuntimeSession {
         inFlight.end(.none); await drain(); starting.applicationBecameActive()
         assert(starting.phase == .stopped && WKExtendedRuntimeSession.instances.last === inFlight)
         assert(starting.actionTitle(hasClass: true) == "Start session")
+        // End class and immediately Start a new class before the old session's
+        // invalidation callback arrives. The explicit Start must wait, not vanish
+        // or overlap the old object. Exercise both start-in-flight and running
+        // predecessors, and either order of invalidation / active callbacks.
+        for oldDidStart in [false, true] {
+            for inactiveAtInvalidation in [false, true] {
+                let queued = try controller()
+                let previousClass = ClassContext(pressedAt: Date(), scheduledStart: Date())
+                queued.synchronizeClass(previousClass)
+                queued.start()
+                let ending = WKExtendedRuntimeSession.instances.last!
+                if oldDidStart { ending.confirmStart(); await drain() }
+                queued.stop(source: "new_class_reset")
+                queued.synchronizeClass(nil)
+                let nextClass = ClassContext(pressedAt: previousClass.initialStartPressedAt.addingTimeInterval(1),
+                                             scheduledStart: Date())
+                queued.synchronizeClass(nextClass)
+                queued.start(); queued.start() // Duplicate taps cannot queue two objects.
+                let beforeQueuedStart = WKExtendedRuntimeSession.instances.count
+                queued.applicationBecameActive()
+                assert(WKExtendedRuntimeSession.instances.count == beforeQueuedStart)
+                if !oldDidStart {
+                    ending.confirmStart(); await drain()
+                    assert(ending.invalidationRequests == 1)
+                }
+                if inactiveAtInvalidation { WKApplication.shared().applicationState = .inactive }
+                ending.end(.none); await drain()
+                if inactiveAtInvalidation {
+                    assert(queued.phase == .stopped && WKExtendedRuntimeSession.instances.count == beforeQueuedStart)
+                    WKApplication.shared().applicationState = .active
+                    queued.applicationBecameActive()
+                }
+                assert(WKExtendedRuntimeSession.instances.count == beforeQueuedStart + 1)
+                let successor = WKExtendedRuntimeSession.instances.last!
+                successor.confirmStart(); await drain()
+                queued.applicationBecameActive(); ending.end(.none); await drain()
+                assert(queued.phase == .running && WKExtendedRuntimeSession.instances.last === successor)
+            }
+        }
+        // A later explicit Stop, reset, different class, or retirement cancels
+        // the queued request. The old callback must not resurrect that intent.
+        for cancellation in ["stop", "reset", "different_class", "retirement"] {
+            let queued = try controller()
+            let initial = ClassContext(pressedAt: Date(), scheduledStart: Date())
+            queued.synchronizeClass(initial)
+            queued.start()
+            let ending = WKExtendedRuntimeSession.instances.last!
+            ending.confirmStart(); await drain()
+            queued.stop()
+            let next = ClassContext(pressedAt: initial.initialStartPressedAt.addingTimeInterval(1),
+                                    scheduledStart: Date())
+            queued.synchronizeClass(next)
+            queued.start()
+            switch cancellation {
+            case "stop": queued.stop()
+            case "reset": queued.synchronizeClass(nil)
+            case "different_class":
+                queued.synchronizeClass(ClassContext(pressedAt: initial.initialStartPressedAt.addingTimeInterval(2),
+                                                      scheduledStart: Date()))
+            default:
+                queued.synchronizeClass(ClassContext(pressedAt: next.initialStartPressedAt,
+                                                      scheduledStart: Date().addingTimeInterval(-10000)))
+            }
+            let beforeCancelledStart = WKExtendedRuntimeSession.instances.count
+            ending.end(.none); await drain()
+            queued.applicationBecameActive(); await drain()
+            assert(queued.phase == .stopped && WKExtendedRuntimeSession.instances.count == beforeCancelledStart)
+        }
         // Process recreation restores *intent*, never a WatchKit object. The
         // same defaults suite models storage shared by successive launches.
         let suite = "TeachingTimerRecoveryChecks." + UUID().uuidString
@@ -313,5 +381,6 @@ final class WKExtendedRuntimeSession {
         observation.cancel()
         print("PASS: relaunch recovery, inactive deferral, duplicate activation, persistent Stop, manual resume, schedule edits, failed-start suppression across launches, legacy/missing/corrupt/mismatched/expired intent")
         print("PASS: early handoff ordering, inactive deferral, observed expiration error, rejected replacement no-loop, explicit reset, manual policy, narrow time/error boundaries, passive UI/runtime correlation")
+        print("PASS: explicit new-class Start survives pending old invalidation without overlap; Stop/reset/class changes/retirement cancel it")
     }
 }
