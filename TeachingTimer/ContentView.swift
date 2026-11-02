@@ -12,6 +12,9 @@ struct ContentView: View {
         case nowPlaying
     }
 
+    // Scene/luminance changes must not move the schedule into a future second.
+    private static let clockTimelineAnchor = Date(timeIntervalSince1970: 0)
+
     @ObservedObject var session: ExtendedRuntimeController
     @StateObject private var classStore = ClassStore()
     @StateObject private var landmarks = LandmarkController()
@@ -45,7 +48,7 @@ struct ContentView: View {
     }
 
     var body: some View {
-        TimelineView(.periodic(from: nextWholeSecond, by: 1)) { context in
+        TimelineView(.periodic(from: Self.clockTimelineAnchor, by: 1)) { context in
             TabView(selection: $page) {
                 SharedClockPage(
                     date: context.date,
@@ -180,10 +183,6 @@ struct ContentView: View {
         fields["mediaViewGeneration"] = String(mediaViewGeneration)
         // Appearance is a SwiftUI callback, not proof that pixels were visible.
         session.recordInterfaceEvent(event, details: fields)
-    }
-
-    private var nextWholeSecond: Date {
-        Date(timeIntervalSince1970: floor(Date().timeIntervalSince1970) + 1)
     }
 
     private func recreateMedia(reason: MediaReloadPolicy.Reason) {

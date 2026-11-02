@@ -5,7 +5,7 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (33), clean source `12772ccabb44`: narrow display normalization addresses the exact-Date boundary mechanism reproduced in the isolated clock probe. All 13 Swift suites, 117 Python tests, 21 full-app Simulator UI-action assertions and CI pass. Signed archive/export, Apple processing and owner-pilot assignment are complete. Physical validation remains open. |
+| Source candidate | 1.0 (34): combines a stable epoch schedule with build 33's narrow display normalization. The app compiles and passes 21 UI-action assertions plus a locked six-group count. A runtime-active video has no measured backward-tick candidate in 764 analyzed frames. Signed release/upload and physical validation remain pending; build 33 is the available owner pilot. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
@@ -39,9 +39,10 @@ status. Dated investigations describe their original builds, not current behavio
    Class timing survives. Build 31 defers the premature start and recovers on a
    later active wake in one matched Simulator trial. Broader callback orderings
    and physical behavior remain unverified.
-4. Seconds-hand backstep at dim/wake: an exact-Date boundary mechanism is now
-   reproduced in the probe; build 33 passes the bounded normalization comparison.
-   Physical validation and the Apple follow-up remain pending.
+4. Seconds-hand backstep at dim/wake: separate precision and moving-anchor
+   mechanisms are now captured in the probe. Build 34 combines the bounded
+   mitigations and passes bounded app integration checks. Physical validation
+   and the Apple follow-up remain pending.
 5. Physical TestFlight install/update/journal access, outbound support reply and
    attachment checks, and final publishing/review metadata.
 
@@ -49,6 +50,19 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 [roadmap](docs/ROADMAP.md), and [publishing readiness](docs/PUBLISHING_READINESS.md).
 
 ## Verification and deployment boundaries
+
+Build 34's [anchor comparison](docs/ALWAYS_ON_HAND_TRANSITION.md#build-34-follow-up-stable-schedule-anchor)
+keeps precision normalization enabled in both variants. Moving anchoring produced
+two matched input/pixel backsteps; the fixed epoch produced none. Each was one
+short recording with two confirmed dim/wake cycles. Future-batch returns remain
+valid and are not clamped. The app compiles and passes all 21 UI-action assertions.
+A 23.815-second runtime-active video has 764 analyzed frames with no ambiguous detections or
+backward-tick candidates; original frames confirm sampled dim/wake transitions
+and forward minute rollover. A locked count completed six groups at 64.82272075 s
+with runtime running and scene inactive. Its control/arc captures were reviewed;
+logged group completion does not prove physical haptic delivery. These bounded
+results do not establish a physical fix. Signed release/upload for build 34
+remain pending; build 33's completed release record below is unchanged.
 
 Build 33's [clock comparison](docs/ALWAYS_ON_HAND_TRANSITION.md#build-33-candidate--bounded-simulator-validation)
 captures raw Dates one representable step below a whole second. The shared

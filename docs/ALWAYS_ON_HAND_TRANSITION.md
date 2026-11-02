@@ -263,3 +263,66 @@ Internal and assigned to the owner pilot. Physical validation remains pending.
 The physical teaching installation remains build 25 and was untouched.
 An Apple follow-up draft records this narrower diagnosis, but this evidence has
 **not been submitted** to FB25329087.
+
+## Build 34 follow-up: stable schedule anchor
+
+A separate comparison enabled the same boundary normalization in both variants
+and changed only the schedule anchor: recompute the next whole second during
+parent evaluation, or retain the fixed epoch. Each short pass recorded two
+actual dim/wake cycles, confirmed by luminance traces.
+
+| Normalized variant | Captured evaluations | Video samples / duration | Measured backward ticks |
+| --- | ---: | --- | ---: |
+| Moving anchor | 231 | 192 frames / 23.7617 s | 2 |
+| Fixed epoch | 234 | 170 frames / 23.7333 s | 0 |
+
+The moving-anchor trace and reviewed pixels agree on evaluation IDs 6 → 7
+(18 → 17; frames 59 → 60) and 120 → 121 (29 → 28; frames 148 → 149).
+The context first led wall time by about 0.60 or 0.67 seconds, then returned to
+an ordinary fractional date about 43 or 42 ms behind wall time. These near-live
+context regressions were about 82 and 165 ms, not one-representable-step errors.
+The narrow precision normalization correctly leaves those fractional inputs
+alone; it cannot fix the moving schedule's premature next-second input.
+
+The fixed-anchor pass had no near-live input regression. It exercised 112
+below-boundary component corrections, so precision normalization still mattered.
+Both captures also contained two returns from batches of future requests to
+current time. Those request-order changes are legitimate preparation boundaries,
+not additional displayed reversals; they were not clamped. Original traces,
+videos and `clock-anchor-numeric-analysis.{json,md}` remain private under
+`work/support/2026-11-02-v1-review/`.
+
+This is one short pass per variant with instrumentation, not a universal or
+physical-Watch result. It separates the moving-anchor mechanism from the
+precision mechanism: the earlier raw fixed-anchor failures did not establish
+that combining a stable anchor with narrow precision normalization would fail.
+
+Build 34 now combines the fixed epoch schedule with build 33's display helper.
+It compiles and passes all 21 full-app Simulator UI-action assertions. A separate
+23.815-second runtime-active recording contains 764 analyzed frames, with no
+ambiguous hand detections or backward steps. It shows 24 forward 6° ticks,
+including 59 → 0; spacing is approximately 0.97–1.03 seconds, median one second.
+Reviewed original frames also show white → yellow at the same second 43 and
+yellow → white at second 49.
+
+The interface journal confirms two dim entries and two wake returns, starting
+already dim. All eight new events retain the same running runtime ID/start,
+class identity and running intent, with intentional Stop false and timer page
+selected. No invalidation, expiry or replacement is recorded. The landmark
+file is byte-identical before/after this video. There is no independent
+preference snapshot for this segment, so it does not prove all saved schedule
+fields were byte-identical. This was Debug revision `efb06367ef76-dirty`, before
+the later clean release artifact; the private audit is under
+`work/support/2026-11-02-v1-review/candidate34-clock-analysis/`.
+
+A locked-count run completed all six groups at 64.82272075 monotonic seconds,
+with runtime running while the scene was inactive. Its evidence check passed;
+33 control captures had no outline warnings. There were 26 OCR warnings, so
+text recognition alone was not treated as proof of missing controls. Reviewed
+captures show visible controls and advancing monochrome count progress. Logged
+group completion is not proof of physical haptic delivery.
+
+These bounded integration results support the combined candidate, not a
+guarantee for every transition or physical Watch. Signed release/upload for
+build 34 remain pending. Build 33 remains the available owner pilot; physical
+build 25 is untouched. No new Apple update or physical fix is claimed.

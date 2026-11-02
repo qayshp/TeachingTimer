@@ -198,3 +198,18 @@ Apple processing. Build 33 is Ready to Test / Internal; its notes and one-owner
 pilot assignment survived reload. Physical build 25 remains untouched, and Beta
 install/update/journal checks remain open. No physical fix or universal cause
 is established, and no new Apple update was sent.
+
+## Build 34 stable-anchor integration
+
+Build 34 combines the existing narrow precision helper with a fixed epoch
+schedule after a normalized moving/fixed probe comparison reproduced two
+moving-anchor backsteps and none with the fixed epoch. Full-app integration
+passes all 21 UI-action assertions and a locked six-group count, completing
+near 64.823 seconds with runtime running while the scene was inactive. A separate
+23.815-second runtime-active recording has 764 analyzed frames and no ambiguous detections or
+backward-tick candidates; reviewed original frames cover dim/wake and forward
+minute rollover. See the [comparison and limitations](ALWAYS_ON_HAND_TRANSITION.md#build-34-follow-up-stable-schedule-anchor).
+
+This is bounded Simulator evidence, not physical haptic/clock validation or a
+universal fix. Build 34's signed release/upload remain pending; build 33 remains
+the available owner pilot and physical build 25 is unchanged.

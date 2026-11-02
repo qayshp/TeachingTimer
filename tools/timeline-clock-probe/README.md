@@ -38,7 +38,8 @@ and yellow/white color for active/reduced luminance. Optional launch arguments:
 - `--canvas`: draw the same hand using Canvas.
 - `--constant-color`: keep the hand white in both states.
 - `--moving-anchor`: recompute the next-whole-second schedule anchor when the
-  parent body evaluates, matching TeachingTimer's current schedule.
+  parent body evaluates, matching TeachingTimer through build 33. Build 34's
+  source candidate uses the default fixed epoch.
 - `--trace-render`: add the optional two-source rendering diagnostic below.
 - `--normalize-second-boundary`: compare the narrow display-boundary normalization
   described below. It is off by default; the raw baseline is retained.
@@ -51,8 +52,8 @@ xcrun simctl launch --terminate-running-process SIMULATOR_UDID \
 ```
 
 Expected: a hand ticking clockwise once per second, possibly at a slower system
-cadence in Always-On, without briefly reversing at a transition. The test is
-about frame ordering, not a guarantee of 1 Hz execution without extended runtime.
+cadence in Always-On, without briefly reversing at a transition. The test checks
+visible hand progression; it does not guarantee 1 Hz execution without extended runtime.
 Use the supplied timeline date; do not substitute current time or globally clamp
 dates because watchOS may request future frames before they are displayed.
 
@@ -134,6 +135,26 @@ replay matched all 234 records; 190 video frames over 24.283 s showed no measure
 backward whole tick. Build 33 also passes all 21 app UI-action assertions.
 These are Simulator results, not a physical-Watch fix claim or a guarantee
 against every transition defect.
+
+### Moving versus fixed anchor with normalization
+
+A separate short comparison enabled normalization in both variants. The moving
+anchor produced two pixel-confirmed backward ticks (18 → 17 and 29 → 28) in
+192 frames over 23.7617 s. The fixed epoch produced none in 170 frames over
+23.7333 s. Both runs completed two confirmed dim/wake cycles.
+
+The moving-anchor regressions are ordinary fractional context dates following
+a premature next-whole-second input, not one-step precision errors. The fixed
+pass still exercised 112 below-boundary corrections. Each run also returned
+twice from future-preparation batches to current time; these request-order
+changes are not extra visible backsteps. See the
+[comparison and limitations](../../docs/ALWAYS_ON_HAND_TRANSITION.md#build-34-follow-up-stable-schedule-anchor).
+One short pass per variant is not a universal fix claim. Build 34 compiles with
+the combined stable anchor and display helper, passes all 21 app UI-action
+assertions and completes a locked six-group count near 64.823 seconds. A separate
+23.815-second runtime-active app video has 764 analyzed frames with no ambiguous detections or
+backward-tick candidates; reviewed frames cover dim/wake and forward 59 → 0
+rollover. These remain bounded Simulator results, not physical validation.
 
 ## November 2, 2026 observation
 
