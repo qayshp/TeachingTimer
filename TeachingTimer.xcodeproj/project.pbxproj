@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        100000000000000000000024 = {isa = PBXBuildFile; fileRef = 200000000000000000000024; };
+        100000000000000000000025 = {isa = PBXBuildFile; fileRef = 200000000000000000000025; };
+        100000000000000000000026 = {isa = PBXBuildFile; fileRef = 200000000000000000000026; };
+        100000000000000000000023 /* AppInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000023; };
         100000000000000000000022 /* CompanionVolumeControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000022; };
         100000000000000000000021 /* RefreshableCompanionVolumeControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000021; };
         100000000000000000000020 /* ClassActionStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000020; };
@@ -33,6 +37,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+        200000000000000000000024 = {isa = PBXFileReference; lastKnownFileType = folder; path = Information; sourceTree = "<group>"; };
+        200000000000000000000025 = {isa = PBXFileReference; lastKnownFileType = text; path = ../docs/PRIVACY.md; sourceTree = "<group>"; };
+        200000000000000000000026 = {isa = PBXFileReference; lastKnownFileType = text; path = ../LICENSE; sourceTree = "<group>"; };
+        200000000000000000000023 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInformationView.swift; sourceTree = "<group>"; };
         200000000000000000000022 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionVolumeControl.swift; sourceTree = "<group>"; };
         200000000000000000000021 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshableCompanionVolumeControl.swift; sourceTree = "<group>"; };
         200000000000000000000020 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassActionStyle.swift; sourceTree = "<group>"; };
@@ -105,6 +113,10 @@
                 200000000000000000000021,
                 200000000000000000000020,
                 200000000000000000000019,
+                200000000000000000000023,
+                200000000000000000000024,
+                200000000000000000000025,
+                200000000000000000000026,
 				200000000000000000000004 /* Info.plist */,
 			);
 			path = TeachingTimer;
@@ -177,6 +189,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+                100000000000000000000024,
+                100000000000000000000025,
+                100000000000000000000026,
                 100000000000000000000013,
                 100000000000000000000014,
 			);
@@ -216,6 +231,7 @@
 				100000000000000000000016 /* MediaReloadPolicy.swift in Sources */,
 				100000000000000000000017 /* VolumeRefreshState.swift in Sources */,
                 100000000000000000000018 /* PersistenceDiagnostics.swift in Sources */,
+                100000000000000000000023 /* AppInformationView.swift in Sources */,
                 100000000000000000000022 /* CompanionVolumeControl.swift in Sources */,
                 100000000000000000000021 /* RefreshableCompanionVolumeControl.swift in Sources */,
                 100000000000000000000020 /* ClassActionStyle.swift in Sources */,
@@ -235,7 +251,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 27;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
                 ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -266,7 +282,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 27;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
                 ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

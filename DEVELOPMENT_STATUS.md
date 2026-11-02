@@ -1,11 +1,11 @@
 # Teaching Timer — current verification
 
-Updated with the October 31 classroom report. This is the authority for current build and validation
+Updated November 1, 2026, retaining the October 31 classroom report. This is the authority for current build and validation
 status. Dated investigations describe their original builds, not current behavior.
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (26): repository cleanup and Settings return-navigation fix; build/offline and SE 3 interactive action verification passed. |
+| Source candidate | 1.0 (27): Help, Privacy and About under Settings; build/offline checks and all 21 SE 3 interactive action assertions passed. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
@@ -16,7 +16,9 @@ status. Dated investigations describe their original builds, not current behavio
 - Two pages: squircle teaching clock and native Now Playing. Both clock hands
   remain wall-clock hands drawn above controls.
 - Settings is available before and during class: Count vibrations (next count)
-  and Minutes left. Preferences persist. See [build 25 screenshots](docs/SETTINGS_PASS_25.md).
+  and Minutes left. Preferences persist. Build 27 adds read-only Help, Privacy and
+  About destinations, including the running version/build, complete offline
+  policy/license and website addresses/QR codes. See [Settings screenshots and verification](docs/SETTINGS_PASS_25.md).
 - Native media refreshes on page entry, eligible background return, and active,
   undimmed wake after at least 30 seconds dimmed with a 60-second refresh cooldown.
   This is prevention, not failure detection. [Policy](docs/MEDIA_WAKE_REFRESH.md).
@@ -42,11 +44,15 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 
 ## Verification and deployment boundaries
 
-Build 26 passes 12 Swift suites, 85 Python tests, repository validation, Simulator
-compilation and unsigned development/distribution archive rehearsals. The subsequent [watchOS 27.2 action run](docs/RUNTIME_27_2_VALIDATION.md) passes
-all 15 assertions, including Settings return. Initial discovery/input problems
-were addressed in the test helper. No physical installation or playback test
-was performed.
+Build 27 passes 12 Swift suites, 87 Python tests, repository validation, Simulator
+compilation and unsigned development/distribution archive rehearsals on Xcode
+27.2. All 21 SE 3/watchOS 27.2 action assertions pass, including Help/Privacy/About
+before and during class, native Back, unchanged saved timing/runtime start-stop
+intent, and the retained teaching action flow. A separate 16-assertion nested-page
+check verified full policy/license rendering, navigation/Back and all three QR
+addresses decoded from actual SE 3 screenshots. The [prior build-26 runtime run](docs/RUNTIME_27_2_VALIDATION.md)
+remains dated evidence. No physical installation or paired playback test was
+performed for build 27.
 The [supervised device-test plan](docs/PHYSICAL_MEDIA_TEST_PLAN.md) is a proposal;
 no unattended run is scheduled.
 

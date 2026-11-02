@@ -1,6 +1,6 @@
 # Publishing readiness
 
-Reviewed October 31, 2026. Preparation only: no registration, upload, invitation or
+Reviewed November 1, 2026. Preparation only: no registration, upload, invitation or
 release. [Current verification](../DEVELOPMENT_STATUS.md) owns build/install status.
 
 ## New user entry points
@@ -59,11 +59,12 @@ fixed or that automatic wake refresh prevented every recurrence.
    policy accurately in a developer support/review inquiry. Acceptance is not
    established. Do not silently switch to HealthKit, use artificial background
    audio or disguise the purpose. A runtime-policy decision may be necessary.
-3. **Add a small Help/About/Privacy surface.** Explain hands/marker, class versus
-   session, count/vibration semantics, and page-swipe media recovery outside the
-   teaching face. Show version/build, source/license, policy and support links.
-   The repository privacy page and manifest do not supply the required in-app
-   privacy-policy link. A full tutorial is not necessary.
+3. **Help/About/Privacy added in build 27.** Settings contains offline explanations
+   of hands/marker, class versus session, counts, media recovery and local data,
+   plus the running version/build, complete bundled policy/license and website
+   addresses/QR codes. Verify camera scanning from the physical display during
+   the pilot; image decoding in Simulator is not a physical camera test. A private
+   support contact and final metadata/privacy review remain outstanding.
 4. **Run the release matrix.** Confirm physical fresh launch, Home/return,
    intentional Stop, force-close class recovery, settings persistence and class
    replacement. Exercise normal phone playback and relevant wired/AirPlay routes

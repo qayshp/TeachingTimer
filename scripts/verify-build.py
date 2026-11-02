@@ -56,6 +56,7 @@ def main():
         ('repository', ['python3', 'scripts/check-repository.py']),
         ('models', ['sh', 'scripts/check.sh']),
         ('tools', ['sh', 'scripts/check-tools.sh']),
+        ('information-qr', ['swift', 'scripts/information-qr.swift', '--check', 'TeachingTimer/Information']),
         ('simulator', ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimer',
                        '-configuration', 'Debug', '-sdk', 'watchsimulator', '-derivedDataPath', str(output / 'DerivedData'),
                        '-resultBundlePath', str(output / 'Simulator.xcresult'), 'CODE_SIGN_IDENTITY=-', 'DEVELOPMENT_TEAM=', 'build']),

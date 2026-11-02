@@ -39,7 +39,8 @@ installation or a physical-device test.
 
 - [Publishing readiness](PUBLISHING_READINESS.md): onboarding and outstanding release gates.
 - [Supervised physical media plan](PHYSICAL_MEDIA_TEST_PLAN.md): preparation only; no run scheduled.
-- [Settings pass](SETTINGS_PASS_25.md): build 25 screenshots and limits.
+- [Settings and information pages](SETTINGS_PASS_25.md): build 25 preferences and
+  build 27 Help/Privacy/About screenshots and limits.
 - [Media wake refresh](MEDIA_WAKE_REFRESH.md): current bounded recovery policy.
 - [October 29 progress incident](MEDIA_PROGRESS_INCIDENT_2026-10-29.md) and
   [October 30 progress incident](MEDIA_PROGRESS_INCIDENT_2026-10-30.md): physical reports and log correlations.

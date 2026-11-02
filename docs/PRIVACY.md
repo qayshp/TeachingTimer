@@ -1,6 +1,6 @@
 # Privacy and diagnostics
 
-Last reviewed October 28, 2026, against the build-21 source.
+Last reviewed November 1, 2026, against the build-27 source.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does
@@ -31,8 +31,8 @@ system/backup copies are outside that operation.
 ## Sharing is a separate choice
 
 A development build's journals may be copied to a trusted Mac using Apple's
-developer tools. TestFlight journal access is not yet verified. There is no
-in-app journal export in this build. Do not promise testers automatic collection.
+developer tools. TestFlight journal access is not yet verified. This build has
+no in-app journal export or automatic collection by the developer.
 
 Before sharing, inspect and minimize the data. GitHub issues are public: use
 cropped screenshots and sanitized excerpts. Arrange a private route with the
@@ -40,10 +40,11 @@ maintainer for larger captures. Sending diagnostics to Apple through Feedback
 Assistant is a separate action, not an automatic app feature. Copies already
 sent to Apple or a recipient follow that recipient's handling policies.
 
-The bundled privacy manifest declares no tracking/data collection and describes
-the existing preferences and monotonic timing API uses. App Store Connect privacy
-answers still require a review of the actual release and support workflow;
-this page is not a claim that Apple has validated the app or its disclosures.
+**Class → Settings → Privacy → Full privacy policy** contains this complete policy
+offline. Help, About and the complete MPL license are also readable on the Watch.
+Website destinations show an address and a QR code for a phone camera. Visiting
+GitHub or Mozilla is subject to those websites' policies; no journals or other
+app data are included in these addresses or QR codes.
 
 Questions can be raised through the [project's public issue form](https://github.com/qayshp/TeachingTimer/issues/new/choose)
 without including personal data. A dedicated private support contact must be

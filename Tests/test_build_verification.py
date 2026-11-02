@@ -30,6 +30,30 @@ artifact = importlib.util.module_from_spec(inspect_spec)
 inspect_spec.loader.exec_module(artifact)
 
 class ArtifactChecks(unittest.TestCase):
+    def test_information_pages_require_documents_and_qr_assets(self):
+        import shutil
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as folder:
+            app = Path(folder)
+            self.assertFalse(artifact.information_resources_present(app))
+            shutil.copytree(root / 'TeachingTimer/Information', app / 'Information')
+            shutil.copy2(root / 'LICENSE', app / 'LICENSE')
+            shutil.copy2(root / 'docs/PRIVACY.md', app / 'PRIVACY.md')
+            self.assertTrue(artifact.information_resources_present(app))
+            (app / 'Information/support.png').unlink()
+            self.assertFalse(artifact.information_resources_present(app))
+
+    def test_information_page_rejects_broken_metadata(self):
+        import shutil
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as folder:
+            app = Path(folder)
+            shutil.copytree(root / 'TeachingTimer/Information', app / 'Information')
+            shutil.copy2(root / 'LICENSE', app / 'LICENSE')
+            shutil.copy2(root / 'docs/PRIVACY.md', app / 'PRIVACY.md')
+            (app / 'Information/WebLinks.json').write_text('{broken')
+            self.assertFalse(artifact.information_resources_present(app))
+
     def test_unsigned_simulator_does_not_become_signed_release(self):
         import plistlib
         from unittest.mock import patch

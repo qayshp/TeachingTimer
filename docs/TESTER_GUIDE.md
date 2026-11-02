@@ -67,3 +67,12 @@ journals or system logs publicly. See [privacy and diagnostics](PRIVACY.md).
 
 The [current limitations](../DEVELOPMENT_STATUS.md) remain part of the beta.
 Wider invitations should follow the [private distribution pilot](TESTFLIGHT_PREPARATION.md).
+
+## Help on the Watch
+
+Open **Class → Settings** before or during a class. **Help** explains the clock,
+class/session controls, counts and media recovery. **Privacy** explains local
+data and sharing, with the full policy bundled offline. **About** shows the running
+version/build, public support, source code and the complete MPL 2.0 license.
+Website destinations show an address and a QR code to scan with your phone. Public
+GitHub issues are for sanitized reports, not raw journals or system logs.

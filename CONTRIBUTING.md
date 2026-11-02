@@ -75,6 +75,15 @@ with `swift scripts/render-icon.swift`. Generated builds, user Xcode state,
 credentials, profiles, and raw journals must not be committed. Curated, anonymous
 Simulator screenshots belong in `docs/images/`.
 
+The in-app full privacy policy and license are copied directly from
+`docs/PRIVACY.md` and `LICENSE` by Xcode; do not maintain duplicate copies.
+Website addresses/titles live in `TeachingTimer/Information/WebLinks.json`.
+After changing an address, run
+`swift scripts/information-qr.swift --generate TeachingTimer/Information`.
+The combined build check decodes the committed QR images and checks the bundled
+documents. Inspect the local Settings pages and their Back navigation after
+changes; a functioning website is not proof that a Watch can launch a browser.
+
 ## Release discipline
 
 Increment `CURRENT_PROJECT_VERSION` for each distributed build. A build phase

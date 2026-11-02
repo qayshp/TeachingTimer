@@ -4,6 +4,7 @@ Run `python3 scripts/verify-build.py NEW_OUTPUT_DIRECTORY` from the repository.
 The directory must not exist. This command never installs or uploads an app. The Simulator build uses
 local ad-hoc signing; both device archives remain unsigned. It records the exact source commit and dirty state, selected Xcode path,
 Xcode/Swift versions and installed SDKs, then runs repository consistency and model/tool checks,
+decodes the website QR assets against their configured destinations,
 Simulator build, isolated phone audio-fixture build, development archive and
 future distribution-identity archive. The fixture build generates audio locally
 and never launches playback.
@@ -31,6 +32,11 @@ Inspection reads the build/version/revision, verifies the binary exists, and
 checks matching binary/dSYM UUIDs for an archive. The signed gate additionally
 requires a valid code signature and unexpired embedded profile. It prints no
 profile device list, signing certificate or account credentials.
+
+For build 27 onward, inspection also requires the bundled full privacy policy,
+MPL license and website metadata/QR assets. This catches missing resources before
+distribution. QR decoding verifies the configured address, not physical camera
+readability or the availability of the destination website.
 
 **Unsigned structural success is not a signed release.** Even the signed gate
 does not establish provisioning-device membership, entitlement eligibility,

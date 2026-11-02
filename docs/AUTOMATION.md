@@ -22,7 +22,7 @@ complete verification for a candidate. The output directory must be new.
 | Repository | Tracked local Markdown targets, source notices, Python syntax, JSON/plist parsing, standalone Swift suite wiring and private/generated-file exclusions. | Does not validate remote URLs or Markdown heading fragments, prove legal compliance, or inspect ignored private evidence. |
 | Swift models/controllers | Class anchoring/persistence, clock edges, geometry/layout, runtime intent/renewal, landmark deadlines/cancellation/restart, journal retention and volume/media policies. | Standalone executables use WatchKit boundary doubles; they cannot establish watchOS acceptance or physical effects. |
 | Python tooling | Device command failures/retries, journal summaries, build inspection, action/evidence classification and suite result handling. | Device/process boundaries are faked. Test success is not a successful transfer or deployment. |
-| Build/archive | Simulator compilation plus structural inspection of development and future distribution archives. | Unsigned archive success is not signed distribution, installation, launch or App Store validation. |
+| Build/archive | Simulator compilation, website QR decoding, bundled policy/license/website resource checks, and structural inspection of development and future distribution archives. | Unsigned archive success is not signed distribution, installation, launch or App Store validation. QR decoding is not a physical camera test. |
 
 GitHub Actions runs the noninteractive verification with its recorded toolchain.
 See [build evidence](BUILD_VERIFICATION.md) for retained artifacts. It does not
@@ -37,7 +37,8 @@ test app's data is reset. Run each size separately, never concurrently through
 the same UI.
 
 - **Essential actions:** create/cancel/edit/replace/end classes, count start/stop,
-  runtime Stop/Resume and media/timer navigation, checked against saved values
+  runtime Stop/Resume, Settings information-page navigation before/during class,
+  and media/timer navigation, checked against saved values, rendered content
   and fresh journal events.
 - **Focus lifecycle, SE 3:** Crown input, Home/reopen, refresh and media return,
   preserving the app host, class and native control instance.

@@ -111,11 +111,28 @@ def main():
         ui('tap', .22, .12)
     def dismiss():
         ui('tap', .23, .13)
+    def information_pages(prefix, expected_class):
+        # Read-only Settings destinations must render and return without changing
+        # a draft, saved class, or intentional runtime state.
+        offset = len(events())
+        for page, text in [('Help', 'read the clock'), ('Privacy', 'your data'), ('About', 'version')]:
+            tap(prefix + '-' + page.lower(), page, scroll=True)
+            rows = capture(prefix + '-' + page.lower() + '-opened', recognize=True)
+            rendered = ' '.join(row['text'] for row in rows).casefold()
+            check(prefix + '-' + page.lower() + '-keeps-state',
+                  lambda: text in rendered and context() == expected_class
+                  and not event_since('stop_requested', offset)
+                  and not event_since('start_requested', offset))
+            dismiss()  # Native navigation Back returns to Settings, not the face.
+            rows = capture(prefix + '-' + page.lower() + '-returned', recognize=True)
+            if not any(row['text'] == 'Settings' for row in rows):
+                raise AssertionError('Information page did not return to Settings')
     ui('bounds')
     ui('tap', .5, .5)  # Wake a previously dimmed disposable simulator; no face action here.
     # A modified draft must not silently change the default class.
     ui('tap', .5, .76)
     tap('settings-before-class', 'Settings', scroll=True)
+    information_pages('before-class', None)
     dismiss()  # Back to the same new-class draft.
     tap('custom-draft', 'Custom', 'Custom schedule', scroll=True)
     tap('later-draft', '+15 min')
@@ -125,6 +142,11 @@ def main():
     tap('default-start', 'Start class')
     check('default-sixty-started', lambda: context() is not None and context()['durationMinutes'] == 60 and event_since('runtime_started', 0))
     original = context()
+    menu()
+    tap('settings-during-class', 'Settings', scroll=True)
+    information_pages('during-class', original)
+    dismiss()  # Settings → class summary.
+    dismiss()  # Done → face.
     offset = len(events('LandmarkDiagnostics'))
     ui('tap', .5, .76)
     check('count-started', lambda: event_since('landmark_started', offset, 'LandmarkDiagnostics'))

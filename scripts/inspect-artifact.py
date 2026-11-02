@@ -13,6 +13,20 @@ def command(*args):
     return subprocess.run(list(map(str, args)), capture_output=True, timeout=30)
 
 
+def information_resources_present(app):
+    try:
+        if any(len((app / name).read_text()) < 1000 for name in ('PRIVACY.md', 'LICENSE')):
+            return False
+        links = json.loads((app / 'Information/WebLinks.json').read_text())
+        if set(links) != {'privacy', 'support', 'source'}:
+            return False
+        return all(item['title'] and item['url'].startswith('https://')
+                   and (app / 'Information' / (key + '.png')).read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+                   for key, item in links.items())
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+
+
 def inspect(path):
     archive = path if path.suffix == '.xcarchive' else None
     app = archive / 'Products/Applications/TeachingTimer.app' if archive else path
@@ -22,6 +36,9 @@ def inspect(path):
     checks = {'watchOnly': info.get('WKWatchOnly') is True,
               'binaryPresent': (app / info['CFBundleExecutable']).is_file(),
               'revisionRecorded': bool(revision)}
+    # Preserve inspection of historical teaching checkpoints from before these pages.
+    if int(info['CFBundleVersion']) >= 27:
+        checks['informationResourcesPresent'] = information_resources_present(app)
     signature = command('codesign', '--verify', '--deep', '--strict', app).returncode == 0
     profile_path = app / 'embedded.mobileprovision'
     profile = None

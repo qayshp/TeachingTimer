@@ -43,6 +43,16 @@ struct ClassControlsView: View {
                         Text("Saved for future classes. Music and system alerts are unchanged.")
                             .font(.caption)
                     }
+                    Section {
+                        ForEach(AppInformationPage.allCases) { page in
+                            NavigationLink {
+                                AppInformationView(page: page)
+                            } label: {
+                                Label(page.title, systemImage: page.symbol)
+                            }
+                            .accessibilityIdentifier("settings-" + page.rawValue)
+                        }
+                    }
                 } else if mode == .summary, let current = classStore.context {
                     Section {
                         VStack(alignment: .leading, spacing: 4) {

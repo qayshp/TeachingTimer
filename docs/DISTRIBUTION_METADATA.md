@@ -1,13 +1,13 @@
 # Distribution metadata draft
 
-Updated October 31, 2026. Not submitted to App Store Connect. This is a review
+Updated November 1, 2026. Not submitted to App Store Connect. This is a review
 packet for a private pilot, not authorization to invite external testers.
 
 | Field | Draft |
 | --- | --- |
 | Name | Teaching Timer |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 / 26; no TestFlight candidate uploaded |
+| Version / development candidate | 1.0 / 27; no TestFlight candidate uploaded |
 | Future bundle identifier | net.qays.TeachingTimer |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
 | Support URL | https://github.com/qayshp/TeachingTimer/issues |
@@ -58,10 +58,12 @@ in public feedback.
 
 ## Current candidate review
 
-Build 26 is the source candidate. Build 25, including settings and bounded media
+Build 27 is the source candidate. Build 25, including settings and bounded media
 wake refresh, is installed as the development identity `com.qayshp.TeachingTimer`.
-It retains the clock/native-control baseline and adds Settings and bounded wake
-refresh; classroom validation of those changes is pending. This is not evidence of a signed distribution upload or TestFlight install.
+Build 25 received positive classroom Settings/volume feedback on October 31;
+song progress still stalled and recovered by switching pages. Build 27 adds
+Help/Privacy/About under Settings; that addition has not been installed on the
+physical Watch. This is not evidence of a signed distribution upload or TestFlight install.
 
 - **Screenshot set:** the [Settings-era teaching face](images/settings-25/se3-face.png)
   was captured on the SE 3 Simulator during build-25 verification.
@@ -69,7 +71,8 @@ refresh; classroom validation of those changes is pending. This is not evidence 
   SE 3 and Ultra. These are development evidence, not approved store assets;
   the face includes the Simulator's disconnected-phone indicator.
 - **Privacy review:** [Privacy](PRIVACY.md) describes local journals and voluntary
-  sharing. This cleanup introduces no new collection; Settings return navigation is fixed.
+  sharing. The new offline information pages introduce no new collection and
+  provide the full privacy policy and MPL license offline in Settings.
   Final App Store declarations still require review against the distribution binary.
 - **Support:** GitHub issues are suitable for sanitized bug descriptions only.
   A private diagnostic intake route and App Store review contact are not yet

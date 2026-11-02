@@ -35,6 +35,8 @@ use the instructions below. New testers should read the
    to stop. Haptics may be late or skipped by watchOS.
 5. Tap **Class** (with the gear) → **Settings** to turn **Count vibrations** off
    for the next count or enable **Minutes left**. Both preferences persist.
+   **Help**, **Privacy**, and **About** are also in Settings, including the app
+   version, recovery guidance, source/license, and public issue link.
 
 **Stop session / Resume session** affects the mindfulness runtime while retaining
 class timing. **End class** clears timing and stops session/count. **New class**

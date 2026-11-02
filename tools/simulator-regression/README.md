@@ -113,6 +113,11 @@ Watch Simulator named `TeachingTimer Regression…`. It requires explicit
 simulator. It never accepts a physical device. Use a normal ad-hoc-signed
 Simulator build: an unsigned app can open yet fail extended-runtime startup.
 
+The action flow also opens Help, Privacy and About before and during class,
+checks rendered content, returns through native Back to Settings, and verifies
+that saved timing and runtime start/stop intent did not change. External-link
+delivery and paired-iPhone audio are separate physical checks.
+
 ```sh
 python3 tools/simulator-regression/actions.py --simulator SIMULATOR_UUID \
   --app /absolute/path/TeachingTimer.app --reset-test-app \

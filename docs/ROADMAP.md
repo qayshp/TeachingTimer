@@ -1,8 +1,9 @@
 # Active roadmap
 
-Updated October 31, 2026. Build 25 is installed and launched; its Settings and
-media wake-refresh classroom validation is pending. Build 26 is the source
-candidate from this cleanup. Build 16 remains a preserved rollback checkpoint. Further
+Updated November 1, 2026. Build 25 is installed and launched; October 31 classroom
+feedback confirms Settings/volume worked, while song progress still stalled and
+page switching recovered it. Build 27 adds Help/Privacy/About in Settings to the
+source candidate. Build 16 remains a preserved rollback checkpoint. Further
 physical installations require authorization. Simulator work and repository
 changes do not count as physical validation.
 
