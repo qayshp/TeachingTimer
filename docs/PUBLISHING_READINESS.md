@@ -1,9 +1,9 @@
 # Publishing readiness
 
-Reviewed November 2, 2026. Build 31 is Ready to Test / Internal and available in
-the manual-distribution Maintainer pilot with one tester, the owner. Build 29 is
-also assigned; build 30 is processed but unassigned. Build 31 passes signed
-archive/export, the bounded Simulator recovery comparison and offline checks.
+Reviewed November 2, 2026. Build 32 is Ready to Test / Internal and available in
+the manual-distribution Maintainer pilot with one tester, the owner. Builds 29 and
+31 are also assigned; build 30 is processed but unassigned. Build 32 passes signed
+archive/export, actual Watch privacy-manifest checks, Simulator UI checks and CI.
 Physical installation/update, wider testing and public release remain pending.
 [Current verification](../DEVELOPMENT_STATUS.md) owns build/install status.
 
@@ -23,8 +23,8 @@ support procedures from historical engineering notes.
 | Gate | Evidence / next action |
 | --- | --- |
 | Names and identifiers | App Store Connect record **Teaching Timer Beta** created for `net.qays.TeachingTimer`; Teaching Timer was unavailable. Its Watch payload is `net.qays.TeachingTimer.watchkitapp`. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Distribution provisioning succeeded. |
-| Build integrity | Build 31 passes 12 Swift suites, 107 Python tests, Debug compilation, a bounded Simulator recovery comparison, clean signed archive/export and Apple processing. Processing is not a physical test. |
-| Paid-team signing / App Store Connect | Build 31 is assigned to the one-tester Maintainer pilot, alongside 29, with automatic distribution disabled; 30 is unassigned. Beta Test Information and build-31 What to Test notes are saved/verified; review contact remains blank. Complete the physical self-pilot when authorized and available. |
+| Build integrity | Build 32 at clean source `f931c173ab86` passes 12 Swift suites, 110 Python tests, Simulator compilation, 21 UI-action assertions, CI, signed archive/export with actual Watch privacy-manifest checks, and Apple processing. Processing is not a physical test. |
+| Paid-team signing / App Store Connect | Build 32 is assigned to the one-tester Maintainer pilot, alongside 29 and 31, with manual distribution; 30 is unassigned. Beta Test Information, build-32 What to Test notes and assignment are saved/verified after reload; review contact remains blank. Complete the physical self-pilot when authorized and available. |
 | Private tester support | [Private email support](../SUPPORT.md) is configured and inbound delivery is verified. Outbound alias replies and diagnostic attachment delivery remain untested. An email address does not export Watch journals. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | Development container copies work intermittently. TestFlight container access and a tester-friendly export path remain unresolved. |
 | Install/update pilot | Check separate container, cold start, update, state preservation, runtime intent and recovery on a physical Watch. |
@@ -79,7 +79,7 @@ fixed or that automatic wake refresh prevented every recurrence.
    watchOS 27.2 results cover it.
 5. **Pilot the real distribution build.** Use `net.qays.TeachingTimer`, preserve
    the development install and install via TestFlight when the Watch is available
-   and installation is authorized. Build 31 has passed signed archive/export,
+   and installation is authorized. Build 32 has passed signed archive/export,
    upload and processing and is available to the owner pilot.
    Check install/update, separate-container state and journal/support access.
    Begin with the maintainer, then a small external teacher group. External beta
@@ -108,8 +108,8 @@ resolved the bare Watch archive's export-method rejection. The account holder
 then accepted the updated developer agreement, resolving Apple's **PLA Update
 available** provisioning gate. The internal-only build-28 IPA exported
 successfully and passed local package, profile, signature and entitlement checks.
-That build-28 export was not uploaded. The later clean builds 29, 30 and 31 were
-uploaded and processed successfully. Builds 29 and 31 are assigned to the manual
+That build-28 export was not uploaded. The later clean builds 29–32 were
+uploaded and processed successfully. Builds 29, 31 and 32 are assigned to the manual
 pilot with one tester, the owner; build 30 has no group assignment. No TestFlight installation
 or physical update has occurred during this preparation. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
 The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) now has a configured

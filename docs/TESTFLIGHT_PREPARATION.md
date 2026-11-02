@@ -1,14 +1,14 @@
 # TestFlight pilot
 
-Updated November 2, 2026. Build 31 passed signed archive/export, upload and Apple
+Updated November 2, 2026. Build 32 passed signed archive/export, upload and Apple
 processing and is Ready to Test / Internal. It is assigned to the manual-distribution
-Maintainer pilot with one tester, the owner. Build 29 is also assigned; build 30
+Maintainer pilot with one tester, the owner. Builds 29 and 31 are also assigned; build 30
 is processed but unassigned. The physical teaching app remains build 25 and is
 untouched; no physical TestFlight installation is verified.
 
-Source build 32 is under review for queued-Start readiness, privacy-manifest
-verification and onboarding clarification. Build 31 remains the available pilot
-until the changed source passes its own clean signed release checks.
+Build 32 includes queued-Start readiness, privacy-manifest verification and
+onboarding clarification. Preparation/upload/group assignment are complete;
+the physical self-pilot below remains unverified.
 
 ## Identities and packaging
 
@@ -124,7 +124,7 @@ created. Upload/processing are verified; installation/update and distribution
 journal access below remain unverified. The separate development build 25 remains
 the last confirmed physical installation.
 
-## Build 30 and current candidate
+## Subsequent pilot builds
 
 Build 30, clean revision `da9d8d6756f8`, adds the private support entry point and
 Settings navigation refinement. Its signed export and upload completed, and Apple
@@ -145,11 +145,21 @@ export, including the source-cleanliness guard. Upload completed November 2 at
 verified as one group and one tester, the owner. Build 29 remains assigned too;
 automatic distribution remains disabled and build 30 remains unassigned.
 
-Build 31 is available to the owner pilot. No physical installation/update or
-distribution journal access is established. The bounded comparison does not
+No physical installation/update or distribution journal access is established.
+The bounded build-31 comparison does not
 prove physical recovery or arbitrary activation-callback ordering. The signed
 artifact identifies the clean source revision above; later release-documentation
 commits do not change that artifact's source identity.
+
+Build 32, clean source `f931c173ab86d6f27fda17083f4afc6163dc2b67`, passed signed
+archive/export, including the actual Watch privacy-manifest checks. Its IPA
+SHA-256 is `ece330038a7e9a5fb00e8351bab42a3bb6d5e99978a67220c4de519f783c2d21`.
+Upload completed November 2 at 13:50:22 PST. Apple shows **Ready to Test / Internal**;
+its What to Test notes and assignment to the one-owner **Maintainer pilot**
+survived reload. The group shows **Manual** distribution, one tester and three
+builds: 29, 31 and 32. Build 30 remains unassigned. Build 32 passes all 12 Swift
+suites, 110 Python tests, 21 Simulator UI-action assertions and
+[CI](https://github.com/qayshp/TeachingTimer/actions/runs/41531683416).
 
 ## Self-pilot record
 

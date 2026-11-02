@@ -5,11 +5,11 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (32): queued explicit Start now also waits for scene/native readiness. Artifact/export checks verify the bundled privacy manifest. All 12 Swift suites, 110 Python tests, Simulator compilation and 21 UI-action assertions pass. Clean signed release checks are pending; build 31 remains the available owner pilot. |
+| Source candidate | 1.0 (32), clean source `f931c173ab86`: queued explicit Start also waits for scene/native readiness. All 12 Swift suites, 110 Python tests, Simulator compilation, 21 UI-action assertions and CI pass. Signed archive/export verifies the actual Watch privacy manifest; Apple processing and owner-pilot assignment are complete. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Build 31 (9da154876eeb) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Build 29 (7e9ca4a82324) is also assigned; build 30 (da9d8d6756f8) is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Build 32 (`f931c173ab86`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29 and 31 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -62,7 +62,12 @@ shipped privacy defect. Build 32 passes all 12 Swift suites, 110 Python tests
 and Simulator compilation. All 21 UI-action assertions pass; reviewed Help,
 active-clock, Stop/Resume and native Not Playing captures show no visual
 regression in those views. This is not paired-media or physical validation.
-Clean signed release checks remain pending. Physical build 25 remains untouched.
+Clean source `f931c173ab86d6f27fda17083f4afc6163dc2b67` passed signed archive/export
+and [CI](https://github.com/qayshp/TeachingTimer/actions/runs/41531683416).
+Upload completed November 2 at 13:50:22 PST; Apple processing, build notes and
+manual owner-pilot assignment were verified after reload. This completes
+preparation and distribution to the owner pilot, not its physical install/update
+or journal-access checks. Physical build 25 remains untouched.
 
 Build 31 passes all 12 Swift suites, including scene/native readiness and early
 handoff checks, 107 Python tests and the Debug Simulator build. In one matched inactive/dimmed

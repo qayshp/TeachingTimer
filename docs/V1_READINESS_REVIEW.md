@@ -41,7 +41,7 @@ Always-On, distribution installation or App Review acceptance.
 
 Signed release preparation also now rejects dirty source before archiving and
 rejects source/commit changes or a mismatched binary revision before export.
-Unsigned rehearsals remain usable during development. All 107 Python tests pass,
+Unsigned rehearsals remain usable during development. Build 31's 107 Python tests pass,
 including the signed-source boundaries and ignored-versus-untracked Git fixtures.
 
 ## Account and support preparation
@@ -50,12 +50,12 @@ The separate App Store Connect record is **Teaching Timer Beta**, with store
 container `net.qays.TeachingTimer`. Apple rejected “Teaching Timer” as already
 used; the public release name remains a decision. The Watch payload stays
 `net.qays.TeachingTimer.watchkitapp`; development remains
-`com.qayshp.TeachingTimer`. Build 31 is Ready to Test / Internal after clean
+`com.qayshp.TeachingTimer`. Build 32 is Ready to Test / Internal after clean
 signed archive/export, upload and processing. It is assigned to the Maintainer
-pilot with one tester, the owner, and manual distribution. Build 29 is also
+pilot with one tester, the owner, and manual distribution. Builds 29 and 31 are also
 assigned; build 30 is processed but unassigned. No external testers or public
-release are configured. The build-31 What to Test notes and one-group/one-tester
-assignment were verified in App Store Connect.
+release are configured. The build-32 What to Test notes and one-group/one-tester
+assignment were verified after reload in App Store Connect.
 
 Beta Test Information was saved and verified after reload: description and known
 limitations, support address, repository and privacy URLs. Review contact remains
@@ -104,14 +104,14 @@ Next independent work:
    Stop comparisons independently retained stopped intent. All 14 candidate
    preference captures matched the baseline class bytes. This is bounded Simulator evidence, not
    a guarantee for arbitrary callback ordering or physical behavior.
-2. Arrange the physical build-31 TestFlight install/update/journal pilot when
+2. Arrange the physical build-32 TestFlight install/update/journal pilot when
    authorized and available. Signed export, upload, processing and owner-pilot
    assignment are complete; installation is not. Keep the teaching Watch untouched
    until the user authorizes that next step.
 3. Preserve completed retirement/layout assertions and reviewed screenshots as
    regression evidence. These are completed UI checks, not pending redesign work.
 4. The isolated fixed-anchor probe reproduced two backsteps on watchOS 27.2.
-   Preserve the [exact evidence and qualifications](ALWAYS_ON_HAND_TRANSITION.md#november-2-watchos-272-comparison)
+   Preserve the [exact evidence and qualifications](ALWAYS_ON_HAND_TRANSITION.md#november-2-watchos-272-reproduction)
    for the existing Apple report; do not clamp system timeline dates.
 5. Verify outbound support replies and arrange a supervised physical file-sharing /
    TestFlight install-update-journal pilot when the devices are available.
@@ -148,7 +148,7 @@ unverified; the probe is still isolated and not a feature of TeachingTimer.
 
 ## Build 32 bounded follow-up
 
-The source candidate is build 32; build 31 remains the available owner pilot.
+Build 32 is the clean signed candidate and is available to the owner pilot.
 The physical Watch remains untouched on build 25.
 
 - **Queued explicit Start:** the readiness check now also covers an explicit
@@ -169,7 +169,12 @@ The physical Watch remains untouched on build 25.
 Build 32 compiles for Simulator and passes all 12 Swift suites and 110 Python
 tests. All 21 UI-action assertions pass; Help, active clock, Stop/Resume and native
 Not Playing screenshots were reviewed without a new visual regression in those
-views. This does not establish paired audio or physical behavior. Clean signed
-release checks have not been completed. Prior build-31 Simulator/distribution
-results remain labeled above and do not substitute for the changed candidate's
-validation.
+views. Clean source `f931c173ab86` passed signed archive/export, actual Watch
+privacy-manifest checks, CI, Apple processing and manual owner-pilot assignment.
+See the [release artifact record](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds).
+This does not establish paired audio, physical installation/update or journal access.
+
+A source-only minimum-OS audit found all three build configurations target
+watchOS 26. The used APIs checked against the current SDK were available by
+watchOS 10, with no unguarded post-26 API found. This is not execution on the
+minimum OS: no older runtime was installed, and watchOS 26 execution remains pending.

@@ -1,8 +1,8 @@
 # Distribution metadata draft
 
 Updated November 2, 2026. The App Store Connect record **Teaching Timer Beta**
-has build 31 Ready to Test / Internal and available to the one-tester Maintainer
-pilot. Build 29 is also assigned; build 30 is processed but unassigned. Distribution
+has build 32 Ready to Test / Internal and available to the one-tester Maintainer
+pilot. Builds 29 and 31 are also assigned; build 30 is processed but unassigned. Distribution
 remains manual. This is the metadata review packet
 for the private pilot, not a completed store submission or external invitation.
 
@@ -10,7 +10,7 @@ for the private pilot, not a completed store submission or external invitation.
 | --- | --- |
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 / source 32 under review; build 31 at clean source 9da154876eeb remains processed and assigned to the owner pilot alongside 29; 30 unassigned |
+| Version / development candidate | 1.0 (32), clean source `f931c173ab86`, processed and assigned to the owner pilot alongside 29 and 31; 30 unassigned |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
@@ -57,15 +57,37 @@ in public feedback.
   assets, not a finalized App Store screenshot set. Prepare final screenshots
   only after the beta behavior and supported-device claims are validated.
 - Complete the install/update and journal-access pilot in
-  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 31 passed clean signed
+  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 32 passed clean signed
   archive/export, upload and processing and is assigned to the owner pilot.
-  It also passes the bounded Simulator comparison, 12 Swift suites and 107 Python tests.
+  It also passes 12 Swift suites, 110 Python tests, 21 Simulator UI-action assertions and CI.
   Neither source work nor processing establishes physical installation or journal access.
+
+### Privacy decisions before broader distribution
+
+- **Known:** class state, preferences and journals stay on the Watch unless copied
+  separately; there is no in-app export/upload. Support email retains the sender,
+  message and chosen attachments as described in [the policy](PRIVACY.md).
+- [ ] **Assess the label separately:** an empty manifest collection array is not
+  an App Store answer. Apple excludes solely on-device processing; evaluate actual
+  support intake separately under its [collection definition](https://developer.apple.com/app-store/app-privacy-details/).
+- [ ] **Owner: choose the initial intake scope.** Description-only reports avoid
+  requiring unavailable journal export and reduce diagnostic intake; they still
+  involve email/contact information. Do not promise “no data collected” from this alone.
+- [ ] **Before requesting optional diagnostics:** assess the actual fields,
+  purposes, identity links and retention. Voluntary submission alone does not meet
+  Apple's [optional-disclosure criteria](https://developer.apple.com/app-store/app-privacy-details/#optional-disclosure),
+  including its in-app identified-submitter and per-submission requirements.
+- [ ] **Before external beta review:** owner approves the review contact and
+  actual runtime-use instructions alongside [required TestFlight information](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information/).
+- [ ] **Before public submission:** owner approves privacy answers against the
+  final binary and chosen intake practice; resolve uncertain classifications with
+  Apple. This checklist records no account answers or legal determination.
 
 ## Current candidate review
 
-Source build 32 adds queued explicit-Start readiness and artifact privacy-manifest
-checks; its signed release is pending. Build 31 remains the available owner pilot.
+Build 32 adds queued explicit-Start readiness and artifact privacy-manifest checks.
+Its clean signed archive/export, Apple processing and manual owner-pilot assignment
+are complete. Build notes and assignment survived reload.
 
 Build 31's scene-readiness guard passes one matched Simulator automatic recovery
 comparison, all 12 Swift suites and 107 Python tests; physical behavior remains unverified.
@@ -76,9 +98,7 @@ wake refresh, is installed as the development identity `com.qayshp.TeachingTimer
 Build 25 received positive classroom Settings/volume feedback on October 31;
 song progress still stalled and recovered by switching pages. Build 27 adds
 Help/Privacy/About under Settings; that addition has not been installed on the
-physical Watch. Build 31 is Ready to Test / Internal in App Store Connect and
-assigned to the owner pilot alongside 29; build 30 remains unassigned. No TestFlight
-installation has been verified.
+physical Watch. No TestFlight installation has been verified.
 
 - **Screenshot set:** the [Settings-era teaching face](images/settings-25/se3-face.png)
   was captured on the SE 3 Simulator during build-25 verification.
