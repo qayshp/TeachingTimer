@@ -1,10 +1,14 @@
 # SPDX-License-Identifier: MPL-2.0
 from datetime import datetime, timedelta
+import hashlib
 import importlib.util
 from pathlib import Path
 import plistlib
+import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('pilot', ROOT / 'scripts/prepare-testflight.py')
@@ -23,6 +27,32 @@ class TestFlightChecks(unittest.TestCase):
         return dict(TeamIdentifier=['TEAM'], ExpirationDate=datetime.now() + timedelta(days=30),
                     Entitlements={'application-identifier': 'TEAM.' + pilot.WATCH_ID,
                                   'get-task-allow': False, 'beta-reports-active': True})
+
+    def exported_package(self, root):
+        ipa = root / 'candidate.ipa'
+        container, watch = self.package()
+        with zipfile.ZipFile(ipa, 'w') as archive:
+            archive.writestr('Payload/TeachingTimerDistribution.app/Info.plist', plistlib.dumps(container))
+            archive.writestr('Payload/TeachingTimerDistribution.app/Watch/TeachingTimer.app/Info.plist',
+                             plistlib.dumps(watch))
+        return ipa
+
+    def export_command(self, *args):
+        """Synthetic tool responses; never inspect a real signing identity."""
+        app = Path(args[-1])
+        identifier = pilot.WATCH_ID if 'Watch' in app.parts else pilot.CONTAINER_ID
+        output = b''
+        if args[:4] == ('security', 'cms', '-D', '-i'):
+            profile = self.profile()
+            profile['Entitlements']['application-identifier'] = 'TEAM.' + identifier
+            output = plistlib.dumps(profile)
+        elif args[:4] == ('codesign', '-d', '--entitlements', ':-'):
+            output = plistlib.dumps({'application-identifier': 'TEAM.' + identifier,
+                                      'com.apple.developer.team-identifier': 'TEAM',
+                                      'get-task-allow': False, 'beta-reports-active': True})
+        else:
+            self.assertEqual(args[:4], ('codesign', '--verify', '--deep', '--strict'))
+        return subprocess.CompletedProcess(args, 0, output, b'')
 
     def test_only_separate_distribution_identity_is_accepted(self):
         container, watch = self.package()
@@ -64,6 +94,47 @@ class TestFlightChecks(unittest.TestCase):
         self.assertFalse(pilot.entitlement_checks(values, pilot.WATCH_ID, 'TEAM')['debuggingDisabled'])
         self.assertFalse(pilot.entitlement_checks(values, pilot.CONTAINER_ID, 'OTHER')['application'])
 
+    def test_export_checks_both_signed_apps_and_parses_xml_entitlements(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            ipa = self.exported_package(root)
+            with patch.object(pilot.artifact, 'command', side_effect=self.export_command) as command:
+                result = pilot.export_checks(ipa, root, 'TEAM')
+            self.assertTrue(result['passed'])
+            self.assertEqual(result['sha256'], hashlib.sha256(ipa.read_bytes()).hexdigest())
+            self.assertEqual(result['signatures'], {'container': True, 'watch': True})
+            self.assertEqual(command.call_count, 6)
+            # ':' requests plist output. A bare '-' can return human-readable
+            # text on current codesign, which broke the first real export audit.
+            entitlement_calls = [call.args for call in command.call_args_list
+                                 if call.args[:3] == ('codesign', '-d', '--entitlements')]
+            self.assertEqual(len(entitlement_calls), 2)
+            self.assertTrue(all(call[3] == ':-' for call in entitlement_calls))
+
+    def test_export_rejects_bad_signature_or_signed_entitlements_on_either_app(self):
+        for kind in ('container', 'watch'):
+            for failure in ('signature', 'entitlements'):
+                with self.subTest(kind=kind, failure=failure), tempfile.TemporaryDirectory() as folder:
+                    root = Path(folder)
+                    ipa = self.exported_package(root)
+                    def command(*args):
+                        result = self.export_command(*args)
+                        actual_kind = 'watch' if 'Watch' in Path(args[-1]).parts else 'container'
+                        if actual_kind != kind:
+                            return result
+                        if failure == 'signature' and args[1] == '--verify':
+                            return subprocess.CompletedProcess(args, 1, b'', b'synthetic invalid signature')
+                        if failure == 'entitlements' and args[1] == '-d':
+                            values = plistlib.loads(result.stdout)
+                            values['get-task-allow'] = True
+                            return subprocess.CompletedProcess(args, 0, plistlib.dumps(values), b'')
+                        return result
+                    with patch.object(pilot.artifact, 'command', side_effect=command):
+                        result = pilot.export_checks(ipa, root, 'TEAM')
+                    self.assertFalse(result['passed'])
+                    # Good profiles must not mask the actual signature failure.
+                    self.assertTrue(all(all(values.values()) for values in result['profiles'].values()))
+
     def test_archive_locates_watch_payload_without_changing_legacy_paths(self):
         with tempfile.TemporaryDirectory() as folder:
             archive = Path(folder) / 'Pilot.xcarchive'
@@ -93,7 +164,6 @@ class TestFlightChecks(unittest.TestCase):
                 pilot.artifact.application_paths(archive)
 
     def test_export_refuses_archive_traversal(self):
-        import zipfile
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             ipa = root / 'bad.ipa'

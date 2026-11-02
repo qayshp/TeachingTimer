@@ -17,8 +17,22 @@ ROOT = Path(__file__).resolve().parents[1]
 LINK = re.compile(r'!?\[[^\]\n]*\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+"[^"\n]*")?\s*\)')
 HTML_LINK = re.compile(r'<(?:img|a)\b[^>]*?\b(?:src|href)=["\']([^"\']+)["\']', re.I)
 PRIVATE_NAMES = {'RuntimeDiagnostics.json', 'InterfaceDiagnostics.json', 'LandmarkDiagnostics.json', 'BuildInfo.plist'}
-PRIVATE_SUFFIXES = ('.p12', '.p8', '.mobileprovision', '.provisionprofile', '.tar', '.tar.gz', '.log')
+PRIVATE_SUFFIXES = ('.p12', '.p8', '.mobileprovision', '.provisionprofile', '.keychain', '.keychain-db',
+                    '.ipa', '.dSYM.zip', '.tar', '.tar.gz', '.log', '.xcuserstate', '.xccheckout', '.xcscmblueprint')
+GENERATED_DIRECTORIES = {'build', '.build', 'xcuserdata', '__pycache__'}
+GENERATED_BUNDLES = ('.app', '.xcarchive', '.logarchive', '.dSYM', '.xcresult')
 SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml'}
+
+
+def private_artifact(name):
+    """Catch accidentally force-added files as well as ordinary ignore rules."""
+    path = Path(name)
+    environment = path.name == '.env' or (path.name.startswith('.env.') and path.name != '.env.example')
+    return (name.startswith(('work/', 'outputs/')) or environment or path.name in PRIVATE_NAMES
+            or name.endswith(PRIVATE_SUFFIXES)
+            or any(part in GENERATED_DIRECTORIES or part.startswith('DerivedData')
+                   or part.endswith(GENERATED_BUNDLES) for part in path.parts[:-1])
+            or path.suffix in {'.pyc', '.pyo', '.pyd'})
 
 
 def check_files(root, paths):
@@ -30,7 +44,7 @@ def check_files(root, paths):
         if not path.is_file():
             errors.append(f'{name}: tracked file missing')
             continue
-        if name.startswith(('work/', 'outputs/')) or any(part in {'xcuserdata', '__pycache__'} for part in path.parts) or path.name in PRIVATE_NAMES or name.endswith(PRIVATE_SUFFIXES) or any(part.endswith(('.app', '.xcarchive', '.logarchive', '.dSYM')) for part in path.parts):
+        if private_artifact(name):
             errors.append(f'{name}: private/generated artifact must not be published')
         try:
             if path.suffix == '.json':

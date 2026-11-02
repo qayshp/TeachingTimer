@@ -78,6 +78,21 @@ class RepositoryChecks(unittest.TestCase):
         self.assertEqual(len(errors), 3)
         self.assertTrue(all('must not be published' in error for error in errors))
 
+    def test_force_added_credentials_and_generated_products_are_rejected(self):
+        cases = ['.env', 'config/.env.production', 'signing/login.keychain-db', 'signing/login.keychain',
+                 'release.ipa', 'release.dSYM.zip', 'Results.xcresult/Info.plist',
+                 'DerivedData-local/build-setting.txt', '.build/package-cache', 'build/product',
+                 'workspace.xcuserstate', 'helper.pyc']
+        for name in cases:
+            with self.subTest(name=name):
+                # The published-file guard must work even if git add --force
+                # bypassed .gitignore. Do not place actual credentials here.
+                self.assertTrue(checker.private_artifact(name))
+        self.assertFalse(checker.private_artifact('config/.env.example'))
+        self.assertFalse(checker.private_artifact('scripts/DerivedDataInfo.swift'))
+        self.assertFalse(checker.private_artifact('TeachingTimer/Assets.xcassets/Contents.json'))
+        self.assertFalse(checker.private_artifact('TeachingTimer.xcodeproj/xcshareddata/xcschemes/TeachingTimer.xcscheme'))
+
     def test_python_syntax_errors_fail(self):
         name = self.write('tool.py', '# SPDX-License-Identifier: MPL-2.0\nif True print(1)')
         self.assertIn('SyntaxError', checker.check_files(self.root, [name])[0])
