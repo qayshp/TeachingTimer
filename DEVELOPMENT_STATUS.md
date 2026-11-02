@@ -5,11 +5,11 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (31): scene-readiness guard passed one matched dimmed-relaunch/wake Simulator comparison and all 12 Swift suites. Debug Simulator build passes; signed export/upload remain pending. Build 30 supplies private support and accessible Settings Back; build 29 fixed explicit Start and schedule-retirement races. |
+| Source candidate | 1.0 (31): scene-readiness guard passed one matched dimmed-relaunch/wake Simulator comparison, 12 Swift suites and 107 Python tests. Clean revision 9da154876eeb passed signed archive/export, upload and Apple processing. Build 30 supplies private support and accessible Settings Back; build 29 fixed explicit Start and schedule-retirement races. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Builds 29 (7e9ca4a82324) and 30 (da9d8d6756f8) passed signed export/upload and are Ready to Test / Internal. Only build 29 is assigned to the manual-distribution Maintainer pilot, with only the owner invited; build 30 has no group assignment. Build 31 is not uploaded. No public release or physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Build 31 (9da154876eeb) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Build 29 (7e9ca4a82324) is also assigned; build 30 (da9d8d6756f8) is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -49,7 +49,7 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 ## Verification and deployment boundaries
 
 Build 31 passes all 12 Swift suites, including scene/native readiness and early
-handoff checks, and the Debug Simulator build. In one matched inactive/dimmed
+handoff checks, 107 Python tests and the Debug Simulator build. In one matched inactive/dimmed
 relaunch, automatic Start was deferred, running intent survived and a later
 active wake produced a successful runtime-start callback without error. The
 second trial had a different initial luminance state and is not a second matched
@@ -58,7 +58,11 @@ preference captures matched the baseline class bytes. The wake helper used Home/
 causing real foreground-loss invalidations between two nonoverlapping starts;
 this is not a claim of one total start or guaranteed recovery for arbitrary
 callback ordering. See [the full comparison and limits](docs/RUNTIME_RECOVERY.md#build-31-candidate-comparison).
-Signed build-31 export/upload and physical validation remain pending.
+The clean build-31 signed archive/export passed, including the source-cleanliness
+guard. Upload completed November 2 at 13:19:59 PST; Apple processed it as Ready
+to Test / Internal. Its What to Test notes and assignment to the one-tester
+Maintainer pilot were verified in App Store Connect. Physical TestFlight
+installation/update, journal access and teaching validation remain unverified.
 
 Build 30's clean revision `da9d8d6756f8` passed signed export and Apple processing.
 Its multi-size and maximum-text UI evidence is recorded in the

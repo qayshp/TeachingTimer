@@ -1,10 +1,10 @@
 # TestFlight pilot
 
-Updated November 2, 2026. Builds 29 and 30 passed signed export, upload and Apple
-processing and are Ready to Test / Internal. Only build 29 is assigned to the
-maintainer-only pilot; build 30 has no group assignment. Source build 31 has a
-bounded Simulator recovery pass and passing Swift suites; signed export/upload
-are pending. The physical teaching app remains build 25 and is untouched.
+Updated November 2, 2026. Build 31 passed signed archive/export, upload and Apple
+processing and is Ready to Test / Internal. It is assigned to the manual-distribution
+Maintainer pilot with one tester, the owner. Build 29 is also assigned; build 30
+is processed but unassigned. The physical teaching app remains build 25 and is
+untouched; no physical TestFlight installation is verified.
 
 ## Identities and packaging
 
@@ -117,21 +117,28 @@ the last confirmed physical installation.
 
 Build 30, clean revision `da9d8d6756f8`, adds the private support entry point and
 Settings navigation refinement. Its signed export and upload completed, and Apple
-marked it **Ready to Test / Internal**. It has not been assigned to a tester group;
-the Maintainer pilot still contains only build 29, with manual distribution and
-only the owner invited.
+marked it **Ready to Test / Internal**. It has not been assigned to a tester group.
 
 Test Information was saved and verified after reloading: beta description and
 known limitations, support address, and repository/privacy URLs. The review
 contact remains blank, no custom EULA was added, and the app requires no sign-in.
 This is internal-pilot preparation, not a completed external review submission.
 
-Source build 31's scene-readiness guard passes all 12 Swift suites, the Debug
-Simulator build, and one matched dimmed-relaunch/wake comparison after the
+Build 31's scene-readiness guard passes all 12 Swift suites, 107 Python tests,
+the Debug Simulator build and one matched dimmed-relaunch/wake comparison after the
 [build-30 runtime recovery reproduction](RUNTIME_RECOVERY.md#build-31-candidate-comparison).
-Signed export and upload are pending; build-30 acceptance does not validate that
-changed runtime behavior. The bounded comparison does not establish physical
-recovery or arbitrary activation-callback ordering.
+Clean revision `9da154876eeb6a429e3d655583696b5958b8dd2b` passed signed archive and
+export, including the source-cleanliness guard. Upload completed November 2 at
+13:19:59 PST; Apple processed it as **Ready to Test / Internal**. The build's
+**What to Test** notes were saved, and its **Maintainer pilot** assignment was
+verified as one group and one tester, the owner. Build 29 remains assigned too;
+automatic distribution remains disabled and build 30 remains unassigned.
+
+Build 31 is available to the owner pilot. No physical installation/update or
+distribution journal access is established. The bounded comparison does not
+prove physical recovery or arbitrary activation-callback ordering. The signed
+artifact identifies the clean source revision above; later release-documentation
+commits do not change that artifact's source identity.
 
 ## Self-pilot record
 

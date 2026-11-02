@@ -50,12 +50,12 @@ The separate App Store Connect record is **Teaching Timer Beta**, with store
 container `net.qays.TeachingTimer`. Apple rejected “Teaching Timer” as already
 used; the public release name remains a decision. The Watch payload stays
 `net.qays.TeachingTimer.watchkitapp`; development remains
-`com.qayshp.TeachingTimer`. Builds 29 and 30 are Ready to Test / Internal after
-signed export, upload and processing. Only build 29 is assigned to the
-maintainer-only group, which has manual distribution and one invited account
-holder. Build 30 is unassigned; no external testers or public release are
-configured. Source build 31 passes the bounded Simulator comparison and Swift
-suites; its signed export/upload remain pending.
+`com.qayshp.TeachingTimer`. Build 31 is Ready to Test / Internal after clean
+signed archive/export, upload and processing. It is assigned to the Maintainer
+pilot with one tester, the owner, and manual distribution. Build 29 is also
+assigned; build 30 is processed but unassigned. No external testers or public
+release are configured. The build-31 What to Test notes and one-group/one-tester
+assignment were verified in App Store Connect.
 
 Beta Test Information was saved and verified after reload: description and known
 limitations, support address, repository and privacy URLs. Review contact remains
@@ -82,15 +82,18 @@ navigation. Actual screenshots show the expected controls and native Not Playing
 state; no paired audio result follows.
 
 The first build-29 source checks passed all 12 Swift suites, the full build and
-unsigned development/distribution archive pipeline. The Python suite passes 102
-tests after adding retirement fixtures and explicit export-declaration checks.
+unsigned development/distribution archive pipeline. That build's Python suite
+passed 102 tests after adding retirement fixtures and explicit export-declaration checks.
 All ten SE 3 retirement assertions pass for build 29: old editor redirect,
 Settings return, explicit new Start, custom draft preservation, and cleanup.
 Screenshots were reviewed separately. Build 29's clean signed revision
 `7e9ca4a82324` and build 30's `da9d8d6756f8` passed signed export and Apple
-processing. Candidate 31 passes all 12 Swift suites (including new early-handoff
-scene/native checks) and Debug Simulator compilation; its signed export/upload
-remain pending. Raw captures, build products and account evidence remain
+processing. Build 31 passes all 12 Swift suites (including new early-handoff
+scene/native checks), 107 Python tests and Debug Simulator compilation. Clean
+revision `9da154876eeb6a429e3d655583696b5958b8dd2b` passed signed archive/export,
+including the source-cleanliness guard. Upload completed at 13:19:59 PST on
+November 2; Apple processing and owner-pilot assignment are verified. Raw captures,
+build products and account evidence remain
 private under ignored `work/`.
 
 Next independent work:
@@ -101,9 +104,10 @@ Next independent work:
    Stop comparisons independently retained stopped intent. All 14 candidate
    preference captures matched the baseline class bytes. This is bounded Simulator evidence, not
    a guarantee for arbitrary callback ordering or physical behavior.
-2. Complete signed distribution verification/upload for candidate 31. Builds
-   29/30 have already passed export/upload/processing; those passes do not
-   validate the new runtime change. Keep the physical Watch untouched.
+2. Arrange the physical build-31 TestFlight install/update/journal pilot when
+   authorized and available. Signed export, upload, processing and owner-pilot
+   assignment are complete; installation is not. Keep the teaching Watch untouched
+   until the user authorizes that next step.
 3. Preserve completed retirement/layout assertions and reviewed screenshots as
    regression evidence. These are completed UI checks, not pending redesign work.
 4. The isolated fixed-anchor probe reproduced two backsteps on watchOS 27.2.

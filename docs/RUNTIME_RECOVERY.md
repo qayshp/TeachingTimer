@@ -111,4 +111,7 @@ ordering and class timing were not changed.
 
 The private `runtime-recovery-comparison.md` and candidate stage records are
 under ignored `work/support/2026-11-02-v1-review/`, beside the baseline evidence.
-Signed build-31 export/upload remain separate pending checks.
+The clean build-31 archive at `9da154876eeb` passed signed export and upload;
+Apple processed it as Ready to Test / Internal, and it is available in the
+one-tester owner pilot. This distribution result does not establish TestFlight
+installation/update, journal access or physical recovery behavior.

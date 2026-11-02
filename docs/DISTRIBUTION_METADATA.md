@@ -1,15 +1,16 @@
 # Distribution metadata draft
 
 Updated November 2, 2026. The App Store Connect record **Teaching Timer Beta**
-has builds 29 and 30 Ready to Test / Internal. Only build 29 is assigned to the
-manual-distribution pilot, with only the maintainer invited. This is the metadata review packet
+has build 31 Ready to Test / Internal and available to the one-tester Maintainer
+pilot. Build 29 is also assigned; build 30 is processed but unassigned. Distribution
+remains manual. This is the metadata review packet
 for the private pilot, not a completed store submission or external invitation.
 
 | Field | Draft |
 | --- | --- |
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 / source 31 with bounded Simulator verification; builds 29/30 processed, only 29 assigned to the internal pilot |
+| Version / development candidate | 1.0 / 31 at clean source 9da154876eeb; processed and assigned to the owner pilot alongside 29; 30 unassigned |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
@@ -56,16 +57,15 @@ in public feedback.
   assets, not a finalized App Store screenshot set. Prepare final screenshots
   only after the beta behavior and supported-device claims are validated.
 - Complete the install/update and journal-access pilot in
-  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 29 has passed upload
-  and processing, with the maintainer invited. Build 30 also passed signed export,
-  upload and processing but has no group assignment. Source 31 passes the bounded
-  Simulator comparison and Swift suites; its signed export/upload are pending.
+  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 31 passed clean signed
+  archive/export, upload and processing and is assigned to the owner pilot.
+  It also passes the bounded Simulator comparison, 12 Swift suites and 107 Python tests.
   Neither source work nor processing establishes physical installation or journal access.
 
 ## Current candidate review
 
-Source build 31's scene-readiness guard passes one matched Simulator automatic
-recovery comparison and all 12 Swift suites; physical behavior remains unverified.
+Build 31's scene-readiness guard passes one matched Simulator automatic recovery
+comparison, all 12 Swift suites and 107 Python tests; physical behavior remains unverified.
 Build 30 adds private support and
 accessible Settings navigation to build 29, which fixed explicit Start and
 schedule-retirement races. Build 25, including settings and bounded media
@@ -73,8 +73,8 @@ wake refresh, is installed as the development identity `com.qayshp.TeachingTimer
 Build 25 received positive classroom Settings/volume feedback on October 31;
 song progress still stalled and recovered by switching pages. Build 27 adds
 Help/Privacy/About under Settings; that addition has not been installed on the
-physical Watch. Builds 29 and 30 are Ready to Test / Internal in App Store Connect,
-with only build 29 assigned to the maintainer pilot. No TestFlight
+physical Watch. Build 31 is Ready to Test / Internal in App Store Connect and
+assigned to the owner pilot alongside 29; build 30 remains unassigned. No TestFlight
 installation has been verified.
 
 - **Screenshot set:** the [Settings-era teaching face](images/settings-25/se3-face.png)
