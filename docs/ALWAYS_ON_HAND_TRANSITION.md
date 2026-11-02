@@ -2,7 +2,7 @@
 
 Filed October 26 as **FB25329087**, with the standalone probe, recordings,
 frame analysis, and comparison notes. See [Apple feedback status](APPLE_FEEDBACK.md)
-for the remaining capture gaps. No seconds-hand fix is claimed.
+for the remaining capture gaps. No physical-Watch fix is established.
 
 **November 2 update:** an exact-value trace now identifies a numerical boundary
 mechanism in the isolated probe. Earlier rounded timestamps could not rule out
@@ -257,8 +257,9 @@ transition defect. Private evidence is under
 `work/support/2026-11-02-v1-review/clock-render-trace-normalized-run1/`.
 
 Candidate build 33 passes 13 Swift suites, 117 Python tests and all 21 full-app
-Simulator UI-action assertions. Signed release preparation/upload and physical
-validation remain pending; build 32 is still the latest available owner pilot.
+Simulator UI-action assertions. Clean source `12772ccabb44` passed signed
+archive/export, CI, upload and Apple processing; build 33 is Ready to Test /
+Internal and assigned to the owner pilot. Physical validation remains pending.
 The physical teaching installation remains build 25 and was untouched.
 An Apple follow-up draft records this narrower diagnosis, but this evidence has
 **not been submitted** to FB25329087.

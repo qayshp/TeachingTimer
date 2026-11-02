@@ -1,13 +1,14 @@
 # TestFlight pilot
 
-Updated November 2, 2026. Build 32 passed signed archive/export, upload and Apple
+Updated November 2, 2026. Build 33 passed signed archive/export, upload and Apple
 processing and is Ready to Test / Internal. It is assigned to the manual-distribution
-Maintainer pilot with one tester, the owner. Builds 29 and 31 are also assigned; build 30
+Maintainer pilot with one tester, the owner. Builds 29, 31 and 32 are also assigned; build 30
 is processed but unassigned. The physical teaching app remains build 25 and is
 untouched; no physical TestFlight installation is verified.
 
-Build 32 includes queued-Start readiness, privacy-manifest verification and
-onboarding clarification. Preparation/upload/group assignment are complete;
+Build 33 adds narrow clock-display boundary normalization to the prior
+queued-Start readiness, privacy-manifest verification and onboarding work.
+Preparation/upload/group assignment are complete;
 the physical self-pilot below remains unverified.
 
 ## Identities and packaging
@@ -156,10 +157,22 @@ archive/export, including the actual Watch privacy-manifest checks. Its IPA
 SHA-256 is `ece330038a7e9a5fb00e8351bab42a3bb6d5e99978a67220c4de519f783c2d21`.
 Upload completed November 2 at 13:50:22 PST. Apple shows **Ready to Test / Internal**;
 its What to Test notes and assignment to the one-owner **Maintainer pilot**
-survived reload. The group shows **Manual** distribution, one tester and three
+survived reload. At that checkpoint the group showed **Manual** distribution, one tester and three
 builds: 29, 31 and 32. Build 30 remains unassigned. Build 32 passes all 12 Swift
 suites, 110 Python tests, 21 Simulator UI-action assertions and
 [CI](https://github.com/qayshp/TeachingTimer/actions/runs/41531683416).
+
+Build 33, clean source `12772ccabb44b4bc93ce235f5bc94b3790c8d740`, passed signed
+archive/export. Its IPA SHA-256 is
+`1722581675ee31796e2e6fc27b783d1ea35a2d896358cd16eb35a681d1c23f88`.
+Upload completed November 2 at 14:39:14 PST; Apple processed it as **Ready to
+Test / Internal**. What to Test notes and assignment to the one-owner
+**Maintainer pilot** survived reload. Assigned builds are now 29, 31, 32 and 33;
+30 remains unassigned, and distribution remains manual. All 13 Swift suites,
+117 Python tests, 21 full-app Simulator UI-action assertions and
+[CI](https://github.com/qayshp/TeachingTimer/actions/runs/41538777416) pass.
+Later documentation commits do not change this artifact's source revision.
+Physical install/update, journal access and teaching validation remain unverified.
 
 ## Self-pilot record
 

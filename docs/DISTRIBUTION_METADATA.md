@@ -1,8 +1,8 @@
 # Distribution metadata draft
 
 Updated November 2, 2026. The App Store Connect record **Teaching Timer Beta**
-has build 32 Ready to Test / Internal and available to the one-tester Maintainer
-pilot. Builds 29 and 31 are also assigned; build 30 is processed but unassigned. Distribution
+has build 33 Ready to Test / Internal and available to the one-tester Maintainer
+pilot. Builds 29, 31 and 32 are also assigned; build 30 is processed but unassigned. Distribution
 remains manual. This is the metadata review packet
 for the private pilot, not a completed store submission or external invitation.
 
@@ -10,7 +10,7 @@ for the private pilot, not a completed store submission or external invitation.
 | --- | --- |
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 (32), clean source `f931c173ab86`, processed and assigned to the owner pilot alongside 29 and 31; 30 unassigned |
+| Version / development candidate | 1.0 (33), clean source `12772ccabb44`, processed and assigned to the owner pilot alongside 29, 31 and 32; 30 unassigned |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
@@ -57,9 +57,9 @@ in public feedback.
   assets, not a finalized App Store screenshot set. Prepare final screenshots
   only after the beta behavior and supported-device claims are validated.
 - Complete the install/update and journal-access pilot in
-  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 32 passed clean signed
+  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 33 passed clean signed
   archive/export, upload and processing and is assigned to the owner pilot.
-  It also passes 12 Swift suites, 110 Python tests, 21 Simulator UI-action assertions and CI.
+  It also passes 13 Swift suites, 117 Python tests, 21 Simulator UI-action assertions and CI.
   Neither source work nor processing establishes physical installation or journal access.
 
 ### Privacy decisions before broader distribution
@@ -84,6 +84,11 @@ in public feedback.
   Apple. This checklist records no account answers or legal determination.
 
 ## Current candidate review
+
+Build 33 adds narrow display normalization for the exact-Date boundary mechanism
+reproduced in the clock probe. Its bounded normalized comparison and full-app UI
+checks pass; signed export, Apple processing and owner-pilot assignment are
+complete. Build notes and assignment survived reload. Physical validation remains open.
 
 Build 32 adds queued explicit-Start readiness and artifact privacy-manifest checks.
 Its clean signed archive/export, Apple processing and manual owner-pilot assignment

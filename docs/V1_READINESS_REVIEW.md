@@ -50,11 +50,11 @@ The separate App Store Connect record is **Teaching Timer Beta**, with store
 container `net.qays.TeachingTimer`. Apple rejected “Teaching Timer” as already
 used; the public release name remains a decision. The Watch payload stays
 `net.qays.TeachingTimer.watchkitapp`; development remains
-`com.qayshp.TeachingTimer`. Build 32 is Ready to Test / Internal after clean
+`com.qayshp.TeachingTimer`. Build 33 is Ready to Test / Internal after clean
 signed archive/export, upload and processing. It is assigned to the Maintainer
-pilot with one tester, the owner, and manual distribution. Builds 29 and 31 are also
+pilot with one tester, the owner, and manual distribution. Builds 29, 31 and 32 are also
 assigned; build 30 is processed but unassigned. No external testers or public
-release are configured. The build-32 What to Test notes and one-group/one-tester
+release are configured. The build-33 What to Test notes and one-group/one-tester
 assignment were verified after reload in App Store Connect.
 
 Beta Test Information was saved and verified after reload: description and known
@@ -104,7 +104,7 @@ Next independent work:
    Stop comparisons independently retained stopped intent. All 14 candidate
    preference captures matched the baseline class bytes. This is bounded Simulator evidence, not
    a guarantee for arbitrary callback ordering or physical behavior.
-2. Arrange the physical build-32 TestFlight install/update/journal pilot when
+2. Arrange the physical build-33 TestFlight install/update/journal pilot when
    authorized and available. Signed export, upload, processing and owner-pilot
    assignment are complete; installation is not. Keep the teaching Watch untouched
    until the user authorizes that next step.
@@ -192,6 +192,9 @@ no measured backward whole tick. All 13 Swift suites, 117 Python tests and 21
 full-app Simulator UI-action assertions pass. See the
 [evidence and limits](ALWAYS_ON_HAND_TRANSITION.md#build-33-candidate--bounded-simulator-validation).
 
-This candidate has not completed signed release/upload. Build 32 remains the
-latest available owner pilot and physical build 25 remains untouched. No
-physical fix or universal cause is established, and no new Apple update was sent.
+Clean source `12772ccabb44b4bc93ce235f5bc94b3790c8d740` passed signed archive/export,
+[CI](https://github.com/qayshp/TeachingTimer/actions/runs/41538777416), upload and
+Apple processing. Build 33 is Ready to Test / Internal; its notes and one-owner
+pilot assignment survived reload. Physical build 25 remains untouched, and Beta
+install/update/journal checks remain open. No physical fix or universal cause
+is established, and no new Apple update was sent.

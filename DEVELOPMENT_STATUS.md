@@ -5,11 +5,11 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (33): narrow display normalization addresses the exact-Date boundary mechanism reproduced in the isolated clock probe. All 13 Swift suites, 117 Python tests and 21 full-app Simulator UI-action assertions pass. The normalized probe exercised the input defect without a measured backward tick. Signed release/upload are pending; build 32 remains the available owner pilot. |
+| Source candidate | 1.0 (33), clean source `12772ccabb44`: narrow display normalization addresses the exact-Date boundary mechanism reproduced in the isolated clock probe. All 13 Swift suites, 117 Python tests, 21 full-app Simulator UI-action assertions and CI pass. Signed archive/export, Apple processing and owner-pilot assignment are complete. Physical validation remains open. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Build 32 (`f931c173ab86`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29 and 31 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Build 33 (`12772ccabb44`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29, 31 and 32 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -58,8 +58,12 @@ controls. The normalized probe corrected all 113 affected inputs among 234
 evaluations; independent replay matched every record. No backward whole tick was
 measured in 190 frames over 24.283 s. All 13 Swift suites, 117 Python tests and
 21 full-app UI-action assertions pass. These bounded Simulator results do not
-establish physical behavior or explain every historical jump. Build 33 has not
-been uploaded; the available pilot and physical installation remain as listed above.
+establish physical behavior or explain every historical jump. Clean source
+`12772ccabb44b4bc93ce235f5bc94b3790c8d740` passed signed archive/export and
+[CI](https://github.com/qayshp/TeachingTimer/actions/runs/41538777416).
+Upload completed November 2 at 14:39:14 PST; Apple shows Ready to Test / Internal.
+Build notes and one-owner Maintainer pilot assignment survived reload. Physical
+build 25 remains untouched; TestFlight installation/update/journal checks remain open.
 
 Build 32 extends the existing readiness guard to an explicit Start queued while
 an old runtime invalidates. The new boundary-double tests exercise both
