@@ -47,9 +47,19 @@ struct ClassContextChecks {
         // Preparing early must allow the inferred quarter to be corrected.
         store.begin(at: date(10, 23), scheduledStart: date(15), durationMinutes: 60)
         assert(store.context?.scheduledEnd == date(15).addingTimeInterval(3600))
-        store.updateSchedule(start: date(30), durationMinutes: 75)
+        assert(store.updateSchedule(start: date(30), durationMinutes: 75, for: date(10, 23), at: date(20)))
         assert(store.context?.initialStartPressedAt == date(10, 23))
         assert(ClassStore(defaults: defaults).context == store.context)
+        let beforeRejectedEdit = store.context!
+        // A save from an older editor cannot modify a replacement class, and an
+        // overdue class cannot be extended after its retirement deadline merely
+        // because the UI's retirement callback has not run yet.
+        assert(!store.updateSchedule(start: date(45), durationMinutes: 60,
+                                     for: date(10, 24), at: date(20)))
+        assert(!store.updateSchedule(start: date(45), durationMinutes: 60,
+                                     for: date(10, 23), at: beforeRejectedEdit.retirementDate))
+        assert(store.context == beforeRejectedEdit)
+        assert(ClassStore(defaults: defaults).context == beforeRejectedEdit)
         // Explicit New class before the old grace period expires gets a fresh anchor.
         store.begin(at: date(40), scheduledStart: date(45), durationMinutes: 60)
         assert(store.context?.initialStartPressedAt == date(40))
@@ -91,6 +101,9 @@ struct ClassContextChecks {
         })
         assert(retirementCalls == 1 && store.context == nil)
         assert(ClassStore(defaults: defaults).context == nil)
+        assert(!store.updateSchedule(start: date(45), durationMinutes: 75,
+                                     for: oldClass.initialStartPressedAt, at: oldClass.retirementDate))
+        assert(store.context == nil && ClassStore(defaults: defaults).context == nil)
         assert(!store.retireIfNeeded(at: oldClass.retirementDate.addingTimeInterval(600)) { _ in retirementCalls += 1 })
         assert(retirementCalls == 1)
         // A new context is created only by a later explicit Start.
@@ -149,5 +162,6 @@ struct ClassContextChecks {
         print("PASS: quarter-hour boundaries, seconds, hour rollover, 75-minute end, midpoint, persistence and explicit reset")
         print("PASS: exact retirement boundary, overrun grace, idempotence, persistence, fresh Start and 75-minute protection")
         print("PASS: invalid persisted durations/dates rejected without overwriting data; explicit Start recovers")
+        print("PASS: stale schedule saves reject missing, replaced, and overdue classes without mutation or resurrection")
     }
 }

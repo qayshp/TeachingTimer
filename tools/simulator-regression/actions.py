@@ -17,6 +17,24 @@ from run import checked, reset_test_app
 
 BUNDLE = 'com.qayshp.TeachingTimer'
 KEY = 'teachingClassContext.v1'
+REFERENCE_DATE_OFFSET = 978307200
+
+
+def retiring_preferences(now, delay=90):
+    """Fresh stopped class fixture; Swift Codable Dates use the 2001 epoch."""
+    if not 20 <= delay <= 90:
+        raise ValueError('Retirement setup must remain bounded to 20–90 seconds')
+    pressed = now - REFERENCE_DATE_OFFSET
+    context = dict(initialStartPressedAt=pressed, scheduledStart=pressed - 90 * 60 + delay,
+                   durationMinutes=60)
+    intent = dict(classID=pressed, state='stopped')
+    return {KEY: json.dumps(context).encode(), 'teachingRuntimeIntent.v1': json.dumps(intent).encode()}
+
+
+def suggested_start(timestamp):
+    minute = datetime.fromtimestamp(timestamp).minute
+    offset = minute % 15
+    return int(timestamp // 60) * 60 + (15 - offset if offset >= 13 else -offset) * 60
 
 
 def choose_text(rows, alternatives, minimum_y=0.2):
@@ -38,6 +56,8 @@ def main():
     parser.add_argument('--app', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--reset-test-app', required=True, action='store_true')
+    parser.add_argument('--retirement', action='store_true',
+                        help='Instead of baseline actions, run three bounded retirement/editor cases; resets the test app for each')
     args = parser.parse_args()
     devices = json.loads(checked('xcrun', 'simctl', 'list', 'devices', '--json'))
     matches = [d for ds in devices['devices'].values() for d in ds if d['udid'] == args.simulator]
@@ -57,11 +77,13 @@ def main():
     if not pid.isdigit():
         raise RuntimeError('Expected one Device Hub')
     # Explicit opt-in above; an existing test class is deliberately discarded.
-    reset_test_app(args.simulator, BUNDLE)
-    checked('xcrun', 'simctl', 'install', args.simulator, args.app.resolve())
-    checked('xcrun', 'simctl', 'launch', args.simulator, BUNDLE)
-    time.sleep(2)
-    container = Path(checked('xcrun', 'simctl', 'get_app_container', args.simulator, BUNDLE, 'data'))
+    container = None
+    if not args.retirement:
+        reset_test_app(args.simulator, BUNDLE)
+        checked('xcrun', 'simctl', 'install', args.simulator, args.app.resolve())
+        checked('xcrun', 'simctl', 'launch', args.simulator, BUNDLE)
+        time.sleep(2)
+        container = Path(checked('xcrun', 'simctl', 'get_app_container', args.simulator, BUNDLE, 'data'))
     results, actions = [], []
     def ui(*values):
         actions.append({'at': datetime.now(timezone.utc).isoformat(), 'input': list(values)})
@@ -95,8 +117,8 @@ def main():
     def events(name='RuntimeDiagnostics'):
         path = container / 'Documents' / (name + '.json')
         return json.loads(path.read_text()) if path.exists() else []
-    def check(label, condition):
-        deadline = time.monotonic() + 30
+    def check(label, condition, timeout=30):
+        deadline = time.monotonic() + timeout
         while not condition():
             if time.monotonic() >= deadline:
                 capture('FAILED-' + label)
@@ -111,6 +133,107 @@ def main():
         ui('tap', .22, .12)
     def dismiss():
         ui('tap', .23, .13)
+    def finish(scenario):
+        for name in ('RuntimeDiagnostics', 'InterfaceDiagnostics', 'LandmarkDiagnostics'):
+            (output / (name + '.json')).write_text(json.dumps(events(name), indent=2))
+        result = {'passed': results, 'complete': True, 'scenario': scenario,
+                  'deviceType': matches[0]['deviceTypeIdentifier'], 'build': info['CFBundleVersion'],
+                  'visualReview': 'required', 'phoneMediaAndHaptics': 'unverified'}
+        (output / 'result.json').write_text(json.dumps(result, indent=2))
+        print(json.dumps(result, indent=2))
+    def retirement_cases():
+        def seed(label):
+            nonlocal container
+            reset_test_app(args.simulator, BUNDLE)
+            checked('xcrun', 'simctl', 'install', args.simulator, args.app.resolve())
+            container = Path(checked('xcrun', 'simctl', 'get_app_container', args.simulator, BUNDLE, 'data'))
+            now = time.time()
+            values = retiring_preferences(now)
+            expected = json.loads(values[KEY])
+            preferences = container / 'Library/Preferences' / (BUNDLE + '.plist')
+            preferences.parent.mkdir(parents=True, exist_ok=True)
+            # This new container has never launched the app. Do not edit live
+            # preferences, change system time, or kill any preferences daemon.
+            preferences.write_bytes(plistlib.dumps(values))
+            (output / (label + '-seed.json')).write_text(json.dumps(expected, indent=2))
+            checked('xcrun', 'simctl', 'launch', args.simulator, BUNDLE)
+            time.sleep(2)
+            ui('bounds')
+            ui('tap', .5, .5)
+            check(label + '-fixture-restored', lambda: context() == expected and
+                  any(e['event'] == 'runtime_intent_restored' and e['details'].get('savedRuntimeIntent') == 'stopped'
+                      for e in events()))
+            return expected, now + 90
+        def ready(label, original, deadline):
+            if context() != original or deadline - time.time() < 3:
+                capture('FAILED-' + label + '-setup-missed-deadline', recognize=True)
+                raise AssertionError('Draft setup missed its fixed retirement deadline: ' + label)
+            capture(label + '-ready-before-retirement', recognize=True)
+        def retired(label, deadline):
+            check(label + '-retired', lambda: context() is None and
+                  any(e['event'] == 'stop_requested' and e['details'].get('source') == 'class_retired'
+                      for e in events()), timeout=max(1, deadline - time.time() + 15))
+            if any(e['event'] in {'start_requested', 'runtime_started'} for e in events()):
+                raise AssertionError('Retirement unexpectedly started a session: ' + label)
+        def require_setup(label):
+            rows = capture(label + '-fresh-setup', recognize=True)
+            text = ' '.join(r['text'] for r in rows).casefold()
+            if 'previous class cleared' not in text or 'save schedule' in text or 'start class' not in text:
+                raise AssertionError('Retired editor did not show fresh setup and notice: ' + label)
+
+        original, deadline = seed('edit')
+        menu()
+        tap('retiring-edit', 'Edit', 'Edit schedule', scroll=True)
+        tap('retiring-edit-later', '+15 min')
+        ready('edit', original, deadline)
+        retired('edit', deadline)
+        require_setup('edit')
+        # The old Save is gone. Only this explicit Start may establish new timing.
+        tap('retirement-fresh-start', 'Start class', scroll=True)
+        check('retired-edit-explicit-new-start', lambda: context() is not None and
+              context()['initialStartPressedAt'] != original['initialStartPressedAt'] and
+              context()['durationMinutes'] == 60)
+
+        original, deadline = seed('settings')
+        menu()
+        tap('retiring-settings', 'Settings', scroll=True)
+        ready('settings', original, deadline)
+        retired('settings', deadline)
+        rows = capture('settings-still-open', recognize=True)
+        if not any(r['text'] == 'Settings' for r in rows):
+            raise AssertionError('Retirement unexpectedly dismissed Settings')
+        dismiss()
+        require_setup('settings-return')
+        check('retired-settings-return-keeps-no-class', lambda: context() is None)
+
+        original, deadline = seed('new-draft')
+        menu()
+        before_new = time.time()
+        tap('retiring-new-draft', 'New class', '+ New class', scroll=True)
+        after_new = time.time()
+        tap('retiring-custom-draft', 'Custom', 'Custom schedule', scroll=True)
+        tap('retiring-new-later', '+15 min')
+        ready('new-draft', original, deadline)
+        retired('new-draft', deadline)
+        rows = capture('custom-draft-preserved', recognize=True)
+        text = ' '.join(r['text'] for r in rows).casefold()
+        if 'scheduled start' not in text or 'previous class cleared' in text:
+            raise AssertionError('Retirement discarded the independent custom-new editor')
+        tap('retiring-custom-start', 'Start class', scroll=True)
+        expected_starts = {suggested_start(t) + 900 - REFERENCE_DATE_OFFSET for t in (before_new, after_new)}
+        check('retired-custom-draft-preserved', lambda: context() is not None and
+              context()['initialStartPressedAt'] != original['initialStartPressedAt'] and
+              context()['scheduledStart'] in expected_starts and context()['durationMinutes'] == 60)
+        # Leave this disposable app with no class or count, just like baseline.
+        menu()
+        tap('retirement-end-class', 'End class', scroll=True)
+        tap('retirement-confirm-end', 'End class', scroll=True, minimum_y=.45)
+        check('retirement-cleanup-clears-class', lambda: context() is None)
+
+    if args.retirement:
+        retirement_cases()
+        finish('retirement')
+        return
     def information_pages(prefix, expected_class):
         # Read-only Settings destinations must render and return without changing
         # a draft, saved class, or intentional runtime state.
@@ -196,11 +319,7 @@ def main():
     check('media-navigation', lambda: any(e['event'] == 'page_selection_changed' and e['details'].get('selectedPage') == 'nowPlaying' for e in events()[offset:]))
     ui('swipe', .15, .55, .85, .55)
     check('timer-return-keeps-class', lambda: context() is None and any(e['event'] == 'page_selection_changed' and e['details'].get('selectedPage') == 'classProgress' for e in events()[offset:]))
-    for name in ('RuntimeDiagnostics', 'InterfaceDiagnostics', 'LandmarkDiagnostics'):
-        (output / (name + '.json')).write_text(json.dumps(events(name), indent=2))
-    result = {'passed': results, 'complete': True, 'deviceType': matches[0]['deviceTypeIdentifier'], 'build': info['CFBundleVersion'], 'visualReview': 'required', 'phoneMediaAndHaptics': 'unverified'}
-    (output / 'result.json').write_text(json.dumps(result, indent=2))
-    print(json.dumps(result, indent=2))
+    finish('baseline')
 
 if __name__ == '__main__':
     main()

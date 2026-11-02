@@ -71,7 +71,8 @@ struct SharedClockPage: View {
         .ignoresSafeArea()
         .containerBackground(.black, for: .tabView)
         .sheet(item: $classSheet) { _ in
-            ClassControlsView(session: session, classStore: classStore, landmarks: landmarks)
+            ClassControlsView(session: session, classStore: classStore, landmarks: landmarks,
+                              retireOldClass: retireOldClass)
         }
         .alert("Class not restored", isPresented: Binding(
             get: { classStore.needsRecoveryNotice },

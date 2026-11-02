@@ -84,12 +84,17 @@ final class ClassStore: ObservableObject {
         persist()
     }
 
-    /// Correct the schedule without changing the original Start timestamp or services.
-    func updateSchedule(start: Date, durationMinutes: Int) {
-        guard let existing = context else { return }
+    /// Correct only the class whose draft was opened. Retirement or replacement
+    /// must not let a stale Save recreate timing or edit a different class.
+    @discardableResult
+    func updateSchedule(start: Date, durationMinutes: Int, for classID: Date,
+                        at date: Date = Date()) -> Bool {
+        guard let existing = context, existing.initialStartPressedAt == classID,
+              !existing.shouldRetire(at: date) else { return false }
         context = ClassContext(pressedAt: existing.initialStartPressedAt,
             durationMinutes: durationMinutes, scheduledStart: start)
         persist()
+        return true
     }
 
     private func persist() {

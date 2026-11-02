@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: MPL-2.0
 import importlib.util
+import json
+import plistlib
 from pathlib import Path
 import sys
 import unittest
@@ -26,3 +28,23 @@ class ActionTargetChecks(unittest.TestCase):
         target = self.row('Il Stop session')
         self.assertEqual(actions.choose_text([target], ['Stop session']), target)
         self.assertIsNone(actions.choose_text([self.row('Do not Stop session')], ['Stop session']))
+
+class RetirementFixtureChecks(unittest.TestCase):
+    def test_seed_has_one_fixed_future_retirement_and_stopped_intent(self):
+        now = 1800000000.25
+        values = plistlib.loads(plistlib.dumps(actions.retiring_preferences(now)))
+        context = json.loads(values[actions.KEY])
+        intent = json.loads(values['teachingRuntimeIntent.v1'])
+        self.assertEqual(context['initialStartPressedAt'] + actions.REFERENCE_DATE_OFFSET, now)
+        self.assertEqual(context['scheduledStart'] + 60 * 60 + 30 * 60 + actions.REFERENCE_DATE_OFFSET, now + 90)
+        self.assertEqual(intent, dict(classID=context['initialStartPressedAt'], state='stopped'))
+
+    def test_unbounded_or_unusable_deadlines_rejected(self):
+        for delay in (-1, 0, 19, 91, 10000):
+            with self.assertRaises(ValueError):
+                actions.retiring_preferences(1800000000, delay)
+
+    def test_each_fixture_is_a_different_class(self):
+        first = json.loads(actions.retiring_preferences(1800000000)[actions.KEY])
+        second = json.loads(actions.retiring_preferences(1800000090)[actions.KEY])
+        self.assertNotEqual(first['initialStartPressedAt'], second['initialStartPressedAt'])

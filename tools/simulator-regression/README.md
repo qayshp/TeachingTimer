@@ -139,6 +139,39 @@ sequences concurrently or interact with Device Hub during a run. A screenshot
 still needs human review; state assertions do not prove visible controls, native
 media pixels, Crown ownership, phone playback or tactile delivery.
 
+### Retirement while a class menu is open
+
+The optional retirement scenario uses the same disposable-Simulator, signed-app,
+OCR targeting, and explicit reset guards. Run it separately from the baseline:
+
+```sh
+python3 tools/simulator-regression/actions.py --simulator SIMULATOR_UUID \
+  --app /absolute/path/TeachingTimer.app --reset-test-app --retirement \
+  --output work/retirement-actions-new
+```
+
+Each of its three cases uninstalls/reinstalls only the test app and seeds a fresh
+stopped class into its new container **before first launch**, with retirement 90
+seconds ahead. It does not alter the Simulator's clock, edit live preferences,
+restart system services, or add an app test hook. Setup must finish before that
+fixed deadline; a slow or failed setup stops the run rather than extending it.
+The three cases take approximately five minutes plus bounded setup/capture time:
+
+1. Editing an old schedule: retirement removes Save, displays a fresh setup and
+   notice, and leaves timing absent until an explicit new Start.
+2. Settings open: retirement leaves Settings open; Back returns to fresh setup.
+3. A separate custom-new draft: retirement preserves its adjusted start, and an
+   explicit Start persists that adjustment with a fresh class identity.
+
+Screenshots, original seeded class values, per-stage journals and assertions are
+retained for review. The current UI has no direct Settings action within Edit;
+the real Settings-to-summary route is exercised. A save racing the retirement
+boundary is covered deterministically in `ClassContextChecks.swift`; this UI
+scenario does not claim millisecond-level Save-race reproduction. It does not
+test native media pixels, Crown ownership, phone audio, or physical haptics.
+Successful completion leaves the disposable app with no class or count and
+leaves the Simulator running.
+
 ## Original media-image audit
 
 Use `media_evidence.py --output NEW_DIRECTORY ORIGINAL.png ...` for read-only

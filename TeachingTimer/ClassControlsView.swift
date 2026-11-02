@@ -12,12 +12,15 @@ struct ClassControlsView: View {
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
     @ObservedObject var landmarks: LandmarkController
+    let retireOldClass: () -> Bool
     @Environment(\.dismiss) private var dismiss
     @State private var mode: Mode = .summary
     @State private var settingsReturnMode: Mode = .summary
     @State private var start = Date()
     @State private var defaultStart = Date()
     @State private var duration = 60
+    @State private var editingClassID: Date?
+    @State private var draftNotice: String?
     @State private var confirmReplacement = false
     @State private var confirmEnd = false
     @AppStorage("countVibrationsEnabled") private var countVibrationsEnabled = true
@@ -26,6 +29,9 @@ struct ClassControlsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                if let draftNotice, mode != .settings {
+                    Section { Text(draftNotice).font(.caption) }
+                }
                 if mode == .settings {
                     Section {
                         Toggle("Count vibrations", isOn: $countVibrationsEnabled)
@@ -78,7 +84,8 @@ struct ClassControlsView: View {
                     }
                     Section("Schedule") {
                         classAction("Edit schedule", icon: "calendar") {
-                            start = current.scheduledStart; duration = current.durationMinutes; mode = .edit
+                            start = current.scheduledStart; duration = current.durationMinutes
+                            editingClassID = current.initialStartPressedAt; draftNotice = nil; mode = .edit
                         }.accessibilityIdentifier("edit-class-schedule")
                         classAction("New class", icon: "plus") { prepareNew() }
                             .accessibilityIdentifier("new-class")
@@ -161,8 +168,9 @@ struct ClassControlsView: View {
             .toolbar { ToolbarItem(placement: .cancellationAction) {
                 Button(closeButtonTitle) {
                     if mode == .settings {
-                        if settingsReturnMode == .summary && classStore.context == nil { prepareNew() }
-                        else { mode = settingsReturnMode }
+                        _ = retireOldClass()
+                        if classStore.context == nil { handleClearedClass() }
+                        mode = settingsReturnMode
                     } else { dismiss() }
                 }
             } }
@@ -190,9 +198,7 @@ struct ClassControlsView: View {
 #endif
         }
         .onChange(of: classStore.context) { _, context in
-            // Retirement can occur while this sheet is open. Don't expose an
-            // uninitialized schedule draft when the old summary disappears.
-            if context == nil && mode == .summary { prepareNew() }
+            if context == nil { handleClearedClass() }
         }
         .alert("Start new class?", isPresented: $confirmReplacement) {
             Button("Start new", role: .destructive) { save() }
@@ -256,7 +262,20 @@ struct ClassControlsView: View {
         start = ClassContext.inferredStart(for: Date())
         defaultStart = start
         duration = 60
+        editingClassID = nil
+        draftNotice = nil
         mode = .create
+    }
+
+    private func handleClearedClass() {
+        let returnMode = mode == .settings ? settingsReturnMode : mode
+        // An explicitly prepared NEW class is independent of the retiring
+        // class. Keep its custom start/duration, including while in Settings.
+        guard returnMode == .summary || returnMode == .edit else { return }
+        let wasInSettings = mode == .settings
+        prepareNew()
+        draftNotice = "Previous class cleared."
+        if wasInSettings { settingsReturnMode = .create; mode = .settings }
     }
 
     private func confirmStart() {
@@ -266,7 +285,15 @@ struct ClassControlsView: View {
 
     private func save() {
         if mode == .edit {
-            classStore.updateSchedule(start: start, durationMinutes: duration)
+            // Save can beat the retirement task/onChange callback. Retire through
+            // the shared path, then reject a stale draft before dismissing.
+            _ = retireOldClass()
+            guard let editingClassID,
+                  classStore.updateSchedule(start: start, durationMinutes: duration, for: editingClassID) else {
+                prepareNew()
+                draftNotice = classStore.context == nil ? "Previous class cleared." : "Class changed. Review before starting."
+                return
+            }
         } else {
             landmarks.cancel(reason: "new_class_reset")
             // The confirmation is the actual Start action; opening the draft
