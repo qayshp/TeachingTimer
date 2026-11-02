@@ -44,7 +44,9 @@ final class WKExtendedRuntimeSession {
         defer { try? FileManager.default.removeItem(at: directory) }
         func controller() throws -> ExtendedRuntimeController {
             WKApplication.shared().applicationState = .active
-            return ExtendedRuntimeController(journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)))
+            let controller = ExtendedRuntimeController(journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)))
+            controller.applicationStateChanged("active")
+            return controller
         }
         let diagnosticSuite = "PersistenceIntent." + UUID().uuidString
         let diagnosticDefaults = UserDefaults(suiteName: diagnosticSuite)!
@@ -120,6 +122,26 @@ final class WKExtendedRuntimeSession {
         replacement.end(.error, error: NSError(domain: "RBSAssertionErrorDomain", code: 1)); await drain()
         early.applicationBecameActive(); early.applicationBecameActive()
         assert(WKExtendedRuntimeSession.instances.count == count + 1 && early.needsRestart)
+        // Early handoff must use the same scene/native readiness as restored
+        // recovery. Do not invalidate a working runtime on native state alone.
+        let sceneHandoff = try controller(); sceneHandoff.start()
+        let sceneOld = WKExtendedRuntimeSession.instances.last!
+        sceneOld.confirmStart(); await drain()
+        sceneHandoff.applicationStateChanged("inactive")
+        sceneOld.expirationDate = Date().addingTimeInterval(15)
+        sceneOld.warn(); await drain()
+        sceneHandoff.applicationBecameActive()
+        assert(sceneOld.invalidationRequests == 0)
+        sceneHandoff.applicationStateChanged("active")
+        sceneHandoff.applicationBecameActive(); sceneHandoff.applicationBecameActive()
+        assert(sceneOld.invalidationRequests == 1)
+        let beforeSceneSuccessor = WKExtendedRuntimeSession.instances.count
+        sceneHandoff.applicationStateChanged("inactive")
+        sceneOld.end(.none); await drain()
+        assert(WKExtendedRuntimeSession.instances.count == beforeSceneSuccessor)
+        sceneHandoff.applicationStateChanged("active")
+        sceneHandoff.applicationBecameActive(); sceneHandoff.applicationBecameActive()
+        assert(WKExtendedRuntimeSession.instances.count == beforeSceneSuccessor + 1)
         // Reproduce the captured expiration-shaped error while inactive.
         let late = try controller(); late.start()
         let second = WKExtendedRuntimeSession.instances.last!
@@ -277,6 +299,7 @@ final class WKExtendedRuntimeSession {
             let controller = ExtendedRuntimeController(
                 journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)),
                 intentStore: RuntimeIntentStore(defaults: UserDefaults(suiteName: suite)!))
+            controller.applicationStateChanged("active")
             controller.synchronizeClass(context)
             return controller
         }
@@ -346,6 +369,51 @@ final class WKExtendedRuntimeSession {
         launch(expiredClass).applicationBecameActive()
         assert(WKExtendedRuntimeSession.instances.count == beforeOther)
         assert(RuntimeIntentStore(defaults: defaults).value == nil)
+        // Dimmed relaunch regression: WatchKit's native application state can
+        // be active before SwiftUI's scene is active. Do not consume restored
+        // running intent or create a runtime until BOTH observations are active.
+        let deferredClass = ClassContext(pressedAt: Date(), scheduledStart: Date())
+        for cancellation in ["none", "stop", "reset", "different_class", "retirement", "manual_policy"] {
+            RuntimeIntentStore(defaults: defaults).save(RuntimeIntent(classID: deferredClass.initialStartPressedAt, state: .running))
+            let deferred = ExtendedRuntimeController(
+                journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)),
+                intentStore: RuntimeIntentStore(defaults: defaults))
+            WKApplication.shared().applicationState = .active
+            deferred.applicationStateChanged("inactive", details: ["luminanceReduced": "true"])
+            deferred.synchronizeClass(deferredClass)
+            let before = WKExtendedRuntimeSession.instances.count
+            deferred.applicationBecameActive(); deferred.applicationBecameActive()
+            assert(WKExtendedRuntimeSession.instances.count == before)
+            assert(RuntimeIntentStore(defaults: defaults).value?.state == .running)
+            switch cancellation {
+            case "stop": deferred.stop()
+            case "reset": deferred.synchronizeClass(nil)
+            case "different_class":
+                deferred.synchronizeClass(ClassContext(pressedAt: deferredClass.initialStartPressedAt.addingTimeInterval(1), scheduledStart: Date()))
+            case "retirement":
+                deferred.synchronizeClass(ClassContext(pressedAt: deferredClass.initialStartPressedAt, scheduledStart: Date().addingTimeInterval(-10000)))
+            case "manual_policy": deferred.renewalPolicy = .userInitiated
+            default: break
+            }
+            // A SwiftUI active transition alone is insufficient too.
+            WKApplication.shared().applicationState = .inactive
+            deferred.applicationStateChanged("active", details: ["luminanceReduced": "false"])
+            deferred.applicationBecameActive()
+            assert(WKExtendedRuntimeSession.instances.count == before)
+            WKApplication.shared().applicationState = .active
+            deferred.applicationBecameActive(); deferred.applicationBecameActive()
+            if cancellation == "none" {
+                assert(WKExtendedRuntimeSession.instances.count == before + 1)
+                let recovered = WKExtendedRuntimeSession.instances.last!
+                recovered.confirmStart(); await drain()
+                assert(deferred.phase == .running)
+                assert(RuntimeIntentStore(defaults: defaults).value == RuntimeIntent(classID: deferredClass.initialStartPressedAt, state: .running))
+                deferred.applicationBecameActive()
+                assert(WKExtendedRuntimeSession.instances.last === recovered)
+            } else {
+                assert(WKExtendedRuntimeSession.instances.count == before)
+            }
+        }
         // UI observations share launch/runtime correlation without starting,
         // invalidating, renewing, or publishing any session state.
         let diagnosticURL = directory.appendingPathComponent("interface.json")
@@ -382,5 +450,6 @@ final class WKExtendedRuntimeSession {
         print("PASS: relaunch recovery, inactive deferral, duplicate activation, persistent Stop, manual resume, schedule edits, failed-start suppression across launches, legacy/missing/corrupt/mismatched/expired intent")
         print("PASS: early handoff ordering, inactive deferral, observed expiration error, rejected replacement no-loop, explicit reset, manual policy, narrow time/error boundaries, passive UI/runtime correlation")
         print("PASS: explicit new-class Start survives pending old invalidation without overlap; Stop/reset/class changes/retirement cancel it")
+        print("PASS: automatic recovery waits for both scene/native readiness; deferred intent survives and Stop/reset/class changes/retirement/manual policy prevent recovery")
     }
 }

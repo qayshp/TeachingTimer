@@ -5,11 +5,11 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (30): private support entry point and accessible Settings Back control, following build 29 runtime-start and schedule-retirement fixes. |
+| Source candidate | 1.0 (31): scene-readiness guard passed one matched dimmed-relaunch/wake Simulator comparison and all 12 Swift suites. Debug Simulator build passes; signed export/upload remain pending. Build 30 supplies private support and accessible Settings Back; build 29 fixed explicit Start and schedule-retirement races. |
 | Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Build 29 (7e9ca4a82324) uploaded and marked Ready to Test / Internal on November 2. Separate Teaching Timer Beta record; no public release or physical Beta install. Build 30 adds support/navigation refinements and is not uploaded yet. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Builds 29 (7e9ca4a82324) and 30 (da9d8d6756f8) passed signed export/upload and are Ready to Test / Internal. Only build 29 is assigned to the manual-distribution Maintainer pilot, with only the owner invited; build 30 has no group assignment. Build 31 is not uploaded. No public release or physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -34,15 +34,39 @@ status. Dated investigations describe their original builds, not current behavio
 1. Incorrect native song progress with working Pause/volume: [incident](docs/MEDIA_PROGRESS_INCIDENT_2026-10-30.md), Apple FB25379883, [issue #8](https://github.com/qayshp/TeachingTimer/issues/8).
 2. Intermittent blank native media, timer Crown response and unintended silencing:
    separate tracked defects, not established manifestations of one cause.
-3. Automatic runtime recovery after dimmed Simulator relaunch: manual-recovery
-   intent was retained after watchOS rejected start. Physical reproduction pending.
+3. Automatic runtime recovery after dimmed Simulator relaunch: build 30 reproduces
+   exact activation error code 3 on watchOS 27.2 and wake does not recover it.
+   Class timing survives. Build 31 defers the premature start and recovers on a
+   later active wake in one matched Simulator trial. Broader callback orderings
+   and physical behavior remain unverified.
 4. Seconds-hand backstep at dim/wake: separate Apple report; no speculative time correction.
-5. TestFlight journal access/private support, signed pilot, and publishing metadata.
+5. Physical TestFlight install/update/journal access, outbound support reply and
+   attachment checks, and final publishing/review metadata.
 
 See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK.md),
 [roadmap](docs/ROADMAP.md), and [publishing readiness](docs/PUBLISHING_READINESS.md).
 
 ## Verification and deployment boundaries
+
+Build 31 passes all 12 Swift suites, including scene/native readiness and early
+handoff checks, and the Debug Simulator build. In one matched inactive/dimmed
+relaunch, automatic Start was deferred, running intent survived and a later
+active wake produced a successful runtime-start callback without error. The
+second trial had a different initial luminance state and is not a second matched
+reproduction. Intentional Stop controls made no Start attempt. All 14 captured
+preferences retained identical class bytes. The wake helper used Home/reopen,
+causing real foreground-loss invalidations between two nonoverlapping starts;
+this is not a claim of one total start or guaranteed recovery for arbitrary
+callback ordering. See [the full comparison and limits](docs/RUNTIME_RECOVERY.md#build-31-candidate-comparison).
+Signed build-31 export/upload and physical validation remain pending.
+
+Build 30's clean revision `da9d8d6756f8` passed signed export and Apple processing.
+Its multi-size and maximum-text UI evidence is recorded in the
+[v1 review](docs/V1_READINESS_REVIEW.md#build-30-usability-follow-up). The TestFlight
+beta description/known limitations, support address and repository/privacy URLs
+were saved and verified after reload. Review contact remains blank; no custom
+EULA or app sign-in is configured. Build-30 processing does not validate the
+changed build-31 runtime behavior or a physical installation.
 
 The build-29 [v1 review](docs/V1_READINESS_REVIEW.md) passes 12 Swift suites,
 102 Python checks, app compilation and the full unsigned build/archive pipeline

@@ -1,8 +1,10 @@
 # TestFlight pilot
 
-Updated November 2, 2026. Build 29 passed signed export, upload and Apple processing.
-It is Ready to Test / Internal in the maintainer-only pilot. Build 30 adds support
-and navigation refinements. The physical teaching app is unchanged.
+Updated November 2, 2026. Builds 29 and 30 passed signed export, upload and Apple
+processing and are Ready to Test / Internal. Only build 29 is assigned to the
+maintainer-only pilot; build 30 has no group assignment. Source build 31 has a
+bounded Simulator recovery pass and passing Swift suites; signed export/upload
+are pending. The physical teaching app remains build 25 and is untouched.
 
 ## Identities and packaging
 
@@ -103,8 +105,27 @@ pilot** internal group has automatic distribution disabled and only the account
 holder invited. No external tester, public link or physical installation was
 created. Upload/processing are verified; installation/update and distribution
 journal access below remain unverified. The separate development build 25 remains
-the last confirmed physical installation. Source build 30 adds the private support
-entry point and Settings navigation refinement; it has not been uploaded yet.
+the last confirmed physical installation.
+
+## Build 30 and current candidate
+
+Build 30, clean revision `da9d8d6756f8`, adds the private support entry point and
+Settings navigation refinement. Its signed export and upload completed, and Apple
+marked it **Ready to Test / Internal**. It has not been assigned to a tester group;
+the Maintainer pilot still contains only build 29, with manual distribution and
+only the owner invited.
+
+Test Information was saved and verified after reloading: beta description and
+known limitations, support address, and repository/privacy URLs. The review
+contact remains blank, no custom EULA was added, and the app requires no sign-in.
+This is internal-pilot preparation, not a completed external review submission.
+
+Source build 31's scene-readiness guard passes all 12 Swift suites, the Debug
+Simulator build, and one matched dimmed-relaunch/wake comparison after the
+[build-30 runtime recovery reproduction](RUNTIME_RECOVERY.md#build-31-candidate-comparison).
+Signed export and upload are pending; build-30 acceptance does not validate that
+changed runtime behavior. The bounded comparison does not establish physical
+recovery or arbitrary activation-callback ordering.
 
 ## Self-pilot record
 

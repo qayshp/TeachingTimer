@@ -94,7 +94,7 @@ actual intake practice; optional support sharing is not automatically exempt.
 - [ ] Outbound reply from the alias tested.
 - [x] Approved address added to About/support QR destination and repository guide.
 - [x] Privacy/support wording describes actual handling; no automatic uploads.
-- [ ] TestFlight feedback contact matches the monitored route.
+- [x] TestFlight feedback email saved to the monitored route and verified after reload.
 - [ ] Self-pilot separately verifies journal retrieval from the distribution app.
 - [ ] Before wider invitations, verify a tester-usable journal delivery path or
   explicitly limit the pilot to reports without journal attachments.

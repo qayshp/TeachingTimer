@@ -13,7 +13,8 @@ class's exact initial Start timestamp. Editing the scheduled start or duration
 does not change that identity.
 
 - `running`: a new class or explicit Resume requests a session. Relaunch arms
-  one recovery attempt when the application is active.
+  one recovery attempt. From build 31, automatic recovery waits until the
+  recorded SwiftUI scene and native application both report active.
 - `stopped`: explicit Stop is persisted before invalidation, including while
   startup is pending. Returning or recreating the process does not undo Stop.
 - `manualRecovery`: a non-renewable failure requires explicit Resume. Repeated
@@ -57,3 +58,58 @@ launch path, without a debug auto-start argument or injected saved intent.
 Physical Watch validation remains necessary for watchOS startup eligibility and
 foreground retention after force-closing during a real class. This change does
 not claim to fix the blank media view or the seconds-hand dimming backstep.
+
+## November 2 build-30 baseline on watchOS 27.2
+
+The SE 3 40 mm Simulator on watchOS 27.2 (24S118), Xcode 27.2 (27B52),
+reproduced [issue #7](https://github.com/qayshp/TeachingTimer/issues/7) with build
+30. A class with running intent was terminated and reopened while dimmed. The
+native app reported active, but the SwiftUI scene was inactive and luminance
+reduced. Automatic start was submitted about 0.135 seconds after the recorded
+launch; about 0.256 seconds after launch, invalidation reported
+`WKExtendedRuntimeSessionErrorDomain` code `3`. The app saved `manualRecovery`.
+Waking to an active, undimmed scene did not restart the session. The persisted
+class bytes remained unchanged.
+
+The intentional-Stop comparison preserved Stop and made no start attempt, but
+its reopened interface was awake, so it does not establish the dimmed-Stop case.
+Two earlier setup-only attempts never reached a runtime relaunch and are not
+counted as successful or failed recovery trials. Original stage screenshots,
+journals, preferences and `result.json` remain in ignored
+`work/support/2026-11-02-v1-review/runtime-recovery-baseline-verified-face/`.
+
+## Build 31 candidate comparison
+
+Build 31 supplies scene state before evaluating recovery on appearance and
+requires both scene and native activity for automatic recovery and early runtime
+handoff. It prevents the observed premature submission; it adds no code-3 retry
+and does not migrate old `manualRecovery` intent to `running`.
+
+One candidate trial matched the baseline's inactive, reduced-luminance initial
+appearance. No premature Start was submitted; running intent remained intact.
+A later verified active wake produced a successful `runtime_started` callback
+without error or a manual Resume. The second candidate trial initially appeared
+inactive but not dimmed, then became dimmed during observation. It is a separate
+nonmatching trial, not a second reproduction of the same launch condition. Both
+intentional-Stop comparisons retained Stop with no Start before or after wake;
+their initial appearance was not dimmed, so that specific Stop condition remains
+unproven. The same class bytes were preserved across 14 preference captures,
+covering the baseline, update and subsequent stages.
+
+The wake helper used virtual Crown/Home followed by reopening, rather than a
+passive wrist lift. Each running candidate trial includes two active edges with
+a real background/`resigned_frontmost` invalidation between them. Two successful,
+nonoverlapping runtime starts follow those edges; this is not a retry loop or a
+claim of one total Start for the whole helper sequence.
+
+All 12 Swift suites pass, including scene/native gating and early-handoff checks;
+the Debug Simulator build succeeds. These results establish one matched
+Simulator prevention/recovery success. They do not guarantee liveness for every
+ordering of native and SwiftUI callbacks: there is no independent native
+did-become-active observer, and this reproduction recovered through a later
+SwiftUI active transition. Physical validation remains pending. Media/volume
+ordering and class timing were not changed.
+
+The private `runtime-recovery-comparison.md` and candidate stage records are
+under ignored `work/support/2026-11-02-v1-review/`, beside the baseline evidence.
+Signed build-31 export/upload remain separate pending checks.

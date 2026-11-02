@@ -3,9 +3,12 @@
 Updated November 2, 2026. Build 25 is installed and launched; October 31 classroom
 feedback confirms Settings/volume worked, while song progress still stalled and
 page switching recovered it. Build 27 adds Help/Privacy/About in Settings to the
-source. Build 29 is Ready to Test / Internal after signed upload and processing;
-only the maintainer is invited, with automatic distribution off. Build 30 adds
-private support and navigation refinements. The physical pilot remains pending. Build 16 remains a preserved rollback
+source. Builds 29 and 30 are Ready to Test / Internal after signed upload and
+processing. Only build 29 is assigned to the maintainer-only pilot, with automatic
+distribution off; build 30 is unassigned. Source build 31's automatic-start
+scene-readiness guard passes one matched Simulator comparison and the Swift
+suites; signed export/upload and the physical pilot remain
+pending. Build 16 remains a preserved rollback
 checkpoint. Further physical installations require authorization. Simulator work
 and repository changes do not count as physical validation.
 
@@ -36,14 +39,14 @@ completed tests. No periodic monitor or automatic installation is scheduled.
 | 1–7 | Teaching checkpoint, documentation separation, retention, device/summary tools, persistence diagnostics and confirmed dead-code cleanup implemented. Journal copying, install/version verification and launch have live evidence; connection reliability remains unresolved. |
 | 8 | Simulator lifecycle regression automation implemented. Original-image audit complete; current bounded run renders. Physical reliability remains unproven. |
 | 9 | Independent native-volume probe built; physical comparison remains current item 7. |
-| 10 | Separate distribution identity, signed export and build-29 upload/processing verified. Install/update and journal-access pilot remain current item 9. |
+| 10 | Separate distribution identity, signed export and builds 29/30 upload/processing verified. Only 29 is assigned to the owner pilot. Install/update and journal-access pilot remain current item 9. |
 | 11–13 | Physical volume, connection and moving-haptic tests pending; current item 7. |
 | 14–15 | Runtime endurance and battery/logging cost pending; current item 8. |
 | 16–17 | Simulator usability checks exist; physical accessibility and ordinary schedule-use observations pending. |
 | 18–21 | Time-edge tests, essential-action checks, build/release evidence and public issues implemented. |
 | 22 | Clock probe and Apple report exist. The fixed-anchor probe reproduces backsteps on watchOS 27.2 (24S118); preserve that comparison for the existing report. Physical transition testing remains pending. |
 | 23 | Mechanical presentation split complete; shared state/native lifecycle retained. |
-| 24 | Tester/privacy guides and metadata draft ready; build 29 processed and support inbound delivery verified. Physical beta install/update, journal access and support reply/attachment checks remain prerequisites for broader testing. |
+| 24 | Tester/privacy guides, builds 29/30 processing, saved beta Test Information and support inbound delivery verified. Review contact, physical beta install/update, journal access and support reply/attachment checks remain prerequisites for broader testing. |
 | 25 | Apple follow-up is ongoing. The October 28 media correction was submitted; connection status and requested documentation follow-up need tracking. |
 
 The older 14-point usability/public-code review is largely implemented: reserved
@@ -96,6 +99,15 @@ journal and distinguish this from an awake relaunch. Investigate startup
 eligibility/deferred recovery separately; intentional Stop and bounded retries
 remain constraints. No physical reproduction or production policy fix is claimed.
 Tracked as [issue #7](https://github.com/qayshp/TeachingTimer/issues/7).
+
+November 2: build 30 reproduces the exact activation error code 3 on watchOS
+27.2 after a dimmed relaunch. Waking does not resume the session, while class
+bytes remain unchanged. [Baseline evidence](RUNTIME_RECOVERY.md#november-2-build-30-baseline-on-watchos-272)
+now exists for the narrow source-build-31 scene-readiness guard. One matched
+candidate trial deferred Start and recovered on a later active wake; another
+trial had different initial luminance. Swift suites and Debug build pass.
+Physical validation and broader callback-ordering coverage remain open; see
+[the comparison limits](RUNTIME_RECOVERY.md#build-31-candidate-comparison).
 
 ## Media progress recovery
 

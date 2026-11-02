@@ -1,8 +1,10 @@
 # Publishing readiness
 
-Reviewed November 2, 2026. Build 29 is Ready to Test / Internal in App Store
-Connect; only the maintainer is invited. Installation/update, wider testing and
-public release remain pending. Source build 30 adds support/navigation refinements.
+Reviewed November 2, 2026. Builds 29 and 30 are Ready to Test / Internal in App
+Store Connect. Only build 29 is assigned to the manual-distribution pilot, with
+only the maintainer invited. Source build 31 passes the bounded Simulator
+recovery comparison and Swift suites; signed export/upload remain pending.
+Physical installation/update, wider testing and public release remain pending.
 [Current verification](../DEVELOPMENT_STATUS.md) owns build/install status.
 
 ## New user entry points
@@ -21,8 +23,8 @@ support procedures from historical engineering notes.
 | Gate | Evidence / next action |
 | --- | --- |
 | Names and identifiers | App Store Connect record **Teaching Timer Beta** created for `net.qays.TeachingTimer`; Teaching Timer was unavailable. Its Watch payload is `net.qays.TeachingTimer.watchkitapp`. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Distribution provisioning succeeded. |
-| Build integrity | Offline checks and unsigned archives pass; build 29 passed local package/profile/signature checks and Apple processing. Repeat checks for changed candidates; processing is not a physical test. |
-| Paid-team signing / App Store Connect | Agreement gate resolved, app record created, build 29 processed, maintainer-only group configured without automatic distribution. Complete the physical self-pilot when available. |
+| Build integrity | Builds 29 and 30 passed signed export and Apple processing. Build 31 passes 12 Swift suites, Debug compilation and a bounded Simulator recovery comparison; its signed export/upload remain pending. Processing is not a physical test. |
+| Paid-team signing / App Store Connect | Agreement gate resolved, app record created, builds 29/30 processed. Only build 29 is in the maintainer-only group, without automatic distribution. Beta Test Information is saved/reload-verified; review contact remains blank. Complete the physical self-pilot when authorized and available. |
 | Private tester support | [Private email support](../SUPPORT.md) is configured and inbound delivery is verified. Outbound alias replies and diagnostic attachment delivery remain untested. An email address does not export Watch journals. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | Development container copies work intermittently. TestFlight container access and a tester-friendly export path remain unresolved. |
 | Install/update pilot | Check separate container, cold start, update, state preservation, runtime intent and recovery on a physical Watch. |
@@ -77,7 +79,7 @@ fixed or that automatic wake refresh prevented every recurrence.
    watchOS 27.2 results cover it.
 5. **Pilot the real distribution build.** Use `net.qays.TeachingTimer`, preserve
    the development install and install via TestFlight when the Watch is available
-   and installation is authorized. Build 29 has passed upload/processing;
+   and installation is authorized. Builds 29 and 30 have passed upload/processing;
    repeat those checks for the changed candidate.
    Check install/update, separate-container state and journal/support access.
    Begin with the maintainer, then a small external teacher group. External beta
@@ -106,8 +108,9 @@ resolved the bare Watch archive's export-method rejection. The account holder
 then accepted the updated developer agreement, resolving Apple's **PLA Update
 available** provisioning gate. The internal-only build-28 IPA exported
 successfully and passed local package, profile, signature and entitlement checks.
-That build-28 export was not uploaded. The later clean build 29 was uploaded and
-processed successfully, with only the maintainer invited. No TestFlight installation
+That build-28 export was not uploaded. The later clean builds 29 and 30 were
+uploaded and processed successfully. Only build 29 is assigned to the pilot,
+with only the maintainer invited; build 30 has no group assignment. No TestFlight installation
 or physical update has occurred during this preparation. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
 The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) now has a configured
 alias and verified inbound delivery. Outbound reply and diagnostic attachment

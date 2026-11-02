@@ -98,6 +98,15 @@ struct ContentView: View {
             }
         }
         .onAppear { [session] in
+            // Native applicationState can already report active while SwiftUI
+            // is still inactive during a dimmed process relaunch. Supply scene
+            // readiness before evaluating automatic runtime recovery.
+            session.applicationStateChanged(String(describing: scenePhase), details: [
+                "selectedPage": page.rawValue,
+                "luminanceReduced": String(dimmed),
+                "mediaViewGeneration": String(mediaViewGeneration),
+                "source": "interface_appearance"
+            ])
             landmarks.diagnosticContext = { [weak session] in session?.diagnosticContext ?? [:] }
             retireOldClass()
             session.recordPersistenceEvents(classStore.takePersistenceEvents())

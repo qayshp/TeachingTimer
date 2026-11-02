@@ -215,7 +215,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         if startPendingExplicitRequestIfReady() { return }
         if attemptEarlyHandoff() { return }
         guard renewalPending, renewalPolicy == .automatic, runtimeSession == nil, !stopRequested else { return }
-        guard WKApplication.shared().applicationState == .active else { return }
+        guard automaticStartIsReady else { return }
         record("automatic_restart_attempt")
         // Consume the intent before trying: a rejected start keeps the manual
         // fallback rather than retrying on every later scene transition.
@@ -264,6 +264,10 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         recordPersistenceEvents(intentStore.takePersistenceEvents())
     }
 
+    private var automaticStartIsReady: Bool {
+        lastSceneState == "active" && WKApplication.shared().applicationState == .active
+    }
+
     @discardableResult
     private func startPendingExplicitRequestIfReady() -> Bool {
         guard let requestedClassID = pendingExplicitStartClassID else { return false }
@@ -289,7 +293,7 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         if earlyHandoffRequested { return true }
         guard RuntimeRenewalRules.canHandoff(
             warned: expirationWarningReceived, expiration: session.expirationDate, now: Date(),
-            active: WKApplication.shared().applicationState == .active,
+            active: automaticStartIsReady,
             automatic: renewalPolicy == .automatic, stopped: stopRequested) else { return false }
         earlyHandoffRequested = true
         renewalPending = true
