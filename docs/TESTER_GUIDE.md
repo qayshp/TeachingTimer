@@ -5,15 +5,27 @@ It needs watchOS 26 or later. The core clock works without phone music; iPhone
 volume requires a paired iPhone and an available media connection. Always-On
 needs a Watch that supports it. Screen-size simulations are not hardware certification.
 
-There is no public beta link yet. Install a maintainer-provided build or build
-from source using the [README](../README.md#build-and-contribute).
+## Get the beta
 
-If invited to the pilot, open **Teaching Timer Beta**. If you already have
+[Public beta invitation — awaiting Apple approval](https://testflight.apple.com/join/YA2WSmae).
+The link currently says it is not accepting new testers. The first external
+build, 1.0 (37), is submitted and **Waiting for Review** at Apple.
+The public group is open to anyone once available, with an initial
+100-tester limit. Link creation does not mean a build is ready to install.
+
+When the invitation becomes available, open it on your paired iPhone with
+Apple's TestFlight app, accept the invitation, and install **Teaching Timer Beta**
+on your Watch through TestFlight. The target is watchOS 26 or later; the latest
+physical owner test used watchOS 27.2. This is a beta, not an App Store release.
+You can also [build from source](../README.md#build-and-contribute).
+
+Open **Teaching Timer Beta** on the Watch. If you already have
 **Teaching Timer**, keep it installed: the two apps have separate classes,
 settings and journals, and Beta does not import the other app's data. Check the
 name and build in **Class → Settings → About** before reporting a problem.
-There is no iPhone companion interface to configure; phone music still requires
-the paired iPhone.
+Teaching Timer has no app account or iPhone companion interface to configure;
+phone music still requires the paired iPhone. Known media-progress, blank-page,
+volume and Always-On issues remain; try the checks below outside class first.
 
 ## Try it before teaching
 
@@ -79,9 +91,13 @@ an empty native media view from a black page. Do not interrupt teaching merely
 to gather evidence. [Email support](../SUPPORT.md) with a short description, or
 use the [issue tracker](ISSUE_TRACKER.md) for a sanitized public report. Never
 post raw journals or system logs publicly. See [privacy and diagnostics](PRIVACY.md).
+The initial public beta accepts descriptions and cropped screenshots without
+journal attachments. There is no tester-facing journal export; do not attempt
+developer-tool collection merely to report a problem.
 
 The [current limitations](../DEVELOPMENT_STATUS.md) remain part of the beta.
-Wider invitations should follow the [private distribution pilot](TESTFLIGHT_PREPARATION.md).
+The [distribution record](TESTFLIGHT_PREPARATION.md) separates owner-pilot results
+from external review and public availability.
 
 ## Help on the Watch
 

@@ -1,16 +1,20 @@
 # Distribution metadata draft
 
-Updated November 2, 2026. The App Store Connect record **Teaching Timer Beta**
-has a Ready to Test / Internal candidate in the owner-only manual Maintainer
-pilot. See [current verification](../DEVELOPMENT_STATUS.md) for build assignments.
-This is the metadata review packet for the private pilot, not a completed store
-submission or external invitation.
+Updated November 2, 2026. **Teaching Timer Beta 1.0 (37)** is submitted for its
+first external Beta App Review and shows **Waiting for Review**. It is assigned
+only to the external Public beta group, with one build and no testers at this
+checkpoint. The [public invitation](https://testflight.apple.com/join/YA2WSmae)
+is enabled for anyone with a 100-tester limit, but its page is not accepting
+testers pending approval. Automatic notification was enabled at submission.
+This is not an approved public beta or an App Store submission.
+See [current verification](../DEVELOPMENT_STATUS.md) for build/install status.
 
 | Field | Draft |
 | --- | --- |
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Current TestFlight pilot | 1.0 (36), clean source `1dbcfc4dacf9`, processed and assigned to the owner pilot; [artifact record](TESTFLIGHT_PREPARATION.md#build-36) |
+| External candidate | 1.0 (37), clean source `a36f3be587825e27b424cf54355ea13afdfded83`, signed/exported, uploaded and processed as external-eligible; Waiting for Review. |
+| Internal owner pilot | Still 1.0 (36) and six earlier assigned builds; the owner's group was not changed by external submission. |
 | Last confirmed physical Beta | 1.0 (35). Build 36 changes privacy copy only and is available for the authorized automatic-update test; installation outcome is unverified. |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
@@ -42,7 +46,13 @@ Stop/Resume versus End class, count cancellation, media return and phone volume.
 No account or login is required by Teaching Timer. Do not submit personal logs
 in public feedback.
 
-## Reviewer execution notes — draft, not submitted
+## Detailed reviewer execution notes — draft
+
+A shorter reviewer summary was submitted with build 37. It describes the guided
+yoga/mindfulness context, automatic runtime replacement, known limitations and
+absence of an app account. The detailed draft below and the separate
+[runtime-use inquiry](#runtime-use-briefing-for-apple--not-submitted) were not
+submitted as standalone requests; no Apple intended-use guidance has been received.
 
 Teaching Timer Beta is a Watch-only clock for yoga teachers. Its iOS container
 packages the Watch app; there is no iPhone interface, app login or test account.
@@ -70,11 +80,13 @@ questions are described in the [runtime-use briefing](#runtime-use-briefing-for-
 Neither renewal nor 1 Hz wrist-down updates are guaranteed. Known native
 media/volume defects and recovery limits are listed in the [issue map](ISSUE_TRACKER.md).
 
-## Before a pilot or store submission
+## Before App Store submission
 
-- Confirm account/team, private support/review contact, category,
-  age-rating questionnaire and applicable export answers. Do not
-  invent contact details or mark declarations complete from this draft.
+- The owner filled all four Beta App Review contact fields; they were saved and
+  verified after reload before build 37's submission. Account/signing and the
+  support route are established. Confirm category, age-rating and remaining
+  store-specific declarations against the final candidate; beta submission does
+  not complete those decisions.
 - Review privacy answers against the final binary and how support diagnostics
   will actually be received. Apple says optional disclosure has specific
   criteria; do not assume all voluntary support data is exempt. See
@@ -108,7 +120,7 @@ manifest is present in the archive and IPA.
 | App-owned preferences and recovery values | [ClassContext](../TeachingTimer/ClassContext.swift), [RuntimeIntentStore](../TeachingTimer/RuntimeRenewalRules.swift), [LandmarkController](../TeachingTimer/LandmarkController.swift), [Settings](../TeachingTimer/ClassControlsView.swift) and [persistence recovery](../TeachingTimer/PersistenceDiagnostics.swift) read/write class timing, runtime intent, count result and settings through UserDefaults/@AppStorage. | The manifest declares UserDefaults reason `CA92.1`. The inspected uses are app-owned storage, consistent with [Apple's reason for app-only defaults](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype). This does not authorize reading another app's preferences. |
 | Monotonic media-refresh intervals | [MediaReloadPolicy](../TeachingTimer/MediaReloadPolicy.swift) compares `ProcessInfo.systemUptime` samples for dim duration and refresh cooldown. Those absolute samples remain private policy state. | The manifest declares system-boot-time reason `35F9.1`, covering elapsed intervals/timers. [Apple's rule](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype) distinguishes shareable in-app elapsed intervals from raw uptime and other derived data. Related [count](../TeachingTimer/LandmarkController.swift), [runtime](../TeachingTimer/ExtendedRuntimeController.swift) and [focus](../TeachingTimer/VolumeControlDiagnostics.swift) diagnostics use elapsed `ContinuousClock` durations; do not treat this declaration as permission to export raw boot-time values. |
 | Local operational journals and recovery files | [RuntimeDiagnostics](../TeachingTimer/RuntimeDiagnostics.swift) and [LandmarkDiagnostics](../TeachingTimer/LandmarkDiagnostics.swift) store timestamps, lifecycle/errors and count submissions on the Watch. Valid journals trim on writes at seven days and caps of 10,000/10,000/20,000 events. | There is no automatic developer upload. Corrupt-journal copies are separate files and can accumulate without a count/time cap; they are not covered by the valid journals' rolling limits. Preference recovery is separately one value per store. Exported copies need their own handling/retention assessment. |
-| Optional support intake | [Support](../SUPPORT.md) asks for a description first. Email received outside the app includes the sender, message and any chosen attachments; [the intake procedure](PRIVATE_SUPPORT_PLAN.md) separates private reports from public issues. | Owner approval is still needed for actual intake scope and privacy answers. Description-only support still involves contact/message data; requested journals may add usage/diagnostic information. Native attachments and general tester export remain unverified. |
+| Optional support intake | [Support](../SUPPORT.md) asks for a description first. Email received outside the app includes the sender, message and any chosen attachments; [the intake procedure](PRIVATE_SUPPORT_PLAN.md) separates private reports from public issues. | The owner chose descriptions and optional cropped screenshots for the public pilot, without requiring journals. This still involves contact/message data; final App Store privacy answers remain incomplete. Native attachments and general tester export remain unverified. |
 
 Apple excludes data processed solely on-device from its collection answers, but
 off-device support intake needs separate assessment. Optional disclosure requires
@@ -123,20 +135,32 @@ all applicable criteria; voluntary email alone does not establish an exemption.
 - [ ] **Assess the label separately:** an empty manifest collection array is not
   an App Store answer. Apple excludes solely on-device processing; evaluate actual
   support intake separately under its [collection definition](https://developer.apple.com/app-store/app-privacy-details/).
-- [ ] **Owner: choose the initial intake scope.** Description-only reports avoid
-  requiring unavailable journal export and reduce diagnostic intake; they still
-  involve email/contact information. Do not promise “no data collected” from this alone.
+- [x] **Initial intake scope chosen:** descriptions and optional cropped
+  screenshots, without requiring unavailable journal export. This still involves
+  email/contact information; it does not establish “no data collected.”
 - [ ] **Before requesting optional diagnostics:** assess the actual fields,
   purposes, identity links and retention. Voluntary submission alone does not meet
   Apple's [optional-disclosure criteria](https://developer.apple.com/app-store/app-privacy-details/#optional-disclosure),
   including its in-app identified-submitter and per-submission requirements.
-- [ ] **Before external beta review:** owner approves the review contact and
-  actual runtime-use instructions alongside [required TestFlight information](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information/).
-- [ ] **Before public submission:** owner approves privacy answers against the
+- [x] **External beta review submitted:** the owner saved review-contact details;
+  concise runtime-use and limitation notes accompanied the first build-37
+  submission. Status is Waiting for Review, not approval or intended-use guidance.
+- [ ] **Before App Store submission:** owner approves privacy answers against the
   final binary and chosen intake practice; resolve uncertain classifications with
   Apple. This checklist records no account answers or legal determination.
 
 ## Current candidate review
+
+Build 37 at clean source `a36f3be587825e27b424cf54355ea13afdfded83` passed signed
+external-eligible archive/export and local checks (13 Swift suites / 130 Python
+tests). Upload completed November 2 at 19:56:05 PST; Apple processed it without
+Internal Only restriction. It is assigned only to Public beta and submitted for
+first Beta App Review, currently Waiting for Review. Watch CI and CodeQL pass.
+The app's behavior is unchanged
+from 36; build number and export eligibility differ. No Watch install was performed.
+App Store privacy-label form answers have not been completed.
+
+The following paragraphs retain earlier candidate checkpoints.
 
 Build 36 changes privacy disclosure only. Its clean signed export, CI, Apple
 processing, exact notes and owner-pilot assignment are verified. It is available
@@ -195,15 +219,16 @@ installed physical Beta; the development teaching app remains build 25. See the
 - **Support:** GitHub issues are suitable for sanitized bug descriptions only.
   Incoming and outgoing plain email through the private support alias were
   verified November 2. Native Watch/diagnostic attachment delivery and tester-facing
-  journal export remain unverified. The review contact is pending. Do not ask
+  journal export remain unverified. Review contact is now saved. Do not ask
   testers to attach raw journals publicly.
 - **Saved Test Information:** beta description/known limitations, support address,
   repository and privacy URLs were saved and verified after reload. No custom
-  EULA was added; the app requires no sign-in. Review contact remains blank.
-- **Wider pilot gates:** validate teaching behavior, support handling and ordinary
-  tester access before inviting additional testers. The completed owner
-  install/update/relaunch and developer-tool journal checks do not establish
-  those broader results.
+  EULA was added; the app requires no sign-in. All four review-contact fields were
+  owner-supplied, saved and verified before the first external submission.
+- **Public pilot limits:** the description/screenshot intake option is chosen;
+  ordinary tester journal export is not promised. Teaching behavior and broader
+  reliability remain to be evaluated. The owner install/update/relaunch and
+  developer-tool journal checks do not establish those broader results.
 
 ## Bundled asset provenance
 

@@ -2,8 +2,9 @@
 
 Updated November 2, 2026. **The approved support alias is configured in the
 existing iCloud mailbox; incoming and outgoing plain email are verified.**
-No mail routing or MX records were changed. This procedure is for the initial
-pilot, not an automatic upload service. Keep public issues limited to sanitized
+No mail routing or MX records were changed. The owner has authorized the public
+beta with **description-based support and optional cropped screenshots**, without
+requiring journal attachments. This is not an automatic upload service. Keep public issues limited to sanitized
 descriptions. The harmless incoming test and one authorized outgoing message
 from the alias were received and their contents checked on November 2. Neither
 test included attachments; native Watch and diagnostic attachment delivery remain
@@ -24,9 +25,10 @@ outgoing plain email from the alias also reached the intended recipient in the
 verified test. Diagnostic attachment delivery remains untested. No MX records
 or inbound mail provider were changed.
 
-For this small pilot, email is the initial reporting route. Diagnostic sharing
-remains a separate, deliberate action. The Watch app continues making no
-automatic uploads.
+For the initial public pilot, email is the reporting route. A short description
+is sufficient to open a report; a cropped screenshot can help when available.
+Diagnostic sharing remains a separate, deliberate action. The Watch app continues
+making no automatic uploads, and ordinary testers are not promised journal export.
 
 ## Getting journals off the Watch
 
@@ -42,12 +44,13 @@ SE 3 and trusted Mac. This is distinct from development-app access and does not
 establish an ordinary tester’s retrieval path. Do not ask testers to attach
 journals they have no supported way to obtain.
 
-Before wider testing, evaluate a small, explicit sharing flow on a physical
+Before offering tester-facing journal export, evaluate an explicit sharing flow on a physical
 Watch: first a harmless test file, then a minimized journal package, and verify
 the received attachment. A share sheet appearing is not proof of delivery.
 If native sharing cannot deliver files reliably, consider a user-triggered
 private upload with a clear preview and consent step. Neither path is
 implemented in TeachingTimer; update privacy wording before introducing an upload.
+This future export work does not block the chosen description-based public pilot.
 
 A separate [native sharing probe](../tools/diagnostic-share-probe/README.md)
 was tested on the SE 3 Simulator, watchOS 27.2, November 2. Text, a 198-byte JSON
@@ -99,8 +102,9 @@ actual intake practice; optional support sharing is not automatically exempt.
 - [x] Owner pilot retrieves and validates all three TestFlight Beta journals in
   the tested developer-enabled Watch/trusted-Mac setup; general tester access
   remains unverified.
-- [ ] Before wider invitations, verify a tester-usable journal delivery path or
-  explicitly limit the pilot to reports without journal attachments.
+- [x] Public pilot explicitly accepts descriptions and optional cropped
+  screenshots without requiring journal attachments; tester-usable journal
+  export and delivery remain unimplemented/unverified.
 
 An email route does not itself solve exporting journals from a TestFlight Watch
 app. If developer tools cannot copy that app's container, report the limitation

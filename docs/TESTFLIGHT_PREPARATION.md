@@ -1,10 +1,12 @@
 # TestFlight pilot
 
-Updated November 2, 2026. **Public-beta preparation is authorized; candidate
-build 37 is pending validation.** No external invitation or public link has been
-created. Build 37 preserves build 36's app behavior and adds the explicit
-external-eligible release path described below. It has not yet been built,
-exported, uploaded or approved for external testing.
+Updated November 2, 2026. **Build 37 is submitted for the first external Beta App
+Review and is Waiting for Review.** Its signed external-eligible export, upload,
+Apple processing and Public beta group assignment are verified. The
+[public invitation](https://testflight.apple.com/join/YA2WSmae) is configured for
+anyone with a 100-tester limit, but currently does not accept testers because
+approval is pending. Build 37 preserves build 36's app behavior. No physical
+installation was performed for this release.
 
 Build 36 passed signed archive/export, upload and Apple
 processing and is Testing / Internal. It is assigned to the manual-distribution
@@ -260,8 +262,33 @@ Build 36 changes privacy disclosure, not recovery behavior or data handling.
 The owner has authorized opening a public TestFlight beta and publishing its
 real invitation link in the repository. Candidate 37 preserves build 36's app
 behavior; release tooling now supports an explicit external-eligible export.
-At this preparation checkpoint, validation, signed export, upload, Apple
-processing, external review, distribution and link creation are **not complete**.
+Clean source `a36f3be587825e27b424cf54355ea13afdfded83` passes all 13 Swift suites
+and 130 Python tooling tests. Signed archive/export checks passed for both
+identities, profiles, entitlements, signatures and the actual Watch privacy
+manifest. The requested and Xcode-produced export options both set
+`testFlightInternalTestingOnly=false`; the internal-only default remains unchanged
+for ordinary `--signed` preparations. The local exported IPA SHA-256 is
+`d09a54b067f7e5d2e4b841d4b51a94494e39e6d1cfd0171aeb746dd4ff23ab31`.
+
+[Watch CI](https://github.com/qayshp/TeachingTimer/actions/runs/41574826046)
+and [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/41574826133)
+both pass for that source commit.
+
+Upload completed November 2 at 19:56:05 PST. Apple processed 1.0 (37) as
+**Ready to Submit**, without the Internal Only designation. It is assigned to
+the **Public beta** external group and is now **Waiting for Review** following
+the first Beta App Review submission. Review contact was supplied by the owner;
+the beta description, feedback address and reviewer instructions were saved and
+verified after reload. Review notes describe the actual guided-yoga use of
+mindfulness runtime and automatic renewal without claiming prior acceptance.
+No app sign-in is required. The build's saved What to Test and single external
+group assignment were read back after submission.
+
+The public invitation is enabled for anyone, with a 100-tester cap and automatic
+tester notification enabled at submission. The current public page still says
+it is not accepting testers. Approval and a usable installation invitation remain
+pending; link creation is not evidence of either. The initial public support route
+accepts descriptions and cropped screenshots without requiring journal export.
 Build 36 remains assigned to the existing internal Maintainer pilot; build 35
 remains the last user-confirmed physical Beta. No automatic installation is
 promised by an upload, group assignment or link creation.
@@ -275,11 +302,12 @@ external submission requires TestFlight App Review. Keep these stages separate:
 3. Create an external group and add the eligible build with clear What to Test.
 4. Complete real review-contact information, beta description and feedback
    email, then submit for review. No app sign-in or demo credentials are needed.
-5. After approval, distribute to the group and create a public invitation link;
-   verify that its page offers the intended build before publishing it in README.
+5. After approval, verify distribution and that the public invitation offers the
+   intended build. The README currently includes the real link with a clear
+   awaiting-approval label; it must not be described as installable before that check.
 
-An initial 100-tester public-link cap is the recommended pilot size, not an
-Apple requirement. Leave the internal group and its owner assignment separate.
+The configured 100-tester public-link cap is a pilot choice, not an Apple
+requirement. The internal group and its owner assignment remain separate.
 See Apple's [external-testing workflow](https://developer.apple.com/help/app-store-connect/test-a-beta-version/invite-external-testers)
 and [test information requirements](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information/).
 

@@ -1,18 +1,18 @@
 # Teaching Timer — current verification
 
-Updated November 2, 2026 for authorized public-beta preparation, retaining the
+Updated November 2, 2026 after public-beta review submission, retaining the
 supervised Beta 35 media/Crown test and October 31 classroom report.
 This is the authority for current build and validation
 status. Dated investigations describe their original builds, not current behavior.
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (37), pending validation: public-beta release preparation with an explicit external-eligible signed-export option. App behavior is unchanged from 36; no runtime, media, volume, count, persistence or recovery change is included. No build-37 validation, signed export, upload or external approval is claimed yet. Build 36's completed checks remain recorded below. |
+| Source candidate | 1.0 (37), clean source `a36f3be587825`: explicit external-eligible signed-export option with app behavior unchanged from 36. All 13 Swift suites / 130 Python tests, signed archive/export, actual Watch privacy-manifest checks, upload and Apple processing passed. Watch CI and CodeQL pass. External beta approval remains pending. |
 | Installed physical Watch | Development build 25 and Beta 35 were inventoried in the earlier [owner pilot](docs/TESTFLIGHT_PILOT_RESULTS.md), which verified a TestFlight 35 → 34 → 35 round trip and ended that test class. The owner again reports Beta 35 for the evening supervised media/Crown test; journal copies succeeded after an installed-build query timed out. No reinstall occurred. Build 36 is available for automatic updating but its installation is not confirmed. The evening test used a new class; cleanup is not in its final captured journal. |
 | Latest supervised physical evidence | November 2, Beta 35, Apple Music on the paired iPhone speaker: initial timer Crown, immediate media-return Crown, Home/reopen and tap-refresh checks all passed by audible user observation. Embedded media progress updated on entry then stalled; standalone Now Playing appeared to advance. Phone seeking updated the embedded indicator with an apparent unmeasured offset. Automatic runtime recovery preserved the class. [Results and limits](docs/MEDIA_PROGRESS_INCIDENT_2026-11-02.md). |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Public beta is authorized but no external invitation or public link exists yet. Candidate 37 needs validation, an external-eligible upload and first Beta App Review; earlier uploads were Internal Only. Build 36 (`1dbcfc4dacf9`) remains Testing / Internal in the Maintainer pilot with one owner and seven assigned builds (29, 31, 32, 33, 34, 35 and 36); 30 is processed but unassigned. Group assignment is manual, client automatic updates are reported enabled, and installation of 36 is unverified. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Build 37 is assigned to Public beta and **Waiting for Review** after its first external Beta App Review submission. The [public invitation](https://testflight.apple.com/join/YA2WSmae) is enabled with a 100-tester limit but is not yet accepting testers. Automatic notification is enabled. Earlier uploads were Internal Only. Maintainer pilot is unchanged: one owner, seven assigned builds (29, 31, 32, 33, 34, 35 and 36), manual group assignment; 30 is unassigned. Client automatic updates are reported enabled, but installation of 36/37 is unverified. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -63,13 +63,16 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 
 ## Verification and deployment boundaries
 
-Build 37 is being prepared for the newly authorized public beta. The signed
+Build 37 is submitted for the newly authorized public beta. The signed
 tooling keeps internal-only export as its default; external eligibility requires
 `--signed --external-eligible`. An eligible local artifact is not an upload,
-review approval, available public build or installation. The planned public
+review approval, available public build or installation. The initial public
 pilot accepts description-based reports without promising a journal export.
 See the [separate release stages](docs/TESTFLIGHT_PREPARATION.md#build-37-public-beta-preparation).
-No build-37 validation or distribution result has been recorded at this checkpoint.
+Signed export, upload, Apple processing, external group assignment and review
+submission are verified. Review approval and usable public installation remain
+pending. Its real invitation link is published with that availability qualification.
+No app behavior or physical installation changed for this release.
 
 Build 36 is a documentation-only app revision after the owner pilot.
 Unreadable journals were already preserved in separate recovery files outside

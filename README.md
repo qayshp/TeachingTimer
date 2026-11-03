@@ -17,9 +17,20 @@ The installed build and current source candidate are listed in
 
 ## Try it
 
-There is no public TestFlight invitation or App Store release yet. To build it,
-use the instructions below. New testers should read the
+[**Public beta invitation — awaiting Apple approval**](https://testflight.apple.com/join/YA2WSmae)
+
+The invitation link exists, but currently says it is not accepting new testers.
+The first external build, 1.0 (37), has been submitted and is **Waiting for Review**
+at Apple. The public group has an initial 100-tester limit;
+this is not an App Store release or a currently installable public beta.
+
+Once available, open the link on your paired iPhone with Apple's TestFlight app,
+then install **Teaching Timer Beta** on your Watch. The app targets watchOS 26
+or later; the latest physical pilot used watchOS 27.2. Teaching Timer requires
+no app account or iPhone companion interface. Read the
 [first-class guide](docs/TESTER_GUIDE.md) and [privacy notes](docs/PRIVACY.md).
+Initial feedback can be a description or cropped screenshot; no journal export
+is required or promised. To build from source, use the instructions below.
 
 1. Tap **Start class**, check **Suggested time**, then confirm the 60-minute class.
    **Custom schedule** changes only this class: adjust its start and choose 60 or
