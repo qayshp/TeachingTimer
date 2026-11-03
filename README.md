@@ -17,6 +17,8 @@ The installed build and current source candidate are listed in
 
 ## Try it
 
+See the [changelog](CHANGELOG.md) for recent beta changes.
+
 [**Public beta invitation — awaiting Apple approval**](https://testflight.apple.com/join/YA2WSmae)
 
 The invitation link exists, but currently says it is not accepting new testers.

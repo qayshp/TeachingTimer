@@ -17,6 +17,7 @@ installation or a physical-device test.
 | [Contributor guide](../CONTRIBUTING.md) | Repository layout, behavior boundaries and maintenance rules. |
 | [Teaching checkpoint](TEACHING_CHECKPOINT.md) | Preserved build 16 provenance and private recovery artifacts. |
 | [Active roadmap](ROADMAP.md) | Completed work and remaining Simulator, physical and distribution gates. |
+| [Changelog](../CHANGELOG.md) | Concise user-facing beta milestones. |
 
 ## Building and testing
 
@@ -120,6 +121,8 @@ behavior:
 - [Verification through build 25](history/VERIFICATION_THROUGH_BUILD_25.md)
 - [Verification through build 16](history/VERIFICATION_THROUGH_BUILD_16.md)
 - [Roadmap batches 17–21](history/ROADMAP_BATCHES_17_TO_21.md)
+- [Status checkpoints through build 37](history/STATUS_THROUGH_BUILD_37.md)
+- [Earlier roadmap through build 37](history/ROADMAP_THROUGH_BUILD_37.md)
 
 Other dated investigations retain their existing paths so issue/report links
 remain stable. Raw journals, private device captures, generated builds and signed

@@ -16,6 +16,21 @@ Simulator results, physical observations and unverified mitigations.
 | [#7 Runtime recovery after dimmed relaunch](https://github.com/qayshp/TeachingTimer/issues/7) | Not separately filed | Build 30 reproduces exact activation error code 3 on watchOS 27.2. Build 31 defers the premature Start and recovers on later active wake in one matched Simulator trial; class bytes and Stop intent survive. Physical behavior and arbitrary callback ordering remain unverified. |
 | [#8 Frozen song progress](https://github.com/qayshp/TeachingTimer/issues/8) | FB25379883 | [November 2 Beta 35 test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md): embedded progress updates on entry then stalls; repeated entry yields a newer snapshot. Standalone Now Playing appears to advance. Phone seeking updates both, with an apparent unmeasured offset in the embedded view. Page-entry and eligible wake refreshes are logged, not proof of recovery. |
 
+## Release and maintenance work
+
+The [roadmap](ROADMAP.md) orders these review follow-ups; each issue has its own
+completion checklist:
+
+- [#9 Runtime intended use](https://github.com/qayshp/TeachingTimer/issues/9)
+- [#10 Physical reliability/battery/accessibility](https://github.com/qayshp/TeachingTimer/issues/10)
+- [#11 First external beta and release readiness](https://github.com/qayshp/TeachingTimer/issues/11)
+- [#12 Current documentation and changelog](https://github.com/qayshp/TeachingTimer/issues/12)
+- [#13 Annotated onboarding](https://github.com/qayshp/TeachingTimer/issues/13)
+- [#14 Release traceability and contribution safeguards](https://github.com/qayshp/TeachingTimer/issues/14)
+- [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15)
+
+## Reporting evidence
+
 The [bug form](../.github/ISSUE_TEMPLATE/bug_report.yml) asks for versions,
 actions, observed results, recovery and relevant audio-route context. Do not
 post raw journals, sysdiagnoses, account details, device identifiers or private
