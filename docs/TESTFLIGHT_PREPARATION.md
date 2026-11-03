@@ -1,7 +1,7 @@
 # TestFlight pilot
 
 The later build-36 source corrects privacy disclosure only. It has local build
-and unsigned archive verification; it is not uploaded or assigned to TestFlight.
+and clean signed archive/export verification; it is not uploaded or assigned to TestFlight.
 Build 35 remains the installed owner pilot described below.
 
 Updated November 2, 2026. Build 35 passed signed archive/export, upload and Apple
@@ -214,6 +214,24 @@ The clean Debug build's [layout matrix and bounded controls run](V1_READINESS_RE
 verify the support-copy change and sampled rendering. Subsequent tooling passes
 128 Python tests, separately from this signed source checkpoint. The physical
 Watch remains untouched and all physical self-pilot checks below remain open.
+
+### Local build 36
+
+Clean source `1dbcfc4dacf9354e9b34a6d42ca7022b3566b600` passed signed archive
+and internal-only export on November 2. Its IPA SHA-256 is
+`dfa47e8e3e8b64f1835e6c7e140c1c3bb507c02a1bed82c4c7eaaf562e34bab9`.
+Both payload identities, matching versions, distribution profiles, entitlements,
+signatures and the exported Watch privacy manifest passed validation.
+The source checkpoint's [Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/41556710607)
+pass; CodeQL was still running at this record's update. The local verification
+also passes 13 Swift suites and 128 Python tests, and the small SE 3 privacy
+overview/full-policy rendering check is complete.
+
+This is a local artifact only: no upload, Apple processing, tester assignment or
+physical installation. The owner's TestFlight automatic updates are on, so a
+future assignment must be treated as capable of changing the installed Beta.
+Build 35 remains the installed owner pilot. Build 36 changes privacy disclosure,
+not recovery behavior or the app's handling of data.
 
 ## Self-pilot record
 

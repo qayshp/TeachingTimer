@@ -5,7 +5,7 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (36): Privacy now explains separate unreadable-journal recovery files and qualifies the observed TestFlight journal access. No runtime, media, volume, count, persistence or recovery behavior changed. Local build/unsigned archive checks pass (13 Swift suites / 128 Python tests); the overview and full policy render and scroll through their final text on the SE 3 40 mm Simulator. Build 36 has not been uploaded or installed on physical devices. |
+| Source candidate | 1.0 (36): Privacy now explains separate unreadable-journal recovery files and qualifies the observed TestFlight journal access. No runtime, media, volume, count, persistence or recovery behavior changed. Local checks pass (13 Swift suites / 128 Python tests); the overview and full policy render and scroll through their final text on the SE 3 40 mm Simulator. Clean source `1dbcfc4dacf9` also passed signed internal-only archive/export. Build 36 has not been uploaded or installed on physical devices. |
 | Installed physical Watch | Development build 25 remains the teaching identity. A separately authorized [owner pilot](docs/TESTFLIGHT_PILOT_RESULTS.md) installed/launched Beta 35 and verified a TestFlight 35 → 34 → 35 round trip with preferences and prior journal events preserved. Final inventory retains development build 25; its prior journal history is preserved. Beta’s test class was ended. A stale development class retired normally during brief foreground activity; see the pilot’s preservation limits. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
@@ -64,6 +64,12 @@ targeted watchOS 27.2 SE 3 40 mm rendering check. One OCR assertion initially
 failed on a line-wrapped `developer-enabled`; the original pixels and a bounded
 hyphen-wrap check confirm the text. The full policy's final sentence is visible.
 This does not extend the physical or multi-size behavior evidence for build 35.
+The clean source subsequently passed signed archive/export with both identities,
+profiles, entitlements, signatures and the actual Watch privacy manifest checked.
+Its [artifact record](docs/TESTFLIGHT_PREPARATION.md#local-build-36) is separate from
+TestFlight processing or installation. The source checkpoint's
+[Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/41556710607) pass;
+CodeQL was still running at this record's update.
 
 The separately authorized [November 2 physical pilot](docs/TESTFLIGHT_PILOT_RESULTS.md)
 verifies Beta installation/update, saved class/settings, intentional Stop,

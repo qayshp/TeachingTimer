@@ -47,6 +47,25 @@ rejects source/commit changes or a mismatched binary revision before export.
 Unsigned rehearsals remain usable during development. Build 31's 107 Python tests pass,
 including the signed-source boundaries and ignored-versus-untracked Git fixtures.
 
+## Post-pilot Mac review
+
+The final bounded code review traced class Save/retirement/replacement, runtime
+invalidation and deferred activation, Stop priority, count cancellation during
+groups five/six and fresh restart, and delayed native-focus supersession against
+their existing deterministic tests. It found no new reproducible defect requiring
+a local behavior change. This is not proof of native platform behavior.
+
+The README, support guide, first-class guide, in-app information and reviewer
+steps agree with those flows. The build-36 privacy corrections are verified on
+the SE 3 40 mm Simulator; the [clean signed local artifact](TESTFLIGHT_PREPARATION.md#local-build-36)
+is ready but not uploaded. The inspected export contains the exact committed
+policy and license. Existing broader build-35 layout checks remain dated evidence.
+
+Further meaningful release validation depends on the physical teaching and
+accessibility tests, ordinary tester support path, minimum-OS execution and
+review decisions listed below. No native media/volume issue is closed by this
+source review, and the prepared Apple follow-ups remain unsent.
+
 ## Account and support preparation
 
 The separate App Store Connect record is **Teaching Timer Beta**, with store

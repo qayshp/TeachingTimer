@@ -11,7 +11,7 @@ submission or external invitation.
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
 | Current TestFlight pilot | 1.0 (35), clean source `b5884e30dd8a`, processed and assigned to the owner pilot; [artifact record](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds) |
-| Local source candidate | 1.0 (36), privacy-copy corrections only; local build and unsigned archive checks pass. Not uploaded, assigned or installed on physical devices. |
+| Local source candidate | 1.0 (36), privacy-copy corrections only; local checks and clean signed archive/export pass at `1dbcfc4dacf9`. Not uploaded, assigned or installed on physical devices. |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
