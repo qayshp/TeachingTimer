@@ -7,8 +7,11 @@ from unittest.mock import patch
 from pathlib import Path
 import tempfile
 import unittest
+import sys
 
-spec = importlib.util.spec_from_file_location('simulator_suite', Path(__file__).resolve().parents[1] / 'tools/simulator-regression/suite.py')
+runner_path = Path(__file__).resolve().parents[1] / 'tools/simulator-regression'
+sys.path.insert(0, str(runner_path))
+spec = importlib.util.spec_from_file_location('simulator_suite', runner_path / 'suite.py')
 suite = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(suite)
 
@@ -34,6 +37,29 @@ class SimulatorSuiteChecks(unittest.TestCase):
     def test_success_without_capture_is_incomplete(self):
         with tempfile.TemporaryDirectory() as folder:
             self.assertTrue(suite.evidence_errors('actions', dict(complete=True, passed=list(suite.ACTIONS)), Path(folder)))
+
+    def test_current_action_result_includes_information_pages_and_settings(self):
+        # Independent fixture: deriving results from suite.ACTIONS hid the old
+        # 14-action wrapper / 21-action runner mismatch.
+        passed = [
+            'before-class-help-keeps-state', 'before-class-privacy-keeps-state',
+            'before-class-about-keeps-state', 'cancel-new-keeps-no-class',
+            'default-sixty-started', 'during-class-help-keeps-state',
+            'during-class-privacy-keeps-state', 'during-class-about-keeps-state',
+            'count-started', 'count-cancelled', 'stop-keeps-class',
+            'resume-keeps-class', 'cancel-edit-keeps-schedule',
+            'save-edits-only-schedule', 'settings-keeps-existing-class',
+            'new-class-replaces-anchor', 'active-class-media-navigation',
+            'active-class-timer-return', 'end-clears-class',
+            'media-navigation', 'timer-return-keeps-class',
+        ]
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for label in passed:
+                (root / ('PASS-' + label + '.png')).touch()
+            self.assertEqual(suite.evidence_errors('actions', dict(complete=True, passed=passed), root), [])
+            for invalid in (passed[:-1], passed + [passed[-1]], passed[:-1] + [passed[0]]):
+                self.assertTrue(suite.evidence_errors('actions', dict(complete=True, passed=invalid), root))
 
     def test_missing_result_stops_sequence_and_retains_manifest(self):
         with tempfile.TemporaryDirectory() as folder:

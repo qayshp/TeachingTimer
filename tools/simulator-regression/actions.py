@@ -19,6 +19,23 @@ BUNDLE = 'com.qayshp.TeachingTimer'
 KEY = 'teachingClassContext.v1'
 REFERENCE_DATE_OFFSET = 978307200
 
+# One contract for the action runner's completion and the suite's evidence gate.
+BASELINE_ACTIONS = frozenset({
+    'cancel-new-keeps-no-class', 'default-sixty-started', 'count-started',
+    'count-cancelled', 'stop-keeps-class', 'resume-keeps-class',
+    'cancel-edit-keeps-schedule', 'save-edits-only-schedule',
+    'settings-keeps-existing-class', 'new-class-replaces-anchor',
+    'active-class-media-navigation', 'active-class-timer-return',
+    'end-clears-class', 'media-navigation', 'timer-return-keeps-class',
+} | {f'{phase}-{page}-keeps-state'
+     for phase in ('before-class', 'during-class')
+     for page in ('help', 'privacy', 'about')})
+
+
+def baseline_complete(passed):
+    return (isinstance(passed, list) and all(isinstance(p, str) for p in passed)
+            and len(passed) == len(BASELINE_ACTIONS) and set(passed) == BASELINE_ACTIONS)
+
 
 def retiring_preferences(now, delay=90):
     """Fresh stopped class fixture; Swift Codable Dates use the 2001 epoch."""
@@ -134,6 +151,8 @@ def main():
     def dismiss():
         ui('tap', .23, .13)
     def finish(scenario):
+        if scenario == 'baseline' and not baseline_complete(results):
+            raise AssertionError('Baseline actions do not match the complete contract')
         for name in ('RuntimeDiagnostics', 'InterfaceDiagnostics', 'LandmarkDiagnostics'):
             (output / (name + '.json')).write_text(json.dumps(events(name), indent=2))
         result = {'passed': results, 'complete': True, 'scenario': scenario,

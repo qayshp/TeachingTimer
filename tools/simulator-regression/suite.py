@@ -20,16 +20,10 @@ import subprocess
 import sys
 import time
 import tempfile
+from actions import BASELINE_ACTIONS, baseline_complete
 
 HERE = Path(__file__).resolve().parent
-ACTIONS = {
-    'cancel-new-keeps-no-class', 'default-sixty-started', 'count-started',
-    'count-cancelled', 'stop-keeps-class', 'resume-keeps-class',
-    'cancel-edit-keeps-schedule', 'save-edits-only-schedule',
-    'new-class-replaces-anchor', 'active-class-media-navigation',
-    'active-class-timer-return', 'end-clears-class', 'media-navigation',
-    'timer-return-keeps-class',
-}
+ACTIONS = BASELINE_ACTIONS
 LIFECYCLE = {'sameHostPID', 'sameClassBytes', 'noNewVolumeControl',
              'mediaPageSelected', 'automaticMediaRefreshRequested'}
 
@@ -72,7 +66,7 @@ def evidence_errors(stage, evidence, folder):
         passed = evidence.get('passed', [])
         if not isinstance(passed, list) or any(not isinstance(p, str) for p in passed):
             return ['passed must be a list of assertion names']
-        if evidence.get('complete') is not True or set(passed) != ACTIONS or len(passed) != len(ACTIONS):
+        if evidence.get('complete') is not True or not baseline_complete(passed):
             errors.append('essential actions incomplete or unexpected')
         for label in ACTIONS:
             if not (folder / ('PASS-' + label + '.png')).is_file():
