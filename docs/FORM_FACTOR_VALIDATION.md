@@ -1,6 +1,6 @@
 # Watch form-factor validation
 
-The [build-39 aligned-dial candidate](#november-2-build-39-aligned-dial-candidate)
+The [build-40 edge-following dial](#november-3-build-40-edge-following-dial)
 is the latest layout comparison. The October 23 review below retains its original
 runtime, device catalog and limits; those are not instructions to recreate old devices.
 
@@ -132,6 +132,10 @@ at different times/count positions. They are not physical-Watch photographs.
 
 ## November 2 build-39 aligned-dial candidate
 
+**Superseded by build 40 below.** The maintainer's November 3 clarification favors
+a full-screen dial wrapping around the top controls over a reserved header strip.
+The following records the earlier proposal and its original validation.
+
 [Issue #19](https://github.com/qayshp/TeachingTimer/issues/19) implements a shared
 rounded-rectangle frame below the header. This candidate is independent of the
 build-38 native-media experiment: it branches from main's build-37 behavior.
@@ -196,3 +200,76 @@ including refresh at its new target, same host/class/native volume identity, and
 media-to-timer return. The 33-frame controls run and complete locked count pass.
 Simulator checks do not certify physical Crown volume, haptic delivery, guaranteed
 Always-On cadence or teaching-length reliability.
+
+
+## November 3 build-40 edge-following dial
+
+[Issue #19](https://github.com/qayshp/TeachingTimer/issues/19) now follows the
+maintainer's clarified direction: use the full screen and wrap outside
+Class/settings and watchOS time. There is no separate header strip. Build 39
+above remains a historical proposal; its commit was not rewritten.
+
+The dial, class-progress perimeter, scheduled-end wedge and seconds-hand endpoint
+share a full-screen contour. `SquircleRayGeometry` intersects radial rays with
+straight edges or rounded-superellipse corners. Explicit radius/exponent profiles
+approximate the five current Simulator display masks by logical point size, with
+an adjustable fallback for other sizes. This is a visual fit, not a public API
+for exact physical-display curvature. The outline is two points inside the edge.
+
+Ticks stop short of the two top labels or are omitted locally when there is not
+enough room; the outline remains continuous and all four cardinal ticks remain.
+The Class capsule moves slightly inward where larger corner profiles require it.
+The inner count track retains top-label clearance while its side/bottom insets
+remain small. It intentionally has a different center from the outer clock.
+The volume control returns to its upper position, and status/minutes-left remains
+inside the count button. Both hands remain foremost over controls.
+
+### SE 3 comparison with the prior baseline
+
+| Build 37 | Candidate 40 |
+| --- | --- |
+| ![SE 3 baseline with dial crossing the top controls](images/edge-40/SE-3-40mm-before37-count.png) | ![SE 3 full-screen dial outside the Class button and system time](images/edge-40/SE-3-40mm-count.png) |
+
+The same Simulator, saved class bytes and settings were used. These are successive
+count runs rather than the same instant: wall-clock hand angles and count
+positions differ. Count vibrations are off and Minutes left is on; the existing
+active visual-count status takes precedence while counting.
+
+### Five current display sizes and presentation states
+
+| SE 3 44 mm | Series 12 42 mm |
+| --- | --- |
+| ![SE 3 44 mm edge-following dial](images/edge-40/SE-3-44mm-count.png) | ![Series 12 42 mm edge-following dial](images/edge-40/Series-12-42mm-count.png) |
+
+| Series 12 46 mm | Ultra 4 49 mm |
+| --- | --- |
+| ![Series 12 46 mm edge-following dial](images/edge-40/Series-12-46mm-count.png) | ![Ultra 4 49 mm edge-following dial](images/edge-40/Ultra-4-49mm-count.png) |
+
+| SE 3 reduced luminance | Ultra reduced luminance |
+| --- | --- |
+| ![SE 3 verified dimmed count](images/edge-40/SE-3-40mm-dim-count.png) | ![Ultra verified dimmed count](images/edge-40/Ultra-4-49mm-dim-count.png) |
+
+| SE 3 maximum app text | Ultra maximum app text |
+| --- | --- |
+| ![SE 3 maximum-text face](images/edge-40/SE-3-40mm-maximum-text.png) | ![Ultra maximum-text face](images/edge-40/Ultra-4-49mm-maximum-text.png) |
+
+All 22 originals were captured November 3 using the five existing watchOS 27.2
+(24S118) Simulators and Xcode 27.2 (27B52); ten are curated here. No Simulator
+was created or re-paired, and no physical device was contacted. Private manifests
+retain hashes, build identity, class preservation and verified luminance states.
+Geometry checks cover eight sizes, 5,760 count-dot/control positions and 34,560
+ray/contour checks. All 13 Swift suites, 132 Python tests, Simulator compilation
+and unsigned development/distribution archive paths pass. All 21 UI actions and
+six lifecycle/focus checks pass, preserving the class, host and native volume
+instance through refresh and media return. The 33-frame controls run has no
+outline warnings, and a full count completes while verified locked. Nine OCR
+label warnings were visually reviewed: controls remain present; the foremost
+hands sometimes cross their lettering. Native media renders its expected
+"Not Playing" state without a connected audio source.
+
+Class snapping/context, runtime/renewal, wall-clock cadence, monotonic count timing,
+haptics, native media and the native Crown-volume implementation are unchanged.
+Simulator presentation and focus events do not prove physical display curvature,
+Crown volume response, haptic delivery or teaching-length Always-On reliability.
+Build 40 is not uploaded to TestFlight or installed on a physical Watch. It remains
+independent of the build-38 native-media experiment.

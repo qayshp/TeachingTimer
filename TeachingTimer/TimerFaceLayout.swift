@@ -10,25 +10,36 @@ import CoreGraphics
 struct TimerFaceLayout {
     let size: CGSize
     var scale: CGFloat { min(1.25, max(1, min(size.width / 162, size.height / 197))) }
-    // One rounded-rectangle family below the 44-point Class/header target.
-    // The physical display curvature is not exposed by public APIs.
-    var dialFrame: CGRect {
-        CGRect(x: scale, y: 46 * scale,
-               width: size.width - 2 * scale, height: size.height - 47 * scale)
-    }
+    // Full-screen outer contour. Only the inner track needs top-label clearance.
+    var dialFrame: CGRect { CGRect(origin: .zero, size: size) }
     var dialCenter: CGPoint { CGPoint(x: dialFrame.midX, y: dialFrame.midY) }
     var dialRadius: CGFloat { Self.cornerRadius(for: size) }
+    var cornerPower: Double { Self.cornerProfile(for: size).power }
     var trackInset: CGFloat { 17 * scale }
-    var trackFrame: CGRect { dialFrame.insetBy(dx: trackInset, dy: trackInset) }
+    var trackFrame: CGRect {
+        let inset = dialFrame.insetBy(dx: trackInset, dy: trackInset)
+        let top = max(inset.minY, 40 * scale)
+        return CGRect(x: inset.minX, y: top, width: inset.width, height: inset.maxY - top)
+    }
     var trackRadius: CGFloat { max(0, dialRadius - trackInset) }
-    var controlsWidth: CGFloat { trackFrame.width - 20 * scale }
+    var classControlCenter: CGPoint {
+        // Keep the capsule just inside the curved edge on larger displays too.
+        let r = Double(dialRadius), y = min(r, 23.0)
+        let edge = r - pow(max(0, pow(r, cornerPower) - pow(r - y, cornerPower)), 1 / cornerPower)
+        return CGPoint(x: max(38, CGFloat(edge) + 35), y: 23)
+    }
+    var headerTickClearances: [CGRect] {
+        [CGRect(x: classControlCenter.x - 33, y: 7, width: 66, height: 32),
+         CGRect(x: size.width - 70 * scale, y: 5 * scale, width: 69 * scale, height: 27 * scale)]
+    }
+    var controlsWidth: CGFloat { trackFrame.width - 22 * scale }
     var actionHeight: CGFloat { 44 * scale }
-    var actionY: CGFloat { trackFrame.maxY - 5 * scale - actionHeight / 2 }
+    var actionY: CGFloat { trackFrame.maxY - 8 * scale - actionHeight / 2 }
     var optionsWidth: CGFloat { 44 * scale }
     var countWidth: CGFloat { controlsWidth - optionsWidth - 4 }
     var volumeSize: CGSize { CGSize(width: 64 * scale, height: 28) }
     var volumeBackingSide: CGFloat { 38 }
-    var volumeCenter: CGPoint { CGPoint(x: dialCenter.x, y: trackFrame.minY + 25 * scale) }
+    var volumeCenter: CGPoint { CGPoint(x: dialCenter.x, y: trackFrame.minY + 27 * scale) }
     var volumeRefreshFrame: CGRect {
         CGRect(x: volumeCenter.x - volumeSize.width / 2,
                y: volumeCenter.y - 22 * scale,
@@ -42,16 +53,53 @@ struct TimerFaceLayout {
         CGRect(x: volumeCenter.x - 19, y: volumeCenter.y - 19, width: 38, height: 38)
     }
     func landmarkPoint(angle: Double) -> CGPoint {
-        dialPoint(angle: angle, inset: trackInset)
+        let vector = SquircleRayGeometry.intersection(size: trackFrame.size,
+            cornerRadius: trackRadius, edgeInset: 0,
+            direction: CGVector(dx: sin(angle), dy: -cos(angle)), cornerPower: cornerPower)
+        return CGPoint(x: trackFrame.midX + vector.dx, y: trackFrame.midY + vector.dy)
     }
     func dialPoint(angle: Double, inset: CGFloat) -> CGPoint {
         let vector = SquircleRayGeometry.intersection(size: dialFrame.size,
             cornerRadius: max(0, dialRadius - inset), edgeInset: inset,
-            direction: CGVector(dx: sin(angle), dy: -cos(angle)))
+            direction: CGVector(dx: sin(angle), dy: -cos(angle)), cornerPower: cornerPower)
         return CGPoint(x: dialCenter.x + vector.dx, y: dialCenter.y + vector.dy)
     }
-    static func cornerRadius(for size: CGSize) -> CGFloat {
-        // Approximation: public APIs do not expose physical display curvature.
-        38 * min(1.3, max(0.9, min(size.width / 162, size.height / 197)))
+    /// Preserve the continuous edge; shorten only ticks that would hit top labels.
+    func tickSegment(second: Int, outerInset: CGFloat, length: CGFloat,
+                     lineWidth: CGFloat) -> (outer: CGPoint, inner: CGPoint)? {
+        let angle = Double(second) * .pi / 30
+        let direction = CGVector(dx: sin(angle), dy: -cos(angle))
+        let edge = dialPoint(angle: angle, inset: outerInset)
+        var visible = length
+        for frame in headerTickClearances {
+            let rect = frame.insetBy(dx: -lineWidth / 2 - 1, dy: -lineWidth / 2 - 1)
+            var enter: CGFloat = 0, exit = length
+            for (origin, delta, minimum, maximum) in [
+                (edge.x, -direction.dx, rect.minX, rect.maxX),
+                (edge.y, -direction.dy, rect.minY, rect.maxY)] {
+                if abs(delta) < 0.00001 {
+                    if origin < minimum || origin > maximum { exit = -1 }
+                } else {
+                    let a = (minimum - origin) / delta, b = (maximum - origin) / delta
+                    enter = max(enter, min(a, b)); exit = min(exit, max(a, b))
+                }
+            }
+            if exit >= enter { visible = min(visible, enter) }
+        }
+        guard visible >= 2 else { return nil }
+        return (edge, CGPoint(x: edge.x - direction.dx * visible, y: edge.y - direction.dy * visible))
+    }
+    static func cornerRadius(for size: CGSize) -> CGFloat { cornerProfile(for: size).radius }
+    static func cornerProfile(for size: CGSize) -> (radius: CGFloat, power: Double) {
+        // Tunable approximations fitted to current Simulator masks, not a public
+        // physical-display API. Geometry is keyed by point size, not model name.
+        switch (Int(size.width.rounded()), Int(size.height.rounded())) {
+        case (162, 197): (35, 2.6)
+        case (184, 224): (44, 2.75)
+        case (187, 223): (53, 2.45)
+        case (208, 248): (59.5, 2.4)
+        case (211, 257): (78, 2.9)
+        default: (35 * min(1.3, max(0.9, min(size.width / 162, size.height / 197))), 2.6)
+        }
     }
 }

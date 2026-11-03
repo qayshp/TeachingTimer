@@ -39,9 +39,9 @@ struct SharedClockPage: View {
                     .overlay(Capsule().strokeBorder(.primary, lineWidth: 1))
                     .frame(width: 64, height: 44).contentShape(Rectangle())
                 }
-                    .buttonStyle(.plain).position(x: 38, y: 23)
+                    .buttonStyle(.plain).position(layout.classControlCenter)
                     .accessibilityLabel("Class options and settings").accessibilityIdentifier("class-options")
-                // The shared dial frame leaves the Class/header area clear.
+                // The full-screen contour wraps the top controls; ticks avoid their labels.
                 // These drawing layers must not intercept the button's touches.
                 clockFace(layer: .dial).allowsHitTesting(false)
                 ClockAdditions(date: date, context: classStore.context,

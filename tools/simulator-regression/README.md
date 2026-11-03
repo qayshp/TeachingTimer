@@ -211,10 +211,11 @@ a replacement-class draft. Back must preserve the draft; saved timing must remai
 unchanged until confirmation. These checks use the same disposable-simulator
 guards as other actions.
 
-## Aligned-dial refresh target (build 39 candidate)
+## Volume refresh target across layout candidates
 
-The current focus runner targets the SE 3 volume widget at normalized y=0.45.
-For a pre-alignment baseline, pass `--volume-refresh-y .32` to `run.py` or
+The current focus runner targets the build-40 SE 3 volume widget at normalized
+y=0.34. For a pre-alignment baseline, pass `--volume-refresh-y .32`; for the
+superseded build-39 header layout, pass `--volume-refresh-y .45` to `run.py` or
 `suite.py`. The explicit coordinate is recorded in the action log; it does not
 change app focus or volume behavior. This avoids hard-coding a build-number
 assumption into the runner. Action/count positions remain covered by their

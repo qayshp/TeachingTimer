@@ -51,10 +51,15 @@ struct ClockGeometryChecks {
                 for step in 0..<720 {
                     let angle = Double(step) * .pi / 360
                     let point = layout.dialPoint(angle: angle, inset: inset)
-                    let x = abs(point.x - frame.midX) - (frame.width / 2 - radius)
-                    let y = abs(point.y - frame.midY) - (frame.height / 2 - radius)
-                    let distance = hypot(max(x, 0), max(y, 0)) + min(max(x, y), 0) - radius
-                    assert(abs(distance) < 0.0001, "Inset point leaves contour")
+                    let x = abs(point.x - frame.midX), y = abs(point.y - frame.midY)
+                    let sx = frame.width / 2 - radius, sy = frame.height / 2 - radius
+                    if x > sx && y > sy {
+                        let boundary = pow(Double((x - sx) / radius), layout.cornerPower)
+                            + pow(Double((y - sy) / radius), layout.cornerPower)
+                        assert(abs(boundary - 1) < 0.00001, "Inset point leaves superellipse corner")
+                    } else {
+                        assert(abs(x - frame.width / 2) < 0.0001 || abs(y - frame.height / 2) < 0.0001)
+                    }
                     let dx = point.x - layout.dialCenter.x, dy = point.y - layout.dialCenter.y
                     assert(abs(dx * -cos(angle) - dy * sin(angle)) < 0.0001)
                 }
@@ -63,6 +68,6 @@ struct ClockGeometryChecks {
                 edgeInset: 1.5, direction: SquircleRayGeometry.direction(forSecond: 0))
             assert(abs(up.dx) < 0.0001 && abs(up.dy + size.height / 2 - 1.5) < 0.0001)
         }
-        print("PASS: 34560 ray/contour checks, 8 Watch sizes, nested bounds, corners and shared radial alignment")
+        print("PASS: 34560 circle/superellipse ray checks, 8 sizes, inset bounds and shared radial alignment")
     }
 }

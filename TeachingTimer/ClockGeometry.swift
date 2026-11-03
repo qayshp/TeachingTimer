@@ -15,9 +15,9 @@ enum SquircleRayGeometry {
     }
 
     /// Intersects a center-originating unit ray with an inset rounded rectangle.
-    /// Straight edges are tested first, then the outer corner-circle root.
+    /// Straight edges are tested first, then a circular or superellipse corner.
     static func intersection(size: CGSize, cornerRadius requestedRadius: CGFloat,
-                             edgeInset: CGFloat, direction: CGVector) -> CGVector {
+                             edgeInset: CGFloat, direction: CGVector, cornerPower: Double = 2) -> CGVector {
         let halfWidth = max(0, size.width / 2 - edgeInset)
         let halfHeight = max(0, size.height / 2 - edgeInset)
         let radius = min(requestedRadius, halfWidth, halfHeight)
@@ -34,6 +34,20 @@ enum SquircleRayGeometry {
         if abs(direction.dy) > epsilon {
             let distance = halfHeight / abs(direction.dy)
             if abs(direction.dx * distance) <= straightHalfWidth { return scaled(distance) }
+        }
+        if cornerPower != 2 && radius > epsilon {
+            // Rounded-superellipse corners approximate the display's continuous
+            // curvature. Straight-edge cases above remain exact and cheap.
+            var low: CGFloat = 0
+            var high = min(halfWidth / abs(direction.dx), halfHeight / abs(direction.dy))
+            for _ in 0..<24 {
+                let distance = (low + high) / 2
+                let x = Double(max(0, abs(direction.dx * distance) - straightHalfWidth) / radius)
+                let y = Double(max(0, abs(direction.dy * distance) - straightHalfHeight) / radius)
+                if pow(x, cornerPower) + pow(y, cornerPower) > 1 { high = distance }
+                else { low = distance }
+            }
+            return scaled((low + high) / 2)
         }
         let cornerCenter = CGVector(
             dx: direction.dx.sign == .minus ? -straightHalfWidth : straightHalfWidth,

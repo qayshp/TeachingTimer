@@ -80,7 +80,7 @@ struct ClockAdditions: View {
 
     /// Uses the same ray/perimeter geometry as the ticks and end marker.
     /// One-degree subdivisions follow the rounded corners without a new animation.
-    private func perimeterPath(from start: Double, to end: Double, size: CGSize, inset: CGFloat = 3) -> Path {
+    private func perimeterPath(from start: Double, to end: Double, size: CGSize, inset: CGFloat = 0) -> Path {
         var path = Path()
         guard end > start else { return path }
         let steps = max(1, Int(ceil((end - start) * 180 / .pi)))

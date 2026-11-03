@@ -89,7 +89,7 @@ def evidence_errors(stage, evidence, folder):
     return errors
 
 
-def stage_plan(lifecycle, controls, volume_refresh_y=.45):
+def stage_plan(lifecycle, controls, volume_refresh_y=.34):
     if not .1 <= volume_refresh_y <= .9:
         raise ValueError('Volume refresh target must be within .1–.9')
     # Actions leaves no class/count and the timer selected, satisfying the
@@ -129,7 +129,7 @@ def execute(command, log_path, timeout):
 
 
 def run_suite(simulator, app, output, lifecycle='none', controls=False, timeout=600,
-              execute_command=execute, volume_refresh_y=.45):
+              execute_command=execute, volume_refresh_y=.34):
     output.mkdir(parents=True, exist_ok=False)
     report = dict(simulator=simulator, app=str(app), startedAt=datetime.now(timezone.utc).isoformat(),
                   complete=False, stages=[], visualReview='required',
@@ -181,8 +181,8 @@ def main():
                         help='Optional SE 3-only lifecycle sequence; media terminates its native view service')
     parser.add_argument('--allow-service-termination', action='store_true')
     parser.add_argument('--controls', action='store_true', help='Also capture count/Lock controls on SE 3 or Ultra')
-    parser.add_argument('--volume-refresh-y', type=float, default=.45,
-                        help='SE 3 normalized refresh target; .32 for pre-alignment builds')
+    parser.add_argument('--volume-refresh-y', type=float, default=.34,
+                        help='SE 3 normalized refresh target; .32 baseline, .45 inset-header experiment')
     args = parser.parse_args()
     if not .1 <= args.volume_refresh_y <= .9:
         parser.error('Volume refresh target must be within .1–.9')

@@ -18,8 +18,10 @@ owns build, installation and distribution facts.
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
 is complete: a concise status page, user-facing changelog and separate historical
-checkpoints. The [matching-dial follow-up #19](https://github.com/qayshp/TeachingTimer/issues/19)
-has a separately tested build-39 candidate, pending review and physical validation.
+checkpoints. The [edge-following dial follow-up #19](https://github.com/qayshp/TeachingTimer/issues/19)
+has a separately tested build-40 candidate, pending review and physical validation.
+It replaces build 39's inset-header proposal with a full-screen perimeter around
+the top controls and local clearance for their tick marks.
 
 ## Existing reliability work
 

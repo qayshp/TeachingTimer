@@ -4,13 +4,26 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
-## Unreleased — build 39 layout candidate
+## Unreleased — build 40 layout candidate
+
+- Restored a full-screen dial that follows the display edge around Class/settings
+  and the system clock. Only ticks crossing those labels are shortened or omitted.
+- Used adjustable corner profiles fitted to current Simulator masks; physical
+  display curvature remains an approximation. Both hands remain foremost.
+- Kept the inner count track clear of the top labels without moving the outer
+  clock down. Status/minutes-left remains inside the count control.
+- Checked all five current display sizes, reduced luminance and maximum app text.
+  Class, runtime, count timing and native Crown-volume behavior are unchanged.
+
+## Superseded — build 39 layout proposal
 
 - Aligned the dial, class-progress perimeter and count track below a clear header.
   Both hands use the same center and remain above controls.
 - Moved status/minutes-left into the count control, keeping the hand hub clear.
 - Checked five current Watch sizes, dimmed presentation and maximum app text.
   This is a separate draft from build 38 and is not distributed through TestFlight.
+- Replaced by build 40 after the maintainer clarified that preserving the full
+  display area around the top controls was preferable to a separate header strip.
 
 ## 1.0 (38) — media experiment upload
 

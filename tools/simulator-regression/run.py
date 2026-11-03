@@ -62,8 +62,8 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--scenario", required=True, choices=["focus", "media"])
     parser.add_argument("--allow-service-termination", action="store_true")
-    parser.add_argument("--volume-refresh-y", type=float, default=.45,
-                        help="SE 3 normalized refresh target; use .32 for pre-alignment builds")
+    parser.add_argument("--volume-refresh-y", type=float, default=.34,
+                        help="SE 3 normalized refresh target; .32 baseline, .45 inset-header experiment")
     args = parser.parse_args()
     if not .1 <= args.volume_refresh_y <= .9:
         parser.error("Volume refresh target must be within .1–.9")

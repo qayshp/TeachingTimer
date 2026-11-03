@@ -29,7 +29,7 @@ class SimulatorSuiteChecks(unittest.TestCase):
     def test_refresh_target_is_explicit_for_layout_comparisons(self):
         current = suite.stage_plan('focus', False)[1][2]
         legacy = suite.stage_plan('focus', False, .32)[1][2]
-        self.assertEqual(current[-2:], ['--volume-refresh-y', '0.45'])
+        self.assertEqual(current[-2:], ['--volume-refresh-y', '0.34'])
         self.assertEqual(legacy[-2:], ['--volume-refresh-y', '0.32'])
         for invalid in (0, 1, float('nan')):
             with self.assertRaises(ValueError):
