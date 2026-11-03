@@ -62,8 +62,9 @@ limitations, support address, repository and privacy URLs. Review contact remain
 blank; no custom EULA or app sign-in requirement was added.
 
 The approved support alias was added to the existing iCloud custom domain.
-Existing routing and catch-all settings were retained. A harmless inbound test was received and verified. Outbound reply verification
-remains separate. See the
+Existing routing and catch-all settings were retained. Incoming and outgoing
+plain email were received and their contents verified November 2. Native Watch
+and diagnostic attachment delivery remain unverified. See the
 [private intake procedure](PRIVATE_SUPPORT_PLAN.md).
 
 The isolated [sharing probe](../tools/diagnostic-share-probe/README.md) presented
@@ -114,9 +115,9 @@ Next independent work:
    for the existing Apple report. Build 33 corrects the exercised numerical
    boundary mechanism without globally clamping timeline dates; hardware
    validation and the Apple update remain pending.
-5. Verify outbound support replies and arrange a supervised physical file-sharing /
-   TestFlight install-update-journal pilot when the devices are available.
-   Inbound email receipt is already verified.
+5. Arrange a supervised physical file-sharing / TestFlight install-update-journal
+   pilot when the devices are available. Incoming and outgoing plain support
+   email are already verified; attachment delivery remains separate.
 
 The [publishing gates](PUBLISHING_READINESS.md) remain: actual runtime-use guidance,
 minimum watchOS compatibility, physical teaching/accessibility validation,
@@ -215,8 +216,10 @@ universal fix. Clean source `ee054de666c34274d3fe200d0f69d698c50c97b7` passed si
 archive/export, [CI](https://github.com/qayshp/TeachingTimer/actions/runs/41541943839),
 upload and Apple processing. Build 34 is Ready to Test / Internal; notes and
 assignment survived reload, and the manual pilot has one tester/five builds.
-Physical build 25 is unchanged. Physical Beta checks, outbound support delivery,
-Apple runtime-use guidance and final owner/review decisions remain open.
+Physical build 25 is unchanged. At this checkpoint, physical Beta checks,
+outbound support delivery, Apple runtime-use guidance and final owner/review
+decisions remained open. Plain support email was subsequently verified in both
+directions on November 2; diagnostic attachment delivery remains unverified.
 
 ## Build 35 static layout matrix
 

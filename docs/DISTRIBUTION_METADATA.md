@@ -129,8 +129,10 @@ physical Watch. No TestFlight installation has been verified.
   provide the full privacy policy and MPL license offline in Settings.
   Final App Store declarations still require review against the distribution binary.
 - **Support:** GitHub issues are suitable for sanitized bug descriptions only.
-  A private support alias has verified inbound delivery; outbound replies and
-  tester-facing journal export remain unverified. The review contact is pending. Do not ask testers to attach raw journals publicly.
+  Incoming and outgoing plain email through the private support alias were
+  verified November 2. Native Watch/diagnostic attachment delivery and tester-facing
+  journal export remain unverified. The review contact is pending. Do not ask
+  testers to attach raw journals publicly.
 - **Saved Test Information:** beta description/known limitations, support address,
   repository and privacy URLs were saved and verified after reload. No custom
   EULA was added; the app requires no sign-in. Review contact remains blank.

@@ -43,7 +43,7 @@ completed tests. No periodic monitor or automatic installation is scheduled.
 | 18–21 | Time-edge tests, essential-action checks, build/release evidence and public issues implemented. |
 | 22 | Exact-Date precision and moving-anchor reproductions, narrow display normalization and stable-epoch integration are documented. Bounded probe/app checks pass; follow-up evidence is prepared but unsent. Physical transition testing remains pending. |
 | 23 | Mechanical presentation split complete; shared state/native lifecycle retained. |
-| 24 | Tester/privacy guides, current candidate processing/owner-pilot assignment, saved beta Test Information and support inbound delivery verified. Review contact, physical beta install/update, journal access and support reply/attachment checks remain prerequisites for broader testing. |
+| 24 | Tester/privacy guides, current candidate processing/owner-pilot assignment, saved beta Test Information and incoming/outgoing plain support email verified. Review contact, physical beta install/update, journal access and diagnostic attachment checks remain prerequisites for broader testing. |
 | 25 | Apple follow-up is ongoing. The October 28 media correction was submitted; connection status and requested documentation follow-up need tracking. |
 
 The older 14-point usability/public-code review is largely implemented: reserved

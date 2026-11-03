@@ -43,7 +43,7 @@ status. Dated investigations describe their original builds, not current behavio
    mechanisms are now captured in the probe. Build 34 combines the bounded
    mitigations and passes bounded app integration checks. Physical validation
    and the Apple follow-up remain pending.
-5. Physical TestFlight install/update/journal access, outbound support reply and
+5. Physical TestFlight install/update/journal access, native Watch/diagnostic
    attachment checks, and final publishing/review metadata.
 
 See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK.md),
@@ -169,7 +169,7 @@ The signed packaged archive passes local signature/resource/symbol checks;
 after the account holder accepted Apple’s agreement, the internal-only
 App Store distribution export passed signature, profile and entitlement checks. No physical
 app was installed, launched, queried or removed during this review. The [private intake plan](docs/PRIVATE_SUPPORT_PLAN.md)
-has a configured alias and verified inbound test; outbound reply and native attachment delivery remain unverified. [Pilot procedure](docs/TESTFLIGHT_PREPARATION.md).
+has a configured alias with incoming and outgoing plain email verified November 2. Native Watch/diagnostic attachment delivery and TestFlight journal retrieval remain unverified. [Pilot procedure](docs/TESTFLIGHT_PREPARATION.md).
 
 The following remains the prior build-27 UI validation:
 

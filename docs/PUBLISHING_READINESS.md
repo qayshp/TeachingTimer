@@ -25,7 +25,7 @@ support procedures from historical engineering notes.
 | Names and identifiers | App Store Connect record **Teaching Timer Beta** created for `net.qays.TeachingTimer`; Teaching Timer was unavailable. Its Watch payload is `net.qays.TeachingTimer.watchkitapp`. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Distribution provisioning succeeded. |
 | Build integrity | Build 35 at clean source `b5884e30dd8a` passes signed archive/export with actual Watch privacy-manifest checks, Watch CI (13 Swift suites / 117 Python tests), CodeQL and Apple processing. Clean Debug layout and bounded controls checks pass; build 34 owns the preceding clock integration evidence. Later tooling passes 128 Python tests. Processing is not a physical test. |
 | Paid-team signing / App Store Connect | Owner-only manual pilot assignment is verified; see [current status](../DEVELOPMENT_STATUS.md) for assigned builds. Beta Test Information, build-35 What to Test notes and assignment are saved/verified after reload; review contact remains blank. Complete the physical self-pilot when authorized and available. |
-| Private tester support | [Private email support](../SUPPORT.md) is configured and inbound delivery is verified. Outbound alias replies and diagnostic attachment delivery remain untested. An email address does not export Watch journals. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
+| Private tester support | [Private email support](../SUPPORT.md) is configured; incoming and outgoing plain email were verified November 2. Native Watch and diagnostic attachment delivery remain untested. An email address does not export Watch journals. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | Development container copies work intermittently. TestFlight container access and a tester-friendly export path remain unresolved. |
 | Install/update pilot | Check separate container, cold start, update, state preservation, runtime intent and recovery on a physical Watch. |
 | Teaching reliability | Build 25 Settings/volume received positive October 31 class feedback; progress still froze and was recovered by swiping. Validate the release candidate and mitigation limits. Prioritize progress, blank media, Crown recovery and silencing. See supervised plan. |
@@ -113,6 +113,6 @@ and processed successfully; the [artifact ledger](TESTFLIGHT_PREPARATION.md#subs
 records each checkpoint. The pilot remains manual and owner-only. No TestFlight installation
 or physical update has occurred during this preparation. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
 The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) now has a configured
-alias and verified inbound delivery. Outbound reply and diagnostic attachment
-delivery remain pending. These are
-release gates, not completed tests.
+alias and verified incoming/outgoing plain email as of November 2. Native Watch
+and diagnostic attachment delivery remain unverified, separately from ordinary
+email. TestFlight journal access is still a physical-pilot gate.

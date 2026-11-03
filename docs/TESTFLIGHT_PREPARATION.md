@@ -216,7 +216,7 @@ rehearsal must not be recorded as a TestFlight pass.
 | Update through TestFlight | A later beta build preserves class identity/timing, settings and intentional Stop. Verify the new build number. |
 | Journal retrieval | Copy all three journals using the **Watch** identifier below; verify parsed data, bounds and build identity. Record failure accurately if distribution container access is denied. |
 | Teaching behavior | Check awake/wrist-down clock/count, media recovery, companion volume, and a teaching-length runtime/battery run. |
-| Private support | Inbound delivery to teachingtimer@qays.net was verified November 2. Verify outbound alias replies and any attachment path separately; request only necessary evidence. |
+| Private support | Incoming and outgoing plain email through teachingtimer@qays.net were verified November 2. Native Watch and diagnostic attachment delivery remain unverified; request only necessary evidence. |
 
 Try custom journals independently of installation:
 

@@ -1,13 +1,13 @@
 # Private support and diagnostic intake
 
 Updated November 2, 2026. **The approved support alias is configured in the
-existing iCloud mailbox; inbound delivery is verified and an outbound reply test
-remains pending.**
+existing iCloud mailbox; incoming and outgoing plain email are verified.**
 No mail routing or MX records were changed. This procedure is for the initial
-pilot, not an automatic upload service. Keep the current public issue route
-limited to sanitized descriptions. A harmless test email reached the mailbox
-on November 2, and its reference/content were checked. Do not describe outbound
-reply behavior or diagnostic attachment delivery as tested.
+pilot, not an automatic upload service. Keep public issues limited to sanitized
+descriptions. The harmless incoming test and one authorized outgoing message
+from the alias were received and their contents checked on November 2. Neither
+test included attachments; native Watch and diagnostic attachment delivery remain
+unverified.
 
 ## Recommended route
 
@@ -19,9 +19,9 @@ incident time with time zone, the affected page, playback source/output route if
 relevant, and whether page switching or another recovery helped. No journal or
 system capture is needed for the first message.
 
-The qays.net alias uses the existing iCloud Mail provider. Its address and harmless
-inbound delivery are verified, so it can receive reports now. Outbound replies
-from the alias and diagnostic attachment delivery remain untested. No MX records
+The qays.net alias uses the existing iCloud Mail provider. It can receive reports;
+outgoing plain email from the alias also reached the intended recipient in the
+verified test. Diagnostic attachment delivery remains untested. No MX records
 or inbound mail provider were changed.
 
 For this small pilot, email is the initial reporting route. Diagnostic sharing
@@ -91,7 +91,7 @@ actual intake practice; optional support sharing is not automatically exempt.
 - [x] Maintainer approves the proposed support alias in the existing mailbox.
 - [x] Alias configured at the existing mail provider.
 - [x] Harmless inbound test received and its contents verified.
-- [ ] Outbound reply from the alias tested.
+- [x] Outgoing plain email from the alias sent, received and contents verified.
 - [x] Approved address added to About/support QR destination and repository guide.
 - [x] Privacy/support wording describes actual handling; no automatic uploads.
 - [x] TestFlight feedback email saved to the monitored route and verified after reload.

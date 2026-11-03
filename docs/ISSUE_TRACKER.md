@@ -30,3 +30,9 @@ Simulator runs do not close physical-device bugs.
 
 Issues #1 and #5 were updated on October 28 to match the image audit and Apple
 connection-report status. Both project issues remain open.
+
+On November 2, issue bodies #4, #7 and #8 were synchronized with the clock
+precision/anchor comparisons, bounded runtime-recovery results, and October
+30–31 song-progress recurrence plus FB25379883. Exact body readback was verified;
+titles, open state and existing comments were preserved. No Apple follow-up or
+new issue comment was sent by this synchronization.
