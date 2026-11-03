@@ -48,8 +48,10 @@ struct ContentView: View {
     }
 
     var body: some View {
-        TimelineView(.periodic(from: Self.clockTimelineAnchor, by: 1)) { context in
-            TabView(selection: $page) {
+        // Keep native media outside the clock's scheduled rendering subtree.
+        // Shared owners and navigation survive every clock tick and page change.
+        TabView(selection: $page) {
+            TimelineView(.periodic(from: Self.clockTimelineAnchor, by: 1)) { context in
                 SharedClockPage(
                     date: context.date,
                     session: session,
@@ -60,45 +62,49 @@ struct ContentView: View {
                     volumeBackgroundRevision: volumeBackgroundRevision,
                     showsClassProgress: true
                 )
-                .onAppear { recordInterfaceEvent("page_appeared", page: .classProgress) }
-                .onDisappear { recordInterfaceEvent("page_disappeared", page: .classProgress) }
-                .tag(Page.classProgress)
+                .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
+                    // Invalidate pre-rendered clock/count frames after a clock change.
+                    context.invalidateTimelineContent()
+                }
+                .onChange(of: landmarks.isActive) { _, _ in
+                    context.invalidateTimelineContent()
+                }
+                .onChange(of: classStore.context) { _, _ in
+                    context.invalidateTimelineContent()
+                }
+            }
+            .onAppear { recordInterfaceEvent("page_appeared", page: .classProgress) }
+            .onDisappear { recordInterfaceEvent("page_disappeared", page: .classProgress) }
+            .tag(Page.classProgress)
 
-                NowPlayingView()
-                    // Recreate only the native media host on bounded entry/return
-                    // events and eligible long-dimmed wakes.
-                    // The timer page, volume adapter, and shared state retain identity.
-                    .id(mediaViewGeneration)
-                    .containerBackground(.black, for: .tabView)
-                    .onAppear { recordInterfaceEvent("page_appeared", page: .nowPlaying) }
-                    .onDisappear { recordInterfaceEvent("page_disappeared", page: .nowPlaying) }
-                    .tag(Page.nowPlaying)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .automatic))
+            NowPlayingView()
+                // Recreate only the native media host on bounded entry/return
+                // events and eligible long-dimmed wakes.
+                // The timer page, volume adapter, and shared state retain identity.
+                .id(mediaViewGeneration)
+                .containerBackground(.black, for: .tabView)
+                .onAppear { recordInterfaceEvent("page_appeared", page: .nowPlaying) }
+                .onDisappear { recordInterfaceEvent("page_disappeared", page: .nowPlaying) }
+                .tag(Page.nowPlaying)
+        }
+        .tabViewStyle(.page(indexDisplayMode: .automatic))
 #if DEBUG
-            // Visual checks only: no automatic session or haptic actions.
-            .transformEnvironment(\.dynamicTypeSize) { size in
-                let arguments = ProcessInfo.processInfo.arguments
-                if arguments.contains("--maximum-text") { size = .accessibility5 }
-                else if arguments.contains("--accessibility-text") { size = .accessibility3 }
-                else if arguments.contains("--large-text") { size = .xxxLarge }
-            }
+        // Visual checks only: no automatic session or haptic actions.
+        .transformEnvironment(\.dynamicTypeSize) { size in
+            let arguments = ProcessInfo.processInfo.arguments
+            if arguments.contains("--maximum-text") { size = .accessibility5 }
+            else if arguments.contains("--accessibility-text") { size = .accessibility3 }
+            else if arguments.contains("--large-text") { size = .xxxLarge }
+        }
 #endif
-            .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
-                // Old pre-rendered dates no longer represent the same instants.
-                // New frames project from a fresh wall/monotonic clock pair.
-                context.invalidateTimelineContent()
-                retireOldClass()
-                classClockRevision &+= 1
-            }
-            .onChange(of: landmarks.isActive) { _, _ in
-                context.invalidateTimelineContent()
-            }
-            .onChange(of: classStore.context) { _, _ in
-                context.invalidateTimelineContent()
-                session.recordPersistenceEvents(classStore.takePersistenceEvents())
-                session.synchronizeClass(classStore.context)
-            }
+        .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
+            // Class retirement must also be handled while media is selected.
+            retireOldClass()
+            classClockRevision &+= 1
+        }
+        .onChange(of: classStore.context) { _, _ in
+            session.recordPersistenceEvents(classStore.takePersistenceEvents())
+            session.synchronizeClass(classStore.context)
         }
         .onAppear { [session] in
             // Native applicationState can already report active while SwiftUI

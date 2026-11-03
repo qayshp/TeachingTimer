@@ -6,6 +6,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 
 | Artifact | Current evidence |
 | --- | --- |
+| Experimental branch | **1.0 (38)** on `codex/media-timeline-isolation`: moves the one-second timeline inside the teaching page, leaving native media outside it. Local build/archive checks, 13 Swift suites and 131 Python tests pass. All 21 actions, six focus checks and the full locked count pass in Simulator; real song-progress improvement is unverified. Not uploaded or installed on the physical Watch. |
 | Submitted beta | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
 | Public invitation | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae). Build 37 is **Waiting for Review**; the link is enabled but not accepting testers yet. Initial limit: 100. Automatic tester notification is enabled. |
 | Physical Watch | **Beta 35** is last confirmed by the user in the November 2 supervised test. Development build 25 was inventoried in the earlier owner pilot. Later beta installation is unconfirmed. No physical install accompanies this review. |
@@ -50,6 +51,7 @@ No supervised device session or unattended playback run is scheduled here.
 
 - [November 2 physical media/Crown results](docs/MEDIA_PROGRESS_INCIDENT_2026-11-02.md)
 - [Exact signed revision and release stages](docs/TESTFLIGHT_PREPARATION.md#build-37-public-beta-preparation)
+- [Build-38 hosting experiment and fresh frame evidence](docs/MEDIA_WAKE_REFRESH.md#november-2-build-38-hosting-experiment)
 - [Publishing gates](docs/PUBLISHING_READINESS.md) and [Apple feedback](docs/APPLE_FEEDBACK.md)
 - [Historical checkpoints through build 37](docs/history/STATUS_THROUGH_BUILD_37.md)
 - [Documentation index](docs/README.md)

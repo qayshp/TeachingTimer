@@ -17,8 +17,8 @@ owns build, installation and distribution facts.
 | P3 — [#15](https://github.com/qayshp/TeachingTimer/issues/15) | Lifecycle/performance evidence | Transition invariants, reproducible seeded event tests and a bounded performance baseline. Measure before optimizing. |
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
-starts this batch: a concise status page, user-facing changelog and separate
-historical checkpoints. Keep those current rather than adding another review report.
+is complete: a concise status page, user-facing changelog and separate historical
+checkpoints. Keep those current rather than adding another review report.
 
 ## Existing reliability work
 
@@ -27,6 +27,11 @@ silencing (#3), seconds-hand transitions (#4), developer connections (#5), paire
 Simulator media (#6), dimmed runtime recovery (#7) and frozen progress (#8).
 Keep them separate unless evidence establishes a shared cause. Bounded successful
 tests do not close intermittent physical bugs.
+
+Fresh Simulator-only missing-label frames are tracked in
+[#17](https://github.com/qayshp/TeachingTimer/issues/17), independently of the
+withdrawn historical interpretations. The action-contract mismatch found during
+this review is tracked in [#16](https://github.com/qayshp/TeachingTimer/issues/16).
 
 The [supervised media plan](PHYSICAL_MEDIA_TEST_PLAN.md) includes initial focus,
 Home return, refresh and media return with known playback routes. An overnight

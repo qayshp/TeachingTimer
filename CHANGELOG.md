@@ -4,6 +4,13 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## Unreleased — build 38 experiment
+
+- Moved the clock's one-second timeline inside the teaching page so native media
+  is outside it. This is an experimental hosting change for issue #8, not a
+  demonstrated song-progress fix. It is not uploaded to TestFlight or installed
+  on the physical Watch.
+
 ## 1.0 (37) — November 2, 2026
 
 - Prepared the first external-eligible TestFlight build and submitted it for

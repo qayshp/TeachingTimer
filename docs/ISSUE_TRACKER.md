@@ -18,6 +18,11 @@ Simulator results, physical observations and unverified mitigations.
 
 ## Release and maintenance work
 
+[Issue #17](https://github.com/qayshp/TeachingTimer/issues/17) records newly
+inspected Simulator count/Lock frames with missing control labels. This is
+separate from the withdrawn historical screenshot claims and has no physical
+reproduction. See the [original-image comparison](MEDIA_WAKE_REFRESH.md#fresh-missing-label-observation).
+
 The [roadmap](ROADMAP.md) orders these review follow-ups; each issue has its own
 completion checklist:
 
