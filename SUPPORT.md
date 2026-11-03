@@ -23,8 +23,10 @@ No GitHub account is required to email support.
 The Watch app has **no journal export or upload control**. Scanning its QR code
 or sending an email does not attach journals. If more evidence would help, the
 maintainer will explain what is needed and arrange a private route for files
-you can obtain. Native Watch attachment delivery and TestFlight journal access
-are still being evaluated; you are not expected to extract those files yourself.
+you can obtain. The maintainer retrieved TestFlight journals using a trusted
+Mac and a developer-enabled Watch, but this is not an ordinary tester export
+path. Native Watch attachment delivery is still being evaluated; you are not
+expected to extract these files yourself.
 
 ## Public reports and known issues
 

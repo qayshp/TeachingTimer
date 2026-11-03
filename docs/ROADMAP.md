@@ -5,7 +5,10 @@ build 25; October 31 feedback confirms Settings/volume worked, while song progre
 still stalled and page switching recovered it. The owner-only manual TestFlight
 pilot is prepared and assigned; [current verification](../DEVELOPMENT_STATUS.md)
 owns candidate/install status. Runtime-readiness and clock fixes have bounded
-Simulator evidence; the physical pilot remains pending. Build 16 remains a
+Simulator evidence. The authorized [physical pilot](TESTFLIGHT_PILOT_RESULTS.md)
+has verified installation/update/relaunch, limited journal access and cleanup;
+development-app preservation is qualified by normal stale-class retirement
+and unavailable pre-install preference bytes. Build 16 remains a
 preserved rollback checkpoint. Further physical installations require authorization.
 Simulator work and repository changes do not count as physical validation.
 
@@ -21,7 +24,7 @@ Simulator work and repository changes do not count as physical validation.
 | 6 — complete | Apple Always-On documentation follow-up | File the missing-documentation issue requested in FB24696786, cross-reference it, and close the old report as requested. FB25347535 submitted; FB24696786 cross-referenced and closed. |
 | 7 | Short coordinated hardware session | Native volume matrix, count cancel/restart while moving, and a connection capture if a failure naturally occurs. Requires a suitable time and device access. |
 | 8 | Separate endurance session | Runtime renewal, Home/return, intentional Stop, persistence/new class, battery and diagnostic cost over a teaching-length run. |
-| 9 | Private TestFlight pilot | The [current candidate](../DEVELOPMENT_STATUS.md) is available to the owner. Verify physical install/update, separate-identity state, journal access and support handling before inviting more testers. |
+| 9 — owner installation pilot complete | Private TestFlight pilot | Beta installation/update, saved state/relaunch, developer-tool journal copies and cleanup passed within [dated preservation limits](TESTFLIGHT_PILOT_RESULTS.md). Ordinary tester access and teaching validation remain before wider invitations. |
 | 10 | Ordinary teaching observations | Early/late/consecutive classes, New Class discoverability and counting groups of 4–6 pulses. Avoid adding teaching UI before the observations justify it. |
 | 11 — bounded Simulator checks complete | Seconds-hand transition comparison | Exact-Date precision and moving-anchor mechanisms are separately reproduced; builds 33/34 address them without globally clamping time. [Probe/app comparisons](ALWAYS_ON_HAND_TRANSITION.md#november-2-exact-date-precision-diagnosis) pass within their stated limits. Preserve the unsent Apple follow-up; physical comparison remains pending. |
 
@@ -36,14 +39,14 @@ completed tests. No periodic monitor or automatic installation is scheduled.
 | 1–7 | Teaching checkpoint, documentation separation, retention, device/summary tools, persistence diagnostics and confirmed dead-code cleanup implemented. Journal copying, install/version verification and launch have live evidence; connection reliability remains unresolved. |
 | 8 | Simulator lifecycle regression automation implemented. Original-image audit complete; current bounded run renders. Physical reliability remains unproven. |
 | 9 | Independent native-volume probe built; physical comparison remains current item 7. |
-| 10 | Separate distribution identity, signed export, upload/processing and owner-pilot assignment verified; see [current status](../DEVELOPMENT_STATUS.md). Install/update and journal-access pilot remain current item 9. |
+| 10 | Separate distribution identity, signed export, upload/processing and owner-pilot assignment verified; see [current status](../DEVELOPMENT_STATUS.md). Owner install/update/relaunch and developer-tool journal checks passed within the recorded limits; broader physical work remains in current items 7, 8 and 10. |
 | 11–13 | Physical volume, connection and moving-haptic tests pending; current item 7. |
 | 14–15 | Runtime endurance and battery/logging cost pending; current item 8. |
 | 16–17 | Simulator usability checks exist; physical accessibility and ordinary schedule-use observations pending. |
 | 18–21 | Time-edge tests, essential-action checks, build/release evidence and public issues implemented. |
 | 22 | Exact-Date precision and moving-anchor reproductions, narrow display normalization and stable-epoch integration are documented. Bounded probe/app checks pass; follow-up evidence is prepared but unsent. Physical transition testing remains pending. |
 | 23 | Mechanical presentation split complete; shared state/native lifecycle retained. |
-| 24 | Tester/privacy guides, current candidate processing/owner-pilot assignment, saved beta Test Information and incoming/outgoing plain support email verified. Review contact, physical beta install/update, journal access and diagnostic attachment checks remain prerequisites for broader testing. |
+| 24 | Tester/privacy guides, current candidate processing/owner-pilot assignment, saved beta Test Information and incoming/outgoing plain support email verified. Review contact, teaching validation, ordinary tester journal access and diagnostic attachment checks remain prerequisites for broader testing. |
 | 25 | Apple follow-up is ongoing. The October 28 media correction was submitted; connection status and requested documentation follow-up need tracking. |
 
 The older 14-point usability/public-code review is largely implemented: reserved

@@ -3,13 +3,18 @@
 Updated November 2, 2026. Build 35 passed signed archive/export, upload and Apple
 processing and is Ready to Test / Internal. It is assigned to the manual-distribution
 Maintainer pilot with one tester, the owner. Builds 29, 31, 32, 33 and 34 are also
-assigned; build 30 is processed but unassigned. Physical build 25 was not contacted
-or changed; no physical TestFlight installation is verified.
+assigned; build 30 is processed but unassigned. The separately authorized
+[physical owner pilot](TESTFLIGHT_PILOT_RESULTS.md) verifies initial Beta
+installation/update/relaunch and limited developer-tool journal access. Cleanup
+and development-app preservation checks are complete with the dated record's
+qualification about normal stale-class retirement and unavailable pre-install
+preferences.
 
 Build 35 corrects the bundled policy's support directions; behavior is unchanged
 from build 34's stable clock schedule and build 33's narrow display-boundary
-normalization. Preparation/upload/group assignment are complete;
-the physical self-pilot below remains unverified.
+normalization. Preparation/upload/group assignment are complete; the physical
+installation/update/relaunch pilot is verified within its recorded limits,
+not a completed teaching trial or general tester-export solution.
 
 ## Identities and packaging
 
@@ -116,6 +121,10 @@ untouched until a separate installation request.
 
 ## First uploaded pilot
 
+The following release checkpoints predate the separately authorized physical
+[owner-pilot results](TESTFLIGHT_PILOT_RESULTS.md). Their original installation
+and access limits are retained as history.
+
 Build 29, clean revision `7e9ca4a82324`, passed the signed export checks and was
 uploaded November 2 at approximately 12:39 Pacific. App Store Connect subsequently
 showed **Ready to Test**, **Internal**, and a 90-day lifetime. The **Maintainer
@@ -204,8 +213,9 @@ Watch remains untouched and all physical self-pilot checks below remain open.
 
 ## Self-pilot record
 
-Record the actual build, date, OS versions and result for every row. A Simulator
-rehearsal must not be recorded as a TestFlight pass.
+Record the actual build, date, OS versions and result for every row. The dated
+[physical results](TESTFLIGHT_PILOT_RESULTS.md) distinguish completed checks from
+remaining teaching/access gates. A Simulator rehearsal is not a TestFlight pass.
 
 | Check | Required observation |
 | --- | --- |
@@ -230,7 +240,9 @@ xcrun devicectl device copy from --device WATCH_IDENTIFIER \
 
 Repeat for `InterfaceDiagnostics.json` and `LandmarkDiagnostics.json`. Use the
 bounded connection workflow in [diagnostic tools](DIAGNOSTIC_TOOLS.md).
-Development copies do not prove TestFlight container access. If access fails,
+Development copies alone do not prove TestFlight container access. The owner
+pilot retrieved all three Beta files in one developer-enabled setup; this does
+not establish general tester access. If access fails,
 record the error and evaluate a user-triggered export before depending on beta
 journals. The app has no tester-facing journal export/upload control; a support
 email address or QR code alone cannot attach its private files. TestFlight

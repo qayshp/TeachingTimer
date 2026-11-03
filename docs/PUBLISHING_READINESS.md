@@ -2,8 +2,10 @@
 
 Reviewed November 2, 2026. The signed candidate is Ready to Test / Internal in
 the manual-distribution, owner-only Maintainer pilot. Preparation, upload and
-assignment are complete; physical installation/update, wider testing and public
-release remain pending. [Current verification](../DEVELOPMENT_STATUS.md) owns
+assignment are complete. Physical installation/update/relaunch and limited Beta
+journal access passed in the [owner pilot](TESTFLIGHT_PILOT_RESULTS.md). Cleanup
+and development-app preservation checks are documented with their limits.
+Wider teaching tests and public release remain pending. [Current verification](../DEVELOPMENT_STATUS.md) owns
 build/install status; the [artifact ledger](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds)
 records exact revisions and checks.
 
@@ -24,10 +26,10 @@ support procedures from historical engineering notes.
 | --- | --- |
 | Names and identifiers | App Store Connect record **Teaching Timer Beta** created for `net.qays.TeachingTimer`; Teaching Timer was unavailable. Its Watch payload is `net.qays.TeachingTimer.watchkitapp`. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Distribution provisioning succeeded. |
 | Build integrity | Build 35 at clean source `b5884e30dd8a` passes signed archive/export with actual Watch privacy-manifest checks, Watch CI (13 Swift suites / 117 Python tests), CodeQL and Apple processing. Clean Debug layout and bounded controls checks pass; build 34 owns the preceding clock integration evidence. Later tooling passes 128 Python tests. Processing is not a physical test. |
-| Paid-team signing / App Store Connect | Owner-only manual pilot assignment is verified; see [current status](../DEVELOPMENT_STATUS.md) for assigned builds. Beta Test Information, build-35 What to Test notes and assignment are saved/verified after reload; review contact remains blank. Complete the physical self-pilot when authorized and available. |
+| Paid-team signing / App Store Connect | Owner-only manual pilot assignment is verified; see [current status](../DEVELOPMENT_STATUS.md) for assigned builds. Beta Test Information, build-35 What to Test notes and assignment are saved/verified after reload; review contact remains blank. The [installation/update owner pilot](TESTFLIGHT_PILOT_RESULTS.md) is complete within its stated limits; teaching tests and wider review remain separate. |
 | Private tester support | [Private email support](../SUPPORT.md) is configured; incoming and outgoing plain email were verified November 2. Native Watch and diagnostic attachment delivery remain untested. An email address does not export Watch journals. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
-| Journal export/access | Development container copies work intermittently. TestFlight container access and a tester-friendly export path remain unresolved. |
-| Install/update pilot | Check separate container, cold start, update, state preservation, runtime intent and recovery on a physical Watch. |
+| Journal export/access | All three TestFlight Beta journals copied and parsed in the owner’s developer-enabled SE 3/trusted-Mac setup. General tester access, native attachment delivery and an in-app export path remain unresolved. |
+| Install/update pilot | TestFlight installation/update, saved class/settings, intentional Stop and running-intent relaunch passed on one physical SE 3. Cleanup and development-app preservation were checked; the original stale class retired normally and pre-install preference bytes were unavailable. See [dated results](TESTFLIGHT_PILOT_RESULTS.md). |
 | Teaching reliability | Build 25 Settings/volume received positive October 31 class feedback; progress still froze and was recovered by swiping. Validate the release candidate and mitigation limits. Prioritize progress, blank media, Crown recovery and silencing. See supervised plan. |
 | Accessibility/form factors | Build 35 has a reviewed [five-size static matrix](V1_READINESS_REVIEW.md#build-35-static-layout-matrix), small/large maximum-text Settings and bounded state-confirmed dim/wake controls checks. Physical VoiceOver, touch while teaching and Always-On remain separate gates. |
 | Store materials | Shipping icon/QR technical provenance is verified in the [asset record](DISTRIBUTION_METADATA.md#bundled-asset-provenance). Review metadata/privacy/export/age-rating answers against the final binary and prepare a final screenshot set with capture provenance. |
@@ -93,8 +95,9 @@ fixed or that automatic wake refresh prevented every recurrence.
 
 A successful self-pilot plus several real classes by a few new users is a useful
 release criterion, not an Apple requirement or a substitute for the matrix.
-The self-pilot may proceed when its gates pass. Preserve the current physical
-teaching installation; it is not part of the authorized distribution work.
+The separately authorized installation/update owner pilot is complete within
+its stated limits. Preserve the development teaching installation; broader
+teaching tests and wider invitations remain later decisions.
 
 References: [runtime categories](https://developer.apple.com/documentation/WatchKit/using-extended-runtime-sessions),
 [review guidelines](https://developer.apple.com/app-store/review/guidelines/),
@@ -111,8 +114,10 @@ successfully and passed local package, profile, signature and entitlement checks
 That build-28 export was not uploaded. Subsequent clean candidates were uploaded
 and processed successfully; the [artifact ledger](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds)
 records each checkpoint. The pilot remains manual and owner-only. No TestFlight installation
-or physical update has occurred during this preparation. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
+or physical update occurred during the initial preparation; the subsequently
+authorized [owner pilot](TESTFLIGHT_PILOT_RESULTS.md) records physical results. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
 The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) now has a configured
 alias and verified incoming/outgoing plain email as of November 2. Native Watch
 and diagnostic attachment delivery remain unverified, separately from ordinary
-email. TestFlight journal access is still a physical-pilot gate.
+email. Limited developer-tool Beta journal access passed during the owner pilot;
+ordinary tester access remains unverified.

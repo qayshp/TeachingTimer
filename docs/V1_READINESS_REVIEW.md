@@ -1,9 +1,11 @@
 # V1 readiness review — November 2, 2026
 
 This is the active review record. [Current verification](../DEVELOPMENT_STATUS.md)
-owns the candidate and installed-build status. The physical Watch is in use and
-must not be contacted, installed, launched or tested during this review. Internal
-TestFlight preparation/upload and support-alias setup are authorized separately.
+owns the candidate and installed-build status. The initial review left the
+physical Watch untouched while TestFlight preparation/upload and support setup
+proceeded. The user subsequently authorized a supervised physical owner pilot;
+its [dated results and remaining checks](TESTFLIGHT_PILOT_RESULTS.md) are separate
+from the earlier release and Simulator evidence below.
 
 ## Scope and acceptance
 
@@ -105,19 +107,19 @@ Next independent work:
    Stop comparisons independently retained stopped intent. All 14 candidate
    preference captures matched the baseline class bytes. This is bounded Simulator evidence, not
    a guarantee for arbitrary callback ordering or physical behavior.
-2. Arrange the physical TestFlight install/update/journal pilot when
-   authorized and available. Signed export, upload, processing and owner-pilot
-   assignment are complete; installation is not. Keep the teaching Watch untouched
-   until the user authorizes that next step.
+2. Preserve the completed [physical owner-pilot evidence](TESTFLIGHT_PILOT_RESULTS.md):
+   installation/update/relaunch, limited Beta journal access and cleanup passed.
+   Original journal history remains; normal stale-class retirement and unavailable
+   pre-install preferences limit the preservation claim. Teaching tests remain open.
 3. Preserve completed retirement/layout assertions and reviewed screenshots as
    regression evidence. These are completed UI checks, not pending redesign work.
 4. Preserve the [exact-Date diagnosis and bounded candidate comparison](ALWAYS_ON_HAND_TRANSITION.md#november-2-exact-date-precision-diagnosis)
    for the existing Apple report. Build 33 corrects the exercised numerical
    boundary mechanism without globally clamping timeline dates; hardware
    validation and the Apple update remain pending.
-5. Arrange a supervised physical file-sharing / TestFlight install-update-journal
-   pilot when the devices are available. Incoming and outgoing plain support
-   email are already verified; attachment delivery remains separate.
+5. Evaluate ordinary tester access separately from the successful owner
+   developer-tool copies. Incoming/outgoing plain support email is verified;
+   native Watch and diagnostic attachment delivery remain unverified.
 
 The [publishing gates](PUBLISHING_READINESS.md) remain: actual runtime-use guidance,
 minimum watchOS compatibility, physical teaching/accessibility validation,

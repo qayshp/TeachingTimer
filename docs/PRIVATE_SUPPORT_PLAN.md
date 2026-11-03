@@ -36,10 +36,11 @@ Watch Mail, scanning the support QR code, or opening a support address does not
 attach them. The empty distribution container is packaging, not an iPhone
 companion or file-transfer service.
 
-For the maintainer's self-pilot, try the existing developer-tool container copy
-and verify the resulting files. Access to a development build does not prove
-access to a TestFlight build. An ordinary tester should not be told to attach
-journals they have no supported way to retrieve.
+The November 2 [owner pilot](TESTFLIGHT_PILOT_RESULTS.md) copied and validated all
+three TestFlight Beta journals through developer tools on one developer-enabled
+SE 3 and trusted Mac. This is distinct from development-app access and does not
+establish an ordinary tester’s retrieval path. Do not ask testers to attach
+journals they have no supported way to obtain.
 
 Before wider testing, evaluate a small, explicit sharing flow on a physical
 Watch: first a harmless test file, then a minimized journal package, and verify
@@ -95,7 +96,9 @@ actual intake practice; optional support sharing is not automatically exempt.
 - [x] Approved address added to About/support QR destination and repository guide.
 - [x] Privacy/support wording describes actual handling; no automatic uploads.
 - [x] TestFlight feedback email saved to the monitored route and verified after reload.
-- [ ] Self-pilot separately verifies journal retrieval from the distribution app.
+- [x] Owner pilot retrieves and validates all three TestFlight Beta journals in
+  the tested developer-enabled Watch/trusted-Mac setup; general tester access
+  remains unverified.
 - [ ] Before wider invitations, verify a tester-usable journal delivery path or
   explicitly limit the pilot to reports without journal attachments.
 

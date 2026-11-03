@@ -91,7 +91,12 @@ navigation directions. Behavior is unchanged from build 34. The clean source's
 signed export, CI, Apple processing, notes and owner-pilot assignment are verified;
 [the gallery](V1_READINESS_REVIEW.md#build-35-static-layout-matrix) records five-size
 layout and bounded dim/wake/count evidence. Subsequent tooling passes 128 Python
-tests, separately from the signed candidate's 117-test source checkpoint.
+tests, separately from the signed candidate's 117-test source checkpoint. The
+subsequent [physical owner pilot](TESTFLIGHT_PILOT_RESULTS.md) verifies initial
+Beta installation/update, saved state/relaunch and limited developer-tool journal
+retrieval. Cleanup and development-app preservation checks are documented with
+normal stale-class retirement and missing pre-install preferences qualified.
+Earlier release-stage limits below describe their original checkpoints.
 
 Build 34 adds a stable schedule anchor to the narrow display normalization.
 Bounded clock/count integration and 21 app UI-action assertions pass. Clean
@@ -116,8 +121,9 @@ schedule-retirement races. Build 25, including settings and bounded media
 wake refresh, is installed as the development identity `com.qayshp.TeachingTimer`.
 Build 25 received positive classroom Settings/volume feedback on October 31;
 song progress still stalled and recovered by switching pages. Build 27 adds
-Help/Privacy/About under Settings; that addition has not been installed on the
-physical Watch. No TestFlight installation has been verified.
+Help/Privacy/About under Settings. Those pages are now present in the separately
+installed physical Beta; the development teaching app remains build 25. See the
+[owner-pilot results](TESTFLIGHT_PILOT_RESULTS.md) for the tested scope.
 
 - **Screenshot set:** the [build-35 five-size gallery](V1_READINESS_REVIEW.md#build-35-static-layout-matrix) includes original captures and hashes. The historical [Settings-era teaching face](images/settings-25/se3-face.png)
   was captured on the SE 3 Simulator during build-25 verification.
@@ -136,9 +142,10 @@ physical Watch. No TestFlight installation has been verified.
 - **Saved Test Information:** beta description/known limitations, support address,
   repository and privacy URLs were saved and verified after reload. No custom
   EULA was added; the app requires no sign-in. Review contact remains blank.
-- **Wider pilot gates:** verify separate-identity state handling, install/update,
-  journal retrieval and support handling before inviting additional testers.
-  The current owner-only invitation does not establish those results.
+- **Wider pilot gates:** validate teaching behavior, support handling and ordinary
+  tester access before inviting additional testers. The completed owner
+  install/update/relaunch and developer-tool journal checks do not establish
+  those broader results.
 
 ## Bundled asset provenance
 

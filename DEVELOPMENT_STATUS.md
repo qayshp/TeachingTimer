@@ -6,10 +6,10 @@ status. Dated investigations describe their original builds, not current behavio
 | Item | Status |
 | --- | --- |
 | Source candidate | 1.0 (35): bundled Privacy copy replaces a repository-relative support path with the actual Settings → About → Contact support route. App behavior is unchanged from build 34. Bundled policy rendering, the five-size static matrix and bounded dim/wake/count controls checks pass. Clean source `b5884e30dd8a` is assigned to the owner pilot. |
-| Installed physical Watch | 1.0 (25), installed, independently version-verified and launched October 30. |
+| Installed physical Watch | Development build 25 remains the teaching identity. A separately authorized [owner pilot](docs/TESTFLIGHT_PILOT_RESULTS.md) installed/launched Beta 35 and verified a TestFlight 35 → 34 → 35 round trip with preferences and prior journal events preserved. Final inventory retains development build 25; its prior journal history is preserved. Beta’s test class was ended. A stale development class retired normally during brief foreground activity; see the pilot’s preservation limits. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Build 35 (`b5884e30dd8a`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29, 31, 32, 33 and 34 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release or verified physical Beta install. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Build 35 (`b5884e30dd8a`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29, 31, 32, 33 and 34 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release; initial physical Beta installation and limited developer-tool journal retrieval are verified in the owner pilot. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -37,19 +37,30 @@ status. Dated investigations describe their original builds, not current behavio
 3. Automatic runtime recovery after dimmed Simulator relaunch: build 30 reproduces
    exact activation error code 3 on watchOS 27.2 and wake does not recover it.
    Class timing survives. Build 31 defers the premature start and recovers on a
-   later active wake in one matched Simulator trial. Broader callback orderings
-   and physical behavior remain unverified.
+   later active wake in one matched Simulator trial. The later owner pilot passes
+   a physical running-intent relaunch; it does not recreate the exact dimmed
+   condition or establish broader callback-order behavior.
 4. Seconds-hand backstep at dim/wake: separate precision and moving-anchor
    mechanisms are now captured in the probe. Build 34 combines the bounded
    mitigations and passes bounded app integration checks. Physical validation
    and the Apple follow-up remain pending.
-5. Physical TestFlight install/update/journal access, native Watch/diagnostic
-   attachment checks, and final publishing/review metadata.
+5. Ordinary tester journal access, native Watch/diagnostic attachments and final
+   review metadata remain open. The supervised Beta installation/update/relaunch,
+   developer-tool copies and cleanup checks are complete within their recorded limits.
 
 See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK.md),
 [roadmap](docs/ROADMAP.md), and [publishing readiness](docs/PUBLISHING_READINESS.md).
 
 ## Verification and deployment boundaries
+
+The separately authorized [November 2 physical pilot](docs/TESTFLIGHT_PILOT_RESULTS.md)
+verifies Beta installation/update, saved class/settings, intentional Stop,
+a running-intent relaunch and all three journals copied through the trusted
+Mac's developer tools. This is one developer-enabled SE 3; ordinary tester
+export and teaching reliability remain unverified. Final inventory, journal
+preservation and Beta cleanup were checked; the development app's stale class
+retired during its brief foreground appearance, so class state was not untouched. Release-stage observations below describe their
+original checkpoints, before that physical authorization.
 
 Build 35 changes only the bundled policy's support directions over build 34.
 Clean source `b5884e30dd8ab04c956e629a5f0a5c7864b58c2b` passed signed
@@ -168,8 +179,8 @@ an update rehearsal, not TestFlight delivery or physical journal-access proof.
 The signed packaged archive passes local signature/resource/symbol checks;
 after the account holder accepted Apple’s agreement, the internal-only
 App Store distribution export passed signature, profile and entitlement checks. No physical
-app was installed, launched, queried or removed during this review. The [private intake plan](docs/PRIVATE_SUPPORT_PLAN.md)
-has a configured alias with incoming and outgoing plain email verified November 2. Native Watch/diagnostic attachment delivery and TestFlight journal retrieval remain unverified. [Pilot procedure](docs/TESTFLIGHT_PREPARATION.md).
+app was installed, launched, queried or removed during that initial review phase. The [private intake plan](docs/PRIVATE_SUPPORT_PLAN.md)
+has a configured alias with incoming and outgoing plain email verified November 2. Native Watch/diagnostic attachment delivery remains unverified. Limited Beta journal retrieval subsequently passed in the [physical pilot](docs/TESTFLIGHT_PILOT_RESULTS.md); ordinary tester access is not established.
 
 The following remains the prior build-27 UI validation:
 

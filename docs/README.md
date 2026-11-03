@@ -103,10 +103,11 @@ image as the current build or infer successful audio/haptics from visible contro
 
 ## Distribution preparation
 
-- [TestFlight preparation](TESTFLIGHT_PREPARATION.md): separate application
-  identity, unsigned rehearsal, verified local signed export and outstanding
-  upload/install/journal-access gates.
-- [Distribution metadata draft](DISTRIBUTION_METADATA.md): review before any upload.
+- [TestFlight preparation](TESTFLIGHT_PREPARATION.md): separate identities,
+  signed artifact history, owner-pilot assignment and reusable validation checklist.
+- [Physical owner-pilot results](TESTFLIGHT_PILOT_RESULTS.md): observed installation,
+  update/relaunch, journal access and remaining validation boundaries.
+- [Distribution metadata draft](DISTRIBUTION_METADATA.md): review before broader distribution.
 
 ## Historical archive
 
