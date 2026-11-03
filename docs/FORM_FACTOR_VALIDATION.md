@@ -1,6 +1,6 @@
 # Watch form-factor validation
 
-The [build-40 edge-following dial](#november-3-build-40-edge-following-dial)
+The [build-41 layered header ticks](#november-3-build-41-layered-header-ticks)
 is the latest layout comparison. The October 23 review below retains its original
 runtime, device catalog and limits; those are not instructions to recreate old devices.
 
@@ -204,6 +204,9 @@ Always-On cadence or teaching-length reliability.
 
 ## November 3 build-40 edge-following dial
 
+Build 41 below retains this contour and replaces local tick clipping with
+translucent layering. These are the original build-40 checks and captures.
+
 [Issue #19](https://github.com/qayshp/TeachingTimer/issues/19) now follows the
 maintainer's clarified direction: use the full screen and wrap outside
 Class/settings and watchOS time. There is no separate header strip. Build 39
@@ -273,3 +276,60 @@ Simulator presentation and focus events do not prove physical display curvature,
 Crown volume response, haptic delivery or teaching-length Always-On reliability.
 Build 40 is not uploaded to TestFlight or installed on a physical Watch. It remains
 independent of the build-38 native-media experiment.
+
+
+## November 3 build-41 layered header ticks
+
+The full-screen contour from build 40 is retained. All 60 ticks now keep their
+normal radial length: nothing is shortened or omitted around the header.
+The dial draws behind the Class button. Its black backing is 75% opaque, allowing
+quarter-strength ticks to show through while the lettering/outline stay opaque.
+A separate alpha mask reduces only the tick portions beneath the native system
+time to 25% strength. That region is an adjustable approximation; watchOS owns
+the clock's actual layout, opacity and compositing. The perimeter, class-progress
+arc, end wedge and foremost hands are not faded by this tick treatment.
+
+### SE 3 before and after
+
+| Build 40: clipped header ticks | Build 41: layered full ticks |
+| --- | --- |
+| ![SE 3 build 40 clipped header ticks](images/layered-41/SE-3-40mm-before40.png) | ![SE 3 build 41 full ticks behind translucent top elements](images/layered-41/SE-3-40mm-normal.png) |
+
+These captures preserve the same saved class and settings on one Simulator.
+They are successive captures, so hand angles differ. Count vibrations are off
+and Minutes left is on. The active-count caption replaces minutes left as before.
+
+| SE 3 44 mm | Series 12 42 mm |
+| --- | --- |
+| ![SE 3 44 mm layered ticks](images/layered-41/SE-3-44mm-normal.png) | ![Series 12 42 mm layered ticks](images/layered-41/Series-12-42mm-normal.png) |
+
+| Series 12 46 mm | Ultra 4 49 mm |
+| --- | --- |
+| ![Series 12 46 mm layered ticks](images/layered-41/Series-12-46mm-normal.png) | ![Ultra 4 49 mm layered ticks](images/layered-41/Ultra-4-49mm-normal.png) |
+
+| SE 3 reduced luminance | Ultra reduced luminance |
+| --- | --- |
+| ![SE 3 dimmed layered ticks](images/layered-41/SE-3-40mm-dim-count.png) | ![Ultra dimmed layered ticks](images/layered-41/Ultra-4-49mm-dim-count.png) |
+
+| SE 3 maximum app text | Ultra maximum app text |
+| --- | --- |
+| ![SE 3 maximum-text layered face](images/layered-41/SE-3-40mm-maximum-text.png) | ![Ultra maximum-text layered face](images/layered-41/Ultra-4-49mm-maximum-text.png) |
+
+Thirteen originals were captured November 3 on the same five existing watchOS
+27.2 (24S118) Simulators with Xcode 27.2 (27B52); ten are curated here. The private
+manifest retains hashes and verified luminance states. All 13 Swift suites and
+132 Python tests pass, as do Simulator compilation and unsigned development/
+distribution archive checks. Updated geometry checks
+verify full tick lengths at all 60 positions across eight sizes (480 ticks),
+plus the existing 5,760 count-dot/control and 34,560 ray/contour checks.
+
+All six focus/lifecycle assertions pass for initial Crown input, Home/reopen,
+tap-refresh and media return: the class bytes, host process and native volume
+instance are preserved. The native media page renders its expected "Not Playing"
+state. The Class button opens its sheet above the tick drawing and dismissal
+preserves the class/volume instance. These are lifecycle/rendering observations,
+not proof of audible iPhone
+volume or tactile haptics. Class snapping, runtime/renewal and count scheduling
+are unchanged. Physical readability and contrast still need Watch comparison.
+Build 41 is not uploaded to TestFlight or installed on the physical Watch; the
+layout draft remains independent of media experiment PR #18/build 38.

@@ -9,6 +9,8 @@ enum SquircleClockTuning {
     static let edgeInset: CGFloat = 2
     static let tickInset: CGFloat = 3
     static let perimeterHandOvershoot: CGFloat = 2
+    // Quarter-strength ticks under the clock and through the Class backing.
+    static let obscuredTickOpacity: Double = 0.25
 }
 
 struct SquircleIntersectionClockView: View {
@@ -30,12 +32,20 @@ struct SquircleIntersectionClockView: View {
                         for index in 0..<60 {
                             let major = index.isMultiple(of: 5)
                             let width: CGFloat = major ? 2.5 : 1.25
-                            guard let tick = layout.tickSegment(second: index,
+                            let tick = layout.tickSegment(second: index,
                                 outerInset: SquircleClockTuning.edgeInset + SquircleClockTuning.tickInset,
-                                length: major ? 10 : 5, lineWidth: width) else { continue }
+                                length: major ? 10 : 5)
                             var path = Path(); path.move(to: tick.outer); path.addLine(to: tick.inner)
                             graphics.stroke(path, with: .color(.white.opacity(major ? 0.92 : 0.48)),
                                 style: StrokeStyle(lineWidth: width, lineCap: .round))
+                        }
+                    }
+                    .mask {
+                        Canvas { mask, size in
+                            mask.fill(Path(CGRect(origin: .zero, size: size)), with: .color(.white))
+                            mask.blendMode = .destinationOut
+                            mask.fill(Path(layout.systemTimeTickRegion),
+                                with: .color(.white.opacity(1 - SquircleClockTuning.obscuredTickOpacity)))
                         }
                     }
                 }

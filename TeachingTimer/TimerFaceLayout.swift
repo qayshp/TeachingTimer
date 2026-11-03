@@ -28,9 +28,9 @@ struct TimerFaceLayout {
         let edge = r - pow(max(0, pow(r, cornerPower) - pow(r - y, cornerPower)), 1 / cornerPower)
         return CGPoint(x: max(38, CGFloat(edge) + 35), y: 23)
     }
-    var headerTickClearances: [CGRect] {
-        [CGRect(x: classControlCenter.x - 33, y: 7, width: 66, height: 32),
-         CGRect(x: size.width - 70 * scale, y: 5 * scale, width: 69 * scale, height: 27 * scale)]
+    // Approximate system-overlay footprint; watchOS owns the actual clock view.
+    var systemTimeTickRegion: CGRect {
+        CGRect(x: size.width - 70 * scale, y: 5 * scale, width: 69 * scale, height: 27 * scale)
     }
     var controlsWidth: CGFloat { trackFrame.width - 22 * scale }
     var actionHeight: CGFloat { 44 * scale }
@@ -64,30 +64,12 @@ struct TimerFaceLayout {
             direction: CGVector(dx: sin(angle), dy: -cos(angle)), cornerPower: cornerPower)
         return CGPoint(x: dialCenter.x + vector.dx, y: dialCenter.y + vector.dy)
     }
-    /// Preserve the continuous edge; shorten only ticks that would hit top labels.
-    func tickSegment(second: Int, outerInset: CGFloat, length: CGFloat,
-                     lineWidth: CGFloat) -> (outer: CGPoint, inner: CGPoint)? {
+    /// Every tick retains its full length; header legibility is a drawing concern.
+    func tickSegment(second: Int, outerInset: CGFloat, length: CGFloat) -> (outer: CGPoint, inner: CGPoint) {
         let angle = Double(second) * .pi / 30
         let direction = CGVector(dx: sin(angle), dy: -cos(angle))
         let edge = dialPoint(angle: angle, inset: outerInset)
-        var visible = length
-        for frame in headerTickClearances {
-            let rect = frame.insetBy(dx: -lineWidth / 2 - 1, dy: -lineWidth / 2 - 1)
-            var enter: CGFloat = 0, exit = length
-            for (origin, delta, minimum, maximum) in [
-                (edge.x, -direction.dx, rect.minX, rect.maxX),
-                (edge.y, -direction.dy, rect.minY, rect.maxY)] {
-                if abs(delta) < 0.00001 {
-                    if origin < minimum || origin > maximum { exit = -1 }
-                } else {
-                    let a = (minimum - origin) / delta, b = (maximum - origin) / delta
-                    enter = max(enter, min(a, b)); exit = min(exit, max(a, b))
-                }
-            }
-            if exit >= enter { visible = min(visible, enter) }
-        }
-        guard visible >= 2 else { return nil }
-        return (edge, CGPoint(x: edge.x - direction.dx * visible, y: edge.y - direction.dy * visible))
+        return (edge, CGPoint(x: edge.x - direction.dx * length, y: edge.y - direction.dy * length))
     }
     static func cornerRadius(for size: CGSize) -> CGFloat { cornerProfile(for: size).radius }
     static func cornerProfile(for size: CGSize) -> (radius: CGFloat, power: Double) {

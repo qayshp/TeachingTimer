@@ -28,6 +28,9 @@ struct SharedClockPage: View {
         GeometryReader { geometry in
             let layout = TimerFaceLayout(size: geometry.size)
             ZStack {
+                // Ticks sit behind the translucent Class backing and native time.
+                // Drawing must not intercept the button's touches or Crown focus.
+                clockFace(layer: .dial).allowsHitTesting(false)
                 Button { classSheet = ClassSheetRequest() } label: {
                     HStack(spacing: 3) {
                         Text("Class")
@@ -35,15 +38,12 @@ struct SharedClockPage: View {
                     }
                     .font(.system(size: min(labelSize, 14), weight: .semibold))
                     .padding(.horizontal, 7).padding(.vertical, 5)
-                    .background(Capsule().fill(.black))
+                    .background(Capsule().fill(.black.opacity(1 - SquircleClockTuning.obscuredTickOpacity)))
                     .overlay(Capsule().strokeBorder(.primary, lineWidth: 1))
                     .frame(width: 64, height: 44).contentShape(Rectangle())
                 }
                     .buttonStyle(.plain).position(layout.classControlCenter)
                     .accessibilityLabel("Class options and settings").accessibilityIdentifier("class-options")
-                // The full-screen contour wraps the top controls; ticks avoid their labels.
-                // These drawing layers must not intercept the button's touches.
-                clockFace(layer: .dial).allowsHitTesting(false)
                 ClockAdditions(date: date, context: classStore.context,
                     showsClassProgress: showsClassProgress,
                     landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,

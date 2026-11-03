@@ -4,7 +4,17 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
-## Unreleased — build 40 layout candidate
+## Unreleased — build 41 layout candidate
+
+- Restored all 60 full-length ticks behind the top elements. The Class button
+  has a translucent black backing and opaque text/outline; ticks under the
+  native system time are reduced to quarter strength within an approximate region.
+- Kept the full-screen perimeter, foremost hands and existing touch targets.
+  Class, runtime, count and native Crown-volume behavior are unchanged.
+- Checked five current display sizes, SE 3/Ultra dimmed and maximum-text views,
+  and Home/refresh/media-return lifecycle behavior in Simulator.
+
+## Layout checkpoint — build 40
 
 - Restored a full-screen dial that follows the display edge around Class/settings
   and the system clock. Only ticks crossing those labels are shortened or omitted.
