@@ -1,5 +1,9 @@
 # TestFlight pilot
 
+The later build-36 source corrects privacy disclosure only. It has local build
+and unsigned archive verification; it is not uploaded or assigned to TestFlight.
+Build 35 remains the installed owner pilot described below.
+
 Updated November 2, 2026. Build 35 passed signed archive/export, upload and Apple
 processing and is Ready to Test / Internal. It is assigned to the manual-distribution
 Maintainer pilot with one tester, the owner. Builds 29, 31, 32, 33 and 34 are also

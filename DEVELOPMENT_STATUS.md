@@ -5,7 +5,7 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (35): bundled Privacy copy replaces a repository-relative support path with the actual Settings → About → Contact support route. App behavior is unchanged from build 34. Bundled policy rendering, the five-size static matrix and bounded dim/wake/count controls checks pass. Clean source `b5884e30dd8a` is assigned to the owner pilot. |
+| Source candidate | 1.0 (36): Privacy now explains separate unreadable-journal recovery files and qualifies the observed TestFlight journal access. No runtime, media, volume, count, persistence or recovery behavior changed. Local build/unsigned archive checks pass (13 Swift suites / 128 Python tests); the overview and full policy render and scroll through their final text on the SE 3 40 mm Simulator. Build 36 has not been uploaded or installed on physical devices. |
 | Installed physical Watch | Development build 25 remains the teaching identity. A separately authorized [owner pilot](docs/TESTFLIGHT_PILOT_RESULTS.md) installed/launched Beta 35 and verified a TestFlight 35 → 34 → 35 round trip with preferences and prior journal events preserved. Final inventory retains development build 25; its prior journal history is preserved. Beta’s test class was ended. A stale development class retired normally during brief foreground activity; see the pilot’s preservation limits. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
@@ -52,6 +52,18 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 [roadmap](docs/ROADMAP.md), and [publishing readiness](docs/PUBLISHING_READINESS.md).
 
 ## Verification and deployment boundaries
+
+Build 36 is a local documentation-only app revision after the owner pilot.
+Unreadable journals were already preserved in separate recovery files outside
+rolling age/event limits; the overview and bundled policy now disclose that
+exception. TestFlight copying is described as verified only in the maintainer's
+developer-enabled Watch/trusted-Mac setup. The existing recovery files and all
+recovery behavior are preserved. The installed/distributed Beta remains build 35.
+The copy-only revision passed the complete local verification workflow and a
+targeted watchOS 27.2 SE 3 40 mm rendering check. One OCR assertion initially
+failed on a line-wrapped `developer-enabled`; the original pixels and a bounded
+hyphen-wrap check confirm the text. The full policy's final sentence is visible.
+This does not extend the physical or multi-size behavior evidence for build 35.
 
 The separately authorized [November 2 physical pilot](docs/TESTFLIGHT_PILOT_RESULTS.md)
 verifies Beta installation/update, saved class/settings, intentional Stop,

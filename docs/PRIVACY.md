@@ -1,6 +1,6 @@
 # Privacy and diagnostics
 
-Last reviewed November 2, 2026, for the build-30 candidate.
+Last reviewed November 2, 2026, for the build-36 candidate.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does
@@ -19,6 +19,10 @@ phone; Apple may separately collect system diagnostics under your Apple settings
   audio content, actual audible volume, heart rate or pose sequences.
 - If a saved class or recovery value is unreadable, one recovery copy per store
   is preserved locally. It is separate from the rolling journals.
+- An unreadable journal may be preserved byte-for-byte in a separate recovery
+  file before a new journal is started. These files are not pruned by the
+  journal age or event limits. Repeated recoveries can create multiple copies;
+  they remain until separately removed or the app's local container is deleted.
 
 Journals are bounded to seven days as new events are written, and also capped at
 10,000 session events, 10,000 interface events and 20,000 landmark events. Heavy
@@ -30,9 +34,10 @@ system/backup copies are outside that operation.
 
 ## Sharing is a separate choice
 
-A development build's journals may be copied to a trusted Mac using Apple's
-developer tools. TestFlight journal access is not yet verified. This build has
-no in-app journal export or automatic collection by the developer.
+Journals may be copied to a trusted Mac using Apple's developer tools. This was
+verified for the maintainer's TestFlight build on a developer-enabled Watch;
+access for ordinary testers is not established. This build has no in-app journal
+export or automatic collection by the developer.
 
 Before sharing, inspect and minimize the data. GitHub issues are public: use
 cropped screenshots and sanitized excerpts. Arrange a private route with the

@@ -76,10 +76,11 @@ struct AppInformationView: View {
             }
             Section("Retention and removal") {
                 Text("Journals retain up to seven days as events are written, capped at 10,000 session, 10,000 interface, and 20,000 count events. Heavy use can shorten that history.")
+                Text("Unreadable journals may be saved as separate recovery files. Those copies are not cleared by the journal limits and can accumulate until separately removed or the app is deleted.")
                 Text("End class clears current timing, not diagnostics or settings. Unreadable saved values may have a separate local recovery copy. Removing the app removes its local container; exported or backup copies are separate.")
             }
             Section("Sharing is your choice") {
-                Text("Developer tools can copy journals from development builds to a trusted Mac. TestFlight access is not yet verified. This app has no journal export or upload.")
+                Text("Journal copying was verified with the maintainer’s TestFlight build and trusted Mac. Access for other testers is not established. This app has no journal export or upload.")
                 Text("Share only what is needed. Do not post raw journals or system logs in public GitHub issues.")
                 Text("Apple’s media services and system diagnostics follow your Apple settings. Data you choose to send to Apple or another recipient follows that recipient’s policies.")
             }

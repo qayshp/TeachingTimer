@@ -34,9 +34,10 @@ Always-On, distribution installation or App Review acceptance.
   found. Add optional, bounded retirement UI cases using pre-launch synthetic
   classes; no live preferences or system-clock changes.
 - **Information copy:** About uses the real bundle display name, including Beta;
-  Help explains the suggested quarter-hour; Privacy distinguishes development
-  journal copies from unverified TestFlight access and says there is no in-app
-  export/upload.
+  Help explains the suggested quarter-hour; Privacy says there is no in-app
+  export/upload. After the owner pilot, build 36 qualifies verified TestFlight
+  copying to the maintainer's developer-enabled Watch and trusted Mac and
+  discloses separate unreadable-journal recovery files outside rolling limits.
 - **Documentation drift:** reconcile the accepted agreement, signed build-28
   export, newer runtime availability and continued song-progress recurrence.
   Keep dated investigations and their corrections intact.
