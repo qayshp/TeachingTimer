@@ -34,7 +34,9 @@ status. Dated investigations describe their original builds, not current behavio
   scenarios on the iPhone-speaker route, without establishing other routes or
   intermittent reliability. Page-entry refresh can update a song-position snapshot
   without restoring live progress. Eligible long-dim refreshes also executed;
-  their individual visual outcomes were not isolated.
+  the user subsequently confirmed that automatic refresh updates the displayed
+  position. Continuous progression remains unresolved, and this observation was
+  not matched to an individual recorded refresh.
 
 ## Open priorities
 

@@ -26,6 +26,10 @@ no Apple update was submitted during this session.
 6. Timer-page Crown volume worked audibly after Home/reopen and after tapping
    refresh without a media round trip. These are physical passes for this run,
    not proof that intermittent volume failures are resolved.
+7. In a follow-up, the wearer confirmed that automatic media refresh after
+   inactivity does update the displayed song position. This establishes useful
+   position catch-up by observation, not restored continuous progression. The
+   report was not matched to a particular captured refresh timestamp.
 
 ## What the journals establish
 
@@ -54,8 +58,9 @@ reported offset or identify the native service's internal failure.
 ## Interpretation and next evidence
 
 Repeated entry refreshed the apparent position but did not restore continuing
-progress in this test. Seeking still reached the embedded indicator. Together
-with the standalone comparison, that narrows the question toward embedded
+progress in this test. The wearer also confirmed position catch-up after the
+automatic refresh following inactivity. Seeking still reached the embedded
+indicator. Together with the standalone comparison, that narrows the question toward embedded
 presentation or playback-time updates; it does not establish an Apple root cause.
 
 The app embeds Apple's `NowPlayingView` under `TimelineView` → `TabView`. It does

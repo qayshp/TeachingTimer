@@ -61,6 +61,9 @@ The user nevertheless observed embedded progress updating once on entry and then
 remaining stale, including during a requested bright-screen comparison. Repeated
 page entry produced a newer snapshot rather than reliable ongoing progress.
 The standalone Now Playing app appeared to advance normally. These observations
-show that native-view recreation does not guarantee live progress. They do not
-isolate the visual result of either particular long-dim refresh or establish its
-underlying cause. The app's timeline ancestor remains a variable to test.
+show that native-view recreation does not guarantee live progress. In a follow-up,
+the user confirmed that automatic refresh after inactivity does update the
+displayed position. This is a useful physical position-catch-up result, separate
+from restoring continuous progress. It is not matched to a particular recorded
+refresh timestamp and does not establish the underlying cause. The app's timeline
+ancestor remains a variable to test.
