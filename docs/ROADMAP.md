@@ -17,8 +17,9 @@ owns build, installation and distribution facts.
 | P3 — [#15](https://github.com/qayshp/TeachingTimer/issues/15) | Lifecycle/performance evidence | Transition invariants, reproducible seeded event tests and a bounded performance baseline. Measure before optimizing. |
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
-starts this batch: a concise status page, user-facing changelog and separate
-historical checkpoints. Keep those current rather than adding another review report.
+is complete: a concise status page, user-facing changelog and separate historical
+checkpoints. The [matching-dial follow-up #19](https://github.com/qayshp/TeachingTimer/issues/19)
+has a separately tested build-39 candidate, pending review and physical validation.
 
 ## Existing reliability work
 

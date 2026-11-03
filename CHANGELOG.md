@@ -4,6 +4,22 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## Unreleased — build 39 layout candidate
+
+- Aligned the dial, class-progress perimeter and count track below a clear header.
+  Both hands use the same center and remain above controls.
+- Moved status/minutes-left into the count control, keeping the hand hub clear.
+- Checked five current Watch sizes, dimmed presentation and maximum app text.
+  This is a separate draft from build 38 and is not distributed through TestFlight.
+
+## 1.0 (38) — media experiment upload
+
+- Moved the clock timeline inside the teaching page so native media is outside it.
+  Live song-progress improvement remains unverified; [PR #18](https://github.com/qayshp/TeachingTimer/pull/18)
+  is still an experiment.
+- Signed/uploaded November 2. Owner TestFlight group availability awaits browser
+  sign-in and readback; upload does not establish installation.
+
 ## 1.0 (37) — November 2, 2026
 
 - Prepared the first external-eligible TestFlight build and submitted it for

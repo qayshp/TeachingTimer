@@ -1,11 +1,13 @@
 # Teaching Timer — current status
 
-Updated November 2, 2026. This page owns current build and validation status.
+Updated November 3, 2026. This page owns current build and validation status.
 See the [changelog](CHANGELOG.md) for user-visible changes and the
 [roadmap](docs/ROADMAP.md) for prioritized work.
 
 | Artifact | Current evidence |
 | --- | --- |
+| Layout candidate | **1.0 (39)** on `codex/aligned-squircle-dial`: matching inset contours below a clear header, with status inside the count control. All local build/archive checks, 13 Swift suites / 132 Python tests, 22 five-size captures, 21 UI actions, six focus checks and full locked-count completion pass. [Comparison](docs/FORM_FACTOR_VALIDATION.md#november-2-build-39-aligned-dial-candidate). Not uploaded or physically installed. |
+| Owner media experiment | **1.0 (38)**, clean signed source `57fde699e424`. Upload succeeded November 2 at 23:09:35 PST. Apple processing and owner-group availability remain unverified because the App Store Connect browser needs sign-in. Intended comparison is 37 versus 38; public group assignment and physical installation were not performed. [Release record](docs/TESTFLIGHT_PREPARATION.md#build-38-owner-media-experiment). |
 | Submitted beta | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
 | Public invitation | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae). Build 37 is **Waiting for Review**; the link is enabled but not accepting testers yet. Initial limit: 100. Automatic tester notification is enabled. |
 | Physical Watch | **Beta 35** is last confirmed by the user in the November 2 supervised test. Development build 25 was inventoried in the earlier owner pilot. Later beta installation is unconfirmed. No physical install accompanies this review. |

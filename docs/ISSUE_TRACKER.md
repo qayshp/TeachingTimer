@@ -29,6 +29,7 @@ completion checklist:
 - [#14 Release traceability and contribution safeguards](https://github.com/qayshp/TeachingTimer/issues/14)
 - [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15)
 - [#16 Simulator action-contract drift](https://github.com/qayshp/TeachingTimer/issues/16)
+- [#19 Matching dial and inset tracks](https://github.com/qayshp/TeachingTimer/issues/19)
 
 ## Reporting evidence
 

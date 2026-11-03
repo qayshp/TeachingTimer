@@ -41,7 +41,7 @@ struct SharedClockPage: View {
                 }
                     .buttonStyle(.plain).position(x: 38, y: 23)
                     .accessibilityLabel("Class options and settings").accessibilityIdentifier("class-options")
-                // The edge-to-edge dial stays visible over the Class capsule.
+                // The shared dial frame leaves the Class/header area clear.
                 // These drawing layers must not intercept the button's touches.
                 clockFace(layer: .dial).allowsHitTesting(false)
                 ClockAdditions(date: date, context: classStore.context,
@@ -60,10 +60,6 @@ struct SharedClockPage: View {
                 )
                     .position(layout.volumeCenter)
                 actions(layout: layout).position(x: geometry.size.width / 2, y: layout.actionY)
-                Text(faceStatus).lineLimit(1).minimumScaleFactor(0.7)
-                    .font(.system(size: min(labelSize, 15)))
-                    .frame(width: layout.controlsWidth, height: 18)
-                    .position(layout.statusCenter).allowsHitTesting(false)
                 WallClockMinuteHand(date: date).allowsHitTesting(false)
                 clockFace(layer: .secondsHand).allowsHitTesting(false)
             }
@@ -137,12 +133,19 @@ struct SharedClockPage: View {
                     if landmarks.isActive { landmarks.cancel() }
                     else { landmarks.start(configuration: .init(hapticsEnabled: countVibrationsEnabled)) }
                 } label: {
-                    ViewThatFits(in: .horizontal) {
-                        Text(landmarks.isActive ? "Stop count" : "1-min count").fixedSize()
-                        Text(landmarks.isActive ? "Stop" : "Count").fixedSize()
-                        Image(systemName: landmarks.isActive ? "stop.fill" : "timer")
+                    VStack(spacing: 2) {
+                        ViewThatFits(in: .horizontal) {
+                            Text(landmarks.isActive ? "Stop count" : "1-min count").fixedSize()
+                            Text(landmarks.isActive ? "Stop" : "Count").fixedSize()
+                            Image(systemName: landmarks.isActive ? "stop.fill" : "timer")
+                        }
+                        .font(.system(size: min(labelSize, faceStatus.isEmpty ? 22 : 17), weight: .semibold))
+                        if !faceStatus.isEmpty {
+                            Text(faceStatus)
+                                .font(.system(size: min(labelSize, 12)))
+                                .lineLimit(1).minimumScaleFactor(0.8)
+                        }
                     }
-                    .font(.system(size: labelSize, weight: .semibold))
                     .padding(.horizontal, 6)
                     .frame(width: session.isActive ? layout.controlsWidth : layout.countWidth,
                            height: layout.actionHeight)
@@ -152,7 +155,8 @@ struct SharedClockPage: View {
                 }
                 .buttonStyle(.plain).accessibilityIdentifier("metronome-toggle")
                 .accessibilityLabel(landmarks.isActive ? "Stop count" : "Start one-minute count")
-                .accessibilityValue(landmarks.isActive ? (landmarks.configuration.hapticsEnabled ? "Counting" : "Visual count") : "Ready")
+                .accessibilityValue((landmarks.isActive ? (landmarks.configuration.hapticsEnabled ? "Counting" : "Visual count") : "Ready")
+                    + (faceStatus.isEmpty ? "" : ". " + faceStatus))
                 .accessibilityHint("Six ten-second landmarks. Tap again to stop.")
                 if !session.isActive {
                     Button { guard !retireOldClass() else { return }; session.start() } label: {

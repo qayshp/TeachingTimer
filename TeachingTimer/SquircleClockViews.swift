@@ -6,10 +6,6 @@
 import SwiftUI
 
 enum SquircleClockTuning {
-    /// Tunable approximation; public APIs don't expose physical display curvature.
-    static func cornerRadius(for size: CGSize) -> CGFloat {
-        TimerFaceLayout.cornerRadius(for: size)
-    }
     static let edgeInset: CGFloat = 1.5
     static let tickInset: CGFloat = 3
     static let perimeterHandOvershoot: CGFloat = 2
@@ -21,7 +17,13 @@ struct SquircleIntersectionClockView: View {
     var layer: ClockFaceLayer = .complete
 
     var body: some View {
-        SquircleClockFace(date: date, dimmed: dimmed, layer: layer)
+        GeometryReader { geometry in
+            let layout = TimerFaceLayout(size: geometry.size)
+            SquircleClockFace(date: date, dimmed: dimmed, layer: layer,
+                              cornerRadius: layout.dialRadius)
+                .frame(width: layout.dialFrame.width, height: layout.dialFrame.height)
+                .position(layout.dialCenter)
+        }
     }
 }
 
@@ -29,6 +31,7 @@ private struct SquircleClockFace: View {
     let date: Date
     let dimmed: Bool
     let layer: ClockFaceLayer
+    let cornerRadius: CGFloat
 
     private var second: Int {
         WallClockDisplay.components(at: date).second ?? 0
@@ -38,8 +41,8 @@ private struct SquircleClockFace: View {
         GeometryReader { geometry in
             let size = geometry.size
             let boundary = RoundedRectangle(
-                cornerRadius: SquircleClockTuning.cornerRadius(for: size),
-                style: .continuous
+                cornerRadius: cornerRadius,
+                style: .circular
             )
 
             ZStack {
@@ -73,7 +76,7 @@ private struct SquircleClockFace: View {
                 let direction = SquircleRayGeometry.direction(forSecond: index)
                 let perimeter = SquircleRayGeometry.intersection(
                     size: size,
-                    cornerRadius: SquircleClockTuning.cornerRadius(for: size),
+                    cornerRadius: max(0, cornerRadius - SquircleClockTuning.edgeInset),
                     edgeInset: SquircleClockTuning.edgeInset,
                     direction: direction
                 )
@@ -102,7 +105,7 @@ private struct SquircleClockFace: View {
             let center = CGPoint(x: size.width / 2, y: size.height / 2)
             let length = SquircleRayGeometry.intersection(
                     size: size,
-                    cornerRadius: SquircleClockTuning.cornerRadius(for: size),
+                    cornerRadius: max(0, cornerRadius - SquircleClockTuning.edgeInset),
                     edgeInset: SquircleClockTuning.edgeInset,
                     direction: direction
                 ).magnitude + SquircleClockTuning.perimeterHandOvershoot

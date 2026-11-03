@@ -9,40 +9,46 @@ import CoreGraphics
 /// A clear count track surrounds the controls below the system clock.
 struct TimerFaceLayout {
     let size: CGSize
-    var scale: CGFloat { min(1.25, max(1, size.width / 162)) }
-    var trackFrame: CGRect {
-        CGRect(x: 16, y: 40 * scale, width: size.width - 32, height: size.height - 54 * scale)
+    var scale: CGFloat { min(1.25, max(1, min(size.width / 162, size.height / 197))) }
+    // One rounded-rectangle family below the 44-point Class/header target.
+    // The physical display curvature is not exposed by public APIs.
+    var dialFrame: CGRect {
+        CGRect(x: scale, y: 46 * scale,
+               width: size.width - 2 * scale, height: size.height - 47 * scale)
     }
-    var trackRadius: CGFloat { 22 * scale }
-    var controlsWidth: CGFloat { size.width - 56 }
+    var dialCenter: CGPoint { CGPoint(x: dialFrame.midX, y: dialFrame.midY) }
+    var dialRadius: CGFloat { Self.cornerRadius(for: size) }
+    var trackInset: CGFloat { 17 * scale }
+    var trackFrame: CGRect { dialFrame.insetBy(dx: trackInset, dy: trackInset) }
+    var trackRadius: CGFloat { max(0, dialRadius - trackInset) }
+    var controlsWidth: CGFloat { trackFrame.width - 20 * scale }
     var actionHeight: CGFloat { 44 * scale }
-    var actionY: CGFloat { size.height - 47 * scale }
+    var actionY: CGFloat { trackFrame.maxY - 5 * scale - actionHeight / 2 }
     var optionsWidth: CGFloat { 44 * scale }
     var countWidth: CGFloat { controlsWidth - optionsWidth - 4 }
     var volumeSize: CGSize { CGSize(width: 64 * scale, height: 28) }
     var volumeBackingSide: CGFloat { 38 }
-    var volumeCenter: CGPoint { CGPoint(x: size.width / 2, y: 63 * scale) }
+    var volumeCenter: CGPoint { CGPoint(x: dialCenter.x, y: trackFrame.minY + 25 * scale) }
     var volumeRefreshFrame: CGRect {
-        // Expand the tap area without moving native feedback or overlapping
-        // the Class button, whose 44-point target ends at y = 45.
         CGRect(x: volumeCenter.x - volumeSize.width / 2,
-               y: max(45, volumeCenter.y - 22), width: volumeSize.width, height: 44)
+               y: volumeCenter.y - 22 * scale,
+               width: volumeSize.width, height: 44 * scale)
     }
-    var statusCenter: CGPoint { CGPoint(x: size.width / 2, y: actionY - actionHeight / 2 - 12) }
     var actionFrame: CGRect {
-        CGRect(x: 28, y: actionY - actionHeight / 2, width: controlsWidth, height: actionHeight)
+        CGRect(x: dialCenter.x - controlsWidth / 2, y: actionY - actionHeight / 2,
+               width: controlsWidth, height: actionHeight)
     }
     var volumeFrame: CGRect {
         CGRect(x: volumeCenter.x - 19, y: volumeCenter.y - 19, width: 38, height: 38)
     }
-    var statusFrame: CGRect {
-        CGRect(x: 28, y: statusCenter.y - 9, width: controlsWidth, height: 18)
-    }
     func landmarkPoint(angle: Double) -> CGPoint {
-        let vector = SquircleRayGeometry.intersection(size: trackFrame.size,
-            cornerRadius: trackRadius, edgeInset: 0,
+        dialPoint(angle: angle, inset: trackInset)
+    }
+    func dialPoint(angle: Double, inset: CGFloat) -> CGPoint {
+        let vector = SquircleRayGeometry.intersection(size: dialFrame.size,
+            cornerRadius: max(0, dialRadius - inset), edgeInset: inset,
             direction: CGVector(dx: sin(angle), dy: -cos(angle)))
-        return CGPoint(x: trackFrame.midX + vector.dx, y: trackFrame.midY + vector.dy)
+        return CGPoint(x: dialCenter.x + vector.dx, y: dialCenter.y + vector.dy)
     }
     static func cornerRadius(for size: CGSize) -> CGFloat {
         // Approximation: public APIs do not expose physical display curvature.

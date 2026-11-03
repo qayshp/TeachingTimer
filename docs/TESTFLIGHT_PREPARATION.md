@@ -370,3 +370,34 @@ two scene transitions when Beta first opened. The app's runtime journal parsed s
 updating. This verifies bundle separation and a Simulator update/relaunch; it
 does not verify Apple's TestFlight transport, physical Crown/audio, or
 distribution-profile container access.
+
+### Build 38 owner media experiment
+
+At the owner's request, clean PR-18 source
+`57fde699e424f6a22e70a0c42da54c43e3c3961d` was signed/exported with
+`--signed --external-eligible`. Both payloads, signatures, profiles, identifiers,
+entitlements and the actual Watch privacy manifest passed validation; source
+cleanliness/revision checks passed. The local IPA SHA-256 is
+`c1811957673066550863b5629334f0e033b258e43b1008138cf04e0d64e39523`.
+Xcode reported upload success November 2, 2026 at 23:09:35 PST. PR-18 Watch CI,
+CodeQL and AccessLint all pass. The draft remains open for physical comparison.
+
+The refreshed App Store Connect browser requested sign-in. Processing, saved
+What to Test and group availability therefore remain **unverified**; the signed
+preparation/upload records are retained privately. The intended destination is
+the internal Maintainer pilot, with build 37 also available as the unchanged
+hosting baseline. No public-group assignment, physical install or launch was
+performed. The owner has been asked to sign in; no rebuild is required merely
+to finish the group assignment.
+
+TestFlight supports sharing multiple builds and organizing tester groups. For
+this experiment, choose 37 and 38 manually, one at a time on the same Watch:
+keep the iPhone track/output fixed, compare at least 30 seconds of bright-screen
+song progress, then test dim/wake, Pause, timer Crown and Home return. Do not
+reset the saved class between versions; verify it and intended runtime state
+after each install/open. Position catch-up is separate from continuous accuracy.
+Automatic updates may change the chosen build, so check About before each trial.
+The existing development installation remains a separate app.
+
+Build 39's matching-dial work is independent and is not part of the build-38
+upload or media A/B comparison.
