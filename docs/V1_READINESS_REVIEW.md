@@ -57,9 +57,12 @@ a local behavior change. This is not proof of native platform behavior.
 
 The README, support guide, first-class guide, in-app information and reviewer
 steps agree with those flows. The build-36 privacy corrections are verified on
-the SE 3 40 mm Simulator; the [clean signed local artifact](TESTFLIGHT_PREPARATION.md#local-build-36)
-is ready but not uploaded. The inspected export contains the exact committed
-policy and license. Existing broader build-35 layout checks remain dated evidence.
+the SE 3 40 mm Simulator. The [clean signed artifact](TESTFLIGHT_PREPARATION.md#build-36)
+contains the exact committed policy and license and has since passed CI, upload
+and Apple processing. Its owner-pilot notes and assignment survived reload.
+Automatic installation is unverified; no direct physical installation or device
+query was performed for this release. Existing broader build-35 layout checks
+remain dated evidence.
 
 Further meaningful release validation depends on the physical teaching and
 accessibility tests, ordinary tester support path, minimum-OS execution and
@@ -72,11 +75,10 @@ The separate App Store Connect record is **Teaching Timer Beta**, with store
 container `net.qays.TeachingTimer`. Apple rejected “Teaching Timer” as already
 used; the public release name remains a decision. The Watch payload stays
 `net.qays.TeachingTimer.watchkitapp`; development remains
-`com.qayshp.TeachingTimer`. Build 35 is Ready to Test / Internal after clean
+`com.qayshp.TeachingTimer`. Build 36 is Testing / Internal after clean
 signed archive/export, upload and processing. It is assigned to the Maintainer
-pilot with one tester, the owner, and manual distribution. Builds 29, 31, 32, 33 and 34 are also
-assigned; build 30 is processed but unassigned. No external testers or public
-release are configured. The build-35 What to Test notes and one-group/one-tester
+pilot with one tester, the owner, and manual distribution. No external testers or
+public release are configured. The build-36 What to Test notes and one-group/one-tester
 assignment were verified after reload in App Store Connect.
 
 Beta Test Information was saved and verified after reload: description and known

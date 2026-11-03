@@ -5,11 +5,11 @@ status. Dated investigations describe their original builds, not current behavio
 
 | Item | Status |
 | --- | --- |
-| Source candidate | 1.0 (36): Privacy now explains separate unreadable-journal recovery files and qualifies the observed TestFlight journal access. No runtime, media, volume, count, persistence or recovery behavior changed. Local checks pass (13 Swift suites / 128 Python tests); the overview and full policy render and scroll through their final text on the SE 3 40 mm Simulator. Clean source `1dbcfc4dacf9` also passed signed internal-only archive/export. Build 36 has not been uploaded or installed on physical devices. |
-| Installed physical Watch | Development build 25 remains the teaching identity. A separately authorized [owner pilot](docs/TESTFLIGHT_PILOT_RESULTS.md) installed/launched Beta 35 and verified a TestFlight 35 → 34 → 35 round trip with preferences and prior journal events preserved. Final inventory retains development build 25; its prior journal history is preserved. Beta’s test class was ended. A stale development class retired normally during brief foreground activity; see the pilot’s preservation limits. |
+| Source candidate | 1.0 (36): Privacy now explains separate unreadable-journal recovery files and qualifies the observed TestFlight journal access. No runtime, media, volume, count, persistence or recovery behavior changed. Local checks pass (13 Swift suites / 128 Python tests); the overview and full policy render and scroll through their final text on the SE 3 40 mm Simulator. Clean source `1dbcfc4dacf9` passed signed internal-only archive/export, CI and Apple processing; owner-pilot assignment is verified. |
+| Installed physical Watch | Last confirmed: development build 25 and Beta 35. A separately authorized [owner pilot](docs/TESTFLIGHT_PILOT_RESULTS.md) verified a TestFlight 35 → 34 → 35 round trip with preferences and prior journal events preserved. Its final inventory retained development build 25 and prior journal history; Beta’s test class was ended. A stale development class retired normally during brief foreground activity; see the pilot’s preservation limits. Build 36 is now available for the authorized automatic-update test, but installation has not been queried or confirmed. |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
-| Distribution | Build 35 (`b5884e30dd8a`) is Ready to Test / Internal and assigned to the Maintainer pilot with one tester, the owner. Builds 29, 31, 32, 33 and 34 are also assigned; build 30 is processed but unassigned. Distribution remains manual. No public release; initial physical Beta installation and limited developer-tool journal retrieval are verified in the owner pilot. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
+| Distribution | Build 36 (`1dbcfc4dacf9`) is Testing / Internal and assigned to the Maintainer pilot with one tester, the owner; exact notes and assignment survived reload. Group settings confirm seven assigned builds (29, 31, 32, 33, 34, 35 and 36), with 30 processed but unassigned. Group assignment is manual; the owner reports client automatic updates enabled, with the build-36 outcome unverified. No public release; initial physical Beta installation and limited developer-tool journal retrieval are verified in the earlier owner pilot. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
 
 ## Current behavior and limits
 
@@ -53,12 +53,12 @@ See the [issue map](docs/ISSUE_TRACKER.md), [Apple receipts](docs/APPLE_FEEDBACK
 
 ## Verification and deployment boundaries
 
-Build 36 is a local documentation-only app revision after the owner pilot.
+Build 36 is a documentation-only app revision after the owner pilot.
 Unreadable journals were already preserved in separate recovery files outside
 rolling age/event limits; the overview and bundled policy now disclose that
 exception. TestFlight copying is described as verified only in the maintainer's
 developer-enabled Watch/trusted-Mac setup. The existing recovery files and all
-recovery behavior are preserved. The installed/distributed Beta remains build 35.
+recovery behavior are preserved. Build 35 remains the last confirmed physical Beta.
 The copy-only revision passed the complete local verification workflow and a
 targeted watchOS 27.2 SE 3 40 mm rendering check. One OCR assertion initially
 failed on a line-wrapped `developer-enabled`; the original pixels and a bounded
@@ -66,10 +66,14 @@ hyphen-wrap check confirm the text. The full policy's final sentence is visible.
 This does not extend the physical or multi-size behavior evidence for build 35.
 The clean source subsequently passed signed archive/export with both identities,
 profiles, entitlements, signatures and the actual Watch privacy manifest checked.
-Its [artifact record](docs/TESTFLIGHT_PREPARATION.md#local-build-36) is separate from
-TestFlight processing or installation. The source checkpoint's
-[Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/41556710607) pass;
-CodeQL was still running at this record's update.
+The source checkpoint's
+[Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/41556710607) and
+[CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/41556710124) pass.
+The existing clean artifact was uploaded November 2 at 17:23:52 PST, processed
+Ready to Test / Internal, and assigned to the owner pilot with exact notes and
+assignment verified after reload. See its [artifact record](docs/TESTFLIGHT_PREPARATION.md#build-36).
+The user authorized this release to test automatic updates; no direct physical
+installation or device query was performed, so update completion remains unverified.
 
 The separately authorized [November 2 physical pilot](docs/TESTFLIGHT_PILOT_RESULTS.md)
 verifies Beta installation/update, saved class/settings, intentional Stop,
@@ -87,8 +91,8 @@ archive/export, actual Watch privacy-manifest checks,
 (13 Swift suites / 117 Python tests) and
 [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/41544096984).
 Upload completed November 2 at 15:32:23 PST. Apple shows Ready to Test / Internal;
-notes and assignment survived reload, and the manual Maintainer pilot has one
-owner and six assigned builds. See the [artifact ledger](docs/TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds).
+notes and assignment survived reload, and at that checkpoint the manual Maintainer
+pilot had one owner and six assigned builds. See the [artifact ledger](docs/TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds).
 
 The clean Debug build's [five-size gallery](docs/V1_READINESS_REVIEW.md#build-35-static-layout-matrix)
 includes small/large maximum-text Settings and the rendered policy directions.

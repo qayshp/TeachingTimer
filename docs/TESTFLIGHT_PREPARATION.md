@@ -1,21 +1,20 @@
 # TestFlight pilot
 
-The later build-36 source corrects privacy disclosure only. It has local build
-and clean signed archive/export verification; it is not uploaded or assigned to TestFlight.
-Build 35 remains the installed owner pilot described below.
-
-Updated November 2, 2026. Build 35 passed signed archive/export, upload and Apple
-processing and is Ready to Test / Internal. It is assigned to the manual-distribution
-Maintainer pilot with one tester, the owner. Builds 29, 31, 32, 33 and 34 are also
-assigned; build 30 is processed but unassigned. The separately authorized
+Updated November 2, 2026. Build 36 passed signed archive/export, upload and Apple
+processing and is Testing / Internal. It is assigned to the manual-distribution
+Maintainer pilot with one tester, the owner. Group settings confirm seven builds
+(29, 31, 32, 33, 34, 35 and 36); 30 is processed but unassigned. The release is authorized to test
+the owner's enabled TestFlight automatic updates; build 35 remains the last
+confirmed physical Beta and the automatic-update outcome is unverified.
+The separately authorized
 [physical owner pilot](TESTFLIGHT_PILOT_RESULTS.md) verifies initial Beta
 installation/update/relaunch and limited developer-tool journal access. Cleanup
 and development-app preservation checks are complete with the dated record's
 qualification about normal stale-class retirement and unavailable pre-install
 preferences.
 
-Build 35 corrects the bundled policy's support directions; behavior is unchanged
-from build 34's stable clock schedule and build 33's narrow display-boundary
+Build 36 corrects privacy disclosure only. Core behavior is unchanged from build
+35, including build 34's stable clock schedule and build 33's narrow display-boundary
 normalization. Preparation/upload/group assignment are complete; the physical
 installation/update/relaunch pilot is verified within its recorded limits,
 not a completed teaching trial or general tester-export solution.
@@ -205,8 +204,8 @@ archive/export, including actual Watch privacy-manifest checks. Its IPA SHA-256 
 `720b00521812f879ad18eb79199cbaa6e7cf6119afa925e3ae0f93c63461914f`.
 Upload completed November 2 at 15:32:23 PST; Apple shows **Ready to Test /
 Internal**. Exact What to Test notes and one-group/one-tester assignment survived
-reload. **Maintainer pilot** has one owner, six builds (29, 31, 32, 33, 34 and 35)
-and **Manual** distribution; 30 remains unassigned.
+reload. At that checkpoint **Maintainer pilot** had one owner, six builds (29, 31,
+32, 33, 34 and 35) and **Manual** distribution; 30 remained unassigned.
 [Watch CI](https://github.com/qayshp/TeachingTimer/actions/runs/41544098376)
 passes 13 Swift suites / 117 Python tests;
 [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/41544096984) also passes.
@@ -215,7 +214,7 @@ verify the support-copy change and sampled rendering. Subsequent tooling passes
 128 Python tests, separately from this signed source checkpoint. The physical
 Watch remains untouched and all physical self-pilot checks below remain open.
 
-### Local build 36
+### Build 36
 
 Clean source `1dbcfc4dacf9354e9b34a6d42ca7022b3566b600` passed signed archive
 and internal-only export on November 2. Its IPA SHA-256 is
@@ -223,15 +222,21 @@ and internal-only export on November 2. Its IPA SHA-256 is
 Both payload identities, matching versions, distribution profiles, entitlements,
 signatures and the exported Watch privacy manifest passed validation.
 The source checkpoint's [Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/41556710607)
-pass; CodeQL was still running at this record's update. The local verification
+and [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/41556710124) pass. The local verification
 also passes 13 Swift suites and 128 Python tests, and the small SE 3 privacy
 overview/full-policy rendering check is complete.
 
-This is a local artifact only: no upload, Apple processing, tester assignment or
-physical installation. The owner's TestFlight automatic updates are on, so a
-future assignment must be treated as capable of changing the installed Beta.
-Build 35 remains the installed owner pilot. Build 36 changes privacy disclosure,
-not recovery behavior or the app's handling of data.
+The user subsequently authorized uploading this existing artifact and assigning
+it to test automatic updates. Upload completed November 2 at 17:23:52 PST;
+Apple shows **Ready to Test / Internal**. Exact What to Test notes and assignment
+to one **Maintainer pilot** group with one tester survived reload. Group settings
+confirm seven assigned builds (29, 31, 32, 33, 34, 35 and 36) and **Manual for Xcode
+Builds**; 30 remains unassigned.
+The owner confirmed TestFlight automatic updates enabled. The assigned build is
+shown as **Testing / Internal**. No direct physical
+installation or device query was performed for this release; build 35 remains
+the last confirmed physical Beta, and automatic installation of 36 is unverified.
+Build 36 changes privacy disclosure, not recovery behavior or data handling.
 
 ## Self-pilot record
 

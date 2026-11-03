@@ -10,8 +10,8 @@ submission or external invitation.
 | --- | --- |
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Current TestFlight pilot | 1.0 (35), clean source `b5884e30dd8a`, processed and assigned to the owner pilot; [artifact record](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds) |
-| Local source candidate | 1.0 (36), privacy-copy corrections only; local checks and clean signed archive/export pass at `1dbcfc4dacf9`. Not uploaded, assigned or installed on physical devices. |
+| Current TestFlight pilot | 1.0 (36), clean source `1dbcfc4dacf9`, processed and assigned to the owner pilot; [artifact record](TESTFLIGHT_PREPARATION.md#build-36) |
+| Last confirmed physical Beta | 1.0 (35). Build 36 changes privacy copy only and is available for the authorized automatic-update test; installation outcome is unverified. |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
@@ -88,10 +88,11 @@ media/volume defects and recovery limits are listed in the [issue map](ISSUE_TRA
 - The [owner installation/update/relaunch pilot](TESTFLIGHT_PILOT_RESULTS.md)
   completed, including developer-tool Beta journal retrieval in one
   developer-enabled Watch/trusted-Mac setup. General tester access and teaching
-  validation remain open. Build 35 passed clean signed
+  validation remain open. Build 36 passed clean signed
   archive/export, upload and processing and is assigned to the owner pilot.
-  Its Watch CI passes 13 Swift suites / 117 Python tests, and CodeQL also passes;
-  the clean Debug layout matrix and bounded controls checks are reviewed.
+  Its Watch CI passes 13 Swift suites / 128 Python tests, and CodeQL also passes;
+  its targeted Privacy rendering check and the earlier build-35 layout matrix
+  and bounded controls checks are reviewed.
   The physical result is separate evidence from those source and processing checks.
 
 ### Bounded source-to-declaration inventory
@@ -136,6 +137,12 @@ all applicable criteria; voluntary email alone does not establish an exemption.
   Apple. This checklist records no account answers or legal determination.
 
 ## Current candidate review
+
+Build 36 changes privacy disclosure only. Its clean signed export, CI, Apple
+processing, exact notes and owner-pilot assignment are verified. It is available
+for the authorized automatic-update test; build 35 remains the last confirmed
+physical Beta. See [current verification](../DEVELOPMENT_STATUS.md) and the
+[artifact ledger](TESTFLIGHT_PREPARATION.md#build-36) for release evidence.
 
 Build 35 replaces the bundled policy's relative support path with actual in-app
 navigation directions. Behavior is unchanged from build 34. The clean source's
