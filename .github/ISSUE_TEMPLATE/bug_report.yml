@@ -27,11 +27,16 @@ body:
     attributes:
       label: Frequency and recovery
       description: Once, occasionally or every time? Did switching pages, returning to the app, refreshing volume, or reopening help? Do not interrupt a class just to test recovery.
+  - type: input
+    id: incident_time
+    attributes:
+      label: Approximate time and time zone, if known
+      description: An approximate date/time helps correlate a report with private diagnostics. Do not include your location or class schedule.
   - type: textarea
     id: media
     attributes:
       label: Media context, if relevant
-      description: Phone or Watch playback; audio app; Bluetooth, AirPlay or wired output; whether playback continued silently; whether standalone Now Playing worked.
+      description: Phone or Watch playback; audio app; Bluetooth, AirPlay or wired output. Did Pause work? Did volume audibly change or only its display? Did standalone Now Playing work?
   - type: textarea
     id: evidence
     attributes:

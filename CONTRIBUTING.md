@@ -86,6 +86,23 @@ changes; a functioning website is not proof that a Watch can launch a browser.
 
 ## Release discipline
 
+Use a pull request for outside contributions. Before merging, require successful
+Watch checks and CodeQL for the proposed revision, review the diff, and record
+any interactive or physical checks separately. As of November 2, main has no
+enforced branch rule; this procedure is a maintainer obligation until
+[the safeguard follow-up](https://github.com/qayshp/TeachingTimer/issues/14)
+establishes required checks with a tested maintainer recovery path.
+
+For public beta milestones, tag the exact signed source as `v1.0-beta.BUILD`
+and publish concise GitHub prerelease notes. Include the source revision,
+validated local export digest, test scope and actual distribution stage.
+A review candidate is labeled awaiting review; a GitHub release does not mean
+Apple approved a build. Apple may repackage TestFlight downloads, so a local
+export digest does not identify the downloaded bytes. Never attach signing
+materials, private archives or raw diagnostics. The
+[build-37 record](https://github.com/qayshp/TeachingTimer/releases/tag/v1.0-beta.37)
+is the first such milestone.
+
 Increment `CURRENT_PROJECT_VERSION` for each distributed build. A build phase
 also records Git revision (including a dirty suffix) and UTC build time in
 `BuildInfo.plist`; launch journals include both. Source exports can supply

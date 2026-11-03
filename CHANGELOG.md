@@ -11,6 +11,8 @@ build was installed or passed hardware validation.
   is published but is not yet accepting testers; the initial limit is 100.
 - App behavior is unchanged from 36. Known song-progress, volume and other
   reliability limitations remain; private support accepts descriptions/screenshots.
+- [Source tag and prerelease record](https://github.com/qayshp/TeachingTimer/releases/tag/v1.0-beta.37)
+  preserve the signed revision and local export digest, separately from Apple approval.
 
 ## 1.0 (35–36) — November 2, 2026
 
