@@ -80,6 +80,7 @@ Read corrections before relying on earlier screenshot descriptions.
 | Native media service loss and recovery | [Service-loss reproduction](NOW_PLAYING_SERVICE_RECOVERY.md), [earlier force-close/class-persistence test](SIMULATOR_MEDIA_RECOVERY.md). |
 | Historical page failures | [Sequence reconstruction](BLANK_PAGE_RECONSTRUCTION.md), [exact Lock/reentry test](EXACT_LOCK_REENTRY_TEST.md), [timer-control correction](TIMER_CONTROL_INVESTIGATION.md). |
 | Physical media and volume incident | [October 23 timeline](MEDIA_INCIDENT_2026-10-23.md). |
+| Embedded media progress stalls | [November 2 physical Beta 35 test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md): repeated entry, standalone comparison, seek response and separate Crown passes. |
 | Volume availability and focus | [Availability investigation](VOLUME_AVAILABILITY_INVESTIGATION.md), [retained-control comparison](SIMULATOR_VOLUME_FOCUS.md), [tap-to-refresh behavior](VOLUME_CONTROL_RECOVERY.md). |
 | Paired Simulator media discovery | [Clean-pair tests](PAIRED_SIMULATOR_MEDIA_TEST.md); no validated companion-media baseline. |
 | Seconds-hand transition | [Always-On investigation](ALWAYS_ON_HAND_TRANSITION.md); Simulator and physical evidence stay separate. |

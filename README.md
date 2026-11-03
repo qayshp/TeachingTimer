@@ -48,7 +48,8 @@ scheduled end; a new class never starts silently.
 ## When something goes wrong
 
 - Frozen song progress or blank media: swipe to the timer and back to recreate
-  the native media view. Progress has recurred after temporary recovery. Eligible
+  the native media view. This may update the displayed position without restoring
+  continuously advancing progress; a freeze can also recur after recovery. Eligible
   long-dimmed wakes also refresh automatically; this does not detect a failure.
 - Timer Crown volume: tap the native volume display to request refresh; returning
   from media is another recovery path. A visual acknowledgement does not prove

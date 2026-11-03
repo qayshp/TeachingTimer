@@ -49,3 +49,18 @@ continuity, try media Crown control, then return to timer and test immediate
 Crown volume. Repeat a short wrist wake and several closely spaced wakes. The
 Simulator does not establish phone audibility, source selection or Crown ownership.
 This build is not installed on the Watch as part of this change.
+
+## November 2 physical Beta 35 follow-up
+
+The [supervised test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md) records both page-entry
+refreshes and two eligible `long_dimmed_wake` refreshes on a physical SE 3. Runtime
+recovery and class preservation passed when returning from Home and the standalone
+Now Playing app; timer Crown checks also passed with iPhone-speaker playback.
+
+The user nevertheless observed embedded progress updating once on entry and then
+remaining stale, including during a requested bright-screen comparison. Repeated
+page entry produced a newer snapshot rather than reliable ongoing progress.
+The standalone Now Playing app appeared to advance normally. These observations
+show that native-view recreation does not guarantee live progress. They do not
+isolate the visual result of either particular long-dim refresh or establish its
+underlying cause. The app's timeline ancestor remains a variable to test.

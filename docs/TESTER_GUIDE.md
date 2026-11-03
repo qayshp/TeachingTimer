@@ -43,7 +43,8 @@ the paired iPhone.
 
 - Swipe left for media and right for the clock. Each entry recreates the native
   media view. If song progress is wrong or the page is blank, swipe away and back.
-  Pause and volume can still work while progress is stale. Build 25 also refreshes
+  This may refresh the position without restoring live progress. Pause and volume
+  can still work while progress is stale. Build 25 also refreshes
   after eligible longer dimmed intervals; this is not a proven fix.
 - Tap the timer's volume display if Crown volume stops responding. A brief ring
   acknowledges the refresh request; it does **not** confirm sound recovered.

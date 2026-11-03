@@ -1,12 +1,14 @@
 # Teaching Timer — current verification
 
-Updated November 2, 2026, retaining the October 31 classroom report. This is the authority for current build and validation
+Updated November 2, 2026 after the supervised Beta 35 media/Crown test, retaining
+the October 31 classroom report. This is the authority for current build and validation
 status. Dated investigations describe their original builds, not current behavior.
 
 | Item | Status |
 | --- | --- |
 | Source candidate | 1.0 (36): Privacy now explains separate unreadable-journal recovery files and qualifies the observed TestFlight journal access. No runtime, media, volume, count, persistence or recovery behavior changed. Local checks pass (13 Swift suites / 128 Python tests); the overview and full policy render and scroll through their final text on the SE 3 40 mm Simulator. Clean source `1dbcfc4dacf9` passed signed internal-only archive/export, CI and Apple processing; owner-pilot assignment is verified. |
-| Installed physical Watch | Last confirmed: development build 25 and Beta 35. A separately authorized [owner pilot](docs/TESTFLIGHT_PILOT_RESULTS.md) verified a TestFlight 35 → 34 → 35 round trip with preferences and prior journal events preserved. Its final inventory retained development build 25 and prior journal history; Beta’s test class was ended. A stale development class retired normally during brief foreground activity; see the pilot’s preservation limits. Build 36 is now available for the authorized automatic-update test, but installation has not been queried or confirmed. |
+| Installed physical Watch | Development build 25 and Beta 35 were inventoried in the earlier [owner pilot](docs/TESTFLIGHT_PILOT_RESULTS.md), which verified a TestFlight 35 → 34 → 35 round trip and ended that test class. The owner again reports Beta 35 for the evening supervised media/Crown test; journal copies succeeded after an installed-build query timed out. No reinstall occurred. Build 36 is available for automatic updating but its installation is not confirmed. The evening test used a new class; cleanup is not in its final captured journal. |
+| Latest supervised physical evidence | November 2, Beta 35, Apple Music on the paired iPhone speaker: initial timer Crown, immediate media-return Crown, Home/reopen and tap-refresh checks all passed by audible user observation. Embedded media progress updated on entry then stalled; standalone Now Playing appeared to advance. Phone seeking updated the embedded indicator with an apparent unmeasured offset. Automatic runtime recovery preserved the class. [Results and limits](docs/MEDIA_PROGRESS_INCIDENT_2026-11-02.md). |
 | Latest classroom evidence | October 31, last confirmed installed build 25: Settings disabled vibrations and enabled time remaining; volume worked; no new bugs reported. Song progress still became stale and recovered after page switching. User observation, not a fresh device query or journal pull. |
 | Preserved rollback | Build 16 signed local checkpoint. It has known intermittent media/volume issues; it is not a guarantee of reliability. |
 | Distribution | Build 36 (`1dbcfc4dacf9`) is Testing / Internal and assigned to the Maintainer pilot with one tester, the owner; exact notes and assignment survived reload. Group settings confirm seven assigned builds (29, 31, 32, 33, 34, 35 and 36), with 30 processed but unassigned. Group assignment is manual; the owner reports client automatic updates enabled, with the build-36 outcome unverified. No public release; initial physical Beta installation and limited developer-tool journal retrieval are verified in the earlier owner pilot. Store container: `net.qays.TeachingTimer`; Watch payload: `net.qays.TeachingTimer.watchkitapp`; development: `com.qayshp.TeachingTimer`. |
@@ -28,10 +30,15 @@ status. Dated investigations describe their original builds, not current behavio
   freeze still recurred; the wake-refresh mitigation is not established as a fix.
   Actual trigger eligibility at that recurrence is unknown without fresh journals.
   A returned focus callback alone remains insufficient proof of physical effects.
+- The November 2 Beta 35 supervised test confirms audible timer volume in four
+  scenarios on the iPhone-speaker route, without establishing other routes or
+  intermittent reliability. Page-entry refresh can update a song-position snapshot
+  without restoring live progress. Eligible long-dim refreshes also executed;
+  their individual visual outcomes were not isolated.
 
 ## Open priorities
 
-1. Incorrect native song progress with working Pause/volume: [incident](docs/MEDIA_PROGRESS_INCIDENT_2026-10-30.md), Apple FB25379883, [issue #8](https://github.com/qayshp/TeachingTimer/issues/8).
+1. Incorrect native song progress: [November 2 supervised comparison](docs/MEDIA_PROGRESS_INCIDENT_2026-11-02.md), [earlier class incident](docs/MEDIA_PROGRESS_INCIDENT_2026-10-30.md), Apple FB25379883, [issue #8](https://github.com/qayshp/TeachingTimer/issues/8). Isolate the embedded view's timeline ancestor before attributing the cause to Apple or adding more reloads.
 2. Intermittent blank native media, timer Crown response and unintended silencing:
    separate tracked defects, not established manifestations of one cause.
 3. Automatic runtime recovery after dimmed Simulator relaunch: build 30 reproduces
@@ -73,7 +80,8 @@ The existing clean artifact was uploaded November 2 at 17:23:52 PST, processed
 Ready to Test / Internal, and assigned to the owner pilot with exact notes and
 assignment verified after reload. See its [artifact record](docs/TESTFLIGHT_PREPARATION.md#build-36).
 The user authorized this release to test automatic updates; no direct physical
-installation or device query was performed, so update completion remains unverified.
+installation was performed. The later evening installed-build query timed out;
+the user reports Beta 35, so build-36 update completion remains unverified.
 
 The separately authorized [November 2 physical pilot](docs/TESTFLIGHT_PILOT_RESULTS.md)
 verifies Beta installation/update, saved class/settings, intentional Stop,

@@ -59,12 +59,39 @@ The installed build's Privacy copy says TestFlight access was not yet verified;
 that was its pre-pilot state. This record provides the narrower subsequent result
 without changing the installed app or its data handling.
 
+## Evening supervised media and Crown check
+
+The owner subsequently tested Beta 35 with Apple Music on the paired iPhone's
+speaker. Initial timer Crown, immediate media-return Crown, Home/reopen and
+tap-to-refresh all changed audible volume successfully. These are user-observed
+results on one route, not conclusions from returned focus calls alone.
+
+Embedded media progress updated on entry then stalled; re-entry produced a newer
+snapshot without reliable live updates. Apple's separate Now Playing app appeared
+to advance normally. Seeking on the phone updated both views, but the owner
+perceived an unmeasured persistent offset in the embedded view. See the
+[dated comparison](MEDIA_PROGRESS_INCIDENT_2026-11-02.md) for evidence and limits.
+
+Runtime automatically recovered after leaving for the standalone app and after
+Home/reopen, retaining the same class. Both page-entry and eligible long-dim media
+refreshes were recorded. All three journals copied and validated repeatedly,
+preserving earlier event prefixes. An installed-build query timed out before
+those successful transfers; no reinstall or pairing change was performed.
+
+The final evening snapshot still has the temporary class running. The owner was
+told collection was finished and could end the class/pause the music; that cleanup
+is not yet confirmed. This is distinct from the completed earlier installation
+pilot cleanup above. No new sysdiagnose, screen recording or Apple follow-up was
+performed during this short test.
+
 ## Still open
 
-- Independent launch from the Watch app icon without the developer-command route.
-- Actual paired audio/Crown behavior, native song-progress recovery, physical
-  haptic delivery, wrist-down clock/count behavior, VoiceOver/touch usability,
-  camera scanning, runtime renewal and teaching-length battery/reliability.
+- Cold-process launch from the Watch app icon without the developer-command route;
+  the evening manual-opening checks returned to an already running process.
+- Broader paired audio routes and repeatable Crown reliability beyond the evening
+  iPhone-speaker pass; native song-progress recovery; physical haptic delivery,
+  wrist-down clock/count behavior, VoiceOver/touch usability, camera scanning,
+  expiration-boundary renewal and teaching-length battery/reliability.
 - Ordinary tester journal access or an explicitly description-only pilot,
   diagnostic attachment delivery, wider beta/review decisions and Apple runtime
   guidance. Incoming/outgoing plain support email is already verified separately.

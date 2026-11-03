@@ -30,7 +30,7 @@ support procedures from historical engineering notes.
 | Private tester support | [Private email support](../SUPPORT.md) is configured; incoming and outgoing plain email were verified November 2. Native Watch and diagnostic attachment delivery remain untested. An email address does not export Watch journals. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | All three TestFlight Beta journals copied and parsed in the owner’s developer-enabled SE 3/trusted-Mac setup. General tester access, native attachment delivery and an in-app export path remain unresolved. |
 | Install/update pilot | TestFlight installation/update, saved class/settings, intentional Stop and running-intent relaunch passed on one physical SE 3. Cleanup and development-app preservation were checked; the original stale class retired normally and pre-install preference bytes were unavailable. See [dated results](TESTFLIGHT_PILOT_RESULTS.md). |
-| Teaching reliability | Build 25 Settings/volume received positive October 31 class feedback; progress still froze and was recovered by swiping. Validate the release candidate and mitigation limits. Prioritize progress, blank media, Crown recovery and silencing. See supervised plan. |
+| Teaching reliability | Build 25 Settings/volume received positive October 31 class feedback. The November 2 [Beta 35 supervised test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md) passes timer Crown checks on iPhone-speaker playback, but media entry updates a position snapshot without reliably restoring live progress. Broader audio routes and a teaching-length candidate run remain unverified. |
 | Accessibility/form factors | Build 35 has a reviewed [five-size static matrix](V1_READINESS_REVIEW.md#build-35-static-layout-matrix), small/large maximum-text Settings and bounded state-confirmed dim/wake controls checks. Physical VoiceOver, touch while teaching and Always-On remain separate gates. |
 | Store materials | Shipping icon/QR technical provenance is verified in the [asset record](DISTRIBUTION_METADATA.md#bundled-asset-provenance). Review metadata/privacy/export/age-rating answers against the final binary and prepare a final screenshot set with capture provenance. |
 
@@ -49,16 +49,19 @@ devices. None is scheduled by this document.
 
 The October 31 class report supports freezing the current product scope as a
 release candidate. Settings, visual-only counting/time remaining and volume
-worked for the maintainer; song progress remains a known recoverable defect.
+worked for the maintainer; song progress remains an unresolved defect. The
+November 2 Beta 35 test shows that swiping can refresh a position snapshot without
+restoring live progress, so recovery must not be assumed.
 This is firsthand feedback, not proof that the earlier silencing/focus bugs are
 fixed or that automatic wake refresh prevented every recurrence.
 
 1. **Freeze scope and acceptance criteria.** Keep the current clock, schedule,
    counts, Settings and native media. Block release on crashes, lost class state,
    unrecoverable runtime/volume failure, or reproduced unexpected silencing in the
-   candidate. Treat recoverable progress stalling as an explicitly documented
-   candidate limitation, subject to beta feedback. Do not require Apple to fix
-   every reported defect or add unrelated teaching features.
+   candidate. Treat progress stalling as a candidate limitation only with the
+   maintainer's acceptance of its observed recovery limits and beta feedback.
+   Do not require Apple to fix every reported defect or add unrelated teaching
+   features.
 2. **Resolve extended-runtime intended use early.** Apple's mindfulness category
    describes silent meditation and a one-hour time limit; category choice must
    follow intended use. Explain the actual yoga-instruction workflow and renewal
