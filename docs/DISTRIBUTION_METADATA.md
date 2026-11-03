@@ -10,7 +10,8 @@ submission or external invitation.
 | --- | --- |
 | App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
 | Subtitle | A clock for teaching yoga |
-| Version / development candidate | 1.0 (35), clean source `b5884e30dd8a`, processed and assigned to the owner pilot; [artifact record](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds) |
+| Current TestFlight pilot | 1.0 (35), clean source `b5884e30dd8a`, processed and assigned to the owner pilot; [artifact record](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds) |
+| Local source candidate | 1.0 (36), privacy-copy corrections only; local build and unsigned archive checks pass. Not uploaded, assigned or installed on physical devices. |
 | App Store Connect bundle identifier | net.qays.TeachingTimer |
 | Watch payload identifier | net.qays.TeachingTimer.watchkitapp |
 | Keywords | yoga,teacher,clock,timer,class,landmarks,mindfulness |
@@ -41,6 +42,34 @@ Stop/Resume versus End class, count cancellation, media return and phone volume.
 No account or login is required by Teaching Timer. Do not submit personal logs
 in public feedback.
 
+## Reviewer execution notes — draft, not submitted
+
+Teaching Timer Beta is a Watch-only clock for yoga teachers. Its iOS container
+packages the Watch app; there is no iPhone interface, app login or test account.
+Clock and count features work without music. No workout or HealthKit access is used.
+
+1. Open the Watch app. Tap **Start class**, check the suggested quarter-hour and
+   press **Start class** again for 60 minutes. **Custom schedule** changes only
+   this class. Both hands show wall time; the outer wedge marks scheduled finish.
+2. Tap **1-min count**. Its inner arc fills over 60 seconds; vibration groups of
+   1–6 begin every 10 seconds, with completion near 64.8 seconds. **Stop count**
+   cancels immediately. Haptic delivery is system-controlled.
+3. Open **Class → Stop session**. Timing remains saved; **Resume** on the face or
+   **Class → Resume session** restarts the runtime. **End class** requires
+   confirmation and clears class timing. Intentional Stop persists on relaunch.
+4. Open **Class → Settings** for **Count vibrations**, **Minutes left**, and the
+   offline Help, Privacy and About pages. Vibration changes apply to the next count.
+5. For media testing, first play audio on the paired iPhone at modest volume.
+   Timer Crown volume targets that phone. Swipe left for native Now Playing,
+   which may select Watch playback instead. If native progress stalls or media
+   is blank, swipe away and back; timer volume refresh is a tap on its display.
+
+Start requests a mindfulness extended-runtime session, separate from the saved
+class. Automatic replacement, its eligibility checks and the unresolved intended-use
+questions are described in the [runtime-use briefing](#runtime-use-briefing-for-apple--not-submitted).
+Neither renewal nor 1 Hz wrist-down updates are guaranteed. Known native
+media/volume defects and recovery limits are listed in the [issue map](ISSUE_TRACKER.md).
+
 ## Before a pilot or store submission
 
 - Confirm account/team, private support/review contact, category,
@@ -56,12 +85,34 @@ in public feedback.
   disconnected media icons and variable capture times. They are tester/review
   assets, not a finalized App Store screenshot set. Prepare final screenshots
   only after the beta behavior and supported-device claims are validated.
-- Complete the install/update and journal-access pilot in
-  [TestFlight preparation](TESTFLIGHT_PREPARATION.md). Build 35 passed clean signed
+- The [owner installation/update/relaunch pilot](TESTFLIGHT_PILOT_RESULTS.md)
+  completed, including developer-tool Beta journal retrieval in one
+  developer-enabled Watch/trusted-Mac setup. General tester access and teaching
+  validation remain open. Build 35 passed clean signed
   archive/export, upload and processing and is assigned to the owner pilot.
   Its Watch CI passes 13 Swift suites / 117 Python tests, and CodeQL also passes;
   the clean Debug layout matrix and bounded controls checks are reviewed.
-  Neither source work nor processing establishes physical installation or journal access.
+  The physical result is separate evidence from those source and processing checks.
+
+### Bounded source-to-declaration inventory
+
+Manual review on November 2 follows the listed source paths and current
+[privacy manifest](../TeachingTimer/PrivacyInfo.xcprivacy). It is not a binary or
+framework-wide API audit, a guarantee that no API was missed, or a final App Store
+privacy/legal declaration. Artifact checks separately verify that the reviewed
+manifest is present in the archive and IPA.
+
+| Inspected use / data | Source evidence | Declaration or decision boundary |
+| --- | --- | --- |
+| App-owned preferences and recovery values | [ClassContext](../TeachingTimer/ClassContext.swift), [RuntimeIntentStore](../TeachingTimer/RuntimeRenewalRules.swift), [LandmarkController](../TeachingTimer/LandmarkController.swift), [Settings](../TeachingTimer/ClassControlsView.swift) and [persistence recovery](../TeachingTimer/PersistenceDiagnostics.swift) read/write class timing, runtime intent, count result and settings through UserDefaults/@AppStorage. | The manifest declares UserDefaults reason `CA92.1`. The inspected uses are app-owned storage, consistent with [Apple's reason for app-only defaults](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype). This does not authorize reading another app's preferences. |
+| Monotonic media-refresh intervals | [MediaReloadPolicy](../TeachingTimer/MediaReloadPolicy.swift) compares `ProcessInfo.systemUptime` samples for dim duration and refresh cooldown. Those absolute samples remain private policy state. | The manifest declares system-boot-time reason `35F9.1`, covering elapsed intervals/timers. [Apple's rule](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype) distinguishes shareable in-app elapsed intervals from raw uptime and other derived data. Related [count](../TeachingTimer/LandmarkController.swift), [runtime](../TeachingTimer/ExtendedRuntimeController.swift) and [focus](../TeachingTimer/VolumeControlDiagnostics.swift) diagnostics use elapsed `ContinuousClock` durations; do not treat this declaration as permission to export raw boot-time values. |
+| Local operational journals and recovery files | [RuntimeDiagnostics](../TeachingTimer/RuntimeDiagnostics.swift) and [LandmarkDiagnostics](../TeachingTimer/LandmarkDiagnostics.swift) store timestamps, lifecycle/errors and count submissions on the Watch. Valid journals trim on writes at seven days and caps of 10,000/10,000/20,000 events. | There is no automatic developer upload. Corrupt-journal copies are separate files and can accumulate without a count/time cap; they are not covered by the valid journals' rolling limits. Preference recovery is separately one value per store. Exported copies need their own handling/retention assessment. |
+| Optional support intake | [Support](../SUPPORT.md) asks for a description first. Email received outside the app includes the sender, message and any chosen attachments; [the intake procedure](PRIVATE_SUPPORT_PLAN.md) separates private reports from public issues. | Owner approval is still needed for actual intake scope and privacy answers. Description-only support still involves contact/message data; requested journals may add usage/diagnostic information. Native attachments and general tester export remain unverified. |
+
+Apple excludes data processed solely on-device from its collection answers, but
+off-device support intake needs separate assessment. Optional disclosure requires
+all applicable criteria; voluntary email alone does not establish an exemption.
+[App privacy guidance](https://developer.apple.com/app-store/app-privacy-details/).
 
 ### Privacy decisions before broader distribution
 
