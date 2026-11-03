@@ -40,6 +40,28 @@ GitHub Actions runs the noninteractive verification with its recorded toolchain.
 See [build evidence](BUILD_VERIFICATION.md) for retained artifacts. It does not
 drive an interactive Device Hub session or touch physical devices.
 
+### November 2, 2026 — Swift CodeQL coverage check
+
+Read-only inspection of [the completed Swift job](https://github.com/qayshp/TeachingTimer/actions/runs/41554828979/job/125651053865)
+at source `17f2d3c1df8e` confirms Autobuild selected the production
+`TeachingTimer` target. Its source phase contains 23 Swift files; CodeQL reported
+23 of the repository's 46 Swift files scanned. The remaining files are 13 tests,
+two scripts and eight tools. This is production-app analysis, not fixture-only
+coverage. The job reported zero unresolved AST nodes; the uploaded Swift analysis
+had no analysis error and zero results. Those results cover the configured
+queries, not every possible defect, source branch or security property.
+
+Autobuild took about 14 minutes, principally in build preparation and compilation;
+database finalization and query results followed in about one minute. It performed
+traced, optimized whole-module device builds for `arm64_32` and `arm64`, explicitly
+disabling compilation caches and the integrated Swift driver on a clean hosted
+runner. A short local build is not an equivalent workload. The log does not
+isolate the cause of every preparation or compilation pause.
+
+That job used Xcode 26.6 and the watchOS 26.5 SDK with a 26.0 deployment target.
+This adds 26.x SDK compilation evidence; it does not establish execution on
+watchOS 26. No workflow was changed or rerun for this inspection.
+
 ## Interactive Simulator checks
 
 Use the [combined regression suite](../tools/simulator-regression/README.md#run-the-combined-suite)
