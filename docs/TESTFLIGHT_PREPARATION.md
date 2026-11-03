@@ -1,6 +1,12 @@
 # TestFlight pilot
 
-Updated November 2, 2026. Build 36 passed signed archive/export, upload and Apple
+Updated November 2, 2026. **Public-beta preparation is authorized; candidate
+build 37 is pending validation.** No external invitation or public link has been
+created. Build 37 preserves build 36's app behavior and adds the explicit
+external-eligible release path described below. It has not yet been built,
+exported, uploaded or approved for external testing.
+
+Build 36 passed signed archive/export, upload and Apple
 processing and is Testing / Internal. It is assigned to the manual-distribution
 Maintainer pilot with one tester, the owner. Group settings confirm seven builds
 (29, 31, 32, 33, 34, 35 and 36); 30 is processed but unassigned. The release is authorized to test
@@ -65,13 +71,24 @@ Signed, local internal-only export (permits automatic provisioning):
 sh scripts/prepare-testflight.sh --signed work/testflight-pilot-new
 ```
 
-Both require a new output directory and preserve logs and `readiness.json`.
+Signed, local export eligible for external TestFlight review (explicit opt-in):
+
+```sh
+sh scripts/prepare-testflight.sh --signed --external-eligible work/testflight-public-new
+```
+
+`--external-eligible` requires `--signed`. Omitting it preserves the internal-only
+default. It changes the export audience, not application behavior; it does not
+submit review, invite testers or create a link.
+
+All modes require a new output directory and preserve logs and `readiness.json`.
 The signed path archives with the separate scheme, verifies Watch resources and
 matching symbols, then asks Xcode for an App Store Connect export. The export is
-marked **TestFlight Internal Only**, retains the explicit build number, and
-includes symbols. Both embedded profiles/signatures and exact identities are
+marked **TestFlight Internal Only** by default; the explicit external option
+sets `testFlightInternalTestingOnly` to false. Both retain the explicit build
+number and include symbols. Embedded profiles/signatures and exact identities are
 checked; an expired, wildcard, development, device-limited or enterprise profile
-is not accepted as a TestFlight export. Neither command uploads or installs.
+is not accepted as a TestFlight export. None of these commands uploads or installs.
 Private builds, provisioning material and raw logs remain in ignored `work/`.
 
 From build-32 tooling, archive inspection and the exported IPA must both contain
@@ -237,6 +254,40 @@ shown as **Testing / Internal**. No direct physical
 installation or device query was performed for this release; build 35 remains
 the last confirmed physical Beta, and automatic installation of 36 is unverified.
 Build 36 changes privacy disclosure, not recovery behavior or data handling.
+
+### Build 37 public-beta preparation
+
+The owner has authorized opening a public TestFlight beta and publishing its
+real invitation link in the repository. Candidate 37 preserves build 36's app
+behavior; release tooling now supports an explicit external-eligible export.
+At this preparation checkpoint, validation, signed export, upload, Apple
+processing, external review, distribution and link creation are **not complete**.
+Build 36 remains assigned to the existing internal Maintainer pilot; build 35
+remains the last user-confirmed physical Beta. No automatic installation is
+promised by an upload, group assignment or link creation.
+
+Apple says Internal Only uploads can join only internal groups. Builds through
+36 used that audience, so the public beta needs a new eligible upload. The first
+external submission requires TestFlight App Review. Keep these stages separate:
+
+1. Validate clean candidate source and its signed external-eligible export.
+2. Upload and verify Apple's processed build number and audience.
+3. Create an external group and add the eligible build with clear What to Test.
+4. Complete real review-contact information, beta description and feedback
+   email, then submit for review. No app sign-in or demo credentials are needed.
+5. After approval, distribute to the group and create a public invitation link;
+   verify that its page offers the intended build before publishing it in README.
+
+An initial 100-tester public-link cap is the recommended pilot size, not an
+Apple requirement. Leave the internal group and its owner assignment separate.
+See Apple's [external-testing workflow](https://developer.apple.com/help/app-store-connect/test-a-beta-version/invite-external-testers)
+and [test information requirements](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information/).
+
+The public pilot can explicitly accept descriptions and cropped screenshots
+without journal attachments. The monitored support alias has verified plain
+email delivery; ordinary tester journal export remains unavailable. This is
+the limited-intake option in the [support plan](PRIVATE_SUPPORT_PLAN.md), not
+a claim that the app uploads diagnostics or that general tester retrieval works.
 
 ## Self-pilot record
 

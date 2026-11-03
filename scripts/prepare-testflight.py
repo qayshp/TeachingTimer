@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MPL-2.0
-"""Create an unsigned rehearsal or a signed, internal-only TestFlight export.
+"""Create an unsigned rehearsal or a signed TestFlight export.
 
 Never uploads, installs, launches, or invites testers. --signed allows Xcode's
-automatic provisioning and requires unchanged, committed source. Account
-agreements must be accepted by the account owner.
+automatic provisioning and requires unchanged, committed source. Signed exports
+are internal-only unless --external-eligible is explicit; external review and
+distribution remain separate steps. Account agreements must be accepted by the
+account owner.
 """
 import argparse
 from datetime import datetime, timezone
@@ -124,15 +126,22 @@ def export_checks(ipa, output, team):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path, help='New output directory; never overwrites')
-    parser.add_argument('--signed', action='store_true', help='Permit automatic provisioning and export an internal-only IPA')
+    parser.add_argument('--signed', action='store_true', help='Permit automatic provisioning and export an IPA (internal-only by default)')
+    parser.add_argument('--external-eligible', action='store_true',
+                        help='With --signed, permit eligibility for external TestFlight review; never uploads or invites')
     args = parser.parse_args(argv)
+    if args.external_eligible and not args.signed:
+        parser.error('--external-eligible requires --signed')
     os.umask(0o077)
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     archive = output / 'TeachingTimer.xcarchive'
     report = dict(stage='starting', signed=False, uploaded=False, installed=False,
                   appStoreValidation='not performed', journalAccess='not verified',
-                  physicalPilot='not performed', steps=[])
+                  physicalPilot='not performed',
+                  requestedAudience=('external_eligible' if args.external_eligible
+                                     else 'internal_only' if args.signed else 'unsigned_rehearsal'),
+                  steps=[])
     def save():
         (output / 'readiness.json').write_text(json.dumps(report, indent=2) + '\n')
     def run(name, command):
@@ -174,7 +183,7 @@ def main(argv=None):
             team = plistlib.loads((archive / 'Info.plist').read_bytes())['ApplicationProperties']['Team']
             options = dict(method='app-store-connect', destination='export', signingStyle='automatic',
                            teamID=team, manageAppVersionAndBuildNumber=False,
-                           testFlightInternalTestingOnly=True, uploadSymbols=True)
+                           testFlightInternalTestingOnly=not args.external_eligible, uploadSymbols=True)
             options_file = output / 'ExportOptions.plist'
             options_file.write_bytes(plistlib.dumps(options))
             # Recheck immediately before export. The build phase records the
@@ -192,7 +201,8 @@ def main(argv=None):
             report['export'] = export_checks(packages[0], output, team)
             if not report['export']['passed']:
                 raise ValueError('Export signature, profile or identifier checks failed')
-            report['stage'] = 'signed_internal_testflight_export_verified'
+            report['stage'] = ('signed_external_testflight_export_verified' if args.external_eligible
+                               else 'signed_internal_testflight_export_verified')
         save()
         print(json.dumps(report, indent=2))
     except Exception as error:
