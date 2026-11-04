@@ -443,3 +443,108 @@ separate from the verified signed export/upload. No direct physical-device
 connection, installation or launch was attempted for this release. TestFlight
 installation/automatic-update outcome and physical readability remain unverified.
 Later release-documentation commits do not change the signed source above.
+
+## Manually triggered GitHub release
+
+The **TestFlight maintainer release** workflow builds on a GitHub-hosted Mac.
+It has only a manual `workflow_dispatch` trigger. Choose **Use workflow from:
+main**, then provide an unused integer build number, testing notes, and either
+`rehearsal` or `publish`. The tools and application come from the exact selected
+workflow commit; there is no free-form application-ref input. The release job
+checks out the same SHA verified by the first job. A command-line build-number
+override changes both payloads without dirtying source; the archive retains its
+exact revision.
+
+The credential-bearing publishing environment permits only `main`. Merge reviewed
+application changes before publishing them with this workflow. Another branch
+containing the workflow can run a credential-free rehearsal in its own branch
+context. Do not copy an arbitrary branch into a privileged default-branch job;
+that can expose default-branch caches even when no signing secret is supplied.
+
+- **Rehearsal** is the default. It runs checks and creates a real unsigned
+  distribution archive with the requested build number. It needs no credentials,
+  never calls the App Store Connect API and does not assign a group. Its status is explicitly
+  `rehearsal_complete`, never `available`.
+- **Publish** uses the protected `testflight-maintainer` environment. It validates
+  the app and existing internal group, rejects an already-used build number,
+  signs/exports an internal-only package, uploads it, polls Apple, saves/verifies
+  What to Test, assigns only Maintainer pilot and verifies `IN_BETA_TESTING`.
+  It never creates/invites testers, enables a public link or submits App Review.
+
+The hosted `xcode-27` runner explicitly selects Xcode 27.2 and records its actual
+version/build. GitHub's published image may differ from the local Mac; a missing
+or incompatible toolchain fails rather than silently selecting an older SDK.
+No Simulator is created/booted and no physical device is contacted.
+
+### One-time credentials
+
+Create the GitHub environment **testflight-maintainer**, restricted to workflow
+runs from `main`. Keep the separate rehearsal environment free of credentials.
+The publishing environment needs these secrets:
+
+| Secret | Value |
+| --- | --- |
+| `ASC_KEY_ID` | App Store Connect team API key identifier |
+| `ASC_ISSUER_ID` | Team API issuer identifier |
+| `ASC_PRIVATE_KEY_BASE64` | Base64 of its downloaded `.p8` private key |
+| `DISTRIBUTION_CERTIFICATE_BASE64` | Base64 of an Apple Distribution identity exported as password-protected `.p12`, including its private key |
+| `DISTRIBUTION_CERTIFICATE_PASSWORD` | That `.p12` export password |
+| `CONTAINER_PROFILE_BASE64` | Base64 App Store profile for `net.qays.TeachingTimer` |
+| `WATCH_PROFILE_BASE64` | Base64 App Store profile for `net.qays.TeachingTimer.watchkitapp` |
+
+Use an App Manager team API key for TestFlight metadata/distribution. Team keys
+have role-level access across the account's apps; the release client additionally
+pins this app, team and internal group. Do not use an Apple Account password.
+Generating/downloading a key is a one-time account-owner setup; Apple may first
+require requesting API access. Store private files outside Git and enter values
+through GitHub's encrypted environment secrets, never an issue or workflow input.
+A cloud-managed certificate without an exportable private key is not a `.p12`
+identity; use a suitable dedicated CI identity without revoking the teaching one.
+
+A temporary runner keychain and SDK-specific manual signing configuration use
+both profiles. Profiles must be unexpired, explicit App Store profiles for the
+expected team and identifiers. Cleanup restores the previous keychain search
+list and removes only credentials/profiles created by this run. Secrets are not
+needed by normal pull-request verification.
+
+### Timing, errors and resume
+
+The run summary and `testflight-release-RUN_ID` artifact contain `summary.md` and
+`release.json`: source/build identity, local IPA digest, UTC stage timestamps,
+monotonic durations, archive/export substeps, polling observations and final
+verified status. GitHub dispatch/job times and Xcode identity are recorded too.
+Neither the private IPA, raw signing logs, API tokens nor credentials are uploaded
+as public artifacts. The report's `installed` field remains false.
+
+Polling defaults to 15 seconds with a bounded wait. `availabilityConfirmedAt`
+means first observed server-side readiness after notes/group readback; it is not
+an exact server transition, client refresh, Watch download or installation time.
+Apple failure/compliance states stop the release visibly. No processing timeout
+or failed request is reported as success.
+
+An interrupted or failed upload is never blindly repeated. The report preserves
+whether the upload command actually succeeded. After a successful upload, the
+CLI can resume metadata using a downloaded `release.json`, the same source/build/
+notes, and API credentials; the private IPA/signing keys are not needed again:
+
+```sh
+python3 scripts/testflight-release.py --resume \
+  --source /path/to/clean-reviewed-checkout --build-number 42 \
+  --notes-file /private/path/notes.txt --output /private/path/saved-release-report
+```
+
+Configure `ASC_TOKEN_HELPER` (compiled from `scripts/asc-token.swift`),
+`ASC_KEY_PATH`, `ASC_KEY_ID` and `ASC_ISSUER_ID` for that local resume. If upload
+outcome is uncertain, inspect its original log/server record before taking another
+action; the client deliberately refuses to repeat it. The first workflow version
+accepts fresh releases/rehearsals; it does not automatically download past reports
+when GitHub's Re-run button is used.
+
+The setup and deterministic tests do not establish that live credentials work.
+Record a successful hosted rehearsal separately from the first actual signed
+publish, Apple processing and pilot assignment.
+
+Primary references: [GitHub Xcode signing](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications),
+[runner inventory](https://github.com/actions/runner-images/blob/main/images/macos/xcode-27-arm64-Readme.md),
+[Apple API keys](https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api),
+[build/group API](https://developer.apple.com/documentation/appstoreconnectapi/post-v1-betagroups-_id_-relationships-builds).
