@@ -67,3 +67,78 @@ displayed position. This is a useful physical position-catch-up result, separate
 from restoring continuous progress. It is not matched to a particular recorded
 refresh timestamp and does not establish the underlying cause. The app's timeline
 ancestor remains a variable to test.
+
+## November 2 build-38 hosting experiment
+
+[Issue #8](https://github.com/qayshp/TeachingTimer/issues/8) also tracks the
+hypothesis that the one-second clock timeline affects the native media host.
+Build 38 narrows the rendering boundary without changing the refresh policy:
+
+```text
+Before (through 37)                 Candidate (38)
+TimelineView                       TabView
+  TabView                            TimelineView → teaching face
+    teaching face                    NowPlayingView
+    NowPlayingView
+```
+
+The same parent still owns class, runtime, count, page selection and native-media
+generation. The timer's companion volume implementation and focus sequence are
+unchanged. Clock/count frames retain their requested timeline Date, stable epoch
+and existing invalidation on count/class/clock changes. Class retirement and
+runtime synchronization remain outside the timeline so they also run on media.
+No periodic reload, playback command or new diagnostic timer is added.
+
+The comparison uses the same booted SE 3 40 mm Simulator, watchOS 27.2 (24S118),
+Xcode 27.2 (27B52), and existing action/focus/Lock scripts. Baseline build 37 was
+built from clean `2ba6f13`; that revision changes documentation only relative to
+the signed source `a36f3be`. Candidate 38 was built from the working source patch;
+the private manifest retains its dirty-revision label and executable hash.
+
+Baseline action evidence contains 21 successful checks. The old suite wrapper
+expected only 14 and rejected the successful run; its failure is preserved.
+[#16](https://github.com/qayshp/TeachingTimer/issues/16) corrects the shared action
+contract, and revalidation accepts the original evidence. Baseline focus/class/
+native-volume-identity checks pass, as does a complete locked count. Full local
+verification passes 13 Swift suites, 131 Python tests, Simulator build, QR checks
+and both unsigned archive paths. These checks do not exercise real phone media.
+
+### Fresh missing-label observation
+
+During that baseline's separate 33-frame controls run, original pixels show some
+control text absent while outlines and hands remain. Seventeen frames triggered
+text-review warnings; the count-0 sequence contains repeated absent labels.
+Later frames restore them. This is new evidence in
+[#17](https://github.com/qayshp/TeachingTimer/issues/17), not a reinstatement of the
+withdrawn historical screenshot interpretations or a physical-Watch reproduction.
+
+| Baseline 37 at 22:19:08 PST | Same run after locked count completion at 22:21 PST |
+| --- | --- |
+| ![SE 3 Simulator: count outline and hands visible, Class/count labels absent](images/review-37/count-missing-labels.png) | ![SE 3 Simulator: Class and count labels visible again](images/review-37/count-finished-labels.png) |
+
+Both images are original Simulator captures from November 2, 2026. The first
+capture's display/scene state is not established solely by its stage name;
+the full-count finish has separately verified locked-state evidence. A normal
+completion callback alone is not proof that every intermediate frame was useful.
+
+Candidate 38 passes all 21 actions, all six focus/lifecycle checks and the full
+33-frame/locked-count sequence. Both builds retain the same running runtime ID
+across the final media→timer round trip, and report an active count at media entry;
+no runtime start/stop/invalidation occurs within that round trip. The native
+volume instance and saved class bytes are preserved. Native Not Playing renders.
+
+The candidate's reviewed ready/count/locked/wake/cancelled/finish images contain
+labels, sometimes crossed by the hands. Its 22 text-review warnings versus the
+baseline's 17 are not a meaningful regression score: inspected candidate warnings
+include text that is present but partly crossed by the minute hand. Selected
+originals were reviewed, not every pixel of every frame, and one comparison
+cannot establish a reliable missing-label fix. Candidate count frame:
+
+![Build 38 SE 3 Simulator count frame with Class and Stop count labels visible](images/review-38/count-0-labels.png)
+
+The code is an experimental branch/PR, not a distributed fix. The issue stays open: native Not Playing rendering does not establish continuously
+accurate song progress. A matched physical A/B comparison must keep the phone
+track/output route fixed, compare at least 30 seconds of bright-screen progress
+against the phone or synchronized video, then check dim/wake, playback continuity,
+Crown response and saved class/count/runtime state. No physical install or
+TestFlight upload is part of this Simulator experiment.
