@@ -4,7 +4,7 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
-## Unreleased — build 41 layout candidate
+## 1.0 (41) — November 3, 2026, maintainer layout pilot
 
 - Restored all 60 full-length ticks behind the top elements. The Class button
   has a translucent black backing and opaque text/outline; ticks under the
@@ -13,6 +13,9 @@ build was installed or passed hardware validation.
   Class, runtime, count and native Crown-volume behavior are unchanged.
 - Checked five current display sizes, SE 3/Ultra dimmed and maximum-text views,
   and Home/refresh/media-return lifecycle behavior in Simulator.
+- Signed, uploaded and processed for the internal Maintainer pilot. Testing
+  notes and one-owner group availability are verified; installation remains
+  unconfirmed. This build does not include build 38's separate media experiment.
 
 ## Layout checkpoint — build 40
 

@@ -331,5 +331,7 @@ preserves the class/volume instance. These are lifecycle/rendering observations,
 not proof of audible iPhone
 volume or tactile haptics. Class snapping, runtime/renewal and count scheduling
 are unchanged. Physical readability and contrast still need Watch comparison.
-Build 41 is not uploaded to TestFlight or installed on the physical Watch; the
-layout draft remains independent of media experiment PR #18/build 38.
+At the time of these Simulator checks, build 41 had not been uploaded or installed.
+Its [subsequent signed maintainer-pilot release](TESTFLIGHT_PREPARATION.md#build-41-maintainer-layout-pilot)
+is now available through TestFlight; physical installation/contrast remain
+unverified. The layout draft remains independent of media experiment PR #18/build 38.

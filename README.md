@@ -22,7 +22,7 @@ See the [changelog](CHANGELOG.md) for recent beta changes.
 [**Public beta invitation — awaiting Apple approval**](https://testflight.apple.com/join/YA2WSmae)
 
 The invitation link exists, but currently says it is not accepting new testers.
-The first external build, 1.0 (37), has been submitted and is **Waiting for Review**
+The first external build, 1.0 (37), has been submitted and is **In Review**
 at Apple. The public group has an initial 100-tester limit;
 this is not an App Store release or a currently installable public beta.
 

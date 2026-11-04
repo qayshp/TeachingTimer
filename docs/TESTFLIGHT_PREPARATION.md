@@ -1,7 +1,12 @@
 # TestFlight pilot
 
-Updated November 2, 2026. **Build 37 is submitted for the first external Beta App
-Review and is Waiting for Review.** Its signed external-eligible export, upload,
+Updated November 3, 2026. **Build 41 is Testing / Internal in the one-owner
+Maintainer pilot.** Its signed export/upload, Apple processing, saved test notes
+and group assignment survived verification after reload. Physical installation
+is unconfirmed. [Exact build-41 release record](#build-41-maintainer-layout-pilot).
+
+**Build 37 is submitted for the first external Beta App
+Review and is In Review.** Its signed external-eligible export, upload,
 Apple processing and Public beta group assignment are verified. The
 [public invitation](https://testflight.apple.com/join/YA2WSmae) is configured for
 anyone with a 100-tester limit, but currently does not accept testers because
@@ -10,7 +15,7 @@ installation was performed for this release.
 
 Build 36 passed signed archive/export, upload and Apple
 processing and is Testing / Internal. It is assigned to the manual-distribution
-Maintainer pilot with one tester, the owner. Group settings confirm seven builds
+Maintainer pilot with one tester, the owner. At the November 2 build-36 checkpoint, group settings confirmed seven builds
 (29, 31, 32, 33, 34, 35 and 36); 30 is processed but unassigned. The release is authorized to test
 the owner's enabled TestFlight automatic updates; build 35 remains the last
 confirmed physical Beta and the automatic-update outcome is unverified.
@@ -382,13 +387,16 @@ cleanliness/revision checks passed. The local IPA SHA-256 is
 Xcode reported upload success November 2, 2026 at 23:09:35 PST. PR-18 Watch CI,
 CodeQL and AccessLint all pass. The draft remains open for physical comparison.
 
-The refreshed App Store Connect browser requested sign-in. Processing, saved
-What to Test and group availability therefore remain **unverified**; the signed
-preparation/upload records are retained privately. The intended destination is
+The refreshed App Store Connect browser requested sign-in at that checkpoint.
+Processing, saved What to Test and group availability were therefore unverified;
+the signed preparation/upload records are retained privately. On November 3,
+processing was verified: the external-eligible build is Ready to Submit and is
+eligible for internal testing, but remains unassigned to tester groups. Its test
+notes/group assignment are still pending. The intended destination is
 the internal Maintainer pilot, with build 37 also available as the unchanged
 hosting baseline. No public-group assignment, physical install or launch was
-performed. The owner has been asked to sign in; no rebuild is required merely
-to finish the group assignment.
+performed. Browser authentication is now available; no rebuild is required merely
+to finish that earlier experiment's group assignment.
 
 TestFlight supports sharing multiple builds and organizing tester groups. For
 this experiment, choose 37 and 38 manually, one at a time on the same Watch:
@@ -401,3 +409,37 @@ The existing development installation remains a separate app.
 
 Build 39's matching-dial work is independent and is not part of the build-38
 upload or media A/B comparison.
+
+
+### Build 41 maintainer layout pilot
+
+At the owner's request, clean layout-PR source
+`30df065a33e86211d76b34fd9a23da0d127ac64b` was signed/exported as an
+internal-only TestFlight build. Both payload identities, signatures, profiles,
+entitlements and the Watch privacy manifest pass validation. The archive retains
+the exact clean source revision; the local exported IPA SHA-256 is
+`be1aa4fbe4bab463bcda5189b1acf390061b1115e66d4a10172bf83ee77422d7`.
+
+Xcode reported upload success November 3, 2026 at **15:56:00 PST**. Apple processed
+**1.0 (41)** as **Testing / Internal**, with a 90-day lifetime shown. What to Test
+notes and the sole **Maintainer pilot** assignment survived reload: one internal
+group, one tester, the owner. The final builds listing also shows Testing and the
+Maintainer pilot group. No external-group assignment or review submission was
+performed for this build. Public build 37 is separately In Review.
+
+Build 41 contains the full-screen edge-following dial and all 60 full-length ticks
+layered beneath the top elements. The Class backing is 75% opaque; tick portions
+under system time are reduced to quarter strength. Hands remain foremost. It
+preserves baseline class/runtime/count/native-volume behavior and does **not**
+include build 38's separate media-hosting experiment. Existing native song-progress
+stalls may remain. The saved notes ask for bright/dim readability and volume
+checks after Class interaction, Home/reopen, refresh and media return.
+
+All 13 Swift suites, 132 Python tests, Simulator and unsigned archive checks,
+six lifecycle/focus assertions and Class-sheet presentation/dismissal pass.
+[Thirteen five-size captures](FORM_FACTOR_VALIDATION.md#november-3-build-41-layered-header-ticks)
+include SE 3/Ultra reduced-luminance and maximum-text views. Those checks are
+separate from the verified signed export/upload. No direct physical-device
+connection, installation or launch was attempted for this release. TestFlight
+installation/automatic-update outcome and physical readability remain unverified.
+Later release-documentation commits do not change the signed source above.
