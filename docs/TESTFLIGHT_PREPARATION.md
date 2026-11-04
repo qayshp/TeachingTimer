@@ -375,14 +375,18 @@ distribution-profile container access.
 
 The **TestFlight maintainer release** workflow builds on a GitHub-hosted Mac.
 It has only a manual `workflow_dispatch` trigger. Choose **Use workflow from:
-main**, then provide a reviewed application `source_ref`, an unused integer
-build number, testing notes, and either `rehearsal` or `publish`.
+main**, then provide an unused integer build number, testing notes, and either
+`rehearsal` or `publish`. The tools and application come from the exact selected
+workflow commit; there is no free-form application-ref input. The release job
+checks out the same SHA verified by the first job. A command-line build-number
+override changes both payloads without dirtying source; the archive retains its
+exact revision.
 
-The workflow tools come from the workflow's immutable commit. Application checks
-resolve the requested source once; the release job checks out that exact SHA.
-The source must belong to a branch/tag in this repository. A command-line build
-number override changes both distribution payloads without dirtying source. The
-signed archive still records the exact application source revision.
+The credential-bearing publishing environment permits only `main`. Merge reviewed
+application changes before publishing them with this workflow. Another branch
+containing the workflow can run a credential-free rehearsal in its own branch
+context. Do not copy an arbitrary branch into a privileged default-branch job;
+that can expose default-branch caches even when no signing secret is supplied.
 
 - **Rehearsal** is the default. It runs checks and creates a real unsigned
   distribution archive with the requested build number. It needs no credentials,

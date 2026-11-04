@@ -119,7 +119,7 @@ a claim of complete coverage.
 
 The manually triggered `.github/workflows/testflight-release.yml` separates
 credential-free verification/rehearsal from internal publishing. It supports an
-explicit reviewed source revision and unused build number, timed upload/processing,
+immutable dispatch revision and unused build number, timed upload/processing,
 verified test notes, and assignment only to the existing Maintainer pilot.
 [Setup, credentials, reports and resume limits](TESTFLIGHT_PREPARATION.md#manually-triggered-github-release).
 

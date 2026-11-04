@@ -12,10 +12,6 @@ on:
         options: [rehearsal, publish]
         default: rehearsal
         required: true
-      source_ref:
-        description: Reviewed application branch, tag, or commit in this repository
-        type: string
-        required: true
       build_number:
         description: Unused positive integer; overrides the build without editing source
         type: string
@@ -52,9 +48,8 @@ jobs:
       - name: Check out reviewed application
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ inputs.source_ref }}
+          ref: ${{ github.sha }}
           path: source
-          fetch-depth: 0
           persist-credentials: false
       - name: Resolve source and validate inputs
         id: source
@@ -71,10 +66,8 @@ jobs:
           if not notes.strip() or len(notes) > 4000:
               raise SystemExit('Testing notes must contain 1–4000 characters')
           sha = subprocess.check_output(['git', '-C', 'source', 'rev-parse', 'HEAD'], text=True).strip()
-          branches = subprocess.check_output(['git', '-C', 'source', 'for-each-ref', '--contains=' + sha,
-              '--format=%(refname)', 'refs/remotes/origin', 'refs/tags'], text=True).strip()
-          if not branches:
-              raise SystemExit('Release source must belong to a branch or tag in this repository')
+          if sha != os.environ['GITHUB_SHA']:
+              raise SystemExit('Application source differs from the selected workflow commit')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('sha=' + sha + '\n')
           PY
