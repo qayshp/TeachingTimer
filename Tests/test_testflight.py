@@ -219,14 +219,29 @@ class TestFlightChecks(unittest.TestCase):
 class SignedSourceChecks(unittest.TestCase):
     head = 'a' * 40
 
-    def prepare(self, states, *, signed=True, external_eligible=False, archived_revision=None):
+    def prepare(self, states, *, signed=True, external_eligible=False, archived_revision=None,
+                build_number=None, manual=False, separate_source=False):
         """Exercise orchestration with fake Xcode/inspection; no account access."""
         commands = []
         export_options = []
-        inspection = dict(version='1.0', build='31', revision=archived_revision or self.head,
+        inspection = dict(version='1.0', build=build_number or '31', revision=archived_revision or self.head,
                           checks={'fixture': True}, signatureValid=True, unexpiredEmbeddedProfile=True)
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / 'release'
+            extra = []
+            if build_number:
+                extra += ['--build-number', build_number]
+            if separate_source:
+                source = Path(folder) / 'source'
+                (source / 'TeachingTimer.xcodeproj').mkdir(parents=True)
+                extra += ['--source', str(source)]
+            if manual:
+                config = Path(folder) / 'signing.xcconfig'; config.write_text('CODE_SIGN_STYLE = Manual\n')
+                signing = Path(folder) / 'signing.json'
+                signing.write_text(json.dumps(dict(teamID='TEAM000001', xcconfig=str(config), profiles={
+                    pilot.CONTAINER_ID: '12345678-1234-1234-1234-123456789ABC',
+                    pilot.WATCH_ID: '12345678-1234-1234-1234-123456789ABD'})))
+                extra += ['--signing-config', str(signing)]
             def run(name, command, destination, timeout):
                 commands.append((name, command))
                 if name == 'build':
@@ -235,10 +250,12 @@ class SignedSourceChecks(unittest.TestCase):
                     watch = container / 'Watch/TeachingTimer.app'
                     watch.mkdir(parents=True)
                     container_info, watch_info = TestFlightChecks.package()
+                    if build_number:
+                        container_info['CFBundleVersion'] = watch_info['CFBundleVersion'] = build_number
                     (container / 'Info.plist').write_bytes(plistlib.dumps(container_info))
                     (watch / 'Info.plist').write_bytes(plistlib.dumps(watch_info))
                     (archive / 'Info.plist').write_bytes(plistlib.dumps({'ApplicationProperties': {
-                        'ApplicationPath': 'Applications/TeachingTimerDistribution.app', 'Team': 'TEAM'}}))
+                        'ApplicationPath': 'Applications/TeachingTimerDistribution.app', 'Team': 'TEAM000001' if manual else 'TEAM'}}))
                 elif name == 'export':
                     export_options.append(plistlib.loads((destination / 'ExportOptions.plist').read_bytes()))
                     (destination / 'export').mkdir()
@@ -246,7 +263,8 @@ class SignedSourceChecks(unittest.TestCase):
                 else:
                     self.fail('Unexpected account/build operation: ' + name)
                 return dict(name=name, command=command, status='passed')
-            with patch.object(pilot, 'source_state', side_effect=states) as state, \
+            with patch.object(pilot, 'ROOT', pilot.ROOT), patch.object(pilot.build, 'ROOT', pilot.build.ROOT), \
+                    patch.object(pilot, 'source_state', side_effect=states) as state, \
                     patch.object(pilot.build, 'run_step', side_effect=run), \
                     patch.object(pilot.artifact, 'inspect', return_value=inspection), \
                     patch.object(pilot, 'export_checks', return_value={'passed': True}) as export, \
@@ -254,7 +272,7 @@ class SignedSourceChecks(unittest.TestCase):
                 error = None
                 try:
                     pilot.main([str(output)] + (['--signed'] if signed else [])
-                               + (['--external-eligible'] if external_eligible else []))
+                               + (['--external-eligible'] if external_eligible else []) + extra)
                 except SystemExit as failure:
                     error = str(failure)
                 report = json.loads((output / 'readiness.json').read_text())
@@ -374,3 +392,32 @@ class SignedSourceChecks(unittest.TestCase):
                 self.assertEqual(pilot.source_state(), baseline)
                 (root / 'untracked.swift').write_text('new source\n')
                 self.assertTrue(pilot.source_state()['dirty'])
+
+    def test_ci_override_keeps_exact_source_and_both_payload_versions(self):
+        clean = {'head': self.head, 'dirty': False}
+        report, error, commands, _, _, _ = self.prepare([clean, clean], build_number='42', separate_source=True)
+        self.assertIsNone(error)
+        self.assertEqual(report['build'], '42')
+        self.assertEqual(report['revision'], self.head)
+        self.assertIn('CURRENT_PROJECT_VERSION=42', commands[0][1])
+        self.assertTrue(report['sourceRevisionVerified'])
+
+    def test_manual_ci_signing_uses_two_profiles_without_interactive_provisioning(self):
+        clean = {'head': self.head, 'dirty': False}
+        report, error, commands, _, _, options = self.prepare([clean, clean], manual=True)
+        self.assertIsNone(error)
+        self.assertIn('-xcconfig', commands[0][1])
+        self.assertTrue(all('-allowProvisioningUpdates' not in command for _, command in commands))
+        self.assertEqual(options[0]['signingStyle'], 'manual')
+        self.assertEqual(set(options[0]['provisioningProfiles']), {pilot.CONTAINER_ID, pilot.WATCH_ID})
+        self.assertTrue(options[0]['testFlightInternalTestingOnly'])
+        self.assertEqual(report['stage'], 'signed_internal_testflight_export_verified')
+
+    def test_separate_checkout_rehearsal_pins_full_source_revision_too(self):
+        clean = {'head': self.head, 'dirty': False}
+        report, error, commands, _, _, _ = self.prepare([clean], signed=False,
+            separate_source=True, build_number='42')
+        self.assertIsNone(error)
+        self.assertEqual(report['revision'], self.head)
+        self.assertIn('SOURCE_REVISION=' + self.head, commands[0][1])
+        self.assertEqual(report['stage'], 'unsigned_archive_verified')

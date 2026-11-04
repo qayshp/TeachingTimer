@@ -16,6 +16,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import re
 import subprocess
 import zipfile
 
@@ -124,14 +125,35 @@ def export_checks(ipa, output, team):
 
 
 def main(argv=None):
+    global ROOT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path, help='New output directory; never overwrites')
     parser.add_argument('--signed', action='store_true', help='Permit automatic provisioning and export an IPA (internal-only by default)')
     parser.add_argument('--external-eligible', action='store_true',
                         help='With --signed, permit eligibility for external TestFlight review; never uploads or invites')
+    parser.add_argument('--source', type=Path, help='Separate clean application checkout; defaults to this repository')
+    parser.add_argument('--build-number', help='Override both payload build numbers without editing committed source')
+    parser.add_argument('--signing-config', type=Path, help='Private CI signing configuration; requires --signed')
     args = parser.parse_args(argv)
     if args.external_eligible and not args.signed:
         parser.error('--external-eligible requires --signed')
+    if args.signing_config and not args.signed:
+        parser.error('--signing-config requires --signed')
+    if args.build_number and not re.fullmatch(r'[1-9][0-9]{0,8}', args.build_number):
+        parser.error('--build-number must be a positive integer of at most nine digits')
+    if args.source:
+        ROOT = args.source.resolve()
+        if not (ROOT / 'TeachingTimer.xcodeproj').is_dir():
+            parser.error('--source must contain TeachingTimer.xcodeproj')
+        build.ROOT = ROOT
+    signing = None
+    if args.signing_config:
+        signing = json.loads(args.signing_config.read_text())
+        if (set(signing.get('profiles', {})) != {CONTAINER_ID, WATCH_ID}
+                or not re.fullmatch(r'[A-Z0-9]{10}', signing.get('teamID', ''))
+                or any(not re.fullmatch(r'[A-Fa-f0-9-]{36}', value) for value in signing['profiles'].values())
+                or not Path(signing.get('xcconfig', '')).is_file()):
+            parser.error('Invalid CI signing configuration')
     os.umask(0o077)
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -161,8 +183,17 @@ def main(argv=None):
         command = ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimerTestFlight',
                    '-configuration', 'TestFlight', '-destination', 'generic/platform=iOS',
                    '-archivePath', str(archive)]
-        command += (['-allowProvisioningUpdates', 'SOURCE_REVISION=' + report['sourceBeforeBuild']['head']]
-                    if args.signed else ['CODE_SIGNING_ALLOWED=NO'])
+        if args.signed:
+            command += ['SOURCE_REVISION=' + report['sourceBeforeBuild']['head']]
+            command += ['-xcconfig', signing['xcconfig']] if signing else ['-allowProvisioningUpdates']
+        else:
+            command += ['CODE_SIGNING_ALLOWED=NO']
+            if args.source:
+                # Cross-checkout rehearsals need the same full revision identity
+                # as publishing; ordinary local rehearsal retains its old behavior.
+                command += ['SOURCE_REVISION=' + source_state()['head']]
+        if args.build_number:
+            command += ['CURRENT_PROJECT_VERSION=' + args.build_number]
         run('build', command + ['archive'])
         inspection = artifact.inspect(archive)
         (output / 'artifact-inspection.json').write_text(json.dumps(inspection, indent=2) + '\n')
@@ -175,6 +206,9 @@ def main(argv=None):
                       build=inspection['build'], revision=inspection['revision'])
         if not all(report['checks'].values()) or not all(inspection['checks'].values()):
             raise ValueError('Archive identity, packaging, resources or symbols failed validation')
+        if args.build_number and (inspection['build'] != args.build_number or any(
+                info.get('CFBundleVersion') != args.build_number for info in (container_info, watch_info))):
+            raise ValueError('Archive did not retain the requested build number')
         report['stage'] = 'unsigned_archive_verified'
         if args.signed:
             if not inspection['signatureValid'] or not inspection['unexpiredEmbeddedProfile']:
@@ -184,6 +218,11 @@ def main(argv=None):
             options = dict(method='app-store-connect', destination='export', signingStyle='automatic',
                            teamID=team, manageAppVersionAndBuildNumber=False,
                            testFlightInternalTestingOnly=not args.external_eligible, uploadSymbols=True)
+            if signing:
+                if team != signing['teamID']:
+                    raise ValueError('Archive team differs from CI signing configuration')
+                options.update(signingStyle='manual', provisioningProfiles=signing['profiles'],
+                               signingCertificate='Apple Distribution')
             options_file = output / 'ExportOptions.plist'
             options_file.write_bytes(plistlib.dumps(options))
             # Recheck immediately before export. The build phase records the
@@ -194,7 +233,7 @@ def main(argv=None):
             save()
             run('export', ['xcodebuild', '-exportArchive', '-archivePath', str(archive),
                            '-exportOptionsPlist', str(options_file), '-exportPath', str(output / 'export'),
-                           '-allowProvisioningUpdates'])
+                           *([] if signing else ['-allowProvisioningUpdates'])])
             packages = list((output / 'export').glob('*.ipa'))
             if len(packages) != 1:
                 raise ValueError('Expected one signed IPA export')
