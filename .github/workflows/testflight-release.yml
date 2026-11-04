@@ -4,6 +4,8 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 name: TestFlight maintainer release
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       mode:
@@ -24,10 +26,6 @@ on:
 permissions:
   contents: read
   actions: read
-concurrency:
-  group: testflight-maintainer-release
-  cancel-in-progress: false
-
 env:
   DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
 
@@ -38,6 +36,7 @@ jobs:
     timeout-minutes: 30
     outputs:
       source_sha: ${{ steps.source.outputs.sha }}
+      build_number: ${{ steps.source.outputs.build_number }}
     steps:
       - name: Check out release tools
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -55,13 +54,20 @@ jobs:
         id: source
         env:
           BUILD_NUMBER: ${{ inputs.build_number }}
-          TESTING_NOTES: ${{ inputs.testing_notes }}
+          WORKFLOW_RUN_NUMBER: ${{ github.run_number }}
+          EVENT_NAME: ${{ github.event_name }}
+          TESTING_NOTES: ${{ inputs.testing_notes || 'Automatic main-branch build. Check the clock, class timing, count controls, media page, and Crown volume; report any regressions.' }}
         run: |
           python3 - <<'PY'
           import os, re, subprocess
-          from pathlib import Path
-          if not re.fullmatch(r'[1-9][0-9]{0,8}', os.environ['BUILD_NUMBER']):
+          if os.environ['EVENT_NAME'] == 'push':
+              number = 10000 + int(os.environ['WORKFLOW_RUN_NUMBER'])
+          else:
+              number = int(os.environ['BUILD_NUMBER']) if re.fullmatch(r'[1-9][0-9]{0,8}', os.environ['BUILD_NUMBER']) else 0
+          if not 1 <= number <= 999999999:
               raise SystemExit('Use a positive integer build number, at most nine digits')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('build_number=' + str(number) + '\n')
           notes = os.environ['TESTING_NOTES']
           if not notes.strip() or len(notes) > 4000:
               raise SystemExit('Testing notes must contain 1–4000 characters')
@@ -92,7 +98,7 @@ jobs:
     runs-on: xcode-27
     timeout-minutes: 60
     # A rehearsal never enters the credential-bearing environment.
-    environment: ${{ inputs.mode == 'publish' && 'testflight-maintainer' || 'testflight-rehearsal' }}
+    environment: ${{ (github.event_name == 'push' || inputs.mode == 'publish') && 'testflight-maintainer' || 'testflight-rehearsal' }}
     steps:
       - name: Check out release tools
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -125,7 +131,7 @@ jobs:
           (root / 'ci-timing.json').write_text(json.dumps(record, indent=2))
           PY
       - name: Install temporary signing credentials
-        if: inputs.mode == 'publish'
+        if: github.event_name == 'push' || inputs.mode == 'publish'
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
@@ -136,33 +142,35 @@ jobs:
           WATCH_PROFILE_BASE64: ${{ secrets.WATCH_PROFILE_BASE64 }}
         run: python3 automation/scripts/ci-signing.py setup "$RUNNER_TEMP/testflight-signing"
       - name: Compile API authentication helper
-        if: inputs.mode == 'publish'
+        if: github.event_name == 'push' || inputs.mode == 'publish'
         run: swiftc automation/scripts/asc-token.swift -o "$RUNNER_TEMP/asc-token"
       - name: Rehearse without credentials or publishing API calls
-        if: inputs.mode == 'rehearsal'
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'rehearsal'
         env:
-          BUILD_NUMBER: ${{ inputs.build_number }}
+          BUILD_NUMBER: ${{ needs.verify.outputs.build_number }}
         run: |
           python3 automation/scripts/testflight-release.py --rehearsal \
             --source "$GITHUB_WORKSPACE/source" --build-number "$BUILD_NUMBER" \
             --notes-file "$RUNNER_TEMP/release-notes.txt" --output "$RUNNER_TEMP/release-report" \
             --ci-timing-file "$RUNNER_TEMP/ci-timing.json"
       - name: Publish, monitor processing, and assign only Maintainer pilot
-        if: inputs.mode == 'publish'
+        if: github.event_name == 'push' || inputs.mode == 'publish'
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          BUILD_NUMBER: ${{ inputs.build_number }}
+          BUILD_NUMBER: ${{ needs.verify.outputs.build_number }}
+          TESTING_NOTES: ${{ inputs.testing_notes || 'Automatic main-branch build. Check the clock, class timing, count controls, media page, and Crown volume; report any regressions.' }}
         run: |
           export ASC_KEY_PATH="$RUNNER_TEMP/testflight-signing/AuthKey.p8"
           export ASC_TOKEN_HELPER="$RUNNER_TEMP/asc-token"
+          printf '%s' "$TESTING_NOTES" > "$RUNNER_TEMP/release-notes.txt"
           python3 automation/scripts/testflight-release.py \
             --source "$GITHUB_WORKSPACE/source" --build-number "$BUILD_NUMBER" \
             --notes-file "$RUNNER_TEMP/release-notes.txt" --output "$RUNNER_TEMP/release-report" \
             --signing-config "$RUNNER_TEMP/testflight-signing/signing.json" \
             --ci-timing-file "$RUNNER_TEMP/ci-timing.json"
       - name: Remove temporary signing material and restore keychain search list
-        if: always() && inputs.mode == 'publish'
+        if: always() && (github.event_name == 'push' || inputs.mode == 'publish')
         run: python3 automation/scripts/ci-signing.py cleanup "$RUNNER_TEMP/testflight-signing"
       - name: Collect GitHub job and step timings
         if: always()
