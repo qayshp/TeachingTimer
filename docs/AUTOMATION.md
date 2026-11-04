@@ -131,3 +131,10 @@ signature with OpenSSL. Credential tests validate profile identity/expiry and
 cleanup after failure without accessing any real keychain or Apple service.
 These checks do not establish live API permissions, CI signing, Apple processing,
 or physical TestFlight installation.
+
+The [November 4 hosted validation](TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation)
+separately establishes a successful rehearsal and actual signed build-42 publish,
+including Apple processing, saved notes and internal Maintainer pilot assignment.
+It records the initial signing-package import failure and the corrected retry,
+exact source/toolchain, stage timings and restored main-only publishing access.
+Physical TestFlight download/installation is still a separate, unverified outcome.

@@ -428,6 +428,15 @@ through GitHub's encrypted environment secrets, never an issue or workflow input
 A cloud-managed certificate without an exportable private key is not a `.p12`
 identity; use a suitable dedicated CI identity without revoking the teaching one.
 
+Verify the encrypted `.p12` imports into an isolated temporary macOS keychain
+before saving it as a secret. During the November 4 setup, an OpenSSL 4 default
+package failed `security import` with “MAC verification failed” despite the
+correct password. Repackaging the same certificate/private key with
+`PBE-SHA1-3DES` for both key and certificate encryption, a SHA-1 MAC and 100,000
+iterations imported successfully. This changes the encrypted package format,
+not the certificate signature or signing identity; no certificate was revoked.
+The initial hosted attempt stopped at import, before archiving or uploading.
+
 A temporary runner keychain and SDK-specific manual signing configuration use
 both profiles. Profiles must be unexpired, explicit App Store profiles for the
 expected team and identifiers. Cleanup restores the previous keychain search
@@ -475,3 +484,65 @@ Primary references: [GitHub Xcode signing](https://docs.github.com/en/actions/ho
 [runner inventory](https://github.com/actions/runner-images/blob/main/images/macos/xcode-27-arm64-Readme.md),
 [Apple API keys](https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api),
 [build/group API](https://developer.apple.com/documentation/appstoreconnectapi/post-v1-betagroups-_id_-relationships-builds).
+
+### November 4, 2026 — hosted release validation
+
+[Release automation PR 21](https://github.com/qayshp/TeachingTimer/pull/21) merged
+as `9dd7c1cde7bf7d53cf696d797a898c704ab65a3d`. All 13 Swift suites,
+161 Python tests, actionlint, Watch CI, CodeQL and AccessLint passed. The seven
+publishing secrets are configured with a dedicated API key, distribution
+certificate and two App Store profiles; existing signing credentials were not
+revoked. The new certificate/profiles expire November 4, 2027 at 08:25:55 UTC.
+
+The [hosted rehearsal](https://github.com/qayshp/TeachingTimer/actions/runs/41800134280)
+passed on that exact main revision with build-number override 42. Its result is
+`rehearsal_complete`, with `uploaded=false`; the archive took 30.674 seconds.
+The runner recorded Xcode 27.2, build **27B48**, distinct from local build 27B52.
+No older toolchain was silently selected.
+
+For the signed live test, branch `codex/testflight-live-validation` at
+`190e0738b82d03b9a24c9e9192a3ff86badafab8` combines layout source `76a1544`
+with the merged automation. Its application implementation is unchanged from
+build 41; the requested build-number override is 42. The layout and media draft
+PRs remain separate and unmerged. All 162 Python tests, 13 Swift suites,
+repository checks and actionlint passed for this integration. Normal future
+publishing requires reviewed app changes on `main`; this branch was allowed only
+for the bounded bootstrap test.
+
+The [first live attempt](https://github.com/qayshp/TeachingTimer/actions/runs/41801696366)
+passed verification but failed importing the encrypted identity. It never
+started an archive or upload. The temporary branch exception was removed and
+`main`-only access verified before correcting the package format described above.
+
+The [second live run](https://github.com/qayshp/TeachingTimer/actions/runs/41802278857)
+passed end to end. Its signed **1.0 (42)** export passed payload, signature,
+profile, entitlement, privacy-manifest and exact-source checks. The IPA digest is
+`59cd502944a5730634d6bcf993895f5a596143eceab22c70cb20b42d83a1fe6f`.
+Apple reports `VALID`, `INTERNAL_ONLY` and `IN_BETA_TESTING`. Test notes match
+their saved digest, and the sole assigned group is **Maintainer pilot**; a separate
+read-only API check confirmed these results. No external submission was made.
+
+| Milestone | November 4 UTC | Recorded duration |
+| --- | --- | ---: |
+| Workflow dispatched | 08:48:01 | — |
+| Source verification | 08:48:05–08:51:13 | 3 min 8 sec |
+| Signed archive/export | 08:51:37.350–08:52:14.399 | 37.049 sec |
+| Upload | 08:52:14.428–08:54:16.608 | 122.181 sec |
+| Processing/visibility polling | 08:54:16.614–08:57:36.383 | 199.769 sec |
+| Test notes readback | 08:57:36.384–08:57:37.287 | 0.903 sec |
+| Maintainer assignment/readback | 08:57:37.289–08:57:39.216 | 1.927 sec |
+| Final availability check | 08:57:39.217–08:57:40.901 | 1.684 sec |
+
+Availability was first confirmed at **08:57:40.903 UTC / 00:57:40.903 PST**,
+204.290 seconds after the upload command succeeded, and about 9 minutes 40 seconds
+after dispatch. These are observations at the configured 15-second polling
+cadence. Apple's separate reported upload date is 08:56:40 UTC; it does not equal
+the local upload command's completion time. Neither establishes the precise
+instant a Watch client first offered or installed the build.
+
+Runner cleanup passed. After completion, the temporary branch exception was
+removed and an independent environment query confirmed **main only**. The final
+timing/artifact reports contain no signing material. No physical device was
+contacted, installed to or launched; TestFlight automatic-update outcome remains
+unverified. Build 42 preserves build 41's app behavior and does not include the
+separate build-38 media-hosting experiment.
