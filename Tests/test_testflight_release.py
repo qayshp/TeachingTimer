@@ -136,9 +136,10 @@ class ReleaseChecks(unittest.TestCase):
             self.assertNotEqual(journal.data['status'], 'available')
 
     def test_invalid_build_numbers(self):
-        for value in ['0','-1','42; echo nope','42\n','00042','1.0','1234567890','nan']:
+        for value in ['0','-1','42; echo nope','42\n','00042','1.0','1234567890','nan','261104.1602.0']:
             with self.subTest(value=value), self.assertRaises(release.ReleaseError): release.build_number(value)
         self.assertEqual(release.build_number('42'), '42')
+        self.assertEqual(release.build_number('261104.1602.1'), '261104.1602.1')
 
 
 class APIchecks(unittest.TestCase):

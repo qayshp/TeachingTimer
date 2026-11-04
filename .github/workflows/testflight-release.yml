@@ -59,13 +59,13 @@ jobs:
           TESTING_NOTES: ${{ inputs.testing_notes || 'Automatic main-branch build. Check the clock, class timing, count controls, media page, and Crown volume; report any regressions.' }}
         run: |
           python3 - <<'PY'
-          import os, re, subprocess
+          import os, re, subprocess, sys
+          sys.path.insert(0, 'source/scripts')
+          from testflight_build_number import automatic_build_number
           if os.environ['EVENT_NAME'] == 'push':
-              number = 10000 + int(os.environ['WORKFLOW_RUN_NUMBER'])
+              number = automatic_build_number(int(os.environ['WORKFLOW_RUN_NUMBER']))
           else:
               number = int(os.environ['BUILD_NUMBER']) if re.fullmatch(r'[1-9][0-9]{0,8}', os.environ['BUILD_NUMBER']) else 0
-          if not 1 <= number <= 999999999:
-              raise SystemExit('Use a positive integer build number, at most nine digits')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('build_number=' + str(number) + '\n')
           notes = os.environ['TESTING_NOTES']

@@ -451,10 +451,14 @@ The **TestFlight maintainer release** workflow builds on a GitHub-hosted Mac.
 Every push to `main` now runs full verification and, on success, automatically
 signs, uploads, waits for Apple processing and assigns that build to the internal
 Maintainer pilot. Failed verification never reaches the publishing job. Each
-workflow run gets a unique automatic build number (`10000 + GitHub run number`)
-and standard focused What to Test notes. App Store Connect's duplicate-build
-check remains an additional safeguard. There is no concurrency policy that
-silently replaces queued `main` builds.
+workflow run gets an automatic build string in Pacific local time:
+`YYMMDD.HHmm.sequence` (for example, `261104.1602.17` means November 4, 2026,
+at 4:02 p.m. Pacific, workflow run 17). The final component is the workflow's
+unique increasing run number, so builds created in the same minute remain
+distinct without a race-prone lookup. Daylight-saving time follows Pacific
+local time. Manual releases may still use an explicit positive integer.
+App Store Connect's duplicate-build check remains an additional safeguard.
+There is no concurrency policy that silently replaces queued `main` builds.
 
 The workflow also retains a manual `workflow_dispatch` trigger. Choose **Use
 workflow from: main**, then provide an unused integer build number, testing notes,

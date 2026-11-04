@@ -43,8 +43,9 @@ def now():
 
 
 def build_number(value):
-    if not re.fullmatch(r'[1-9][0-9]{0,8}', value):
-        raise ReleaseError('Build number must be a positive integer of at most nine digits')
+    if not (re.fullmatch(r'[1-9][0-9]{0,8}', value)
+            or re.fullmatch(r'[0-9]{6}\.[0-9]{4}\.[1-9][0-9]{0,8}', value)):
+        raise ReleaseError('Build number must be a positive integer or YYMMDD.HHmm.sequence')
     return value
 
 

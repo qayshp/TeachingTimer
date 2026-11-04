@@ -139,8 +139,9 @@ def main(argv=None):
         parser.error('--external-eligible requires --signed')
     if args.signing_config and not args.signed:
         parser.error('--signing-config requires --signed')
-    if args.build_number and not re.fullmatch(r'[1-9][0-9]{0,8}', args.build_number):
-        parser.error('--build-number must be a positive integer of at most nine digits')
+    if args.build_number and not (re.fullmatch(r'[1-9][0-9]{0,8}', args.build_number)
+                                  or re.fullmatch(r'[0-9]{6}\.[0-9]{4}\.[1-9][0-9]{0,8}', args.build_number)):
+        parser.error('--build-number must be a positive integer or YYMMDD.HHmm.sequence')
     if args.source:
         ROOT = args.source.resolve()
         if not (ROOT / 'TeachingTimer.xcodeproj').is_dir():

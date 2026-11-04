@@ -95,7 +95,7 @@ def inspect(path):
                       containerVersionMatches=all(info[key] == container_info[key] for key in ('CFBundleVersion', 'CFBundleShortVersionString')),
                       noCompanionRequirement='WKCompanionAppBundleIdentifier' not in info)
     # Preserve inspection of historical teaching checkpoints from before these pages.
-    if int(info['CFBundleVersion']) >= 27:
+    if int(info['CFBundleVersion'].split('.')[0]) >= 27:
         checks['informationResourcesPresent'] = information_resources_present(app)
     signature = command('codesign', '--verify', '--deep', '--strict', app).returncode == 0
     profile_path = app / 'embedded.mobileprovision'
