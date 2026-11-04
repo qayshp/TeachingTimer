@@ -1,5 +1,11 @@
 # TestFlight pilot
 
+**Latest physical installation:** the owner confirmed **1.0 (42)** on November 4
+after updating from TestFlight on the paired iPhone without a developer
+connection. [Release and installation evidence](#november-4-2026--hosted-release-validation)
+distinguishes this successful update from unverified unattended-update timing.
+The external-review status below was last checked November 2.
+
 Updated November 2, 2026. **Build 37 is submitted for the first external Beta App
 Review and is Waiting for Review.** Its signed external-eligible export, upload,
 Apple processing and Public beta group assignment are verified. The
@@ -12,8 +18,8 @@ Build 36 passed signed archive/export, upload and Apple
 processing and is Testing / Internal. It is assigned to the manual-distribution
 Maintainer pilot with one tester, the owner. Group settings confirm seven builds
 (29, 31, 32, 33, 34, 35 and 36); 30 is processed but unassigned. The release is authorized to test
-the owner's enabled TestFlight automatic updates; build 35 remains the last
-confirmed physical Beta and the automatic-update outcome is unverified.
+the owner's enabled TestFlight automatic updates. At that November 2 checkpoint,
+build 35 was the last confirmed physical Beta and automatic updating was unverified.
 The separately authorized
 [physical owner pilot](TESTFLIGHT_PILOT_RESULTS.md) verifies initial Beta
 installation/update/relaunch and limited developer-tool journal access. Cleanup
@@ -542,7 +548,16 @@ instant a Watch client first offered or installed the build.
 
 Runner cleanup passed. After completion, the temporary branch exception was
 removed and an independent environment query confirmed **main only**. The final
-timing/artifact reports contain no signing material. No physical device was
-contacted, installed to or launched; TestFlight automatic-update outcome remains
-unverified. Build 42 preserves build 41's app behavior and does not include the
-separate build-38 media-hosting experiment.
+timing/artifact reports contain no signing material. The CI run made no direct
+physical-device connection, installation or launch. Build 42 preserves build 41's
+app behavior and does not include the separate build-38 media-hosting experiment.
+
+Later on November 4, the owner confirmed build **42 is installed on the physical
+Watch**: TestFlight on the paired iPhone successfully updated the Watch app with
+**no developer connection required**. This completes the observed delivery path
+from the hosted workflow through TestFlight to the Watch. It is owner-reported
+installation evidence, not a new developer inventory, launch check or class trial.
+The owner reports updates do not appear on a regular cadence unless triggered
+in the iPhone TestFlight app; unattended automatic-update timing remains
+unestablished. The CI timing above ends at server-side availability and does not
+include this later installation.

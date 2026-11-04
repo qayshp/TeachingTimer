@@ -137,4 +137,7 @@ separately establishes a successful rehearsal and actual signed build-42 publish
 including Apple processing, saved notes and internal Maintainer pilot assignment.
 It records the initial signing-package import failure and the corrected retry,
 exact source/toolchain, stage timings and restored main-only publishing access.
-Physical TestFlight download/installation is still a separate, unverified outcome.
+The owner subsequently confirmed build 42 installed through the paired iPhone's
+TestFlight app without a developer connection. This separate delivery result is
+recorded with the release evidence; unattended automatic-update timing remains
+unestablished and is not included in CI's server-readiness measurements.
