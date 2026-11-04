@@ -1,0 +1,216 @@
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+name: TestFlight maintainer release
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Rehearsal never uploads; publish requires the protected environment credentials
+        type: choice
+        options: [rehearsal, publish]
+        default: rehearsal
+        required: true
+      source_ref:
+        description: Reviewed application branch, tag, or commit in this repository
+        type: string
+        required: true
+      build_number:
+        description: Unused positive integer; overrides the build without editing source
+        type: string
+        required: true
+      testing_notes:
+        description: What to Test (1–4000 characters)
+        type: string
+        default: Check clock readability, counts, class persistence, and Crown volume after Home, refresh, and media return.
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: testflight-maintainer-release
+  cancel-in-progress: false
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
+
+jobs:
+  verify:
+    name: Verify reviewed source
+    runs-on: xcode-27
+    timeout-minutes: 30
+    outputs:
+      source_sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - name: Check out release tools
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: automation
+          persist-credentials: false
+      - name: Check out reviewed application
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ inputs.source_ref }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve source and validate inputs
+        id: source
+        env:
+          BUILD_NUMBER: ${{ inputs.build_number }}
+          TESTING_NOTES: ${{ inputs.testing_notes }}
+        run: |
+          python3 - <<'PY'
+          import os, re, subprocess
+          from pathlib import Path
+          if not re.fullmatch(r'[1-9][0-9]{0,8}', os.environ['BUILD_NUMBER']):
+              raise SystemExit('Use a positive integer build number, at most nine digits')
+          notes = os.environ['TESTING_NOTES']
+          if not notes.strip() or len(notes) > 4000:
+              raise SystemExit('Testing notes must contain 1–4000 characters')
+          sha = subprocess.check_output(['git', '-C', 'source', 'rev-parse', 'HEAD'], text=True).strip()
+          branches = subprocess.check_output(['git', '-C', 'source', 'for-each-ref', '--contains=' + sha,
+              '--format=%(refname)', 'refs/remotes/origin', 'refs/tags'], text=True).strip()
+          if not branches:
+              raise SystemExit('Release source must belong to a branch or tag in this repository')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('sha=' + sha + '\n')
+          PY
+          xcodebuild -version
+      - name: Test release tooling
+        run: sh automation/scripts/check-tools.sh
+      - name: Verify application models, Simulator and unsigned archives
+        working-directory: source
+        run: python3 scripts/verify-build.py "$RUNNER_TEMP/application-verification"
+      - name: Retain non-secret verification report
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: testflight-checks-${{ github.run_id }}
+          path: ${{ runner.temp }}/application-verification/verification.json
+          retention-days: 14
+          if-no-files-found: ignore
+
+  release:
+    name: Prepare and release
+    needs: verify
+    runs-on: xcode-27
+    timeout-minutes: 60
+    # A rehearsal never enters the credential-bearing environment.
+    environment: ${{ inputs.mode == 'publish' && 'testflight-maintainer' || 'testflight-rehearsal' }}
+    steps:
+      - name: Check out release tools
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: automation
+          persist-credentials: false
+      - name: Check out verified immutable application revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          path: source
+          persist-credentials: false
+      - name: Record workflow timings and prepare notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TESTING_NOTES: ${{ inputs.testing_notes }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])
+          (root / 'release-notes.txt').write_text(os.environ['TESTING_NOTES'])
+          repo = os.environ['GITHUB_REPOSITORY']; run = os.environ['GITHUB_RUN_ID']
+          info = json.loads(subprocess.check_output(['gh', 'api', 'repos/' + repo + '/actions/runs/' + run]))
+          jobs = json.loads(subprocess.check_output(['gh', 'api', 'repos/' + repo + '/actions/runs/' + run + '/jobs']))
+          record = dict(workflowCreatedAt=info['created_at'], workflowStartedAt=info['run_started_at'],
+              runURL=info['html_url'], xcode=subprocess.check_output(['xcodebuild', '-version'], text=True).strip(),
+              jobs=[dict(name=j['name'], startedAt=j['started_at'], completedAt=j['completed_at']) for j in jobs['jobs']])
+          (root / 'ci-timing.json').write_text(json.dumps(record, indent=2))
+          PY
+      - name: Install temporary signing credentials
+        if: inputs.mode == 'publish'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.DISTRIBUTION_CERTIFICATE_BASE64 }}
+          DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          CONTAINER_PROFILE_BASE64: ${{ secrets.CONTAINER_PROFILE_BASE64 }}
+          WATCH_PROFILE_BASE64: ${{ secrets.WATCH_PROFILE_BASE64 }}
+        run: python3 automation/scripts/ci-signing.py setup "$RUNNER_TEMP/testflight-signing"
+      - name: Compile API authentication helper
+        if: inputs.mode == 'publish'
+        run: swiftc automation/scripts/asc-token.swift -o "$RUNNER_TEMP/asc-token"
+      - name: Rehearse without credentials or publishing API calls
+        if: inputs.mode == 'rehearsal'
+        env:
+          BUILD_NUMBER: ${{ inputs.build_number }}
+        run: |
+          python3 automation/scripts/testflight-release.py --rehearsal \
+            --source "$GITHUB_WORKSPACE/source" --build-number "$BUILD_NUMBER" \
+            --notes-file "$RUNNER_TEMP/release-notes.txt" --output "$RUNNER_TEMP/release-report" \
+            --ci-timing-file "$RUNNER_TEMP/ci-timing.json"
+      - name: Publish, monitor processing, and assign only Maintainer pilot
+        if: inputs.mode == 'publish'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          BUILD_NUMBER: ${{ inputs.build_number }}
+        run: |
+          export ASC_KEY_PATH="$RUNNER_TEMP/testflight-signing/AuthKey.p8"
+          export ASC_TOKEN_HELPER="$RUNNER_TEMP/asc-token"
+          python3 automation/scripts/testflight-release.py \
+            --source "$GITHUB_WORKSPACE/source" --build-number "$BUILD_NUMBER" \
+            --notes-file "$RUNNER_TEMP/release-notes.txt" --output "$RUNNER_TEMP/release-report" \
+            --signing-config "$RUNNER_TEMP/testflight-signing/signing.json" \
+            --ci-timing-file "$RUNNER_TEMP/ci-timing.json"
+      - name: Remove temporary signing material and restore keychain search list
+        if: always() && inputs.mode == 'publish'
+        run: python3 automation/scripts/ci-signing.py cleanup "$RUNNER_TEMP/testflight-signing"
+      - name: Collect GitHub job and step timings
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs" \
+            --jq '{jobs: [.jobs[] | {name, startedAt: .started_at, completedAt: .completed_at, steps: [.steps[] | {name, startedAt: .started_at, completedAt: .completed_at, status, conclusion}]}]}' \
+            > "$RUNNER_TEMP/job-timings.json"
+      - name: Publish timing summary
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/release-report/summary.md"; then
+            cat "$RUNNER_TEMP/release-report/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Release did not start. Check verification, credentials, and runner setup.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          python3 - <<'PYCODE'
+          import json, os
+          from datetime import datetime
+          from pathlib import Path
+          file = Path(os.environ['RUNNER_TEMP']) / 'job-timings.json'
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('\n## GitHub step timings\n\n| Job / step | Seconds | Result |\n| --- | ---: | --- |\n')
+              if file.exists() and file.stat().st_size:
+                  for job in json.loads(file.read_text())['jobs']:
+                      for step in job['steps']:
+                          start, end = step['startedAt'], step['completedAt']
+                          seconds = round((datetime.fromisoformat(end.replace('Z', '+00:00')) - datetime.fromisoformat(start.replace('Z', '+00:00'))).total_seconds(), 3) if start and end else 'pending'
+                          summary.write('| ' + job['name'] + ' / ' + step['name'] + ' | ' + str(seconds) + ' | ' + str(step['conclusion']) + ' |\n')
+          PYCODE
+      - name: Retain timing and release identity (never signing material)
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: testflight-release-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: ignore
+          path: |
+            ${{ runner.temp }}/release-report/release.json
+            ${{ runner.temp }}/release-report/summary.md
+            ${{ runner.temp }}/ci-timing.json
+            ${{ runner.temp }}/job-timings.json
