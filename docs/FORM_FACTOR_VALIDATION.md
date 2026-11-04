@@ -1,4 +1,10 @@
-# Simulator form-factor review — October 23, 2026
+# Watch form-factor validation
+
+The [build-41 layered header ticks](#november-3-build-41-layered-header-ticks)
+is the latest layout comparison. The October 23 review below retains its original
+runtime, device catalog and limits; those are not instructions to recreate old devices.
+
+## Simulator form-factor review — October 23, 2026
 
 Reviewed application revision `24705cb` (application source unchanged since
 `6d2e444`, version 1.0/build 5). Xcode 27.1 (27A9275), macOS 27.0.1 (26A434),
@@ -123,3 +129,209 @@ at different times/count positions. They are not physical-Watch photographs.
 | Small-screen custom actions after scrolling | Tight maximum-text split controls |
 | --- | --- |
 | ![Custom actions](images/form-factors-2026-10-23/se40-custom-footer.png) | ![Count and Resume](images/form-factors-2026-10-23/s12-42-active-max.png) |
+
+## November 2 build-39 aligned-dial candidate
+
+**Superseded by build 40 below.** The maintainer's November 3 clarification favors
+a full-screen dial wrapping around the top controls over a reserved header strip.
+The following records the earlier proposal and its original validation.
+
+[Issue #19](https://github.com/qayshp/TeachingTimer/issues/19) implements a shared
+rounded-rectangle frame below the header. This candidate is independent of the
+build-38 native-media experiment: it branches from main's build-37 behavior.
+It is not uploaded to TestFlight or installed on a physical Watch.
+
+`TimerFaceLayout` supplies the dial bounds, center, radius and insets. Ticks,
+class-progress perimeter, end wedge, both hands and the inner count track use
+that coordinate system. Insets reduce both bounds and radius; the circular-corner
+approximation now agrees with the ray math. It is not a measurement of physical
+display curvature. The dial retains almost all width, with a shorter height and
+lower center to clear Class/settings and watchOS time.
+
+Status text, including optional minutes left, sits as a second line inside the
+count control to avoid the relocated hand hub. Targets remain at least 44 points.
+Both hands remain foremost and can cross lettering at some angles, preserving
+the maintainer's priority. Class inference/state, runtime/renewal, count scheduling
+and the native companion-volume implementation are unchanged. The volume widget
+moves with the layout; the focus runner has an explicit refresh coordinate for
+current versus pre-alignment comparisons.
+
+### SE 3 before and after
+
+| Build 37 | Candidate 39 |
+| --- | --- |
+| ![SE 3 baseline: offset count track and dial through header](images/aligned-39/SE-3-40mm-before37-count.png) | ![SE 3 candidate: nested tracks below a clear header](images/aligned-39/SE-3-40mm-count.png) |
+
+These original captures used the same Simulator, saved class bytes and settings.
+They are successive count runs, not the same instant: hand angles and count
+positions differ. Settings enabled Minutes left and disabled count vibrations;
+the existing active visual-count status takes precedence while counting.
+
+### Five current display sizes
+
+| SE 3 44 mm | Series 12 42 mm |
+| --- | --- |
+| ![SE 3 44 mm active count](images/aligned-39/SE-3-44mm-count.png) | ![Series 12 42 mm active count](images/aligned-39/Series-12-42mm-count.png) |
+
+| Series 12 46 mm | Ultra 4 49 mm |
+| --- | --- |
+| ![Series 12 46 mm active count](images/aligned-39/Series-12-46mm-count.png) | ![Ultra 4 49 mm active count](images/aligned-39/Ultra-4-49mm-count.png) |
+
+| SE 3 reduced luminance | Ultra reduced luminance |
+| --- | --- |
+| ![SE 3 verified dimmed count](images/aligned-39/SE-3-40mm-dim-count.png) | ![Ultra verified dimmed count](images/aligned-39/Ultra-4-49mm-dim-count.png) |
+
+| SE 3 maximum app text | Ultra maximum app text |
+| --- | --- |
+| ![SE 3 maximum-text face](images/aligned-39/SE-3-40mm-maximum-text.png) | ![Ultra maximum-text face](images/aligned-39/Ultra-4-49mm-maximum-text.png) |
+
+All 22 originals were captured November 2 on the five already-booted watchOS 27.2
+(24S118) Simulators with Xcode 27.2 (27B52); ten are curated here. No device was
+created or re-paired. Candidate metadata retains its pre-commit dirty revision;
+private manifests preserve source/binary identity, hashes, captures and verified
+luminance states. The first script attempt read preferences before their
+asynchronous disk write completed; polling the actual saved preference corrected
+that driver issue before the successful pass. No preferences daemon was killed.
+
+Geometry checks cover eight sizes, 5,760 full count-dot/control clearances and
+34,560 ray/contour checks. All 13 Swift suites and 132 Python tests, Simulator and
+unsigned archive paths pass. All 21 UI actions and six focus/lifecycle checks pass,
+including refresh at its new target, same host/class/native volume identity, and
+media-to-timer return. The 33-frame controls run and complete locked count pass.
+Simulator checks do not certify physical Crown volume, haptic delivery, guaranteed
+Always-On cadence or teaching-length reliability.
+
+
+## November 3 build-40 edge-following dial
+
+Build 41 below retains this contour and replaces local tick clipping with
+translucent layering. These are the original build-40 checks and captures.
+
+[Issue #19](https://github.com/qayshp/TeachingTimer/issues/19) now follows the
+maintainer's clarified direction: use the full screen and wrap outside
+Class/settings and watchOS time. There is no separate header strip. Build 39
+above remains a historical proposal; its commit was not rewritten.
+
+The dial, class-progress perimeter, scheduled-end wedge and seconds-hand endpoint
+share a full-screen contour. `SquircleRayGeometry` intersects radial rays with
+straight edges or rounded-superellipse corners. Explicit radius/exponent profiles
+approximate the five current Simulator display masks by logical point size, with
+an adjustable fallback for other sizes. This is a visual fit, not a public API
+for exact physical-display curvature. The outline is two points inside the edge.
+
+Ticks stop short of the two top labels or are omitted locally when there is not
+enough room; the outline remains continuous and all four cardinal ticks remain.
+The Class capsule moves slightly inward where larger corner profiles require it.
+The inner count track retains top-label clearance while its side/bottom insets
+remain small. It intentionally has a different center from the outer clock.
+The volume control returns to its upper position, and status/minutes-left remains
+inside the count button. Both hands remain foremost over controls.
+
+### SE 3 comparison with the prior baseline
+
+| Build 37 | Candidate 40 |
+| --- | --- |
+| ![SE 3 baseline with dial crossing the top controls](images/edge-40/SE-3-40mm-before37-count.png) | ![SE 3 full-screen dial outside the Class button and system time](images/edge-40/SE-3-40mm-count.png) |
+
+The same Simulator, saved class bytes and settings were used. These are successive
+count runs rather than the same instant: wall-clock hand angles and count
+positions differ. Count vibrations are off and Minutes left is on; the existing
+active visual-count status takes precedence while counting.
+
+### Five current display sizes and presentation states
+
+| SE 3 44 mm | Series 12 42 mm |
+| --- | --- |
+| ![SE 3 44 mm edge-following dial](images/edge-40/SE-3-44mm-count.png) | ![Series 12 42 mm edge-following dial](images/edge-40/Series-12-42mm-count.png) |
+
+| Series 12 46 mm | Ultra 4 49 mm |
+| --- | --- |
+| ![Series 12 46 mm edge-following dial](images/edge-40/Series-12-46mm-count.png) | ![Ultra 4 49 mm edge-following dial](images/edge-40/Ultra-4-49mm-count.png) |
+
+| SE 3 reduced luminance | Ultra reduced luminance |
+| --- | --- |
+| ![SE 3 verified dimmed count](images/edge-40/SE-3-40mm-dim-count.png) | ![Ultra verified dimmed count](images/edge-40/Ultra-4-49mm-dim-count.png) |
+
+| SE 3 maximum app text | Ultra maximum app text |
+| --- | --- |
+| ![SE 3 maximum-text face](images/edge-40/SE-3-40mm-maximum-text.png) | ![Ultra maximum-text face](images/edge-40/Ultra-4-49mm-maximum-text.png) |
+
+All 22 originals were captured November 3 using the five existing watchOS 27.2
+(24S118) Simulators and Xcode 27.2 (27B52); ten are curated here. No Simulator
+was created or re-paired, and no physical device was contacted. Private manifests
+retain hashes, build identity, class preservation and verified luminance states.
+Geometry checks cover eight sizes, 5,760 count-dot/control positions and 34,560
+ray/contour checks. All 13 Swift suites, 132 Python tests, Simulator compilation
+and unsigned development/distribution archive paths pass. All 21 UI actions and
+six lifecycle/focus checks pass, preserving the class, host and native volume
+instance through refresh and media return. The 33-frame controls run has no
+outline warnings, and a full count completes while verified locked. Nine OCR
+label warnings were visually reviewed: controls remain present; the foremost
+hands sometimes cross their lettering. Native media renders its expected
+"Not Playing" state without a connected audio source.
+
+Class snapping/context, runtime/renewal, wall-clock cadence, monotonic count timing,
+haptics, native media and the native Crown-volume implementation are unchanged.
+Simulator presentation and focus events do not prove physical display curvature,
+Crown volume response, haptic delivery or teaching-length Always-On reliability.
+Build 40 is not uploaded to TestFlight or installed on a physical Watch. It remains
+independent of the build-38 native-media experiment.
+
+
+## November 3 build-41 layered header ticks
+
+The full-screen contour from build 40 is retained. All 60 ticks now keep their
+normal radial length: nothing is shortened or omitted around the header.
+The dial draws behind the Class button. Its black backing is 75% opaque, allowing
+quarter-strength ticks to show through while the lettering/outline stay opaque.
+A separate alpha mask reduces only the tick portions beneath the native system
+time to 25% strength. That region is an adjustable approximation; watchOS owns
+the clock's actual layout, opacity and compositing. The perimeter, class-progress
+arc, end wedge and foremost hands are not faded by this tick treatment.
+
+### SE 3 before and after
+
+| Build 40: clipped header ticks | Build 41: layered full ticks |
+| --- | --- |
+| ![SE 3 build 40 clipped header ticks](images/layered-41/SE-3-40mm-before40.png) | ![SE 3 build 41 full ticks behind translucent top elements](images/layered-41/SE-3-40mm-normal.png) |
+
+These captures preserve the same saved class and settings on one Simulator.
+They are successive captures, so hand angles differ. Count vibrations are off
+and Minutes left is on. The active-count caption replaces minutes left as before.
+
+| SE 3 44 mm | Series 12 42 mm |
+| --- | --- |
+| ![SE 3 44 mm layered ticks](images/layered-41/SE-3-44mm-normal.png) | ![Series 12 42 mm layered ticks](images/layered-41/Series-12-42mm-normal.png) |
+
+| Series 12 46 mm | Ultra 4 49 mm |
+| --- | --- |
+| ![Series 12 46 mm layered ticks](images/layered-41/Series-12-46mm-normal.png) | ![Ultra 4 49 mm layered ticks](images/layered-41/Ultra-4-49mm-normal.png) |
+
+| SE 3 reduced luminance | Ultra reduced luminance |
+| --- | --- |
+| ![SE 3 dimmed layered ticks](images/layered-41/SE-3-40mm-dim-count.png) | ![Ultra dimmed layered ticks](images/layered-41/Ultra-4-49mm-dim-count.png) |
+
+| SE 3 maximum app text | Ultra maximum app text |
+| --- | --- |
+| ![SE 3 maximum-text layered face](images/layered-41/SE-3-40mm-maximum-text.png) | ![Ultra maximum-text layered face](images/layered-41/Ultra-4-49mm-maximum-text.png) |
+
+Thirteen originals were captured November 3 on the same five existing watchOS
+27.2 (24S118) Simulators with Xcode 27.2 (27B52); ten are curated here. The private
+manifest retains hashes and verified luminance states. All 13 Swift suites and
+132 Python tests pass, as do Simulator compilation and unsigned development/
+distribution archive checks. Updated geometry checks
+verify full tick lengths at all 60 positions across eight sizes (480 ticks),
+plus the existing 5,760 count-dot/control and 34,560 ray/contour checks.
+
+All six focus/lifecycle assertions pass for initial Crown input, Home/reopen,
+tap-refresh and media return: the class bytes, host process and native volume
+instance are preserved. The native media page renders its expected "Not Playing"
+state. The Class button opens its sheet above the tick drawing and dismissal
+preserves the class/volume instance. These are lifecycle/rendering observations,
+not proof of audible iPhone
+volume or tactile haptics. Class snapping, runtime/renewal and count scheduling
+are unchanged. Physical readability and contrast still need Watch comparison.
+At the time of these Simulator checks, build 41 had not been uploaded or installed.
+Its [subsequent signed maintainer-pilot release](TESTFLIGHT_PREPARATION.md#build-41-maintainer-layout-pilot)
+is now available through TestFlight; physical installation/contrast remain
+unverified. The layout draft remains independent of media experiment PR #18/build 38.

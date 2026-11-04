@@ -377,6 +377,74 @@ updating. This verifies bundle separation and a Simulator update/relaunch; it
 does not verify Apple's TestFlight transport, physical Crown/audio, or
 distribution-profile container access.
 
+### Build 38 owner media experiment
+
+At the owner's request, clean PR-18 source
+`57fde699e424f6a22e70a0c42da54c43e3c3961d` was signed/exported with
+`--signed --external-eligible`. Both payloads, signatures, profiles, identifiers,
+entitlements and the actual Watch privacy manifest passed validation; source
+cleanliness/revision checks passed. The local IPA SHA-256 is
+`c1811957673066550863b5629334f0e033b258e43b1008138cf04e0d64e39523`.
+Xcode reported upload success November 2, 2026 at 23:09:35 PST. PR-18 Watch CI,
+CodeQL and AccessLint all pass. The draft remains open for physical comparison.
+
+The refreshed App Store Connect browser requested sign-in at that checkpoint.
+Processing, saved What to Test and group availability were therefore unverified;
+the signed preparation/upload records are retained privately. On November 3,
+processing was verified: the external-eligible build is Ready to Submit and is
+eligible for internal testing, but remains unassigned to tester groups. Its test
+notes/group assignment are still pending. The intended destination is
+the internal Maintainer pilot, with build 37 also available as the unchanged
+hosting baseline. No public-group assignment, physical install or launch was
+performed. Browser authentication is now available; no rebuild is required merely
+to finish that earlier experiment's group assignment.
+
+TestFlight supports sharing multiple builds and organizing tester groups. For
+this experiment, choose 37 and 38 manually, one at a time on the same Watch:
+keep the iPhone track/output fixed, compare at least 30 seconds of bright-screen
+song progress, then test dim/wake, Pause, timer Crown and Home return. Do not
+reset the saved class between versions; verify it and intended runtime state
+after each install/open. Position catch-up is separate from continuous accuracy.
+Automatic updates may change the chosen build, so check About before each trial.
+The existing development installation remains a separate app.
+
+Build 39's matching-dial work is independent and is not part of the build-38
+upload or media A/B comparison.
+
+
+### Build 41 maintainer layout pilot
+
+At the owner's request, clean layout-PR source
+`30df065a33e86211d76b34fd9a23da0d127ac64b` was signed/exported as an
+internal-only TestFlight build. Both payload identities, signatures, profiles,
+entitlements and the Watch privacy manifest pass validation. The archive retains
+the exact clean source revision; the local exported IPA SHA-256 is
+`be1aa4fbe4bab463bcda5189b1acf390061b1115e66d4a10172bf83ee77422d7`.
+
+Xcode reported upload success November 3, 2026 at **15:56:00 PST**. Apple processed
+**1.0 (41)** as **Testing / Internal**, with a 90-day lifetime shown. What to Test
+notes and the sole **Maintainer pilot** assignment survived reload: one internal
+group, one tester, the owner. The final builds listing also shows Testing and the
+Maintainer pilot group. No external-group assignment or review submission was
+performed for this build. Public build 37 is separately In Review.
+
+Build 41 contains the full-screen edge-following dial and all 60 full-length ticks
+layered beneath the top elements. The Class backing is 75% opaque; tick portions
+under system time are reduced to quarter strength. Hands remain foremost. It
+preserves baseline class/runtime/count/native-volume behavior and does **not**
+include build 38's separate media-hosting experiment. Existing native song-progress
+stalls may remain. The saved notes ask for bright/dim readability and volume
+checks after Class interaction, Home/reopen, refresh and media return.
+
+All 13 Swift suites, 132 Python tests, Simulator and unsigned archive checks,
+six lifecycle/focus assertions and Class-sheet presentation/dismissal pass.
+[Thirteen five-size captures](FORM_FACTOR_VALIDATION.md#november-3-build-41-layered-header-ticks)
+include SE 3/Ultra reduced-luminance and maximum-text views. Those checks are
+separate from the verified signed export/upload. No direct physical-device
+connection, installation or launch was attempted for this release. TestFlight
+installation/automatic-update outcome and physical readability remain unverified.
+Later release-documentation commits do not change the signed source above.
+
 ## Manually triggered GitHub release
 
 The **TestFlight maintainer release** workflow builds on a GitHub-hosted Mac.

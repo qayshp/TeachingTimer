@@ -89,13 +89,17 @@ def evidence_errors(stage, evidence, folder):
     return errors
 
 
-def stage_plan(lifecycle, controls):
+def stage_plan(lifecycle, controls, volume_refresh_y=.34):
+    if not .1 <= volume_refresh_y <= .9:
+        raise ValueError('Volume refresh target must be within .1–.9')
     # Actions leaves no class/count and the timer selected, satisfying the
     # focus/media setup contract. Do not chain focus into media: focus leaves
     # a count running, and the next runner's tap would cancel it.
     stages = [('actions', 'actions.py', ['--reset-test-app'])]
     if lifecycle != 'none':
         flags = ['--scenario', lifecycle]
+        if lifecycle == 'focus':
+            flags += ['--volume-refresh-y', str(volume_refresh_y)]
         if lifecycle == 'media':
             flags += ['--allow-service-termination']
         stages.append((lifecycle, 'run.py', flags))
@@ -125,7 +129,7 @@ def execute(command, log_path, timeout):
 
 
 def run_suite(simulator, app, output, lifecycle='none', controls=False, timeout=600,
-              execute_command=execute):
+              execute_command=execute, volume_refresh_y=.34):
     output.mkdir(parents=True, exist_ok=False)
     report = dict(simulator=simulator, app=str(app), startedAt=datetime.now(timezone.utc).isoformat(),
                   complete=False, stages=[], visualReview='required',
@@ -136,7 +140,7 @@ def run_suite(simulator, app, output, lifecycle='none', controls=False, timeout=
     try:
         report['artifact'] = artifact_identity(app)
         save()
-        for stage, script, flags in stage_plan(lifecycle, controls):
+        for stage, script, flags in stage_plan(lifecycle, controls, volume_refresh_y):
             destination = output / stage
             command = [sys.executable, str(HERE / script), '--simulator', simulator,
                        '--app', str(app), '--output', str(destination), *flags]
@@ -177,7 +181,11 @@ def main():
                         help='Optional SE 3-only lifecycle sequence; media terminates its native view service')
     parser.add_argument('--allow-service-termination', action='store_true')
     parser.add_argument('--controls', action='store_true', help='Also capture count/Lock controls on SE 3 or Ultra')
+    parser.add_argument('--volume-refresh-y', type=float, default=.34,
+                        help='SE 3 normalized refresh target; .32 baseline, .45 inset-header experiment')
     args = parser.parse_args()
+    if not .1 <= args.volume_refresh_y <= .9:
+        parser.error('Volume refresh target must be within .1–.9')
     if args.lifecycle == 'media' and not args.allow_service_termination:
         parser.error('--lifecycle media requires --allow-service-termination')
     # Validate every requested stage before any test data can be reset.
@@ -191,7 +199,7 @@ def main():
     if args.controls and not kind.endswith(('Apple-Watch-SE-3-40mm', 'Apple-Watch-Ultra-4-49mm')):
         parser.error('Control captures support SE 3 40 mm and Ultra 4 49 mm')
     os.umask(0o077)
-    success = run_suite(args.simulator, args.app.resolve(), args.output.resolve(), args.lifecycle, args.controls)
+    success = run_suite(args.simulator, args.app.resolve(), args.output.resolve(), args.lifecycle, args.controls, volume_refresh_y=args.volume_refresh_y)
     print(('PASS: assertions complete; screenshots still need review. ' if success else 'FAILED: see suite manifest/logs. ') + str(args.output))
     raise SystemExit(0 if success else 2)
 

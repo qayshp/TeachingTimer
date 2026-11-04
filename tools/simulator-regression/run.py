@@ -62,7 +62,11 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--scenario", required=True, choices=["focus", "media"])
     parser.add_argument("--allow-service-termination", action="store_true")
+    parser.add_argument("--volume-refresh-y", type=float, default=.34,
+                        help="SE 3 normalized refresh target; .32 baseline, .45 inset-header experiment")
     args = parser.parse_args()
+    if not .1 <= args.volume_refresh_y <= .9:
+        parser.error("Volume refresh target must be within .1–.9")
     if args.scenario == "media" and not args.allow_service_termination:
         parser.error("media scenario requires explicit --allow-service-termination")
     devices = json.loads(checked("xcrun", "simctl", "list", "devices", "--json"))
@@ -140,7 +144,7 @@ def main():
         returned = sim("reopen", "launch", args.simulator, bundle)
         time.sleep(2)
         ui("crown-down-home", "crown", -8); capture("04-home-crown")
-        ui("refresh", "tap", .5, .32)
+        ui("refresh", "tap", .5, args.volume_refresh_y)
         time.sleep(1)
         ui("crown-up-refresh", "crown", 8); capture("05-refresh-crown")
         ui("media", "swipe", .85, .55, .15, .55); capture("06-media")

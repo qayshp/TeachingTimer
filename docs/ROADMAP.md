@@ -1,6 +1,6 @@
 # Active roadmap
 
-Updated November 2, 2026 after the repository review. GitHub issues own the task
+Updated November 3, 2026 after the repository/layout review. GitHub issues own the task
 checklists; this page owns their order. [Current status](../DEVELOPMENT_STATUS.md)
 owns build, installation and distribution facts.
 
@@ -17,8 +17,12 @@ owns build, installation and distribution facts.
 | P3 — [#15](https://github.com/qayshp/TeachingTimer/issues/15) | Lifecycle/performance evidence | Transition invariants, reproducible seeded event tests and a bounded performance baseline. Measure before optimizing. |
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
-starts this batch: a concise status page, user-facing changelog and separate
-historical checkpoints. Keep those current rather than adding another review report.
+is complete: a concise status page, user-facing changelog and separate historical
+checkpoints. The [edge-following dial follow-up #19](https://github.com/qayshp/TeachingTimer/issues/19)
+has a separately tested build-41 candidate, pending review and physical validation.
+It replaces build 39's inset-header proposal with a full-screen perimeter around
+the top controls. All 60 ticks now continue behind a translucent Class button
+and are subdued beneath system time instead of being shortened or omitted.
 
 ## Existing reliability work
 
