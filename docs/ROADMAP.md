@@ -1,6 +1,6 @@
 # Active roadmap
 
-Updated November 2, 2026 after the repository review. GitHub issues own the task
+Updated November 3, 2026 after the repository/layout review. GitHub issues own the task
 checklists; this page owns their order. [Current status](../DEVELOPMENT_STATUS.md)
 owns build, installation and distribution facts.
 
@@ -18,7 +18,11 @@ owns build, installation and distribution facts.
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
 is complete: a concise status page, user-facing changelog and separate historical
-checkpoints. Keep those current rather than adding another review report.
+checkpoints. The [edge-following dial follow-up #19](https://github.com/qayshp/TeachingTimer/issues/19)
+has a separately tested build-41 candidate, pending review and physical validation.
+It replaces build 39's inset-header proposal with a full-screen perimeter around
+the top controls. All 60 ticks now continue behind a translucent Class button
+and are subdued beneath system time instead of being shortened or omitted.
 
 ## Existing reliability work
 
@@ -27,11 +31,6 @@ silencing (#3), seconds-hand transitions (#4), developer connections (#5), paire
 Simulator media (#6), dimmed runtime recovery (#7) and frozen progress (#8).
 Keep them separate unless evidence establishes a shared cause. Bounded successful
 tests do not close intermittent physical bugs.
-
-Fresh Simulator-only missing-label frames are tracked in
-[#17](https://github.com/qayshp/TeachingTimer/issues/17), independently of the
-withdrawn historical interpretations. The action-contract mismatch found during
-this review is tracked in [#16](https://github.com/qayshp/TeachingTimer/issues/16).
 
 The [supervised media plan](PHYSICAL_MEDIA_TEST_PLAN.md) includes initial focus,
 Home return, refresh and media return with known playback routes. An overnight

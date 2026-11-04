@@ -15,9 +15,8 @@ struct ClockAdditions: View {
 
     var body: some View {
         Canvas { graphics, size in
-            let center = CGPoint(x: size.width / 2, y: size.height / 2)
+            let layout = TimerFaceLayout(size: size)
             if let start = landmarkStartAngle {
-                let layout = TimerFaceLayout(size: size)
                 let end = start + min(1, max(0, landmarkProgress)) * 2 * .pi
                 var arc = Path()
                 let steps = max(1, Int(ceil((end - start) * 180 / .pi)))
@@ -51,17 +50,15 @@ struct ClockAdditions: View {
             if let context {
                 let minute = Calendar.current.component(.minute, from: context.scheduledEnd)
                 let direction = SquircleRayGeometry.direction(forSecond: minute)
-                let perimeter = SquircleRayGeometry.intersection(size: size,
-                        cornerRadius: SquircleClockTuning.cornerRadius(for: size),
-                        edgeInset: SquircleClockTuning.edgeInset, direction: direction)
+                let angle = Double(minute) * .pi / 30
+                let point = layout.dialPoint(angle: angle, inset: SquircleClockTuning.edgeInset + 2)
                 let prominent = context.progress(at: date) >= 0.5
                 // Solid geometry carries the emphasis even in monochrome Always-On.
                 // Initial area is 56 pt², about twice a 10 × 2.5 pt major tick.
                 // After the scheduled midpoint, area increases moderately to 76.5 pt².
                 let depth: CGFloat = prominent ? 17 : 14
                 let halfWidth: CGFloat = prominent ? 4.5 : 4
-                let outer = CGPoint(x: center.x + perimeter.dx - direction.dx * 2,
-                                    y: center.y + perimeter.dy - direction.dy * 2)
+                let outer = point
                 var marker = Path()
                 marker.move(to: CGPoint(x: outer.x - direction.dy * halfWidth, y: outer.y + direction.dx * halfWidth))
                 marker.addLine(to: CGPoint(x: outer.x + direction.dy * halfWidth, y: outer.y - direction.dx * halfWidth))
@@ -83,17 +80,14 @@ struct ClockAdditions: View {
 
     /// Uses the same ray/perimeter geometry as the ticks and end marker.
     /// One-degree subdivisions follow the rounded corners without a new animation.
-    private func perimeterPath(from start: Double, to end: Double, size: CGSize, inset: CGFloat = 3) -> Path {
+    private func perimeterPath(from start: Double, to end: Double, size: CGSize, inset: CGFloat = 0) -> Path {
         var path = Path()
         guard end > start else { return path }
         let steps = max(1, Int(ceil((end - start) * 180 / .pi)))
         for index in 0...steps {
             let angle = start + (end - start) * Double(index) / Double(steps)
-            let direction = CGVector(dx: sin(angle), dy: -cos(angle))
-            let vector = SquircleRayGeometry.intersection(size: size,
-                cornerRadius: inset == 3 ? SquircleClockTuning.cornerRadius(for: size) : max(0, SquircleClockTuning.cornerRadius(for: size) - inset),
-                edgeInset: SquircleClockTuning.edgeInset + inset, direction: direction)
-            let point = CGPoint(x: size.width / 2 + vector.dx, y: size.height / 2 + vector.dy)
+            let point = TimerFaceLayout(size: size).dialPoint(
+                angle: angle, inset: SquircleClockTuning.edgeInset + inset)
             if index == 0 { path.move(to: point) } else { path.addLine(to: point) }
         }
         return path
@@ -107,11 +101,12 @@ struct WallClockMinuteHand: View {
 
     var body: some View {
         Canvas { graphics, size in
-            let center = CGPoint(x: size.width / 2, y: size.height / 2)
+            let layout = TimerFaceLayout(size: size)
+            let center = layout.dialCenter
             let components = WallClockDisplay.components(at: date)
             let minute = Double(components.minute ?? 0) + Double(components.second ?? 0) / 60
             let angle = minute * .pi / 30
-            let length = min(size.width, size.height) * 0.29
+            let length = min(layout.dialFrame.width, layout.dialFrame.height) * 0.29
             var hand = Path()
             hand.move(to: center)
             hand.addLine(to: CGPoint(x: center.x + sin(angle) * length, y: center.y - cos(angle) * length))

@@ -42,10 +42,32 @@ struct ClockGeometryChecks {
                     }
                 }
             }
+            // App contours must share a center and remain exact inset rounded
+            // rectangles, including corners rather than only cardinal ticks.
+            let layout = TimerFaceLayout(size: size)
+            for inset: CGFloat in [1.5, 4.5, layout.trackInset] {
+                let frame = layout.dialFrame.insetBy(dx: inset, dy: inset)
+                let radius = max(0, layout.dialRadius - inset)
+                for step in 0..<720 {
+                    let angle = Double(step) * .pi / 360
+                    let point = layout.dialPoint(angle: angle, inset: inset)
+                    let x = abs(point.x - frame.midX), y = abs(point.y - frame.midY)
+                    let sx = frame.width / 2 - radius, sy = frame.height / 2 - radius
+                    if x > sx && y > sy {
+                        let boundary = pow(Double((x - sx) / radius), layout.cornerPower)
+                            + pow(Double((y - sy) / radius), layout.cornerPower)
+                        assert(abs(boundary - 1) < 0.00001, "Inset point leaves superellipse corner")
+                    } else {
+                        assert(abs(x - frame.width / 2) < 0.0001 || abs(y - frame.height / 2) < 0.0001)
+                    }
+                    let dx = point.x - layout.dialCenter.x, dy = point.y - layout.dialCenter.y
+                    assert(abs(dx * -cos(angle) - dy * sin(angle)) < 0.0001)
+                }
+            }
             let up = SquircleRayGeometry.intersection(size: size, cornerRadius: 38,
                 edgeInset: 1.5, direction: SquircleRayGeometry.direction(forSecond: 0))
             assert(abs(up.dx) < 0.0001 && abs(up.dy + size.height / 2 - 1.5) < 0.0001)
         }
-        print("PASS: 17280 ray intersections, 8 Watch sizes, 3 insets, bounds, corners and radial alignment")
+        print("PASS: 34560 circle/superellipse ray checks, 8 sizes, inset bounds and shared radial alignment")
     }
 }

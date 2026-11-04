@@ -26,6 +26,15 @@ class SimulatorSuiteChecks(unittest.TestCase):
         self.assertEqual([s[0] for s in suite.stage_plan('focus', True)], ['actions', 'focus', 'controls'])
         self.assertEqual([s[0] for s in suite.stage_plan('media', False)], ['actions', 'media'])
 
+    def test_refresh_target_is_explicit_for_layout_comparisons(self):
+        current = suite.stage_plan('focus', False)[1][2]
+        legacy = suite.stage_plan('focus', False, .32)[1][2]
+        self.assertEqual(current[-2:], ['--volume-refresh-y', '0.34'])
+        self.assertEqual(legacy[-2:], ['--volume-refresh-y', '0.32'])
+        for invalid in (0, 1, float('nan')):
+            with self.assertRaises(ValueError):
+                suite.stage_plan('focus', False, invalid)
+
     def test_empty_checks_and_non_boolean_success_fail_closed(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

@@ -1,16 +1,18 @@
 # Teaching Timer — current status
 
-Updated November 2, 2026. This page owns current build and validation status.
+Installed-build status updated November 4, 2026; external-review status was last
+checked November 2. This page owns current build and validation status.
 See the [changelog](CHANGELOG.md) for user-visible changes and the
 [roadmap](docs/ROADMAP.md) for prioritized work.
 
 | Artifact | Current evidence |
 | --- | --- |
-| Experimental branch | **1.0 (38)** on `codex/media-timeline-isolation`: moves the one-second timeline inside the teaching page, leaving native media outside it. Local build/archive checks, 13 Swift suites and 131 Python tests pass. All 21 actions, six focus checks and the full locked count pass in Simulator; real song-progress improvement is unverified. Not uploaded or installed on the physical Watch. |
-| Submitted beta | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
-| Public invitation | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae). Build 37 is **Waiting for Review**; the link is enabled but not accepting testers yet. Initial limit: 100. Automatic tester notification is enabled. |
-| Physical Watch | **Beta 35** is last confirmed by the user in the November 2 supervised test. Development build 25 was inventoried in the earlier owner pilot. Later beta installation is unconfirmed. No physical install accompanies this review. |
-| Owner pilot | Install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Internal Maintainer pilot retains seven builds through 36. |
+| External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
+| Public invitation, last checked November 2 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae). Build 37 was **Waiting for Review**; the link was enabled but not accepting testers yet. Initial limit: 100. Automatic tester notification was enabled. |
+| Internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It preserves build 41's dial and app behavior; layout and media draft PRs remain separate. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). |
+| Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. The merged code is covered by the updated checks; a physical progress fix remains unverified and no new TestFlight build includes this experiment yet. |
+| Physical Watch | **Beta 42**, confirmed by the owner November 4 after updating through TestFlight on the paired iPhone, with no developer connection required. This is an owner report, not a new developer-tool inventory or classroom validation. Unattended automatic-update cadence is not established. |
+| Owner pilot | The November 2 build-35 install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Its seven-build group inventory through 36 is historical. The later build-42 update is separately owner-confirmed. |
 | Rollback | Build 16 remains a preserved local checkpoint with its known media/volume issues. |
 
 ## What works and what remains uncertain
@@ -51,7 +53,6 @@ No supervised device session or unattended playback run is scheduled here.
 
 - [November 2 physical media/Crown results](docs/MEDIA_PROGRESS_INCIDENT_2026-11-02.md)
 - [Exact signed revision and release stages](docs/TESTFLIGHT_PREPARATION.md#build-37-public-beta-preparation)
-- [Build-38 hosting experiment and fresh frame evidence](docs/MEDIA_WAKE_REFRESH.md#november-2-build-38-hosting-experiment)
 - [Publishing gates](docs/PUBLISHING_READINESS.md) and [Apple feedback](docs/APPLE_FEEDBACK.md)
 - [Historical checkpoints through build 37](docs/history/STATUS_THROUGH_BUILD_37.md)
 - [Documentation index](docs/README.md)

@@ -1,5 +1,11 @@
 # TestFlight pilot
 
+**Latest physical installation:** the owner confirmed **1.0 (42)** on November 4
+after updating from TestFlight on the paired iPhone without a developer
+connection. [Release and installation evidence](#november-4-2026--hosted-release-validation)
+distinguishes this successful update from unverified unattended-update timing.
+The external-review status below was last checked November 2.
+
 Updated November 2, 2026. **Build 37 is submitted for the first external Beta App
 Review and is Waiting for Review.** Its signed external-eligible export, upload,
 Apple processing and Public beta group assignment are verified. The
@@ -12,8 +18,8 @@ Build 36 passed signed archive/export, upload and Apple
 processing and is Testing / Internal. It is assigned to the manual-distribution
 Maintainer pilot with one tester, the owner. Group settings confirm seven builds
 (29, 31, 32, 33, 34, 35 and 36); 30 is processed but unassigned. The release is authorized to test
-the owner's enabled TestFlight automatic updates; build 35 remains the last
-confirmed physical Beta and the automatic-update outcome is unverified.
+the owner's enabled TestFlight automatic updates. At that November 2 checkpoint,
+build 35 was the last confirmed physical Beta and automatic updating was unverified.
 The separately authorized
 [physical owner pilot](TESTFLIGHT_PILOT_RESULTS.md) verifies initial Beta
 installation/update/relaunch and limited developer-tool journal access. Cleanup
@@ -370,3 +376,256 @@ two scene transitions when Beta first opened. The app's runtime journal parsed s
 updating. This verifies bundle separation and a Simulator update/relaunch; it
 does not verify Apple's TestFlight transport, physical Crown/audio, or
 distribution-profile container access.
+
+### Build 38 owner media experiment
+
+At the owner's request, clean PR-18 source
+`57fde699e424f6a22e70a0c42da54c43e3c3961d` was signed/exported with
+`--signed --external-eligible`. Both payloads, signatures, profiles, identifiers,
+entitlements and the actual Watch privacy manifest passed validation; source
+cleanliness/revision checks passed. The local IPA SHA-256 is
+`c1811957673066550863b5629334f0e033b258e43b1008138cf04e0d64e39523`.
+Xcode reported upload success November 2, 2026 at 23:09:35 PST. PR-18 Watch CI,
+CodeQL and AccessLint all pass. The draft remains open for physical comparison.
+
+The refreshed App Store Connect browser requested sign-in at that checkpoint.
+Processing, saved What to Test and group availability were therefore unverified;
+the signed preparation/upload records are retained privately. On November 3,
+processing was verified: the external-eligible build is Ready to Submit and is
+eligible for internal testing, but remains unassigned to tester groups. Its test
+notes/group assignment are still pending. The intended destination is
+the internal Maintainer pilot, with build 37 also available as the unchanged
+hosting baseline. No public-group assignment, physical install or launch was
+performed. Browser authentication is now available; no rebuild is required merely
+to finish that earlier experiment's group assignment.
+
+TestFlight supports sharing multiple builds and organizing tester groups. For
+this experiment, choose 37 and 38 manually, one at a time on the same Watch:
+keep the iPhone track/output fixed, compare at least 30 seconds of bright-screen
+song progress, then test dim/wake, Pause, timer Crown and Home return. Do not
+reset the saved class between versions; verify it and intended runtime state
+after each install/open. Position catch-up is separate from continuous accuracy.
+Automatic updates may change the chosen build, so check About before each trial.
+The existing development installation remains a separate app.
+
+Build 39's matching-dial work is independent and is not part of the build-38
+upload or media A/B comparison.
+
+
+### Build 41 maintainer layout pilot
+
+At the owner's request, clean layout-PR source
+`30df065a33e86211d76b34fd9a23da0d127ac64b` was signed/exported as an
+internal-only TestFlight build. Both payload identities, signatures, profiles,
+entitlements and the Watch privacy manifest pass validation. The archive retains
+the exact clean source revision; the local exported IPA SHA-256 is
+`be1aa4fbe4bab463bcda5189b1acf390061b1115e66d4a10172bf83ee77422d7`.
+
+Xcode reported upload success November 3, 2026 at **15:56:00 PST**. Apple processed
+**1.0 (41)** as **Testing / Internal**, with a 90-day lifetime shown. What to Test
+notes and the sole **Maintainer pilot** assignment survived reload: one internal
+group, one tester, the owner. The final builds listing also shows Testing and the
+Maintainer pilot group. No external-group assignment or review submission was
+performed for this build. Public build 37 is separately In Review.
+
+Build 41 contains the full-screen edge-following dial and all 60 full-length ticks
+layered beneath the top elements. The Class backing is 75% opaque; tick portions
+under system time are reduced to quarter strength. Hands remain foremost. It
+preserves baseline class/runtime/count/native-volume behavior and does **not**
+include build 38's separate media-hosting experiment. Existing native song-progress
+stalls may remain. The saved notes ask for bright/dim readability and volume
+checks after Class interaction, Home/reopen, refresh and media return.
+
+All 13 Swift suites, 132 Python tests, Simulator and unsigned archive checks,
+six lifecycle/focus assertions and Class-sheet presentation/dismissal pass.
+[Thirteen five-size captures](FORM_FACTOR_VALIDATION.md#november-3-build-41-layered-header-ticks)
+include SE 3/Ultra reduced-luminance and maximum-text views. Those checks are
+separate from the verified signed export/upload. No direct physical-device
+connection, installation or launch was attempted for this release. TestFlight
+installation/automatic-update outcome and physical readability remain unverified.
+Later release-documentation commits do not change the signed source above.
+
+## Manually triggered GitHub release
+
+The **TestFlight maintainer release** workflow builds on a GitHub-hosted Mac.
+It has only a manual `workflow_dispatch` trigger. Choose **Use workflow from:
+main**, then provide an unused integer build number, testing notes, and either
+`rehearsal` or `publish`. The tools and application come from the exact selected
+workflow commit; there is no free-form application-ref input. The release job
+checks out the same SHA verified by the first job. A command-line build-number
+override changes both payloads without dirtying source; the archive retains its
+exact revision.
+
+The credential-bearing publishing environment permits only `main`. Merge reviewed
+application changes before publishing them with this workflow. Another branch
+containing the workflow can run a credential-free rehearsal in its own branch
+context. Do not copy an arbitrary branch into a privileged default-branch job;
+that can expose default-branch caches even when no signing secret is supplied.
+
+- **Rehearsal** is the default. It runs checks and creates a real unsigned
+  distribution archive with the requested build number. It needs no credentials,
+  never calls the App Store Connect API and does not assign a group. Its status is explicitly
+  `rehearsal_complete`, never `available`.
+- **Publish** uses the protected `testflight-maintainer` environment. It validates
+  the app and existing internal group, rejects an already-used build number,
+  signs/exports an internal-only package, uploads it, polls Apple, saves/verifies
+  What to Test, assigns only Maintainer pilot and verifies `IN_BETA_TESTING`.
+  It never creates/invites testers, enables a public link or submits App Review.
+
+The hosted `xcode-27` runner explicitly selects Xcode 27.2 and records its actual
+version/build. GitHub's published image may differ from the local Mac; a missing
+or incompatible toolchain fails rather than silently selecting an older SDK.
+No Simulator is created/booted and no physical device is contacted.
+
+### One-time credentials
+
+Create the GitHub environment **testflight-maintainer**, restricted to workflow
+runs from `main`. Keep the separate rehearsal environment free of credentials.
+The publishing environment needs these secrets:
+
+| Secret | Value |
+| --- | --- |
+| `ASC_KEY_ID` | App Store Connect team API key identifier |
+| `ASC_ISSUER_ID` | Team API issuer identifier |
+| `ASC_PRIVATE_KEY_BASE64` | Base64 of its downloaded `.p8` private key |
+| `DISTRIBUTION_CERTIFICATE_BASE64` | Base64 of an Apple Distribution identity exported as password-protected `.p12`, including its private key |
+| `DISTRIBUTION_CERTIFICATE_PASSWORD` | That `.p12` export password |
+| `CONTAINER_PROFILE_BASE64` | Base64 App Store profile for `net.qays.TeachingTimer` |
+| `WATCH_PROFILE_BASE64` | Base64 App Store profile for `net.qays.TeachingTimer.watchkitapp` |
+
+Use an App Manager team API key for TestFlight metadata/distribution. Team keys
+have role-level access across the account's apps; the release client additionally
+pins this app, team and internal group. Do not use an Apple Account password.
+Generating/downloading a key is a one-time account-owner setup; Apple may first
+require requesting API access. Store private files outside Git and enter values
+through GitHub's encrypted environment secrets, never an issue or workflow input.
+A cloud-managed certificate without an exportable private key is not a `.p12`
+identity; use a suitable dedicated CI identity without revoking the teaching one.
+
+Verify the encrypted `.p12` imports into an isolated temporary macOS keychain
+before saving it as a secret. During the November 4 setup, an OpenSSL 4 default
+package failed `security import` with “MAC verification failed” despite the
+correct password. Repackaging the same certificate/private key with
+`PBE-SHA1-3DES` for both key and certificate encryption, a SHA-1 MAC and 100,000
+iterations imported successfully. This changes the encrypted package format,
+not the certificate signature or signing identity; no certificate was revoked.
+The initial hosted attempt stopped at import, before archiving or uploading.
+
+A temporary runner keychain and SDK-specific manual signing configuration use
+both profiles. Profiles must be unexpired, explicit App Store profiles for the
+expected team and identifiers. Cleanup restores the previous keychain search
+list and removes only credentials/profiles created by this run. Secrets are not
+needed by normal pull-request verification.
+
+### Timing, errors and resume
+
+The run summary and `testflight-release-RUN_ID` artifact contain `summary.md` and
+`release.json`: source/build identity, local IPA digest, UTC stage timestamps,
+monotonic durations, archive/export substeps, polling observations and final
+verified status. GitHub dispatch/job times and Xcode identity are recorded too.
+Neither the private IPA, raw signing logs, API tokens nor credentials are uploaded
+as public artifacts. The report's `installed` field remains false.
+
+Polling defaults to 15 seconds with a bounded wait. `availabilityConfirmedAt`
+means first observed server-side readiness after notes/group readback; it is not
+an exact server transition, client refresh, Watch download or installation time.
+Apple failure/compliance states stop the release visibly. No processing timeout
+or failed request is reported as success.
+
+An interrupted or failed upload is never blindly repeated. The report preserves
+whether the upload command actually succeeded. After a successful upload, the
+CLI can resume metadata using a downloaded `release.json`, the same source/build/
+notes, and API credentials; the private IPA/signing keys are not needed again:
+
+```sh
+python3 scripts/testflight-release.py --resume \
+  --source /path/to/clean-reviewed-checkout --build-number 42 \
+  --notes-file /private/path/notes.txt --output /private/path/saved-release-report
+```
+
+Configure `ASC_TOKEN_HELPER` (compiled from `scripts/asc-token.swift`),
+`ASC_KEY_PATH`, `ASC_KEY_ID` and `ASC_ISSUER_ID` for that local resume. If upload
+outcome is uncertain, inspect its original log/server record before taking another
+action; the client deliberately refuses to repeat it. The first workflow version
+accepts fresh releases/rehearsals; it does not automatically download past reports
+when GitHub's Re-run button is used.
+
+The setup and deterministic tests do not establish that live credentials work.
+Record a successful hosted rehearsal separately from the first actual signed
+publish, Apple processing and pilot assignment.
+
+Primary references: [GitHub Xcode signing](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications),
+[runner inventory](https://github.com/actions/runner-images/blob/main/images/macos/xcode-27-arm64-Readme.md),
+[Apple API keys](https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api),
+[build/group API](https://developer.apple.com/documentation/appstoreconnectapi/post-v1-betagroups-_id_-relationships-builds).
+
+### November 4, 2026 — hosted release validation
+
+[Release automation PR 21](https://github.com/qayshp/TeachingTimer/pull/21) merged
+as `9dd7c1cde7bf7d53cf696d797a898c704ab65a3d`. All 13 Swift suites,
+161 Python tests, actionlint, Watch CI, CodeQL and AccessLint passed. The seven
+publishing secrets are configured with a dedicated API key, distribution
+certificate and two App Store profiles; existing signing credentials were not
+revoked. The new certificate/profiles expire November 4, 2027 at 08:25:55 UTC.
+
+The [hosted rehearsal](https://github.com/qayshp/TeachingTimer/actions/runs/41800134280)
+passed on that exact main revision with build-number override 42. Its result is
+`rehearsal_complete`, with `uploaded=false`; the archive took 30.674 seconds.
+The runner recorded Xcode 27.2, build **27B48**, distinct from local build 27B52.
+No older toolchain was silently selected.
+
+For the signed live test, branch `codex/testflight-live-validation` at
+`190e0738b82d03b9a24c9e9192a3ff86badafab8` combines layout source `76a1544`
+with the merged automation. Its application implementation is unchanged from
+build 41; the requested build-number override is 42. The layout and media draft
+PRs remain separate and unmerged. All 162 Python tests, 13 Swift suites,
+repository checks and actionlint passed for this integration. Normal future
+publishing requires reviewed app changes on `main`; this branch was allowed only
+for the bounded bootstrap test.
+
+The [first live attempt](https://github.com/qayshp/TeachingTimer/actions/runs/41801696366)
+passed verification but failed importing the encrypted identity. It never
+started an archive or upload. The temporary branch exception was removed and
+`main`-only access verified before correcting the package format described above.
+
+The [second live run](https://github.com/qayshp/TeachingTimer/actions/runs/41802278857)
+passed end to end. Its signed **1.0 (42)** export passed payload, signature,
+profile, entitlement, privacy-manifest and exact-source checks. The IPA digest is
+`59cd502944a5730634d6bcf993895f5a596143eceab22c70cb20b42d83a1fe6f`.
+Apple reports `VALID`, `INTERNAL_ONLY` and `IN_BETA_TESTING`. Test notes match
+their saved digest, and the sole assigned group is **Maintainer pilot**; a separate
+read-only API check confirmed these results. No external submission was made.
+
+| Milestone | November 4 UTC | Recorded duration |
+| --- | --- | ---: |
+| Workflow dispatched | 08:48:01 | — |
+| Source verification | 08:48:05–08:51:13 | 3 min 8 sec |
+| Signed archive/export | 08:51:37.350–08:52:14.399 | 37.049 sec |
+| Upload | 08:52:14.428–08:54:16.608 | 122.181 sec |
+| Processing/visibility polling | 08:54:16.614–08:57:36.383 | 199.769 sec |
+| Test notes readback | 08:57:36.384–08:57:37.287 | 0.903 sec |
+| Maintainer assignment/readback | 08:57:37.289–08:57:39.216 | 1.927 sec |
+| Final availability check | 08:57:39.217–08:57:40.901 | 1.684 sec |
+
+Availability was first confirmed at **08:57:40.903 UTC / 00:57:40.903 PST**,
+204.290 seconds after the upload command succeeded, and about 9 minutes 40 seconds
+after dispatch. These are observations at the configured 15-second polling
+cadence. Apple's separate reported upload date is 08:56:40 UTC; it does not equal
+the local upload command's completion time. Neither establishes the precise
+instant a Watch client first offered or installed the build.
+
+Runner cleanup passed. After completion, the temporary branch exception was
+removed and an independent environment query confirmed **main only**. The final
+timing/artifact reports contain no signing material. The CI run made no direct
+physical-device connection, installation or launch. Build 42 preserves build 41's
+app behavior and does not include the separate build-38 media-hosting experiment.
+
+Later on November 4, the owner confirmed build **42 is installed on the physical
+Watch**: TestFlight on the paired iPhone successfully updated the Watch app with
+**no developer connection required**. This completes the observed delivery path
+from the hosted workflow through TestFlight to the Watch. It is owner-reported
+installation evidence, not a new developer inventory, launch check or class trial.
+The owner reports updates do not appear on a regular cadence unless triggered
+in the iPhone TestFlight app; unattended automatic-update timing remains
+unestablished. The CI timing above ends at server-side availability and does not
+include this later installation.

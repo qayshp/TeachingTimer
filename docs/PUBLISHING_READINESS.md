@@ -1,12 +1,14 @@
 # Publishing readiness
 
-Reviewed November 2, 2026. **Build 37 is Waiting for Review** after its first
+Reviewed November 3, 2026. **Build 37 is In Review** after its first
 external Beta App Review submission. The signed external-eligible export,
 upload, processing and external Public beta assignment are verified. Its
 [public invitation](https://testflight.apple.com/join/YA2WSmae) is enabled for
 anyone with a 100-tester cap, but currently does not accept testers pending
 approval. Automatic notification was enabled at submission. The internal
-Maintainer pilot remains unchanged through build 36; physical Beta 35 is the
+Maintainer pilot now includes the internal-only build-41 layout candidate;
+its signed export/upload, processing and one-owner availability are verified.
+Physical Beta 35 is the
 last user-confirmed installed version.
 
 Physical installation/update/relaunch and limited Beta
@@ -34,7 +36,7 @@ installation/support procedures from historical engineering notes.
 | --- | --- |
 | Names and identifiers | App Store Connect record **Teaching Timer Beta** created for `net.qays.TeachingTimer`; Teaching Timer was unavailable. Its Watch payload is `net.qays.TeachingTimer.watchkitapp`. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Distribution provisioning succeeded. |
 | Build integrity | Build 37 at clean source `a36f3be587825e27b424cf54355ea13afdfded83` passes signed external-eligible archive/export and 13 Swift suites / 130 Python tests. Watch CI and CodeQL pass. Apple processed the upload completed at 19:56:05 PST. App behavior is unchanged from 36. Earlier build-36 Privacy rendering, build-35 layout/controls and build-34 clock results retain their original scope. Processing is not a physical test. |
-| Paid-team signing / App Store Connect | External Public beta has only build 37 and no testers at this checkpoint. Its first Beta App Review is Waiting for Review. All four owner-supplied review-contact fields were saved and verified; reviewer notes describe actual runtime use, automatic replacement and known limits. The separate internal owner group remains seven builds through 36. Build-36 automatic installation remains unverified. |
+| Paid-team signing / App Store Connect | External Public beta has only build 37; its first Beta App Review is In Review. All four owner-supplied review-contact fields were saved and verified; reviewer notes describe actual runtime use, automatic replacement and known limits. The separate one-owner internal group now includes build 41. Its availability is verified; automatic installation remains unconfirmed. |
 | Private tester support | [Private email support](../SUPPORT.md) is configured; incoming and outgoing plain email were verified November 2. The public pilot accepts descriptions and optional cropped screenshots without requiring journals. Native Watch/diagnostic attachment delivery remains untested. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | All three TestFlight Beta journals copied and parsed in the owner’s developer-enabled SE 3/trusted-Mac setup. General tester access, native attachment delivery and an in-app export path remain unresolved. |
 | Install/update pilot | TestFlight installation/update, saved class/settings, intentional Stop and running-intent relaunch passed on one physical SE 3. Cleanup and development-app preservation were checked; the original stale class retired normally and pre-install preference bytes were unavailable. See [dated results](TESTFLIGHT_PILOT_RESULTS.md). |
