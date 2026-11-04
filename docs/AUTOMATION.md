@@ -114,3 +114,30 @@ Record the actual command, source revision, toolchain and retained results in
 [current status](../DEVELOPMENT_STATUS.md). Keep dated test counts and observations
 in their original reports; do not turn an unrun test or a bounded success into
 a claim of complete coverage.
+
+## Maintainer TestFlight release
+
+The manually triggered `.github/workflows/testflight-release.yml` separates
+credential-free verification/rehearsal from internal publishing. It supports an
+immutable dispatch revision and unused build number, timed upload/processing,
+verified test notes, and assignment only to the existing Maintainer pilot.
+[Setup, credentials, reports and resume limits](TESTFLIGHT_PREPARATION.md#manually-triggered-github-release).
+
+Release tests use a synthetic API and fake clock for visibility delays, failure,
+timeouts, exact destination matching, duplicate-build refusal, idempotent notes/
+groups, metadata-only resume and uncertain-upload handling. A temporary generated
+P-256 key exercises the real CryptoKit JWT helper and independently verifies its
+signature with OpenSSL. Credential tests validate profile identity/expiry and
+cleanup after failure without accessing any real keychain or Apple service.
+These checks do not establish live API permissions, CI signing, Apple processing,
+or physical TestFlight installation.
+
+The [November 4 hosted validation](TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation)
+separately establishes a successful rehearsal and actual signed build-42 publish,
+including Apple processing, saved notes and internal Maintainer pilot assignment.
+It records the initial signing-package import failure and the corrected retry,
+exact source/toolchain, stage timings and restored main-only publishing access.
+The owner subsequently confirmed build 42 installed through the paired iPhone's
+TestFlight app without a developer connection. This separate delivery result is
+recorded with the release evidence; unattended automatic-update timing remains
+unestablished and is not included in CI's server-readiness measurements.

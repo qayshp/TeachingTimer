@@ -1,17 +1,17 @@
 # Teaching Timer — current status
 
-Updated November 3, 2026. This page owns current build and validation status.
+Installed-build status updated November 4, 2026; external-review status was last
+checked November 2. This page owns current build and validation status.
 See the [changelog](CHANGELOG.md) for user-visible changes and the
 [roadmap](docs/ROADMAP.md) for prioritized work.
 
 | Artifact | Current evidence |
 | --- | --- |
-| Layout pilot | **1.0 (41)**, clean signed source `30df065a33e8` on `codex/aligned-squircle-dial`: full-screen dial with all 60 ticks restored behind translucent top elements. All 13 Swift suites / 132 Python tests, Simulator/archive checks, six focus checks and thirteen five-size captures pass. Signed export/upload, Apple processing, saved test notes and assignment to the one-owner **Maintainer pilot** are verified: **Testing / Internal**. [Layout comparison](docs/FORM_FACTOR_VALIDATION.md#november-3-build-41-layered-header-ticks) · [release record](docs/TESTFLIGHT_PREPARATION.md#build-41-maintainer-layout-pilot). Installation is unconfirmed; no direct physical-device action was performed. |
-| Owner media experiment | **1.0 (38)**, clean signed source `57fde699e424`. Upload succeeded November 2 at 23:09:35 PST; Apple processing was verified November 3. It remains unassigned to tester groups. Intended comparison is 37 versus 38; build 41 does not include this experiment. [Release record](docs/TESTFLIGHT_PREPARATION.md#build-38-owner-media-experiment). |
-| Submitted beta | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
-| Public invitation | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae). Build 37 is **In Review**; approval remains pending. Initial limit: 100. Automatic tester notification is enabled. Build 41 is internal-only and is not assigned to this group. |
-| Physical Watch | **Beta 35** is last confirmed by the user in the November 2 supervised test. Development build 25 was inventoried in the earlier owner pilot. Later beta installation is unconfirmed. No physical install accompanies this review. |
-| Owner pilot | Install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Internal Maintainer pilot now includes build 41; no new physical installation or teaching validation is established. |
+| External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
+| Public invitation, last checked November 2 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae). Build 37 was **Waiting for Review**; the link was enabled but not accepting testers yet. Initial limit: 100. Automatic tester notification was enabled. |
+| Internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It preserves build 41's dial and app behavior; layout and media draft PRs remain separate. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). |
+| Physical Watch | **Beta 42**, confirmed by the owner November 4 after updating through TestFlight on the paired iPhone, with no developer connection required. This is an owner report, not a new developer-tool inventory or classroom validation. Unattended automatic-update cadence is not established. |
+| Owner pilot | The November 2 build-35 install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Its seven-build group inventory through 36 is historical. The later build-42 update is separately owner-confirmed. |
 | Rollback | Build 16 remains a preserved local checkpoint with its known media/volume issues. |
 
 ## What works and what remains uncertain
