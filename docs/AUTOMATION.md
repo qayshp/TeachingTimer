@@ -37,8 +37,11 @@ Setext headings, custom HTML anchors or richer heading markup in a linked target
 Private ignored evidence is outside repository validation.
 
 GitHub Actions runs the noninteractive verification with its recorded toolchain.
-See [build evidence](BUILD_VERIFICATION.md) for retained artifacts. It does not
-drive an interactive Device Hub session or touch physical devices.
+The Mac job compiles the app for Watch Simulator but does not boot it or drive its
+UI. The Swift model/controller suites are separate host executables that use
+WatchKit boundary doubles. Interactive Watch Simulator scenarios require the
+local Device Hub workflow below. See [build evidence](BUILD_VERIFICATION.md) for
+retained artifacts. CI does not touch physical devices.
 
 ### November 2, 2026 — Swift CodeQL coverage check
 
