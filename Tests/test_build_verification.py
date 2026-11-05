@@ -154,6 +154,8 @@ class RevisionMetadataChecks(unittest.TestCase):
         import os
         import plistlib
         import subprocess
+        if not Path('/usr/libexec/PlistBuddy').is_file():
+            self.skipTest('Xcode build metadata writer is macOS-only')
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             repo = root / 'source'
