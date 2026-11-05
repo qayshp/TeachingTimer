@@ -1,6 +1,6 @@
 # Teaching Timer — current status
 
-Installed-build status updated November 4, 2026; external-review status was last
+Installed-build status updated November 5, 2026; external-review status was last
 checked November 2. This page owns current build and validation status.
 See the [changelog](CHANGELOG.md) for user-visible changes and the
 [roadmap](docs/ROADMAP.md) for prioritized work.
@@ -9,9 +9,9 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | --- | --- |
 | External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
 | Public invitation, last checked November 2 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae). Build 37 was **Waiting for Review**; the link was enabled but not accepting testers yet. Initial limit: 100. Automatic tester notification was enabled. |
-| Internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It preserves build 41's dial and app behavior; layout and media draft PRs remain separate. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). |
-| Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. The merged code is covered by the updated checks; a physical progress fix remains unverified and no new TestFlight build includes this experiment yet. |
-| Physical Watch | **Beta 42**, confirmed by the owner November 4 after updating through TestFlight on the paired iPhone, with no developer connection required. This is an owner report, not a new developer-tool inventory or classroom validation. Unattended automatic-update cadence is not established. |
+| Internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). |
+| Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. TestFlight `1.0 (261104.1939.6)` includes the change; the owner reports song progress still freezes. Isolation alone did not fix the issue. |
+| Physical Watch | The owner reports TestFlight **1.0 (261104.1939.6)** on the Watch; frozen song progress persists on this build. Installation is owner-reported, not a new developer-tool inventory or classroom validation. Unattended automatic-update cadence is not established. |
 | Owner pilot | The November 2 build-35 install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Its seven-build group inventory through 36 is historical. The later build-42 update is separately owner-confirmed. |
 | Rollback | Build 16 remains a preserved local checkpoint with its known media/volume issues. |
 
@@ -30,16 +30,19 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
   indicator with an apparent, unmeasured offset.
 - The user confirms eligible inactivity refresh updates song position. Neither
   that nor page reentry establishes continuously accurate progress.
-- Blank media, Crown nonresponse, unexpected silencing, seconds-hand backsteps
-  and developer-connection failures remain distinct [open issues](docs/ISSUE_TRACKER.md).
+- Blank media and volume-to-zero have not recurred since recent changes, per the
+  owner's November 5 correction; treat both as mitigated, not fixed. Crown
+  nonresponse, seconds-hand backsteps, frozen song progress and developer-
+  connection failures remain distinct [open issues](docs/ISSUE_TRACKER.md).
   Runtime/clock fixes have bounded Simulator evidence, not universal hardware proof.
 - Mindfulness runtime suitability for guided yoga teaching and automatic renewal
   still needs explicit Apple guidance. Beta review does not settle intended use.
 
 ## Next validation
 
-1. Isolate native media from the clock timeline and compare lifecycle behavior;
-   real progress accuracy requires matched phone/Watch playback testing.
+1. Investigate frozen progress on the timeline-isolated build with matched
+   phone/Watch playback; the latest owner-reported TestFlight build still showed
+   the issue.
 2. Obtain runtime guidance and finish teaching-length, route, battery and
    accessibility checks before a general release.
 3. Verify an approved public invitation and first external install. Private email

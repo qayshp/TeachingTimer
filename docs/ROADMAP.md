@@ -8,7 +8,7 @@ owns build, installation and distribution facts.
 
 | Priority | Work | Completion gate |
 | --- | --- | --- |
-| P0 — [#8](https://github.com/qayshp/TeachingTimer/issues/8) | Isolate native media from the clock timeline | Bounded Simulator lifecycle/state checks, then matched physical A/B continuous-progress comparison. No new refresh timer; preserve native volume and class/runtime/count state. |
+| P0 — [#8](https://github.com/qayshp/TeachingTimer/issues/8) | Validate media progress after timeline isolation | The isolation experiment is merged; TestFlight `1.0 (261104.1939.6)` still showed stale progress. Compare continuous progress on a matched physical setup while preserving playback, Crown volume and class/runtime/count state. |
 | P0 — [#9](https://github.com/qayshp/TeachingTimer/issues/9) | Establish supported runtime policy | Documented Apple guidance on actual yoga teaching and renewal, or a supported alternative. Beta review approval alone does not complete this. |
 | P1 — [#10](https://github.com/qayshp/TeachingTimer/issues/10) | Release-critical hardware validation | Supervised media/route/count checks, teaching-length renewal and battery results, readable controls and accessibility. Requires coordinated physical use. |
 | P1 — [#11](https://github.com/qayshp/TeachingTimer/issues/11) | Public-beta readiness | Apple approval, working invitation, external install/update and usable support. Final store privacy disclosures precede App Store publication. |
@@ -18,11 +18,10 @@ owns build, installation and distribution facts.
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
 is complete: a concise status page, user-facing changelog and separate historical
-checkpoints. The [edge-following dial follow-up #19](https://github.com/qayshp/TeachingTimer/issues/19)
-has a separately tested build-41 candidate, pending review and physical validation.
-It replaces build 39's inset-header proposal with a full-screen perimeter around
-the top controls. All 60 ticks now continue behind a translucent Class button
-and are subdued beneath system time instead of being shortened or omitted.
+checkpoints. The [edge-following dial work #19](https://github.com/qayshp/TeachingTimer/issues/19)
+is implemented and merged; its Simulator/form-factor checks passed. Physical
+validation of the merged layout is part of #10. All 60 ticks continue behind a
+translucent Class button and are subdued beneath system time.
 
 ## Existing reliability work
 
