@@ -32,10 +32,21 @@ class JournalBoundaryChecks(unittest.TestCase):
         self.assertEqual(regression.events_after([], [{'event': 'new'}]), [{'event': 'new'}])
 
 class FreshResetChecks(unittest.TestCase):
+    @staticmethod
+    def convert_plist_to_json(command, **kwargs):
+        import json
+        import plistlib
+        from types import SimpleNamespace
+        if command[0] != 'plutil':
+            raise AssertionError(f'Unexpected subprocess call: {command}')
+        value = plistlib.loads(kwargs['input'].encode())
+        return SimpleNamespace(stdout=json.dumps(value))
+
     def test_failed_uninstall_propagates_and_does_not_continue(self):
         import plistlib
         from unittest.mock import patch
-        with patch.object(regression, 'checked', side_effect=[plistlib.dumps({'app': {}}).decode(), RuntimeError('failed')]) as command:
+        with patch.object(regression.subprocess, 'run', side_effect=self.convert_plist_to_json), \
+                patch.object(regression, 'checked', side_effect=[plistlib.dumps({'app': {}}).decode(), RuntimeError('failed')]) as command:
             with self.assertRaises(RuntimeError):
                 regression.reset_test_app('disposable', 'app')
             self.assertEqual(command.call_count, 2)
@@ -43,13 +54,15 @@ class FreshResetChecks(unittest.TestCase):
         import plistlib
         from unittest.mock import patch
         installed = plistlib.dumps({'app': {}}).decode()
-        with patch.object(regression, 'checked', side_effect=[installed, '', installed]):
+        with patch.object(regression.subprocess, 'run', side_effect=self.convert_plist_to_json), \
+                patch.object(regression, 'checked', side_effect=[installed, '', installed]):
             with self.assertRaises(RuntimeError):
                 regression.reset_test_app('disposable', 'app')
     def test_absent_app_skips_uninstall(self):
         import plistlib
         from unittest.mock import patch
-        with patch.object(regression, 'checked', return_value=plistlib.dumps({}).decode()) as command:
+        with patch.object(regression.subprocess, 'run', side_effect=self.convert_plist_to_json), \
+                patch.object(regression, 'checked', return_value=plistlib.dumps({}).decode()) as command:
             regression.reset_test_app('disposable', 'app')
             self.assertTrue(all('uninstall' not in args.args for args in command.call_args_list))
 
