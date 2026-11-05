@@ -14,7 +14,68 @@ concurrency:
   group: watch-checks-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      app_changed: ${{ steps.impact.outputs.app_changed }}
+      docs_changed: ${{ steps.impact.outputs.docs_changed }}
+      tooling_changed: ${{ steps.impact.outputs.tooling_changed }}
+      workflow_changed: ${{ steps.impact.outputs.workflow_changed }}
+      unknown_changed: ${{ steps.impact.outputs.unknown_changed }}
+      mac_verify: ${{ steps.impact.outputs.mac_verify }}
+      publish: ${{ steps.impact.outputs.publish }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+      - name: Classify changed files
+        id: impact
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENT_NAME" = pull_request ]; then
+            python3 scripts/change-impact.py --base "$PR_BASE" --head "$PR_HEAD" --output "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = push ] && [ -n "$PUSH_BEFORE" ] && ! echo "$PUSH_BEFORE" | grep -q '^0\+$'; then
+            python3 scripts/change-impact.py --base "$PUSH_BEFORE" --head "$GITHUB_SHA" --output "$GITHUB_OUTPUT"
+          else
+            python3 scripts/change-impact.py --all --output "$GITHUB_OUTPUT"
+          fi
+
+  lightweight:
+    name: Repository and Python checks
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Check repository files and documentation links
+        run: python3 scripts/check-repository.py
+      - name: Run Python tooling tests
+        run: python3 -m unittest discover -s Tests -p 'test_*.py' -v
+
+  workflow-lint:
+    name: Lint GitHub workflows
+    needs: changes
+    if: needs.changes.outputs.workflow_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install pinned actionlint
+        env:
+          GOBIN: "${{ runner.temp }}/bin"
+        run: |
+          mkdir -p "$GOBIN"
+          go install 'github.com/rhysd/actionlint/cmd/actionlint@v1.7.7'
+      - name: Lint workflow files
+        run: |
+          "$RUNNER_TEMP/bin/actionlint" .github/workflows/*.yml
+
   verify:
+    name: Watch Simulator and archive verification
+    needs: changes
+    if: needs.changes.outputs.mac_verify == 'true'
     runs-on: macos-26
     timeout-minutes: 25
     steps:
@@ -35,3 +96,23 @@ jobs:
             ${{ runner.temp }}/TeachingTimerVerification/*-archive/build.log
             ${{ runner.temp }}/TeachingTimerVerification/*-archive/readiness.json
             ${{ runner.temp }}/TeachingTimerVerification/*-archive/artifact-inspection.json
+
+  required-result:
+    name: Required result
+    if: always()
+    needs: [changes, lightweight, workflow-lint, verify]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all applicable checks
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          LIGHTWEIGHT_RESULT: ${{ needs.lightweight.result }}
+          WORKFLOW_LINT_RESULT: ${{ needs.workflow-lint.result }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+          WORKFLOW_CHANGED: ${{ needs.changes.outputs.workflow_changed }}
+          MAC_VERIFY: ${{ needs.changes.outputs.mac_verify }}
+        run: |
+          test "$CHANGES_RESULT" = success
+          test "$LIGHTWEIGHT_RESULT" = success
+          if [ "$WORKFLOW_CHANGED" = true ]; then test "$WORKFLOW_LINT_RESULT" = success; fi
+          if [ "$MAC_VERIFY" = true ]; then test "$VERIFY_RESULT" = success; fi

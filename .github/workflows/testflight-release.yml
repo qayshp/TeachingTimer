@@ -30,8 +30,66 @@ env:
   DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      app_changed: ${{ steps.impact.outputs.app_changed }}
+      docs_changed: ${{ steps.impact.outputs.docs_changed }}
+      tooling_changed: ${{ steps.impact.outputs.tooling_changed }}
+      workflow_changed: ${{ steps.impact.outputs.workflow_changed }}
+      unknown_changed: ${{ steps.impact.outputs.unknown_changed }}
+      mac_verify: ${{ steps.impact.outputs.mac_verify }}
+      publish: ${{ steps.impact.outputs.publish }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+      - name: Classify changed files
+        id: impact
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT_NAME" = push ] && [ -n "$PUSH_BEFORE" ] && ! echo "$PUSH_BEFORE" | grep -q '^0\+$'; then
+            python3 scripts/change-impact.py --base "$PUSH_BEFORE" --head "$GITHUB_SHA" --output "$GITHUB_OUTPUT"
+          else
+            # Manual rehearsal/publish always receives complete verification.
+            python3 scripts/change-impact.py --all --output "$GITHUB_OUTPUT"
+          fi
+
+  tooling-checks:
+    name: Release tooling checks
+    needs: changes
+    if: needs.changes.outputs.tooling_changed == 'true' && needs.changes.outputs.mac_verify != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Verify repository and Python tooling
+        run: |
+          python3 scripts/check-repository.py
+          python3 -m unittest discover -s Tests -p 'test_*.py' -v
+
+  workflow-lint:
+    name: Release workflow lint
+    needs: changes
+    if: needs.changes.outputs.workflow_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install pinned actionlint
+        env:
+          GOBIN: "${{ runner.temp }}/bin"
+        run: |
+          mkdir -p "$GOBIN"
+          go install 'github.com/rhysd/actionlint/cmd/actionlint@v1.7.7'
+      - name: Lint workflow files
+        run: |
+          "$RUNNER_TEMP/bin/actionlint" .github/workflows/*.yml
+
   verify:
     name: Verify reviewed source
+    needs: changes
+    if: needs.changes.outputs.mac_verify == 'true'
     runs-on: xcode-27
     timeout-minutes: 30
     outputs:
@@ -94,7 +152,19 @@ jobs:
 
   release:
     name: Prepare and release
-    needs: verify
+    needs: [changes, verify, tooling-checks, workflow-lint]
+    if: >-
+      always() &&
+      needs.changes.result == 'success' &&
+      (
+        (github.event_name == 'push' &&
+         needs.changes.outputs.publish == 'true' &&
+         needs.verify.result == 'success') ||
+        (github.event_name == 'workflow_dispatch' &&
+         needs.verify.result == 'success')
+      ) &&
+      (needs.tooling-checks.result == 'success' || needs.tooling-checks.result == 'skipped') &&
+      (needs.workflow-lint.result == 'success' || needs.workflow-lint.result == 'skipped')
     runs-on: xcode-27
     timeout-minutes: 60
     # A rehearsal never enters the credential-bearing environment.

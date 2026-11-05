@@ -117,11 +117,35 @@ a claim of complete coverage.
 
 ## Maintainer TestFlight release
 
-The manually triggered `.github/workflows/testflight-release.yml` separates
-credential-free verification/rehearsal from internal publishing. It supports an
-immutable dispatch revision and unused build number, timed upload/processing,
-verified test notes, and assignment only to the existing Maintainer pilot.
-[Setup, credentials, reports and resume limits](TESTFLIGHT_PREPARATION.md#manually-triggered-github-release).
+The `.github/workflows/check.yml` and
+`.github/workflows/testflight-release.yml` workflows classify the changed paths
+before selecting expensive checks or publishing.
+
+- Every push and pull request runs tracked-file/documentation validation and the
+  Python tooling tests on Ubuntu.
+- Changes under the Watch app, Xcode project, app configuration or package
+  inputs also run the Mac Simulator build, Swift suites and unsigned archive
+  checks. Swift test-harness changes run that Mac verification without triggering
+  a TestFlight upload.
+- Workflow changes run pinned `actionlint`; other tooling changes run the
+  Python tooling checks. Documentation-only changes skip the Mac/Xcode job.
+- Only app inputs, or an unrecognized path handled conservatively as an app
+  input, can trigger automatic TestFlight publishing. CI/workflow configuration
+  changes and docs alone cannot publish.
+- A manual release rehearsal or publish still runs the full verification path.
+
+`scripts/change-impact.py` is the shared classifier. Its unit tests cover
+documentation-only, app, mixed, tooling, Swift-test and unknown-path cases. Keep
+the app input rules conservative and extend the tests when project layout or
+generated app resources change. The Watch-check workflow has a stable
+required-result job that reports success only after every applicable check
+passes. Unknown paths take the full verification and publishing path.
+
+The release workflow still separates credential-free verification/rehearsal
+from internal publishing. It supports an immutable dispatch revision and unused
+build number, timed upload/processing, verified test notes, and assignment only
+to the existing Maintainer pilot.
+[Setup, credentials, reports and resume limits](TESTFLIGHT_PREPARATION.md#automatic-and-manual-github-release).
 
 Release tests use a synthetic API and fake clock for visibility delays, failure,
 timeouts, exact destination matching, duplicate-build refusal, idempotent notes/

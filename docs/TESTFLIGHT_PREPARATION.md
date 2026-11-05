@@ -445,13 +445,23 @@ connection, installation or launch was attempted for this release. TestFlight
 installation/automatic-update outcome and physical readability remain unverified.
 Later release-documentation commits do not change the signed source above.
 
-## Manually triggered GitHub release
+## Automatic and manual GitHub release
 
 The **TestFlight maintainer release** workflow builds on a GitHub-hosted Mac.
-Every push to `main` now runs full verification and, on success, automatically
-signs, uploads, waits for Apple processing and assigns that build to the internal
-Maintainer pilot. Failed verification never reaches the publishing job. Each
-workflow run gets an automatic build string in Pacific local time:
+Every push to `main` runs the change classifier and lightweight repository/Python
+checks. Only app inputs (or an unrecognized path, treated conservatively as an
+app input) run full Mac/Xcode verification and may publish to TestFlight. Docs-only
+and CI/tooling-only changes do not sign or upload an app; workflow changes run
+`actionlint`, and other tooling changes run Python tooling tests. Swift test-harness
+changes receive Mac verification without an upload. The Watch-check workflow's
+stable required-result job reports whether its applicable checks passed. Manual
+rehearsals and publishes always run full verification. See
+[automation check boundaries](AUTOMATION.md#maintainer-testflight-release).
+
+After app verification passes, the workflow automatically signs, uploads, waits
+for Apple processing and assigns that build to the internal Maintainer pilot.
+Failed verification never reaches the publishing job. Each published workflow
+run gets an automatic build string in Pacific local time:
 `YYMMDD.HHmm.sequence` (for example, `261104.1602.17` means November 4, 2026,
 at 4:02 p.m. Pacific, workflow run 17). The final component is the workflow's
 unique increasing run number, so builds created in the same minute remain

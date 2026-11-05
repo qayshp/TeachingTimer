@@ -2,8 +2,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-# GitHub's documented hosted Xcode-27 label is newer than actionlint's built-in
-# runner catalog. This registers the label for linting; it is not a self-hosted Mac.
+# GitHub's hosted Mac runner labels are newer than actionlint's built-in catalog.
+# These labels are hosted runners, not self-hosted Macs.
 self-hosted-runner:
   labels:
+    - macos-26
     - xcode-27
