@@ -1,40 +1,44 @@
 // SPDX-License-Identifier: MPL-2.0
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at https://mozilla.org/MPL/2.0/.
-
-// Original code-drawn icon: no downloaded artwork or third-party assets.
+// Render the three watch icon variants from the reviewed rolled-mat draft.
 // Run from the repository root: swift scripts/render-icon.swift
 import AppKit
 
 let size = 1024
-let bitmap = CGContext(data: nil, width: size, height: size, bitsPerComponent: 8,
-    bytesPerRow: size * 4, space: CGColorSpace(name: CGColorSpace.sRGB)!,
-    bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
-let graphics = NSGraphicsContext(cgContext: bitmap, flipped: false)
-NSGraphicsContext.saveGraphicsState()
-NSGraphicsContext.current = graphics
-NSColor.black.setFill()
-NSRect(x: 0, y: 0, width: size, height: size).fill()
-let ring = NSBezierPath(roundedRect: NSRect(x: 190, y: 190, width: 644, height: 644), xRadius: 180, yRadius: 180)
-NSColor.white.setStroke(); ring.lineWidth = 20; ring.stroke()
-for index in 0..<12 {
-    let angle = Double(index) * .pi / 6
-    let outer = CGPoint(x: 512 + sin(angle) * 270, y: 512 + cos(angle) * 270)
-    let inner = CGPoint(x: 512 + sin(angle) * 245, y: 512 + cos(angle) * 245)
-    let path = NSBezierPath(); path.move(to: inner); path.line(to: outer)
-    path.lineWidth = 12; path.lineCapStyle = .round; path.stroke()
+let sourceURL = URL(fileURLWithPath: "docs/design/icon-drafts/mat-timer.png")
+guard let source = NSImage(contentsOf: sourceURL) else { fatalError("Missing rolled-mat source artwork") }
+
+func writeIcon(_ name: String, badge: String? = nil, color: NSColor? = nil) throws {
+    let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: size, pixelsHigh: size,
+        bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+        colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
+    NSGraphicsContext.saveGraphicsState()
+    let context = NSGraphicsContext(bitmapImageRep: bitmap)!
+    NSGraphicsContext.current = context
+    NSColor.black.setFill(); NSRect(x: 0, y: 0, width: size, height: size).fill()
+    source.draw(in: NSRect(x: 0, y: 0, width: size, height: size), from: .zero,
+                operation: .copy, fraction: 1)
+    if let badge, let color {
+        let rect = NSRect(x: badge == "BETA" ? 600 : 650, y: 58,
+                          width: badge == "BETA" ? 370 : 320, height: 128)
+        let pill = NSBezierPath(roundedRect: rect, xRadius: 64, yRadius: 64)
+        color.setFill(); pill.fill()
+        NSColor.white.setStroke(); pill.lineWidth = 9; pill.stroke()
+        let font = NSFont.systemFont(ofSize: 70, weight: .black)
+        let text = NSAttributedString(string: badge, attributes: [
+            .font: font, .foregroundColor: NSColor.white
+        ])
+        let textSize = text.size()
+        text.draw(at: NSPoint(x: rect.midX - textSize.width / 2,
+                              y: rect.midY - textSize.height / 2 + 3))
+    }
+    context.flushGraphics()
+    NSGraphicsContext.restoreGraphicsState()
+    let target = URL(fileURLWithPath: "TeachingTimer/Assets.xcassets/\(name).appiconset/\(name).png")
+    try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+    try bitmap.representation(using: .png, properties: [:])!.write(to: target)
+    print("Wrote \(target.path)")
 }
-let minute = NSBezierPath(); minute.move(to: CGPoint(x: 512, y: 512)); minute.line(to: CGPoint(x: 425, y: 660))
-minute.lineWidth = 36; minute.lineCapStyle = .square; minute.stroke()
-NSColor(calibratedRed: 1, green: 0.84, blue: 0, alpha: 1).setStroke()
-let second = NSBezierPath(); second.move(to: CGPoint(x: 512, y: 512)); second.line(to: CGPoint(x: 665, y: 740))
-second.lineWidth = 18; second.lineCapStyle = .round; second.stroke()
-NSColor(calibratedRed: 1, green: 0.84, blue: 0, alpha: 1).setFill()
-NSBezierPath(ovalIn: NSRect(x: 485, y: 485, width: 54, height: 54)).fill()
-NSGraphicsContext.restoreGraphicsState()
-let image = NSBitmapImageRep(cgImage: bitmap.makeImage()!)
-let target = URL(fileURLWithPath: "TeachingTimer/Assets.xcassets/AppIcon.appiconset/AppIcon.png")
-try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
-try image.representation(using: .png, properties: [:])!.write(to: target)
-print("Wrote \(target.path)")
+
+try writeIcon("AppIcon")
+try writeIcon("AppIconBeta", badge: "BETA", color: NSColor(calibratedRed: 0.55, green: 0.12, blue: 0.28, alpha: 1))
+try writeIcon("AppIconDev", badge: "DEV", color: NSColor(calibratedRed: 0.08, green: 0.28, blue: 0.52, alpha: 1))

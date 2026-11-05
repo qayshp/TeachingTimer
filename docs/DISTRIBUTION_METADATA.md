@@ -237,7 +237,7 @@ website QR images regenerate byte-for-byte from tracked, MPL-noticed source.
 
 | Bundled asset | Source and verification |
 | --- | --- |
-| [App icon](../TeachingTimer/Assets.xcassets/AppIcon.appiconset/AppIcon.png) | [Geometry-only Swift drawing](../scripts/render-icon.swift), with no input artwork. Generator and image originated together in `adc78e3`; the image is unchanged. |
+| [App icon variants](../TeachingTimer/Assets.xcassets/) | [Rolled-mat and timer artwork](design/icon-drafts/mat-timer.png), rendered by [the icon script](../scripts/render-icon.swift). Release uses the unbadged `AppIcon`; local Debug uses `AppIconDev`; TestFlight uses `AppIconBeta`. |
 | Privacy, source and support QR images | [QR generator](../scripts/information-qr.swift) uses [WebLinks.json](../TeachingTimer/Information/WebLinks.json). Regenerated images match and decode to the configured URLs. Physical camera scanning is still unverified. |
 
 The three [generated yoga concepts](design/icon-drafts/README.md) are documented
