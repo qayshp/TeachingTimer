@@ -7,14 +7,15 @@ Simulator results, physical observations and unverified mitigations.
 
 | GitHub issue | Apple feedback | Current boundary |
 | --- | --- | --- |
-| [#1 Blank native media](https://github.com/qayshp/TeachingTimer/issues/1) | FB25305069 | Preventive native-view refresh helps some cases. On November 5 the maintainer corrected a transcription: no blank page has recurred since recent changes. Apparent mitigation; physical recurrence/root cause remain unresolved. |
-| [#2 Crown volume response](https://github.com/qayshp/TeachingTimer/issues/2) | FB25329167 | Retained control/refocus avoids a controlled regression. November 2 Beta 35 passes initial, media-return, Home-return and tap-refresh Crown checks with iPhone-speaker playback; intermittent reliability and other routes remain unproven. |
+| [#1 Blank native media](https://github.com/qayshp/TeachingTimer/issues/1) | FB25305069 | **Resolved November 6** by preventive view recreation, supported by no recent physical recurrence and a passing service-loss recovery capture. Current originals contain Not Playing; an initial preview misreading was corrected. Apple's root cause/status is separate; reopen on recurrence. |
+| [#2 Crown volume response](https://github.com/qayshp/TeachingTimer/issues/2) | FB25329167 | **Fixed November 6** for the retained-control/refocus regression. Controlled comparison, four physical Beta 35 checks and six fresh lifecycle assertions pass. Other routes belong in #10; silencing remains #3. Reopen on recurrence. |
 | [#3 Unexpected audio silencing](https://github.com/qayshp/TeachingTimer/issues/3) | Draft only | A captured zero-volume request does not establish the initiating fault. On November 5 the maintainer corrected a transcription: no zero-volume event during timer adjustment has recurred since recent changes. Apparent mitigation only. |
 | [#4 Always-On seconds-hand backstep](https://github.com/qayshp/TeachingTimer/issues/4) | FB25329087 | **Closed as fixed, November 6.** Builds 33–34 correct the reproduced precision and moving-anchor mechanisms. Follow-up recordings show no backward ticks; the owner reports no recent physical recurrence. [Evidence and resolution](ALWAYS_ON_HAND_TRANSITION.md#resolution--november-6). Reopen on recurrence. Apple status is separate; follow-up not sent. |
 | [#5 Watch developer connection failures](https://github.com/qayshp/TeachingTimer/issues/5) | FB25329139 | Apple could not diagnose with current information; coordinated failure/recovery evidence remains needed. |
 | [#6 Paired Simulator media discovery](https://github.com/qayshp/TeachingTimer/issues/6) | FB25294079 | No known-working companion-media baseline; Apple support clarification remains needed. |
-| [#7 Runtime recovery after dimmed relaunch](https://github.com/qayshp/TeachingTimer/issues/7) | Not separately filed | Build 30 reproduces activation error code 3; build 31 defers Start and recovers on later active wake in one matched Simulator trial. November 5 adds 1,280 seeded lifecycle events through the controller, plus a fresh passing action/focus suite. Physical behavior and arbitrary callback ordering remain unverified. |
+| [#7 Runtime recovery after dimmed relaunch](https://github.com/qayshp/TeachingTimer/issues/7) | Not separately filed | **Closed as fixed, November 6.** Builds 31–32 prevent the reproduced premature Start. Matched Simulator recovery and eight additional persisted-intent regression cases pass, alongside 1,280 seeded events. Broader native callback delivery/physical reliability remain in #10; reopen on recurrence. |
 | [#8 Frozen song progress](https://github.com/qayshp/TeachingTimer/issues/8) | FB25379883 | Timeline isolation merged in `2e02452`. The maintainer reports progress still freezes on TestFlight `1.0 (261104.1939.6)`, which includes the change. Isolation alone did not fix it; matched physical comparison remains open. |
+| [#27 Awake runtime recovery rejection](https://github.com/qayshp/TeachingTimer/issues/27) | Not filed | Hosted watchOS 26.5 smoke catches code 3 after both app and scene report active. This differs from #7's corrected inactive/dimmed submission. Preserve the failed capture and compare startup/relaunch timing; no physical reproduction or fix claimed. |
 
 ## Release and maintenance work
 
@@ -30,9 +31,13 @@ a cause. See the [full review](REVIEW_2026-11-05.md).
 The [roadmap](ROADMAP.md) orders these review follow-ups; each issue has its own
 completion checklist:
 
+The [November 6 review](ISSUE_REVIEW_2026-11-06.md) records current closures,
+new automated coverage, the hosted failure and a next action for every open issue.
+
 - [#9 Runtime intended use](https://github.com/qayshp/TeachingTimer/issues/9)
 - [#10 Physical reliability/battery/accessibility](https://github.com/qayshp/TeachingTimer/issues/10)
 - [#11 First external beta and release readiness](https://github.com/qayshp/TeachingTimer/issues/11)
+- [#26 Private tester journal sharing](https://github.com/qayshp/TeachingTimer/issues/26): [proposed export and delivery gates](DIAGNOSTIC_EXPORT_PLAN.md); no feature or upload service is shipped.
 - [#14 Release traceability and contribution safeguards](https://github.com/qayshp/TeachingTimer/issues/14)
 - [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15): invariant table and seeded tests implemented; performance measurement remains.
 - [#24 Release ordering and verification reuse](https://github.com/qayshp/TeachingTimer/issues/24): overlapping publishers, duplicated checks and a confirmed synthetic Pacific daylight-saving build-number reversal. Main Watch-check cancellation by later docs pushes is fixed with per-commit groups.

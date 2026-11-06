@@ -17,6 +17,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | Physical Watch | The owner reports TestFlight **1.0 (261104.1939.6)** on the Watch; frozen song progress persists on this build. Installation is owner-reported, not a new developer-tool inventory or classroom validation. Unattended automatic-update cadence is not established. |
 | Owner pilot | The November 2 build-35 install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Its seven-build group inventory through 36 is historical. The later build-42 update is separately owner-confirmed. |
 | Rollback | Build 16 remains a preserved local checkpoint with its known media/volume issues. |
+| November 6 issue follow-up | #1, #2 and the original dimmed-start #7 are resolved. All 13 local Swift suites / 266 Python tests pass; fresh action, focus, media and count captures were reviewed. Hosted watchOS 26.5 testing caught a separate awake-runtime rejection (#27); the newer hosted path passed. [Full findings and evidence correction](docs/ISSUE_REVIEW_2026-11-06.md). No app behavior or physical device changed. |
 | November 6 CI expansion | At `d0ac054`, local and both hosted small/large Watch matrices passed recovery, intentional Stop, timer/media retirement and overdue-class launch checks. Each matrix exercised 20 process launches; all 13 Swift suites / 253 Python tests and both archive paths passed. [Exact models, runtime builds and limits](docs/AUTOMATION.md#booted-watch-smoke-check). CodeQL passed; no app behavior changed, no new TestFlight release was published and no physical Watch was accessed. |
 | November 5 cleanup follow-up | Gear-only class/settings control, complete Start/Resume session labels, strict compiler checks and booted Simulator smoke are implemented. All 13 Swift suites / 204 Python tests, 21 SE 3 action assertions and six lifecycle assertions passed. Both hosted paths executed the Watch app on watchOS 26.5 and 27.2 and passed archive verification at `8ddde8f`; see the [follow-up](docs/REVIEW_2026-11-05.md#hosted-follow-up--november-6). No physical-device action was performed. |
 | November 5 review | Runtime sequence coverage, release-input checks and clearer stopped-session text are committed. Full SE 3 Simulator suite and five-size layout inspection completed; see the [review and evidence limits](docs/REVIEW_2026-11-05.md). No physical-device action was performed for this review. |
@@ -36,11 +37,16 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
   indicator with an apparent, unmeasured offset.
 - The user confirms eligible inactivity refresh updates song position. Neither
   that nor page reentry establishes continuously accurate progress.
-- Blank media and volume-to-zero have not recurred since recent changes, per the
-  owner's November 5 correction; treat both as mitigated, not fixed. Crown
-  nonresponse, frozen song progress and developer-
-  connection failures remain distinct [open issues](docs/ISSUE_TRACKER.md).
-  Runtime recovery still needs physical validation.
+- **Blank media (#1) and the Crown-focus regression (#2) are resolved:** retained
+  native controls/refocus and view recreation have targeted verification plus
+  subsequent positive owner evidence. Reopen on recurrence. Unexpected silencing
+  (#3) has not recurred recently but needs one bounded affected-route check;
+  frozen progress (#8) and developer connections (#5) remain open.
+- **Dimmed runtime recovery fixed in builds 31–32:** readiness gating prevents
+  the reproduced premature Start. The matched Simulator recovery and eight
+  added persisted-intent cases pass; [issue #7](https://github.com/qayshp/TeachingTimer/issues/7)
+  is closed. A newly captured awake-relaunch rejection despite active readiness
+  is tracked separately in #27; broader physical reliability remains in #10.
 - **Seconds-hand backstep fixed in builds 33–34:** the stable timeline anchor
   and boundary normalization address the reproduced mechanisms. Subsequent
   Simulator recordings show no backward ticks, and the owner reports no recent
@@ -57,9 +63,9 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 2. Obtain runtime guidance and finish teaching-length, route, battery and
    accessibility checks before a general release.
 3. Verify the exact public build and first external install; the invitation page
-   is now open. Private email
-   accepts descriptions and optional cropped screenshots; tester journal export
-   is not implemented.
+   is now open. Private email accepts descriptions and optional cropped
+   screenshots; [tester journal export](docs/DIAGNOSTIC_EXPORT_PLAN.md) is proposed
+   in #26, not implemented.
 
 The [issue-linked roadmap](docs/ROADMAP.md) records acceptance criteria.
 No supervised device session or unattended playback run is scheduled here.

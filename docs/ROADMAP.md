@@ -10,8 +10,10 @@ owns build, installation and distribution facts.
 | --- | --- | --- |
 | P0 — [#8](https://github.com/qayshp/TeachingTimer/issues/8) | Diagnose frozen native song progress | The merged isolation experiment did not fix TestFlight `1.0 (261104.1939.6)`. Add the supervised standalone/embedded comparison to Apple feedback, then obtain matched physical evidence; preserve playback, Crown and class state. |
 | P0 — [#9](https://github.com/qayshp/TeachingTimer/issues/9) | Establish supported runtime policy | Documented Apple guidance on actual yoga teaching and renewal, or a supported alternative. Beta review approval alone does not complete this. |
+| P1 — [#27](https://github.com/qayshp/TeachingTimer/issues/27) | Awake-relaunch runtime rejection | Compare cold/running-process relaunch timing against the captured hosted failure; verify a bounded correction without weakening the runtime assertion. |
 | P1 — [#10](https://github.com/qayshp/TeachingTimer/issues/10) | Release-critical hardware validation | Supervised media/route/count checks, teaching-length renewal and battery results, readable controls and accessibility. Requires coordinated physical use. |
 | P1 — [#11](https://github.com/qayshp/TeachingTimer/issues/11) | External beta installation | The public invitation now offers joining instructions. Verify exact eligible build and one new tester's install/update/support experience; internal-owner success is separate. |
+| P1 — [#26](https://github.com/qayshp/TeachingTimer/issues/26) | Private tester journal sharing | Validate harmless native attachment delivery, then implement bounded report export or an explicitly approved private upload route. [Proposed design](DIAGNOSTIC_EXPORT_PLAN.md); no export is shipped. |
 | P1 — [#14](https://github.com/qayshp/TeachingTimer/issues/14) | Contribution and release safeguards | Main still has no required-check enforcement. Define a practical recovery/bypass policy; retain durable source tags/notes after workflow artifacts expire. |
 | P2 — [#24](https://github.com/qayshp/TeachingTimer/issues/24) | Release order and verification reuse | Avoid overlapping publishers, reduce duplicate Mac verification, and handle decreasing Pacific-local numbers at daylight-saving fall-back. Synthetic numbering failure is confirmed; no rejected upload is claimed. |
 | P2 — [#17](https://github.com/qayshp/TeachingTimer/issues/17) | Transient missing Simulator controls | Keep original early/delayed captures and separate capture timing, dim state and actual missing pixels. Current count/Lock OCR warnings were hand occlusion; early multi-size captures still merit follow-up. |
@@ -45,9 +47,10 @@ translucent settings button and are subdued beneath system time.
 
 ## Existing reliability work
 
-Use the [issue map](ISSUE_TRACKER.md) for blank media (#1), Crown response (#2),
-silencing (#3), developer connections (#5), paired
-Simulator media (#6), dimmed runtime recovery (#7) and frozen progress (#8).
+Use the [issue map](ISSUE_TRACKER.md) for silencing (#3), developer connections
+(#5), paired Simulator media (#6), frozen progress (#8) and awake runtime
+recovery (#27). The [November 6 review](ISSUE_REVIEW_2026-11-06.md) records the
+latest closure decisions, tests and evidence limits.
 Keep them separate unless evidence establishes a shared cause. Resolution should
 consider the identified cause, correction, relevant tests and subsequent use;
 it does not require proof that a symptom can never recur.
@@ -58,10 +61,18 @@ normalization, passing follow-up recordings and no recent owner-observed
 physical recurrence. Reopen on recurrence; the separate Apple report retains
 its last inspected status.
 
-After the release-blocking work above: verify **#2 Crown response** and
-**#7 dimmed recovery** within #10's supervised checks. Monitor
-**#1 blank media** and **#3 silencing**, both reported absent since recent changes;
-keep them open as apparently mitigated. **#6 paired Simulator media** awaits
+The dimmed-relaunch defect [#7](https://github.com/qayshp/TeachingTimer/issues/7)
+is also closed as fixed: the readiness guard addresses the reproduced premature
+Start, matched Simulator recovery passed, and persisted-intent regression tests
+cover both readiness orders and bounded failure. Broader physical recovery
+remains in #10; reopen #7 if the corrected symptom returns. Newly observed #27
+has both readiness gates satisfied and is tracked independently.
+
+**#1 blank media** and **#2 Crown focus** are also resolved using the targeted
+corrections, passing follow-ups and owner evidence. Retain their reopen criteria.
+**#3 silencing** remains for one bounded volume exercise on the previously
+affected available routes; passing that alongside normal use can justify
+closure without a universal route guarantee. **#6 paired Simulator media** awaits
 Apple support guidance. **#5 connection failures** needs the existing requested
 CoreDevice failure/recovery capture; TestFlight improves delivery but does not
 repair that diagnostic transport.

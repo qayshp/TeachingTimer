@@ -1,5 +1,21 @@
 # Runtime recovery after reopening
 
+**November 6 resolution:** [issue #7](https://github.com/qayshp/TeachingTimer/issues/7)
+is closed as fixed for the reproduced premature Start during dimmed relaunch.
+Builds 31–32 gate recovery on both scene and native readiness; the matched
+Simulator comparison below recovered on wake. Eight additional persisted-intent
+tests in `73d3cbd` exercise both readiness orders, saved Stop/manual recovery,
+unchanged class bytes and the captured code-3 error without a retry loop.
+All 13 Swift suites pass. The boundary doubles verify controller responses,
+not native callback delivery; broader physical reliability remains in #10.
+Reopen #7 for a recurrence of the corrected defect. Dated findings below retain
+their original evidence limits.
+
+Later in the same review, hosted watchOS 26.5 testing rejected an **awake**
+relaunch despite both readiness gates reporting active. This distinct case is
+[#27](https://github.com/qayshp/TeachingTimer/issues/27), not evidence that a
+dimmed Start bypassed the corrected guard. See the [current review](ISSUE_REVIEW_2026-11-06.md#new-awake-relaunch-failure-caught-by-hosted-testing).
+
 Build 6 fixes the gap between persisted class timing and process-local runtime
 state. Previously, a force-close retained `ClassContext` but discarded
 `renewalPending`; foreground recovery only considered that in-memory flag.

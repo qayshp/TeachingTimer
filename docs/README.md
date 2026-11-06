@@ -37,8 +37,11 @@ installation or a physical-device test.
 | [Native volume probe](../tools/native-volume-probe/README.md) | Isolated companion-volume experiment. |
 | [Timeline probe](../tools/timeline-clock-probe/README.md) | Isolated Always-On clock experiment. |
 | [Diagnostic sharing probe](../tools/diagnostic-share-probe/README.md) | Synthetic native file sharing; delivery remains unverified. |
+| [Proposed diagnostic export](DIAGNOSTIC_EXPORT_PLAN.md) | Bounded tester journal sharing, delivery validation and private-upload fallback; not shipped. |
 
 ## Current additions
+
+- [November 6 issue review](ISSUE_REVIEW_2026-11-06.md): resolved bugs, remaining priorities, stronger media evidence checks and a new hosted runtime rejection.
 
 - [November 5 full review](REVIEW_2026-11-05.md): pipelines, runtime tests, five-size Simulator inspection, issue triage, Apple status and local cleanup.
 

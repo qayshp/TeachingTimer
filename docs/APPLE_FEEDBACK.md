@@ -11,6 +11,12 @@ passing follow-up recordings and no recent owner-observed physical recurrence.
 This does not change FB25329087's last inspected status below or imply that its
 prepared follow-up was sent. See the [resolution](ALWAYS_ON_HAND_TRANSITION.md#resolution--november-6).
 
+The subsequent [November 6 issue review](ISSUE_REVIEW_2026-11-06.md) also resolves
+GitHub #1 (blank media) and #2 (Crown focus) using the app corrections and
+follow-up evidence. FB25305069 and FB25329167 retain their separate last-inspected
+statuses below. No Apple messages were sent. A new hosted awake-runtime rejection
+is tracked as GitHub #27, without a new Apple report or established root cause.
+
 ## November 5 current status
 
 | Report | Scope | Displayed resolution |
