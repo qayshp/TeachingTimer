@@ -512,10 +512,169 @@ final class WKExtendedRuntimeSession {
         assert(uiEvents[1].details["sceneState"] == contextBefore["sceneState"])
         assert(uiEvents[1].details["launchElapsedSeconds"] != nil)
         observation.cancel()
+        await checkSeededTransitions(in: directory)
         print("PASS: relaunch recovery, inactive deferral, duplicate activation, persistent Stop, manual resume, schedule edits, failed-start suppression across launches, legacy/missing/corrupt/mismatched/expired intent")
         print("PASS: early handoff ordering, inactive deferral, observed expiration error, rejected replacement no-loop, explicit reset, manual policy, narrow time/error boundaries, passive UI/runtime correlation")
         print("PASS: explicit new-class Start survives pending old invalidation without overlap; Stop/reset/class changes/retirement cancel it")
         print("PASS: automatic recovery waits for both scene/native readiness; deferred intent survives and Stop/reset/class changes/retirement/manual policy prevent recovery")
         print("PASS: queued explicit Start waits for scene/native readiness in both invalidation orders, respects user-initiated policy, and cancels while awaiting wake")
+    }
+
+    /// Mixed event histories supplement the named regression cases above.
+    /// Fixed seeds plus the last 24 actions make a failure reproducible in CI.
+    @MainActor private static func checkSeededTransitions(in directory: URL) async {
+        let seeds: [UInt64] = [1, 7, 42, 99, 2026, 104729, 0xC0FFEE, 0xDEADBEEF]
+        for seed in seeds {
+            var random = SeededEvents(state: seed)
+            let suite = "RuntimeSequences." + UUID().uuidString
+            let defaults = UserDefaults(suiteName: suite)!
+            let intent = RuntimeIntentStore(defaults: defaults)
+            let journal = RuntimeDiagnostics(fileURL: directory
+                .appendingPathComponent("seed-\(seed)/RuntimeDiagnostics.json"))
+            let model = ExtendedRuntimeController(journal: journal, intentStore: intent)
+            let firstInstance = WKExtendedRuntimeSession.instances.count
+            let anchor = Date()
+            var classRevision = 0
+            var context: ClassContext? = ClassContext(pressedAt: anchor, scheduledStart: anchor)
+            var stoppedClassID: Date?
+            var trace: [String] = []
+            WKApplication.shared().applicationState = .active
+            model.applicationStateChanged("active")
+            model.synchronizeClass(context)
+            model.start()
+            WKExtendedRuntimeSession.instances.last!.confirmStart()
+            await drain()
+
+            for step in 0..<160 {
+                let instances = Array(WKExtendedRuntimeSession.instances.dropFirst(firstInstance))
+                let live = instances.last { $0.state != .invalid }
+                let before = WKExtendedRuntimeSession.instances.count
+                let action = random.next(16)
+                var description: String
+                switch action {
+                case 0, 1:
+                    description = "foreground"
+                    WKApplication.shared().applicationState = .active
+                    model.applicationStateChanged("active")
+                    model.applicationBecameActive()
+                case 2, 3:
+                    let background = action == 3
+                    description = background ? "background" : "dim"
+                    WKApplication.shared().applicationState = background ? .background : .inactive
+                    model.applicationStateChanged(background ? "background" : "inactive")
+                case 4:
+                    description = "explicit_start"
+                    if context?.shouldRetire(at: Date()) == false { stoppedClassID = nil }
+                    model.start()
+                case 5:
+                    description = "explicit_stop"
+                    stoppedClassID = context?.initialStartPressedAt
+                    model.stop()
+                case 6:
+                    description = "new_class_and_start"
+                    classRevision += 1
+                    context = ClassContext(pressedAt: anchor.addingTimeInterval(Double(classRevision)),
+                                           scheduledStart: anchor)
+                    stoppedClassID = nil
+                    model.synchronizeClass(context)
+                    model.start()
+                case 7:
+                    description = "clear_class"
+                    context = nil
+                    stoppedClassID = nil
+                    model.synchronizeClass(nil)
+                case 8:
+                    description = "confirm_start"
+                    if live?.state == .notStarted { live?.confirmStart() }
+                case 9:
+                    description = "expiration_warning"
+                    if live?.state == .running {
+                        live?.expirationDate = Date().addingTimeInterval(10)
+                        live?.warn()
+                    }
+                case 10:
+                    let reasons: [WKExtendedRuntimeSessionInvalidationReason] = [
+                        .none, .expired, .resignedFrontmost, .suppressedBySystem, .error
+                    ]
+                    let reason = reasons[random.next(reasons.count)]
+                    description = "invalidate_\(reason)"
+                    live?.end(reason)
+                case 11:
+                    description = "stale_callbacks"
+                    if let stale = instances.first(where: { $0.state == .invalid }) {
+                        model.extendedRuntimeSessionDidStart(stale)
+                        model.extendedRuntimeSessionWillExpire(stale)
+                        model.extendedRuntimeSession(stale, didInvalidateWith: .error, error: nil)
+                    }
+                case 12:
+                    description = "edit_schedule"
+                    if let current = context, !current.shouldRetire(at: Date()) {
+                        context = ClassContext(pressedAt: current.initialStartPressedAt,
+                            durationMinutes: current.durationMinutes == 60 ? 75 : 60,
+                            scheduledStart: anchor.addingTimeInterval(900))
+                        model.synchronizeClass(context)
+                    }
+                case 13:
+                    let automatic = random.next(2) == 0
+                    description = automatic ? "automatic_policy" : "manual_policy"
+                    model.renewalPolicy = automatic ? .automatic : .userInitiated
+                case 14:
+                    description = "native_active_scene_inactive"
+                    WKApplication.shared().applicationState = .active
+                    model.applicationStateChanged("inactive")
+                    model.applicationBecameActive()
+                default:
+                    description = "retire_class"
+                    if let current = context {
+                        context = ClassContext(pressedAt: current.initialStartPressedAt,
+                                               scheduledStart: anchor.addingTimeInterval(-10000))
+                        model.synchronizeClass(context)
+                        model.applicationBecameActive()
+                    }
+                }
+                await drain()
+                trace.append("\(step): \(description) -> \(model.phase)")
+                trace = Array(trace.suffix(24))
+                func require(_ valid: Bool, _ invariant: String) {
+                    precondition(valid, "Runtime seed \(seed), step \(step): \(invariant)\n" + trace.joined(separator: "\n"))
+                }
+                let after = WKExtendedRuntimeSession.instances.count
+                let liveAfter = WKExtendedRuntimeSession.instances.dropFirst(firstInstance)
+                    .filter { $0.state != .invalid }
+                require(liveAfter.count <= 1, "runtime objects must never overlap")
+                require(after - before <= 1, "one event must not create multiple successors")
+                if after > before {
+                    require(context?.shouldRetire(at: Date()) == false, "a successor requires a current class")
+                    require(WKApplication.shared().applicationState == .active, "a start requires native active state")
+                    require(stoppedClassID != context?.initialStartPressedAt, "explicit Stop prevents automatic restart")
+                    if action != 4 && action != 6 {
+                        require(model.lastSceneState == "active", "deferred recovery requires scene readiness too")
+                    }
+                }
+                if let stoppedClassID, stoppedClassID == context?.initialStartPressedAt,
+                   context?.shouldRetire(at: Date()) == false {
+                    require(intent.value?.state == .stopped, "callbacks cannot overwrite explicit Stop intent")
+                }
+                if model.phase == .running {
+                    require(liveAfter.last?.state == .running, "running presentation requires a confirmed live object")
+                }
+            }
+            model.stop(source: "test_cleanup")
+            if let live = WKExtendedRuntimeSession.instances.dropFirst(firstInstance).last(where: { $0.state != .invalid }) {
+                live.end(.none)
+            }
+            await drain()
+            await journal.flush()
+            defaults.removePersistentDomain(forName: suite)
+        }
+        print("PASS: 1,280 mixed runtime events across eight fixed seeds preserve no-overlap, current-class, explicit-Stop, readiness, and confirmed-running invariants")
+    }
+
+    private struct SeededEvents {
+        var state: UInt64
+        mutating func next(_ upperBound: Int) -> Int {
+            state = state &* 6364136223846793005 &+ 1442695040888963407
+            return Int((state >> 32) % UInt64(upperBound))
+        }
     }
 }
