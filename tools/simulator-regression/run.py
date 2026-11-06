@@ -68,6 +68,37 @@ def select_service(output):
     return labels[0]
 
 
+def media_pixel_evidence(output):
+    from media_evidence import DELAYED_MEDIA_CAPTURES, collect_media_pixels
+    helper = output.resolve() / 'media-pixels'
+    try:
+        checked('swiftc', Path(__file__).with_name('MediaPixels.swift'), '-o', helper, timeout=60)
+    except Exception as error:
+        return [dict(file=name, error=f'Pixel helper unavailable: {type(error).__name__}: {error}')
+                for name in DELAYED_MEDIA_CAPTURES]
+    return collect_media_pixels(output, lambda path: json.loads(checked(helper, path.resolve())))
+
+
+def finish_result(output, scenario, checks):
+    result = {'checks': checks, 'visualResult': 'REVIEW_SCREENSHOTS_REQUIRED',
+              'actualPhoneVolume': 'unverified',
+              'note': 'Lifecycle checks and visible-content thresholds are not media recovery, audio or haptic-delivery assertions.'}
+    visual_errors = []
+    if scenario == 'media':
+        from media_evidence import media_sequence_errors
+        result['mediaPixelEvidence'] = media_pixel_evidence(output)
+        visual_errors = media_sequence_errors(result['mediaPixelEvidence'], output)
+        result['mediaVisualErrors'] = visual_errors
+        result['mediaVisualReviewRequired'] = bool(visual_errors)
+        if visual_errors:
+            result['visualResult'] = 'VISUAL_REVIEW_REQUIRED'
+    # Keep all original lifecycle and pixel evidence before returning failure.
+    (output / 'result.json').write_text(json.dumps(result, indent=2, allow_nan=False))
+    print(json.dumps(result, indent=2, allow_nan=False))
+    if not all(value is True for value in checks.values()) or visual_errors:
+        raise SystemExit(2)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--simulator", required=True)
@@ -192,11 +223,7 @@ def main():
     }
     if args.scenario == "focus":
         checks["manualRefreshRequested"] = any(e["event"] == "volume_refresh_requested" for e in new)
-    result = {"checks": checks, "visualResult": "REVIEW_SCREENSHOTS_REQUIRED", "actualPhoneVolume": "unverified", "note": "Lifecycle checks are not pixel, audio or haptic-delivery assertions."}
-    (args.output / "result.json").write_text(json.dumps(result, indent=2))
-    print(json.dumps(result, indent=2))
-    if not all(checks.values()):
-        raise SystemExit(2)
+    finish_result(args.output, args.scenario, checks)
 
 
 if __name__ == "__main__":

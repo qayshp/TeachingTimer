@@ -1,13 +1,17 @@
 # SPDX-License-Identifier: MPL-2.0
 import importlib.util
 import io
+import json
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
-spec = importlib.util.spec_from_file_location('regression', Path(__file__).resolve().parents[1] / 'tools/simulator-regression/run.py')
+runner_path = Path(__file__).resolve().parents[1] / 'tools/simulator-regression'
+sys.path.insert(0, str(runner_path))
+spec = importlib.util.spec_from_file_location('regression', runner_path / 'run.py')
 regression = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(regression)
 
@@ -65,6 +69,83 @@ class SimulatorRegressionChecks(unittest.TestCase):
     def test_ambiguous_service_is_rejected(self):
         with self.assertRaises(ValueError):
             regression.select_service('42 0 UIKitApplication:com.apple.NanoNowPlayingViewService[a]\n43 0 UIKitApplication:com.apple.NanoNowPlayingViewService[b]')
+
+
+class MediaResultChecks(unittest.TestCase):
+    def test_helper_compile_failure_writes_review_result_before_exit_two(self):
+        with tempfile.TemporaryDirectory() as folder, \
+                patch.object(regression, 'checked', side_effect=RuntimeError('compiler unavailable')), \
+                patch.object(regression.sys, 'stdout', io.StringIO()):
+            with self.assertRaises(SystemExit) as raised:
+                regression.finish_result(Path(folder), 'media', {'sameClassBytes': True})
+            self.assertEqual(raised.exception.code, 2)
+            result = json.loads((Path(folder) / 'result.json').read_text())
+            self.assertEqual(result['checks'], {'sameClassBytes': True})
+            self.assertEqual(result['visualResult'], 'VISUAL_REVIEW_REQUIRED')
+            self.assertIs(result['mediaVisualReviewRequired'], True)
+            self.assertEqual(len(result['mediaPixelEvidence']), 3)
+            self.assertTrue(all('compiler unavailable' in r['error'] for r in result['mediaPixelEvidence']))
+
+    def test_measurement_errors_remain_saved_review_failures(self):
+        from media_evidence import DELAYED_MEDIA_CAPTURES
+        failures = (subprocess.CalledProcessError(2, ['media-pixels']),
+                    subprocess.TimeoutExpired(['media-pixels'], 30), 'invalid JSON',
+                    '{"visibleFraction": NaN}')
+        for failure in failures:
+            with self.subTest(failure=str(failure)), tempfile.TemporaryDirectory() as folder, \
+                    patch.object(regression.sys, 'stdout', io.StringIO()):
+                root = Path(folder)
+                for name in DELAYED_MEDIA_CAPTURES:
+                    (root / name).write_bytes(b'original fixture')
+                def command(*args, **kwargs):
+                    if args[0] == 'swiftc':
+                        return ''
+                    if isinstance(failure, Exception):
+                        raise failure
+                    return failure
+                with patch.object(regression, 'checked', side_effect=command):
+                    with self.assertRaises(SystemExit) as raised:
+                        regression.finish_result(root, 'media', {'sameClassBytes': True})
+                self.assertEqual(raised.exception.code, 2)
+                result = json.loads((root / 'result.json').read_text())
+                self.assertIs(result['mediaVisualReviewRequired'], True)
+                self.assertEqual(len(result['mediaPixelEvidence']), 3)
+                self.assertTrue(result['mediaVisualErrors'])
+                json.dumps(result, allow_nan=False)
+
+    def test_blank_delayed_original_writes_metrics_and_lifecycle_results_before_failure(self):
+        from media_evidence import DELAYED_MEDIA_CAPTURES, PIXEL_REGION
+        with tempfile.TemporaryDirectory() as folder, patch.object(regression.sys, 'stdout', io.StringIO()):
+            root = Path(folder)
+            for name in DELAYED_MEDIA_CAPTURES:
+                (root / name).write_bytes(('fixture ' + name).encode())
+            def command(*args, **kwargs):
+                if args[0] == 'swiftc':
+                    return ''
+                blank = Path(args[1]).name == DELAYED_MEDIA_CAPTURES[1]
+                return json.dumps(dict(width=324, height=394, region=PIXEL_REGION,
+                    visibleFraction=0 if blank else .04, brightFraction=0,
+                    meanChannelMaximum=0 if blank else .01, peakChannel=0 if blank else 1))
+            with patch.object(regression, 'checked', side_effect=command):
+                with self.assertRaises(SystemExit) as raised:
+                    regression.finish_result(root, 'media', {'sameClassBytes': True, 'noNewVolumeControl': True})
+            self.assertEqual(raised.exception.code, 2)
+            result = json.loads((root / 'result.json').read_text())
+            self.assertTrue(all(result['checks'].values()))
+            self.assertEqual(result['mediaPixelEvidence'][1]['pixels']['visibleFraction'], 0)
+            self.assertEqual(len(result['mediaVisualErrors']), 1)
+            self.assertIn('04b-media-return-after-five-seconds.png', result['mediaVisualErrors'][0])
+
+    def test_focus_keeps_existing_assertions_without_media_measurement(self):
+        with tempfile.TemporaryDirectory() as folder, \
+                patch.object(regression, 'media_pixel_evidence') as measure, \
+                patch.object(regression.sys, 'stdout', io.StringIO()):
+            regression.finish_result(Path(folder), 'focus', {'sameClassBytes': True})
+            measure.assert_not_called()
+            result = json.loads((Path(folder) / 'result.json').read_text())
+            self.assertNotIn('mediaPixelEvidence', result)
+            with self.assertRaises(SystemExit):
+                regression.finish_result(Path(folder), 'focus', {'sameClassBytes': False})
 
 class JournalBoundaryChecks(unittest.TestCase):
     def test_retention_does_not_hide_new_events(self):

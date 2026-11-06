@@ -21,6 +21,7 @@ import sys
 import time
 import tempfile
 from actions import BASELINE_ACTIONS, baseline_complete
+from media_evidence import media_sequence_errors
 
 HERE = Path(__file__).resolve().parent
 ACTIONS = BASELINE_ACTIONS
@@ -78,6 +79,10 @@ def evidence_errors(stage, evidence, folder):
             errors.append('lifecycle assertions incomplete or false')
         if not (folder / ('07-return-crown.png' if stage == 'focus' else '07-final.png')).is_file():
             errors.append('missing final lifecycle capture')
+        if stage == 'media':
+            errors.extend(media_sequence_errors(evidence.get('mediaPixelEvidence'), folder))
+            if evidence.get('mediaVisualReviewRequired') is not False or evidence.get('mediaVisualErrors') != []:
+                errors.append('visual review required: media pixel gate incomplete or flagged')
     elif stage == 'controls':
         if (evidence.get('frames', 0) != 33 or evidence.get('fullCountCompleted') is not True
                 or evidence.get('lockedCountEvidence', {}).get('verified') is not True

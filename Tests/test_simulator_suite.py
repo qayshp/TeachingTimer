@@ -16,6 +16,23 @@ suite = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(suite)
 
 
+def media_fixture(folder):
+    names = ('03b-media-before-fault-after-five-seconds.png',
+             '04b-media-return-after-five-seconds.png', '06b-media-after-five-seconds.png')
+    records = []
+    for name in names:
+        content = ('original fixture ' + name).encode()
+        (folder / name).write_bytes(content)
+        records.append(dict(file=name, sha256=hashlib.sha256(content).hexdigest(),
+                            pixels=dict(width=324, height=394,
+                                region='x=0.10...0.90, y=0.22...0.82 (top origin)',
+                                visibleFraction=.04, brightFraction=.02,
+                                meanChannelMaximum=.01, peakChannel=1)))
+    (folder / '07-final.png').touch()
+    return dict(checks={k: True for k in suite.LIFECYCLE}, mediaPixelEvidence=records,
+                mediaVisualReviewRequired=False, mediaVisualErrors=[])
+
+
 class SimulatorSuiteChecks(unittest.TestCase):
     def setUp(self):
         metadata = patch.object(suite, 'artifact_identity', return_value={'build': 'fixture'})
@@ -41,7 +58,31 @@ class SimulatorSuiteChecks(unittest.TestCase):
             (root / '07-final.png').touch()
             self.assertTrue(suite.evidence_errors('media', {'checks': {}}, root))
             self.assertTrue(suite.evidence_errors('media', {'checks': {k: 'true' for k in suite.LIFECYCLE}}, root))
-            self.assertEqual(suite.evidence_errors('media', {'checks': {k: True for k in suite.LIFECYCLE}}, root), [])
+            self.assertTrue(suite.evidence_errors('media', {'checks': {k: True for k in suite.LIFECYCLE}}, root))
+            self.assertEqual(suite.evidence_errors('media', media_fixture(root), root), [])
+
+    def test_media_success_claim_cannot_hide_blank_missing_or_invalid_pixel_evidence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for invalid in (None, {}, {'visibleFraction': .04}):
+                evidence = media_fixture(root)
+                evidence['mediaPixelEvidence'][1]['pixels'] = invalid
+                self.assertTrue(suite.evidence_errors('media', evidence, root))
+            for invalid in (0, float('nan'), float('inf'), True, '0.04'):
+                evidence = media_fixture(root)
+                evidence['mediaPixelEvidence'][1]['pixels'].update(visibleFraction=invalid, brightFraction=0)
+                self.assertTrue(suite.evidence_errors('media', evidence, root))
+            evidence = media_fixture(root)
+            evidence['mediaPixelEvidence'].pop()
+            self.assertTrue(suite.evidence_errors('media', evidence, root))
+            evidence = media_fixture(root)
+            (root / evidence['mediaPixelEvidence'][1]['file']).unlink()
+            self.assertTrue(suite.evidence_errors('media', evidence, root))
+            for key, value in (('mediaVisualReviewRequired', True), ('mediaVisualReviewRequired', 0),
+                               ('mediaVisualErrors', ['visual review required'])):
+                evidence = media_fixture(root)
+                evidence[key] = value
+                self.assertTrue(suite.evidence_errors('media', evidence, root))
 
     def test_success_without_capture_is_incomplete(self):
         with tempfile.TemporaryDirectory() as folder:

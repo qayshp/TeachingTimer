@@ -76,6 +76,15 @@ media capture: successful callbacks do not mean that pixels rendered, focus was
 acquired, phone volume changed, or haptics were delivered. With no compatible
 phone media source, an unchanged volume ring is inconclusive.
 
+The media scenario also measures the three five-second-delayed originals
+(before fault, after return, and after page reentry). Missing/invalid metrics,
+changed image digests or near-black content fail with **visual review required**;
+the suite independently enforces this evidence. OCR absence is not blankness,
+and passing the content threshold is not proof of usable controls, advancing
+song progress or audio. Final measurement/audit errors are saved in `result.json`
+before failure; screenshot-command failures retain the existing action logs and
+fail the stage. Original-image review remains required.
+
 ## October 26, 2026 evidence
 
 **October 28 correction:** the nine delayed images included in the later Apple
