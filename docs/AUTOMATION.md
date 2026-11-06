@@ -143,8 +143,31 @@ The expanded matrix passed locally on November 6 using Xcode 27.2 / watchOS 27.2
 Both completed ten process launches, two timed retirements and an overdue-launch
 check, with clean Simulator removal. All 13 Swift suites and 253 Python tests,
 fixture/helper builds, Simulator compilation and unsigned archives passed.
-Expanded hosted execution remains pending; the runs above establish only the
-earlier three-launch smoke coverage.
+
+Expanded hosted execution also passed at clean source `d0ac054`:
+
+| Verification | Runtime | Small / large models | Matrix time |
+| --- | --- | --- | --- |
+| [Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/42192825908), Xcode 26.6 (17F113) | watchOS 26.5 (23T570) | Series 6 40 mm / Ultra 49 mm | 612.961 s |
+| [Release verification](https://github.com/qayshp/TeachingTimer/actions/runs/42192825784), Xcode 27.2 (27B48) | watchOS 27.2 (24S116) | SE 3 40 mm / Ultra 4 49 mm | 699.564 s |
+
+Each hosted matrix completed all 20 launches, four timed retirements, two
+overdue-launch checks and clean removal of both devices. All 14 verification
+stages passed. These jobs cover two size extremes on their recorded runtime;
+they are not a test of every Watch generation or every rendered layout. The
+local and hosted 27.2 runtime build numbers differ and are intentionally retained
+above. [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/42192825381)
+passed for the same source. Publishing was skipped because these changes affect
+tests and documentation, not the app artifact.
+
+The initial local attempts exposed two harness races: the interface journal can
+flush after runtime callbacks, and the preference file can update after a
+retirement event is recorded. Readiness now waits for both independent sources
+within the existing launch deadline before starting its three-second observation.
+It does not treat a callback alone as persisted-state proof. The 49 added Python
+tests also reject stale launch/runtime IDs, premature retirement, lost journal
+records, late restarts, transient dim/background intervals, and incomplete
+matrices. The app's production code was unchanged.
 
 ### November 2, 2026 — Swift CodeQL coverage check
 

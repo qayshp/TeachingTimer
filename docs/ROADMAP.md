@@ -29,6 +29,10 @@ The narrow [#25](https://github.com/qayshp/TeachingTimer/issues/25) recovery-lab
 layout fix is recorded in the review's before/after captures.
 [#23](https://github.com/qayshp/TeachingTimer/issues/23) is also complete: real
 hosted Watch launches and class/Stop persistence passed on watchOS 26.5 and 27.2.
+The November 6 expansion adds small/large matrices with real running-session
+recovery, timed class retirement on both pages and overdue-launch checks. Local
+and both hosted paths passed; [exact coverage](AUTOMATION.md#booted-watch-smoke-check)
+still excludes menu interactions, physical audio/haptics and full-length renewal.
 The follow-up adds compiler/source hygiene and clearer gear/session controls;
 main verification can no longer be cancelled by a later docs-only push.
 
