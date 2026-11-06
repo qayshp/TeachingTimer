@@ -32,23 +32,26 @@ making no automatic uploads, and ordinary testers are not promised journal expor
 
 ## Getting journals off the Watch
 
-Published builds have no journal export or upload control. Ordinary Watch Mail,
+Builds preceding the native-sharing pilot have no journal export or upload control. Ordinary Watch Mail,
 the support QR code and the distribution container do not attach app-private
 journals. The November 2 [owner pilot](TESTFLIGHT_PILOT_RESULTS.md) copied all
 three Beta journals through a developer-enabled SE 3 and trusted Mac; that is
 not an ordinary tester's retrieval path.
 
-A [native-sharing draft](DIAGNOSTIC_EXPORT_PLAN.md) now adds **Settings → About →
+The [native-sharing owner pilot](DIAGNOSTIC_EXPORT_PLAN.md) adds **Settings → About →
 Share diagnostics**, a time-limited/filtered report, preview and explicit native
-share action. It is **unmerged and Simulator-only**, with no upload service or
-new iPhone companion. Current public-beta support still accepts descriptions and
-optional cropped screenshots; it does not require journals.
+share action, with no upload service or new iPhone companion. The owner approved
+merge after review/CI and an internal TestFlight test after class. Merge/release
+readiness remains in [current status](../DEVELOPMENT_STATUS.md); attachment receipt
+is not yet verified. Public-beta support still accepts descriptions and optional
+cropped screenshots; it does not require journals.
 
 The November 6 SE 3 Simulator probe offered only Messages. A harmless 139-byte
 JSON and a 1,401,371-byte representative report reached compose; staged copies
 matched source hashes and parsed correctly. No recipient was selected or file
 sent, and cancellation returned. This extends the November 2 presentation checks
-without proving delivery. The owner chose to defer physical testing. Do not
+without proving delivery. The planned owner TestFlight test will investigate
+physical receipt. Do not
 promise Mail support, a direct-to-support send, or a usable tester export until
 received attachments and the complete intended route are verified.
 
@@ -102,7 +105,7 @@ actual intake practice; optional support sharing is not automatically exempt.
   remains unverified.
 - [x] Public pilot explicitly accepts descriptions and optional cropped
   screenshots without requiring journal attachments. Native export now has a
-  separate draft; tester delivery remains unverified and unreleased.
+  separate owner-pilot validation path; general tester delivery remains unverified.
 
 An email route does not itself solve exporting journals from a TestFlight Watch
 app. If developer tools cannot copy that app's container, report the limitation

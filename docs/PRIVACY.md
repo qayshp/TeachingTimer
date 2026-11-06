@@ -1,8 +1,8 @@
 # Privacy and diagnostics
 
-Policy updated November 6, 2026 for the **draft native diagnostic-sharing
-implementation**. This feature has not been released; recipient delivery is
-not yet validated. The policy below describes the draft's behavior when built.
+Policy updated November 6, 2026 for native diagnostic sharing. Recipient
+delivery is still under owner-pilot validation; the policy describes how the
+implemented sharing feature handles data.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does
@@ -42,7 +42,7 @@ Review the available time range, event counts, missing-history warnings and
 event preview before choosing **Share file…**. The native sharing sheet lets you
 choose a destination; it does not send directly to support or confirm receipt.
 Available destinations depend on the system. Actual attachment delivery remains
-unverified, so this draft is not yet a supported tester intake route.
+unverified, so this feature is not yet a supported general tester intake route.
 
 The report includes app/build/OS versions, exact event timestamps, class/session
 and interface state, count timing and selected error codes. Generated run IDs

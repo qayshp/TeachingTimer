@@ -1,9 +1,12 @@
-# Diagnostic sharing: draft validation
+# Diagnostic sharing: validation record
 
 November 6, 2026 · [Issue #26](https://github.com/qayshp/TeachingTimer/issues/26).
-This is a **draft branch**, not a released feature. The owner chose Simulator-only
-testing and to leave delivery validation pending. No physical device, account,
-recipient, backend or TestFlight distribution was changed.
+The tests below were completed under the owner's initial Simulator-only scope.
+No physical device, account, recipient, backend or TestFlight distribution was
+changed during those tests. The owner subsequently approved merge after review
+and CI, followed by an internal TestFlight installation and sharing test after
+class. That planned test is not a received-file result; delivery remains pending.
+See [current status](../DEVELOPMENT_STATUS.md) for merge and release readiness.
 
 ## What was tested
 
@@ -92,4 +95,5 @@ received file as described in the probe README.
 - Reconcile the actual intake route and retention with App Store privacy answers.
 
 Keep [issue #26](https://github.com/qayshp/TeachingTimer/issues/26) open until these
-gates are addressed. No automatic merge or TestFlight upload is part of this draft.
+gates are addressed. The owner-approved internal pilot can proceed after the
+implementation review and CI pass; broader delivery claims still need these results.

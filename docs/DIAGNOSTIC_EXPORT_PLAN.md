@@ -1,17 +1,18 @@
-# Diagnostic sharing draft and delivery plan
+# Diagnostic sharing and delivery plan
 
-Updated November 6, 2026. **Implemented on a draft branch for Simulator testing;
-not merged, released, installed on the physical Watch, or verified to deliver a
-file.** [Issue #26](https://github.com/qayshp/TeachingTimer/issues/26) remains open.
-The owner explicitly chose to keep this iteration Simulator-only. Published
-builds continue to use [description-based private support](../SUPPORT.md).
+Updated November 6, 2026. **The owner approved merging after review and CI, then
+using the internal TestFlight build for classroom and journal-sharing validation.**
+Merge/release readiness is tracked in [current status](../DEVELOPMENT_STATUS.md).
+No received attachment has yet been validated;
+[issue #26](https://github.com/qayshp/TeachingTimer/issues/26) remains open.
+General testers can still use [description-based private support](../SUPPORT.md).
 See the [validation record](DIAGNOSTIC_SHARING_VALIDATION.md) for completed checks
 and the limits of the current evidence.
 
 ## Decision and evidence
 
 Native `ShareLink` is the smallest candidate: no server, account service or iPhone
-companion is needed. The draft prepares a bounded file and asks the user to
+companion is needed. The implementation prepares a bounded file and asks the user to
 choose a private destination. It must not be promoted as a working tester intake
 route until a received attachment is validated.
 
@@ -38,7 +39,7 @@ If native delivery fails or requires an awkward Messages-to-phone-to-email relay
 compare the explicit HTTPS fallback below. A Simulator limitation alone does not
 prove physical sharing fails. No upload backend or companion is implemented.
 
-## Draft user flow
+## User flow
 
 **Gear → Settings → About → Share diagnostics**:
 
@@ -99,7 +100,12 @@ stable encoding, size rejection, cache boundaries and source preservation.
 These tests do not establish native attachment delivery. The journals' own
 retention remains documented in [Privacy](PRIVACY.md).
 
-## Gates before release
+## Owner pilot and gates before general support
+
+The owner will install through TestFlight and try sharing after class. The
+remaining checks establish supported delivery; they do not block the approved
+owner pilot once the implementation checks pass. No developer-tool access to
+the physical devices is requested for that plan.
 
 1. Receive harmless small and realistically sized JSON fixtures from an
    authorized physical Watch. Verify filename, size, SHA-256 and parsed contents.
@@ -137,7 +143,7 @@ An upload changes today's data flow. Review collected diagnostics, linkage,
 IP/server logs and providers under Apple's
 [App Privacy Details](https://developer.apple.com/app-store/app-privacy-details/).
 User-triggered support sharing is not automatically exempt. No service, retention
-promise or App Store privacy-label change has been deployed for this draft.
+promise or App Store privacy-label change has been deployed for this feature.
 
 ## Deferred companion option
 
