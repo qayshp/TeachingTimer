@@ -77,10 +77,28 @@ command logs, synthetic journals, screenshots, runtime/build metadata and result
 manifest for 14 days, including failure evidence. Existing devices and evidence
 are not reset. Local output directories are retained for review.
 
+The CI workflows additionally pass `--prepare-ci-runtime`. This guarded dependency
+step runs only on **GitHub-hosted** runners and writes its evidence under
+`RUNNER_TEMP`; local and self-hosted invocation is rejected. If the selected
+Watch Simulator SDK has no matching usable runtime, it performs one ten-minute
+bounded `xcodebuild -downloadPlatform watchOS` request with that SDK version and
+architecture. It then rechecks availability and fails if the runtime is still
+missing. See [Apple's runtime installation commands](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components).
+
+This provision was necessary because the first Xcode 27.2 hosted image had the
+Watch SDK but **no Watch runtime**. The first attempt correctly failed before
+signing or uploading. Download logs and before/after inventories are retained;
+no laptop platforms, physical devices, accounts or license agreements are changed.
+CI timeouts include this dependency step. The macOS 26 runner checks its selected
+SDK/runtime; the release runner checks Xcode 27.2. Local smoke uses the already
+installed newest compatible runtime and never downloads one.
+
 Python tests cover runtime selection, missing-runtime failure, stale/wrong-page
-journal rejection, synthetic state preservation and cleanup ownership. The first
-local run passed on watchOS 27.2 / SE 3 40 mm; hosted results must independently
-confirm the configured CI runtimes. Screenshots settle briefly after appearance,
+journal rejection, synthetic state preservation and cleanup ownership. Local runs passed on watchOS 27.2 / SE 3 40 mm. The first
+[hosted Watch check](https://github.com/qayshp/TeachingTimer/actions/runs/42183165891)
+also passed all three launches on watchOS 26.5 / Xcode 26.6 in 87.117 seconds,
+with clean device removal. The separate Xcode 27.2 release-runner runtime
+provisioning still needs a successful hosted result. Screenshots settle briefly after appearance,
 but the result deliberately keeps `renderingVerified=false`.
 
 ### November 2, 2026 — Swift CodeQL coverage check

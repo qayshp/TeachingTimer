@@ -91,7 +91,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.mac_verify == 'true'
     runs-on: xcode-27
-    timeout-minutes: 30
+    timeout-minutes: 40
     outputs:
       source_sha: ${{ steps.source.outputs.sha }}
       build_number: ${{ steps.source.outputs.build_number }}
@@ -141,7 +141,7 @@ jobs:
         run: sh automation/scripts/check-tools.sh
       - name: Verify application models, Simulator and unsigned archives
         working-directory: source
-        run: python3 scripts/verify-build.py "$RUNNER_TEMP/application-verification" --simulator-smoke
+        run: python3 scripts/verify-build.py "$RUNNER_TEMP/application-verification" --simulator-smoke --prepare-ci-runtime
       - name: Retain non-secret verification report
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
@@ -151,6 +151,7 @@ jobs:
             ${{ runner.temp }}/application-verification/verification.json
             ${{ runner.temp }}/application-verification/*.log
             ${{ runner.temp }}/application-verification/simulator-smoke/
+            ${{ runner.temp }}/application-verification/runtime-preparation/
           retention-days: 14
           if-no-files-found: ignore
 

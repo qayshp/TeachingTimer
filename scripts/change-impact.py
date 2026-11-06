@@ -25,7 +25,7 @@ DOC_FILES = {"README", "README.md", "CHANGELOG.md", "SUPPORT.md", "LICENSE", "LI
 TOOL_PREFIXES = (".github/", "scripts/", "Tests/", "tools/")
 TOOL_FILES = {"AGENTS.md", "SECURITY.md", ".gitignore", ".gitattributes", ".editorconfig"}
 MAC_TOOL_FILES = {
-    "scripts/simulator-smoke.py", "scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
+    "scripts/prepare-ci-watch-runtime.py", "scripts/simulator-smoke.py", "scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
     "scripts/prepare-testflight.sh", "scripts/prepare-testflight.py",
     "scripts/inspect-artifact.py",
 }

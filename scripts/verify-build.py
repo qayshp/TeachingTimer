@@ -43,7 +43,11 @@ def main():
     parser.add_argument('output', type=Path, help='New artifact directory; never overwrites')
     parser.add_argument('--simulator-smoke', action='store_true',
                         help='Create, boot, test and delete one disposable Watch Simulator')
+    parser.add_argument('--prepare-ci-runtime', action='store_true',
+                        help='Prepare the matching Watch runtime on GitHub-hosted runners only')
     args = parser.parse_args()
+    if args.prepare_ci_runtime and not args.simulator_smoke:
+        parser.error('--prepare-ci-runtime requires --simulator-smoke')
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -72,7 +76,13 @@ def main():
             'python3', 'scripts/simulator-smoke.py',
             '--app', str(output / 'DerivedData/Build/Products/Debug-watchsimulator/TeachingTimer.app'),
             '--output', str(output / 'simulator-smoke')]))
+    if args.prepare_ci_runtime:
+        index = next(i for i, (name, _) in enumerate(steps) if name == 'simulator-smoke')
+        steps.insert(index, ('prepare-watch-runtime', [
+            'python3', 'scripts/prepare-ci-watch-runtime.py',
+            '--output', str(output / 'runtime-preparation')]))
     report['bootedSimulatorRequested'] = args.simulator_smoke
+    report['hostedRuntimePreparationRequested'] = args.prepare_ci_runtime
     try:
         for name, command in steps:
             print('Running ' + name, flush=True)

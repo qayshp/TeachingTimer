@@ -115,6 +115,21 @@ class SimulatorSmokeChecks(unittest.TestCase):
 
 
 class SmokeVerificationChecks(unittest.TestCase):
+    def test_ci_runtime_preparation_precedes_smoke(self):
+        spec = importlib.util.spec_from_file_location('smoke_verify_prepare', Path(__file__).resolve().parents[1] / 'scripts/verify-build.py')
+        verify = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verify)
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'verify'
+            with patch.object(sys, 'argv', ['verify-build.py', str(output), '--simulator-smoke', '--prepare-ci-runtime']), \
+                    patch.object(verify.subprocess, 'check_output', side_effect=['a' * 40, '']), \
+                    patch.object(verify, 'run_step', side_effect=lambda name, *args: dict(name=name, status='passed')):
+                verify.main()
+            report = json.loads((output / 'verification.json').read_text())
+            names = [step['name'] for step in report['steps']]
+            self.assertEqual(names[names.index('simulator-smoke') - 1], 'prepare-watch-runtime')
+            self.assertTrue(report['hostedRuntimePreparationRequested'])
+
     def test_opt_in_runs_smoke_after_build_and_before_archives(self):
         spec = importlib.util.spec_from_file_location('smoke_verify', Path(__file__).resolve().parents[1] / 'scripts/verify-build.py')
         verify = importlib.util.module_from_spec(spec)

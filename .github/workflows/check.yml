@@ -79,11 +79,11 @@ jobs:
     needs: changes
     if: needs.changes.outputs.mac_verify == 'true'
     runs-on: macos-26
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Verify models, tools, Simulator and unsigned archives
-        run: python3 scripts/verify-build.py "$RUNNER_TEMP/TeachingTimerVerification" --simulator-smoke
+        run: python3 scripts/verify-build.py "$RUNNER_TEMP/TeachingTimerVerification" --simulator-smoke --prepare-ci-runtime
       - name: Retain verification evidence
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
@@ -96,6 +96,7 @@ jobs:
             ${{ runner.temp }}/TeachingTimerVerification/verification.json
             ${{ runner.temp }}/TeachingTimerVerification/Simulator.xcresult
             ${{ runner.temp }}/TeachingTimerVerification/simulator-smoke/
+            ${{ runner.temp }}/TeachingTimerVerification/runtime-preparation/
             ${{ runner.temp }}/TeachingTimerVerification/*-archive/build.log
             ${{ runner.temp }}/TeachingTimerVerification/*-archive/readiness.json
             ${{ runner.temp }}/TeachingTimerVerification/*-archive/artifact-inspection.json
