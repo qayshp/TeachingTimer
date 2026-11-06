@@ -329,3 +329,48 @@ guarantee for every transition or physical Watch. Build 34's clean source
 Apple processing. It is Ready to Test / Internal and assigned to the manual
 owner pilot; notes and assignment survived reload. Physical build 25 is
 untouched. No new Apple update or physical fix is claimed.
+
+## November 6: current-app dim/wake check
+
+The owner reports not noticing the backward step recently on the physical
+Watch. This is useful classroom feedback, not a controlled hardware test.
+
+A new local SE 3 40 mm recording used Xcode 27.2 (27B52), watchOS 27.2
+(24S118), the unchanged production clock implementation and an active
+mindfulness runtime. Ten Device Hub **Controls → Lock** inputs produced five
+confirmed dim entries and five wake returns in the interface journal. Rendered
+white/yellow changes corroborate those transitions.
+
+| Measurement | Result |
+| --- | --- |
+| Recorded interval | 53.712 seconds |
+| Decoded frames | 1,994; no ambiguous hand detections |
+| Forward whole-second ticks | 54, including 59 → 0 |
+| Backward-tick candidates | **0** |
+| Forward-tick spacing | 0.982–1.018 seconds; median 1.000 |
+| Runtime | Same running identity throughout; no invalidation/replacement |
+| Saved preferences | Identical before/after, including class and runtime intent |
+| Operational journal | Identical before/after; transitions recorded separately |
+
+The existing SE 3 pixel analyzer still matches the current center and hand
+geometry. Major ticks now touch the outer edge of its sampled annulus; they
+cannot satisfy the coverage threshold alone, but the detector remains a
+heuristic. Original bright and dimmed frames were inspected. Video presentation
+timestamps strictly increase; the longest gap between encoded frames is
+1.007 seconds. Consequently this is **no reversal detected in the captured
+frames**, not proof that every instant or every future transition is correct.
+
+The Simulator artifact is the November 6 local Debug verification build,
+revision `f78d29ec3e62-dirty`; the subsequent changes through `a745d18` affect
+tests, automation and documentation, not app source/project files. This was
+not a new TestFlight or physical-Watch build. Private video, before/after
+journals and preferences, action timings, sampled original frames and pixel
+analysis are under the active worktree's ignored
+`work/clock-dim-2026-11-06/current-app/`.
+
+GitHub runs deterministic clock-boundary tests and booted-Simulator lifecycle
+checks. It does **not** currently drive or record dim/wake transitions, so green
+CI is not evidence for this visual symptom. The current result supports keeping
+the two existing mitigations and monitoring [issue #4](https://github.com/qayshp/TeachingTimer/issues/4),
+without adding another speculative rendering workaround. No new Apple follow-up
+was sent during this check.
