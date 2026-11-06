@@ -7,13 +7,12 @@ needs a Watch that supports it. Screen-size simulations are not hardware certifi
 
 ## Get the beta
 
-[Public beta invitation — awaiting Apple approval](https://testflight.apple.com/join/YA2WSmae).
-The link currently says it is not accepting new testers. The first external
-build, 1.0 (37), is submitted and **Waiting for Review** at Apple.
-The public group is open to anyone once available, with an initial
-100-tester limit. Link creation does not mean a build is ready to install.
+[Join the public beta](https://testflight.apple.com/join/YA2WSmae).
+On November 5 the invitation shows joining instructions and **View in TestFlight**.
+The initial public limit is 100 testers. The public page does not identify the
+eligible build; a first external tester's install/update is still to be verified.
 
-When the invitation becomes available, open it on your paired iPhone with
+Open the invitation on your paired iPhone with
 Apple's TestFlight app, accept the invitation, and install **Teaching Timer Beta**
 on your Watch through TestFlight. The target is watchOS 26 or later; the latest
 physical owner test used watchOS 27.2. This is a beta, not an App Store release.
@@ -28,6 +27,9 @@ phone music still requires the paired iPhone. Known media-progress, blank-page,
 volume and Always-On issues remain; try the checks below outside class first.
 
 ## Try it before teaching
+
+Use the [teaching-face visual key](TEACHING_FACE_GUIDE.md) to identify the hands,
+finish marker, class-progress perimeter, count arc and audio controls.
 
 1. Open **Start class**. Check the suggested start and end, then press the large
    **Start class** button for the usual 60 minutes. **Custom schedule** changes

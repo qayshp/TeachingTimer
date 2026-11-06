@@ -4,12 +4,17 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
-## Unreleased — build 38 experiment
+## November 4–5, 2026 — merged beta changes
 
-- Moved the clock's one-second timeline inside the teaching page so native media
-  is outside it. This is an experimental hosting change for issue #8, not a
-  demonstrated song-progress fix. It is not uploaded to TestFlight or installed
-  on the physical Watch.
+- Merged the full-screen dial and media-timeline isolation experiments. The owner
+  reports TestFlight `1.0 (261104.1939.6)` installed; song progress still freezes,
+  so isolation alone did not resolve [issue #8](https://github.com/qayshp/TeachingTimer/issues/8).
+- Adopted the rolled-mat/timer icon, with **BETA** and **DEV** badges for the
+  respective builds and an unbadged release icon.
+- Verified automatic internal TestFlight releases from main, with Pacific date/time
+  build numbers. Documentation-only changes now skip app builds and publishing.
+- The public invitation now offers **View in TestFlight** (checked November 5);
+  the first external installation remains to be verified.
 
 ## 1.0 (41) — November 3, 2026, maintainer layout pilot
 
@@ -57,7 +62,8 @@ build was installed or passed hardware validation.
 
 - Prepared the first external-eligible TestFlight build and submitted it for
   Apple's review. The [public invitation](https://testflight.apple.com/join/YA2WSmae)
-  is published but is not yet accepting testers; the initial limit is 100.
+  was published but not yet accepting testers at that checkpoint; the initial
+  limit was 100. See current status for subsequent availability.
 - App behavior is unchanged from 36. Known song-progress, volume and other
   reliability limitations remain; private support accepts descriptions/screenshots.
 - [Source tag and prerelease record](https://github.com/qayshp/TeachingTimer/releases/tag/v1.0-beta.37)

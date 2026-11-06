@@ -35,3 +35,17 @@ partial attempts remain evidence rather than being silently relabeled success.
 The historical chat working directory may no longer exist. The canonical source
 checkout is `/Users/qayshp/github-clones/TeachingTimer`; use it explicitly when
 running tools. Paths in private historical records remain provenance.
+
+## November 5, 2026 cleanup
+
+A metadata inventory preceded removal of 146 compiler-cache/intermediate
+directories (32,634 generated files, about 2.10 GiB allocated). Only enumerated
+`ModuleCache.noindex` and `Build/Intermediates.noindex` directories were removed;
+each path was checked for symlinks and excluded from active worktrees,
+checkpoints and historical device-build trees. These files regenerate on build.
+
+Signed products, archives, build logs, raw journals, sysdiagnoses, Apple feedback
+attachments and manifests were retained. The private inventory, explicit removal
+plan and successful result live under `work/maintenance/2026-11-05-review/` in
+the canonical checkout. This was a local cleanup, not deletion from devices or
+from Git history.

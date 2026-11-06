@@ -11,11 +11,14 @@ python3 scripts/check-repository.py
 sh scripts/check-tools.sh
 sh scripts/check.sh
 python3 scripts/verify-build.py work/verification-new
+sh scripts/check-simulator-tools.sh work/simulator-tools-new
 ```
 
 `verify-build.py` includes the repository, tooling and Swift checks, a Simulator
 build and unsigned archives. Run the smaller commands when iterating; use the
 complete verification for a candidate. The output directory must be new.
+The separate Simulator-tools check compiles all four diagnostic fixtures and
+four UI-inspection helpers. It does not launch them or produce audio.
 
 | Layer | Automated coverage | Boundary |
 | --- | --- | --- |
@@ -23,6 +26,7 @@ complete verification for a candidate. The output directory must be new.
 | Swift models/controllers | Class anchoring/persistence, clock edges, geometry/layout, runtime intent/renewal, landmark deadlines/cancellation/restart, journal retention and volume/media policies. | Standalone executables use WatchKit boundary doubles; they cannot establish watchOS acceptance or physical effects. |
 | Python tooling | Device command failures/retries, journal summaries, build inspection, action/evidence classification and suite result handling. | Device/process boundaries are faked. Test success is not a successful transfer or deployment. |
 | Build/archive | Simulator compilation, website QR decoding, bundled policy/license/website resources, exact reviewed privacy-manifest declarations, and structural inspection of development/distribution archives. Signed export checks inspect the Watch manifest again in the IPA. | Manifest comparison is not an API-usage audit or Apple privacy approval. Unsigned success is not signed distribution, installation or App Store validation. QR decoding is not a physical camera test. |
+| Diagnostic tools | Compiles the phone-audio, native-volume, timeline-clock and diagnostic-share Simulator fixtures, plus HubInput, ScreenText, MediaPixels and ControlOutline helpers. | Compilation catches SDK and syntax regressions; no simulator boots, UI interactions, audio, sharing or device behavior is tested. |
 
 The manifest check rejects missing, unreadable or changed tracking/data-collection
 declarations and omitted, duplicate or unexpected required-reason entries. Update
@@ -38,7 +42,8 @@ Private ignored evidence is outside repository validation.
 
 GitHub Actions runs the noninteractive verification with its recorded toolchain.
 The Mac job compiles the app for Watch Simulator but does not boot it or drive its
-UI. The Swift model/controller suites are separate host executables that use
+UI. The Mac jobs also compile the four diagnostic fixtures and four UI-inspection
+helpers. The Swift model/controller suites are separate host executables that use
 WatchKit boundary doubles. Interactive Watch Simulator scenarios require the
 local Device Hub workflow below. See [build evidence](BUILD_VERIFICATION.md) for
 retained artifacts. CI does not touch physical devices.

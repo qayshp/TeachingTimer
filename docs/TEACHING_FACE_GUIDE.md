@@ -1,0 +1,63 @@
+# Read the teaching face
+
+Start a class, check the suggested schedule, and try phone volume before teaching.
+The clock hands always show real time; a class does not reset them.
+
+![SE 3 teaching face with a running class and count](images/review-2026-11-05/se3-active-count.png)
+
+November 5, 2026 capture: SE 3 40 mm Simulator, watchOS 27.2, Xcode 27.2;
+development build 41 from source `5fcef3c`. This is a simulated class. The red
+crossed-phone symbol is watchOS's disconnected-phone indicator; this image does
+not demonstrate working paired audio. The visual key below annotates the image
+without covering the hands or controls.
+
+| Where to look | What it means / what to do |
+| --- | --- |
+| **Class ⚙**, upper left | Opens the class menu and Settings. Edit the current schedule, stop/resume its session, or explicitly begin/end a class. |
+| System time, upper right | watchOS supplies the digital time. The dial continues behind it and the Class button. |
+| Long, thin hand (yellow here) | Real-world seconds, ticking once per second when watchOS permits. |
+| Short, thick hand (white here) | Real-world minutes, including the current second's fraction of a minute. Its thickness distinguishes it in monochrome. |
+| Outer bright perimeter | For a 60-minute class, the time still ahead, clockwise toward the scheduled finish. Past time has less visual weight. A 75-minute class keeps its finish marker but omits this single-revolution progress line. |
+| Inward wedge, at the bottom in this example | Scheduled finish at `:30`. It is visible from the start and grows modestly halfway through the scheduled interval. |
+| Speaker ring and small refresh arrow | Turn the Crown to change the **paired iPhone's** media volume. Tap the ring to request a refresh if it stops responding. Visual feedback alone does not confirm audible volume changed. |
+| **Stop count**, lower center | A one-minute count is active. Tap to cancel. When inactive it reads **1-min count**; without a class it offers **Start class**. |
+| Small inner dot/arc, just inside the right edge here | Time since the count tap, independent of the wall clock. It starts at the tap's clock position and grows for 60 seconds; a clock correction does not restart it. |
+| Two dots, bottom | Two swipe pages: the teaching face and Apple's native media controls. |
+
+## Three independent things
+
+**Class schedule** is the saved start, duration and finish. Default Start uses a
+60-minute class and the suggested quarter-hour. Before the last two minutes of
+a quarter-hour, the suggestion uses the preceding boundary; at `:13` or `:14`
+it uses the next. Check that suggestion when opening early or late. Custom
+schedule changes only this class.
+
+**Session** is the mindfulness runtime that helps keep the app available and
+the clock updating wrist-down. Stop session leaves the class intact. Resume
+requests a new session. An intentional Stop stays stopped after reopening;
+reopening can recover a session that was meant to run. **New class** and
+**End class** are separate, confirmed actions. An old class clears 30 minutes
+after its scheduled end; the next class never starts silently.
+
+**Count** measures time from its own tap. Vibration groups of 1–6 begin at
+10, 20, 30, 40, 50 and 60 seconds. The inner arc fills at 60 seconds and remains
+while the final group finishes, normally around 64.8 seconds. This brief hold
+also occurs with vibrations disabled. Late or skipped haptics do not erase the
+arc. Class → Settings controls count vibrations and optional minutes remaining.
+
+## Music during teaching
+
+The timer targets the iPhone; native Now Playing can instead show Watch music.
+Check the source before class. Swiping to media and back restores timer Crown
+focus in reported cases. If the timer volume ring is unresponsive, tap it once
+to refresh and give it a moment before trying the Crown again.
+
+Native song progress can still freeze even when Pause and volume work. Swipe
+away and back to refresh its position; it can stall again. Eligible longer
+wrist-down intervals also trigger a bounded refresh on wake. Use audible music
+as a cross-check before timing a pause to the end of a song.
+
+If playback continues silently, use the iPhone's volume controls; avoid repeated
+blind Crown adjustments. These are recovery steps, not guarantees. See the
+[first-class guide](TESTER_GUIDE.md) for setup and [support](../SUPPORT.md) for
+reporting an incident after class.

@@ -1,7 +1,12 @@
 # Working on Teaching Timer
 
-Keep changes small and run `sh scripts/check.sh`, `sh scripts/check-tools.sh`,
-plus a Watch Simulator build.
+Keep changes small and run the checks appropriate to the affected files. For
+documentation-only edits, run `python3 scripts/check-repository.py`; tooling
+changes also need `sh scripts/check-tools.sh`. App, Swift-test or build-input
+changes need `sh scripts/check.sh` plus a Watch Simulator build. The
+[automation map](docs/AUTOMATION.md) explains how CI selects those checks.
+The bundled `docs/PRIVACY.md` and `LICENSE` are app inputs, even though they are
+documents; changes to them need app verification.
 The project has no external package dependencies. Xcode's scheme does not
 contain an XCTest target; the script compiles and runs standalone Swift suites.
 Do not claim hardware validation from a simulator or WatchKit test double.
@@ -70,8 +75,10 @@ Check hands pointing through controls and markers at all four quarter-hours.
 `--show-settings` opens Settings without starting a class.
 Record what was actually observed in `DEVELOPMENT_STATUS.md`.
 
-The icon is original, deterministic drawing code. Regenerate it from the root
-with `swift scripts/render-icon.swift`. Generated builds, user Xcode state,
+The icon renderer uses the tracked rolled-mat/timer artwork and adds distinct
+Beta/Dev badges. Regenerate all three variants from the root with
+`swift scripts/render-icon.swift`; see [asset provenance](docs/DISTRIBUTION_METADATA.md#bundled-asset-provenance).
+Generated builds, user Xcode state,
 credentials, profiles, and raw journals must not be committed. Curated, anonymous
 Simulator screenshots belong in `docs/images/`.
 
@@ -103,7 +110,12 @@ materials, private archives or raw diagnostics. The
 [build-37 record](https://github.com/qayshp/TeachingTimer/releases/tag/v1.0-beta.37)
 is the first such milestone.
 
-Increment `CURRENT_PROJECT_VERSION` for each distributed build. A build phase
+Every distributed build needs a unique `CURRENT_PROJECT_VERSION`. The automatic
+release workflow supplies `YYMMDD.HHmm.sequence` in Pacific local time (including
+daylight-saving changes); manual release tooling accepts the same format or a
+positive integer. Do not
+change the checked-in project version merely to allocate an automatic release.
+A build phase
 also records Git revision (including a dirty suffix) and UTC build time in
 `BuildInfo.plist`; launch journals include both. Source exports can supply
 `SOURCE_REVISION` to that phase. `scripts/check-archive.sh` verifies the app is

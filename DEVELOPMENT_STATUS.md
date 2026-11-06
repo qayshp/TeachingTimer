@@ -1,15 +1,16 @@
 # Teaching Timer — current status
 
-Installed-build status updated November 5, 2026; external-review status was last
-checked November 2. This page owns current build and validation status.
+Installed-build and public-invitation status updated November 5, 2026. Exact
+App Store Connect review/build membership was last checked November 2. This page
+owns current build and validation status.
 See the [changelog](CHANGELOG.md) for user-visible changes and the
 [roadmap](docs/ROADMAP.md) for prioritized work.
 
 | Artifact | Current evidence |
 | --- | --- |
 | External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
-| Public invitation, last checked November 2 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae). Build 37 was **Waiting for Review**; the link was enabled but not accepting testers yet. Initial limit: 100. Automatic tester notification was enabled. |
-| Internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). |
+| Public invitation, checked November 5 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae) now offers **View in TestFlight** and joining instructions. Initial configured limit: 100. The public page does not expose the eligible build/version; a new external tester's installation remains unverified. |
+| First hosted internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). Subsequent app-affecting main pushes publish through the same gated workflow. |
 | Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. TestFlight `1.0 (261104.1939.6)` includes the change; the owner reports song progress still freezes. Isolation alone did not fix the issue. |
 | Physical Watch | The owner reports TestFlight **1.0 (261104.1939.6)** on the Watch; frozen song progress persists on this build. Installation is owner-reported, not a new developer-tool inventory or classroom validation. Unattended automatic-update cadence is not established. |
 | Owner pilot | The November 2 build-35 install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Its seven-build group inventory through 36 is historical. The later build-42 update is separately owner-confirmed. |
@@ -45,7 +46,8 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
    the issue.
 2. Obtain runtime guidance and finish teaching-length, route, battery and
    accessibility checks before a general release.
-3. Verify an approved public invitation and first external install. Private email
+3. Verify the exact public build and first external install; the invitation page
+   is now open. Private email
    accepts descriptions and optional cropped screenshots; tester journal export
    is not implemented.
 

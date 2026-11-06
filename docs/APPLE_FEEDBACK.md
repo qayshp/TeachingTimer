@@ -1,11 +1,11 @@
 # Apple feedback status
 
-Last inspected in Feedback Assistant on November 2, 2026, read-only. Submission
+Last inspected in Feedback Assistant on November 5, 2026, read-only. Submission
 is not an Apple diagnosis or a verified fix. Raw device logs, identifiers and
 private evidence packages stay outside Git. Earlier attachment/submission
 results are recorded in the dated history below.
 
-## November 2 current status
+## November 5 current status
 
 | Report | Scope | Displayed resolution |
 | --- | --- | --- |
@@ -21,16 +21,31 @@ The six Open reports' visible author/date lists contain the existing maintainer
 messages; no new technical Apple reply was found. The connection report shows
 an **Apple Feedback** message dated **October 28, 2026 at 15:28**, as displayed.
 That establishes the message's displayed time, not when its resolution changed.
+The November 5 Requests mailbox contains this connection report; no new technical
+reply was found in the other six reports after refreshing Feedback Assistant.
 
 The existing Apple request asks for a fresh reproduction, ideally using the
 [CoreDevice logging profile](https://developer.apple.com/bug-reporting/profiles-and-logs/?name=CoreDevice),
 then `xcrun devicectl diagnose`. Its output should include host and relevant-device
 sysdiagnoses; collect missing captures separately. This is an older request
-observed during today's inspection, not a new response or a completed collection.
+rechecked during today's inspection, not a new response or a completed collection.
 
 No report, follow-up, attachment, new request or device action was made during
 this Feedback Assistant inspection. Private UI text captures are retained under
-`work/support/2026-11-02-v1-review/apple-status/`.
+the active review worktree's `work/review-2026-11-05/apple-status/`.
+
+Useful follow-ups remain prepared or newly identified, not submitted by this review:
+
+- **FB25329087:** send the exact-Date precision and fixed-anchor comparisons
+  described below, retaining the distinction from physical validation.
+- **FB25379883:** add the supervised Beta 35 comparison with standalone Now
+  Playing and the recurrence on TestFlight `261104.1939.6` after timeline isolation.
+- **FB25305069 / volume-silencing draft:** preserve the maintainer's November 5
+  correction that neither blank media nor unexpected silencing has recurred
+  since recent changes. That is mitigation evidence, not a root-cause diagnosis.
+- **FB25329139:** the missing coordinated host/device capture requires a fresh
+  connection failure and relevant physical devices; no substitute capture was
+  attempted during the Simulator review.
 
 The subsequent [exact-Date clock investigation](ALWAYS_ON_HAND_TRANSITION.md#november-2-exact-date-precision-diagnosis)
 found context Dates one representable step below whole-second boundaries;

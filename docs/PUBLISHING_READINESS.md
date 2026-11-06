@@ -1,21 +1,19 @@
 # Publishing readiness
 
-Reviewed November 3, 2026. **Build 37 is In Review** after its first
-external Beta App Review submission. The signed external-eligible export,
-upload, processing and external Public beta assignment are verified. Its
-[public invitation](https://testflight.apple.com/join/YA2WSmae) is enabled for
-anyone with a 100-tester cap, but currently does not accept testers pending
-approval. Automatic notification was enabled at submission. The internal
-Maintainer pilot now includes the internal-only build-41 layout candidate;
-its signed export/upload, processing and one-owner availability are verified.
-Physical Beta 35 is the
-last user-confirmed installed version.
+Reviewed November 5, 2026. The
+[public invitation](https://testflight.apple.com/join/YA2WSmae) now offers
+**View in TestFlight** and joining instructions. The public group was initially
+configured with a 100-tester cap. Exact eligible-build membership and a new
+external tester's installation remain to be verified; the public page does not
+identify its build number. Automatic internal releases now use GitHub Actions.
+[Current verification](../DEVELOPMENT_STATUS.md) owns the latest uploaded and
+owner-reported installed builds, separately from this release checklist.
 
 Physical installation/update/relaunch and limited Beta
 journal access passed in the [owner pilot](TESTFLIGHT_PILOT_RESULTS.md). Cleanup
 and development-app preservation checks are documented with their limits.
-Wider teaching tests and public release remain pending. [Current verification](../DEVELOPMENT_STATUS.md) owns
-build/install status; the [artifact ledger](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds)
+Wider teaching tests and App Store release remain pending. The
+[artifact ledger](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds)
 records exact revisions and checks.
 
 ## New user entry points
@@ -26,9 +24,9 @@ records exact revisions and checks.
 - [Issues](ISSUE_TRACKER.md): distinct symptoms, workarounds and Apple reports.
 - [Contributing](../CONTRIBUTING.md): code layout, checks and device boundaries.
 
-The public link is in README and the tester guide with its approval boundary.
-Do not describe it as currently installable or ask a new user to infer
-installation/support procedures from historical engineering notes.
+The public link is in README and the tester guide with current availability
+and installation instructions. A new user should not need historical engineering
+notes to learn installation or support procedures.
 
 ## Release gates
 
@@ -36,7 +34,7 @@ installation/support procedures from historical engineering notes.
 | --- | --- |
 | Names and identifiers | App Store Connect record **Teaching Timer Beta** created for `net.qays.TeachingTimer`; Teaching Timer was unavailable. Its Watch payload is `net.qays.TeachingTimer.watchkitapp`. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Distribution provisioning succeeded. |
 | Build integrity | Build 37 at clean source `a36f3be587825e27b424cf54355ea13afdfded83` passes signed external-eligible archive/export and 13 Swift suites / 130 Python tests. Watch CI and CodeQL pass. Apple processed the upload completed at 19:56:05 PST. App behavior is unchanged from 36. Earlier build-36 Privacy rendering, build-35 layout/controls and build-34 clock results retain their original scope. Processing is not a physical test. |
-| Paid-team signing / App Store Connect | External Public beta has only build 37; its first Beta App Review is In Review. All four owner-supplied review-contact fields were saved and verified; reviewer notes describe actual runtime use, automatic replacement and known limits. The separate one-owner internal group now includes build 41. Its availability is verified; automatic installation remains unconfirmed. |
+| Paid-team signing / App Store Connect | The public invitation now offers joining instructions. Exact external build membership and first external installation remain unverified. Review-contact fields and actual runtime-use notes were saved with build 37. Automatic internal releases verify processing and Maintainer assignment; server readiness does not prove Watch installation. |
 | Private tester support | [Private email support](../SUPPORT.md) is configured; incoming and outgoing plain email were verified November 2. The public pilot accepts descriptions and optional cropped screenshots without requiring journals. Native Watch/diagnostic attachment delivery remains untested. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | All three TestFlight Beta journals copied and parsed in the owner’s developer-enabled SE 3/trusted-Mac setup. General tester access, native attachment delivery and an in-app export path remain unresolved. |
 | Install/update pilot | TestFlight installation/update, saved class/settings, intentional Stop and running-intent relaunch passed on one physical SE 3. Cleanup and development-app preservation were checked; the original stale class retired normally and pre-install preference bytes were unavailable. See [dated results](TESTFLIGHT_PILOT_RESULTS.md). |
@@ -95,10 +93,10 @@ fixed or that automatic wake refresh prevented every recurrence.
 5. **Pilot the real distribution build.** Use `net.qays.TeachingTimer`, preserve
    the development install and install via TestFlight when the Watch is available
    and installation is authorized. The current candidate has passed signed archive/export,
-   upload and processing; build 37 is now awaiting external Beta App Review.
+   upload and processing; the public invitation now offers joining instructions.
    Check install/update, separate-container state and journal/support access.
    The owner pilot has completed its recorded checks and public-beta invitations
-   are authorized, pending approval. External beta
+   are authorized. The first external installation remains to be checked. External beta
    review is an opportunity to expose runtime-use questions, not a guarantee of
    final store acceptance.
 6. **Finish release materials and support.** Finalize support handling, the public
@@ -111,7 +109,7 @@ A successful self-pilot plus several real classes by a few new users is a useful
 release criterion, not an Apple requirement or a substitute for the matrix.
 The separately authorized installation/update owner pilot is complete within
 its stated limits. Preserve the development teaching installation. Public-beta
-invitations are authorized and submitted for review; broader teaching tests
+invitations are authorized and available; broader teaching tests
 remain necessary and no App Store release is implied.
 
 References: [runtime categories](https://developer.apple.com/documentation/WatchKit/using-extended-runtime-sessions),

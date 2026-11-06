@@ -1,17 +1,25 @@
 # TestFlight pilot
 
-**Latest physical installation:** the owner confirmed **1.0 (42)** on November 4
-after updating from TestFlight on the paired iPhone without a developer
-connection. [Release and installation evidence](#november-4-2026--hosted-release-validation)
-distinguishes this successful update from unverified unattended-update timing.
-The external-review status below was last checked November 2.
+Current build/install status lives in [current verification](../DEVELOPMENT_STATUS.md).
+The owner most recently reports **1.0 (261104.1939.6)** on the Watch; frozen song
+progress persists. The earlier [build-42 update](#november-4-2026--hosted-release-validation)
+succeeded through TestFlight without a developer connection. Unattended-update
+timing remains unverified.
 
-Updated November 2, 2026. **Build 37 is submitted for the first external Beta App
-Review and is Waiting for Review.** Its signed external-eligible export, upload,
+The [public invitation](https://testflight.apple.com/join/YA2WSmae) now offers
+**View in TestFlight** (checked November 5, 2026). Its page does not identify the
+eligible build; exact external membership and a first external installation
+remain separate checks. The November 2 submission history below retains its
+original status rather than describing current availability.
+
+## November 2 external submission checkpoint
+
+On November 2, 2026, **build 37 was submitted for the first external Beta App
+Review and was Waiting for Review.** Its signed external-eligible export, upload,
 Apple processing and Public beta group assignment are verified. The
 [public invitation](https://testflight.apple.com/join/YA2WSmae) is configured for
-anyone with a 100-tester limit, but currently does not accept testers because
-approval is pending. Build 37 preserves build 36's app behavior. No physical
+anyone with a 100-tester limit, but did not yet accept testers while
+approval was pending. Build 37 preserves build 36's app behavior. No physical
 installation was performed for this release.
 
 Build 36 passed signed archive/export, upload and Apple
@@ -498,6 +506,9 @@ The hosted `xcode-27` runner explicitly selects Xcode 27.2 and records its actua
 version/build. GitHub's published image may differ from the local Mac; a missing
 or incompatible toolchain fails rather than silently selecting an older SDK.
 No Simulator is created/booted and no physical device is contacted.
+Verification also compiles the four standalone diagnostic fixtures and four
+Simulator-inspection helpers through `scripts/check-simulator-tools.sh`; it
+does not exercise their audio, sharing or UI behavior.
 
 ### One-time credentials
 

@@ -9,9 +9,10 @@ Built around real teaching on Apple Watch SE 3. This is still an experimental
 app with known media, volume and Always-On issues. Test it before relying on it
 in class and keep another timing method available.
 
-<img src="docs/images/settings-25/se3-face.png" alt="Build 25 SE 3 Simulator teaching face with Class and gear, native volume and wall-clock hands" width="240">
+<img src="docs/images/layered-41/SE-3-40mm-normal.png" alt="Build 41 SE 3 Simulator teaching face with the full-screen dial behind the Class button and system time" width="240">
 
-*Build 25, SE 3 40 mm Simulator, before starting a class. The disconnected-phone symbol is Simulator state.
+*Build 41 layout, SE 3 40 mm Simulator. This edge-following layout is merged into
+the current app. The disconnected-phone symbol is Simulator state.
 The installed build and current source candidate are listed in
 [current verification](DEVELOPMENT_STATUS.md).*
 
@@ -19,14 +20,17 @@ The installed build and current source candidate are listed in
 
 See the [changelog](CHANGELOG.md) for recent beta changes.
 
-[**Public beta invitation — awaiting Apple approval**](https://testflight.apple.com/join/YA2WSmae)
+New to the dial? The [teaching-face visual key](docs/TEACHING_FACE_GUIDE.md)
+explains the hands, perimeter, count arc and controls using a current screenshot.
 
-The invitation link exists, but currently says it is not accepting new testers.
-The first external build, 1.0 (37), has been submitted and is **In Review**
-at Apple. The public group has an initial 100-tester limit;
-this is not an App Store release or a currently installable public beta.
+[**Join the public TestFlight beta**](https://testflight.apple.com/join/YA2WSmae)
 
-Once available, open the link on your paired iPhone with Apple's TestFlight app,
+The invitation page was checked November 5, 2026 and now offers **View in
+TestFlight**. The public group was configured with a 100-tester limit. Public
+availability can change; the invitation shows whether places are available.
+An installation by a new external tester has not yet been verified.
+
+Open the link on your paired iPhone with Apple's TestFlight app,
 then install **Teaching Timer Beta** on your Watch. The app targets watchOS 26
 or later; the latest physical pilot used watchOS 27.2. Teaching Timer requires
 no app account or iPhone companion interface. Read the

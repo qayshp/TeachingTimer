@@ -12,6 +12,7 @@ installation or a physical-device test.
 | Document | Purpose |
 | --- | --- |
 | [Tester guide](TESTER_GUIDE.md) | Before-class checks, everyday controls and recovery choices. |
+| [Teaching-face visual key](TEACHING_FACE_GUIDE.md) | Current screenshot annotated by location; hands, schedule, session, count and audio meanings. |
 | [Support](../SUPPORT.md) | Private email for a short report; public issues are optional and journals are not attached automatically. |
 | [Privacy](PRIVACY.md) | Local storage, retention and diagnostic sharing boundaries. |
 | [Contributor guide](../CONTRIBUTING.md) | Repository layout, behavior boundaries and maintenance rules. |
@@ -29,6 +30,7 @@ installation or a physical-device test.
 | [Simulator regression runner](../tools/simulator-regression/README.md) | Interactive lifecycle, action, focus and rendering checks with bounded evidence capture. |
 | [Device Hub testing](DEVICE_HUB_TESTING.md) | Lock/Always-On, haptic sound and remote-input limits. |
 | [Time-edge checks](TIME_EDGE_TESTS.md) | Scheduled-time, clock-change and monotonic-count cases. |
+| [Runtime invariants](RUNTIME_INVARIANTS.md) | Seeded lifecycle sequences, cancellation and explicit Stop checks. |
 | [Essential-action run](ESSENTIAL_ACTION_CHECKS.md) | Build 18 action sequence and historical results; use current status for later runs. |
 | [Form-factor validation](FORM_FACTOR_VALIDATION.md) | Dated multi-size visual checks, not hardware certification. |
 | [Phone audio fixture](../tools/phone-audio-probe/README.md) | Bounded native playback and remote-command evidence, independent of TeachingTimer. |
@@ -43,7 +45,7 @@ installation or a physical-device test.
 - [Build 26 on newer runtimes](RUNTIME_27_2_VALIDATION.md): 15-action pass, input-helper adjustment and paired-media test limits.
 
 - [Publishing readiness](PUBLISHING_READINESS.md): onboarding and outstanding release gates.
-- [Private support intake](PRIVATE_SUPPORT_PLAN.md): verified inbound email, handling procedure and remaining reply/attachment/export checks.
+- [Private support intake](PRIVATE_SUPPORT_PLAN.md): verified incoming/outgoing email, handling procedure and remaining attachment/export checks.
 - [Supervised physical media plan](PHYSICAL_MEDIA_TEST_PLAN.md): preparation only; no run scheduled.
 - [Settings and information pages](SETTINGS_PASS_25.md): build 25 preferences and
   build 27 Help/Privacy/About screenshots and limits.
@@ -97,7 +99,7 @@ Read corrections before relying on earlier screenshot descriptions.
   with the missing-control interpretation corrected.
 - [October 26 review](USABILITY_REVIEW_2026-10-26.md): earlier action-button and
   large-text changes.
-- [Icon drafts](design/icon-drafts/README.md): design alternatives, not installed icons.
+- [Icon concepts](design/icon-drafts/README.md): selected rolled-mat source, badge variants and retained alternatives.
 
 `images/` contains curated Simulator captures referenced by these records.
 Their times, build versions and test settings vary. Do not relabel an older

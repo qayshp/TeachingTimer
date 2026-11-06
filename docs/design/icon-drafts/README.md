@@ -1,9 +1,11 @@
 # Icon concept drafts
 
-Generated with the built-in image-generation tool for comparison, not installed
-in the asset catalog. The current shipping icon is unchanged. These are raster
-concepts, not final production artwork; assess circular crops and small sizes
-before choosing or refining one.
+Generated with the built-in image-generation tool for comparison. These are
+raster concepts, not SVGs. The rolled-mat/timer concept was subsequently selected
+as the source for the current app icon; the other two remain alternatives.
+[The renderer](../../../scripts/render-icon.swift) produces an unbadged release
+icon and separate **BETA** and **DEV** variants from the tracked mat artwork.
+See [asset provenance](../../DISTRIBUTION_METADATA.md#bundled-asset-provenance).
 
 | Concept | Draft | Assessment |
 | --- | --- | --- |
