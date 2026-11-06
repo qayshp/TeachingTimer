@@ -46,13 +46,20 @@ translucent settings button and are subdued beneath system time.
 ## Existing reliability work
 
 Use the [issue map](ISSUE_TRACKER.md) for blank media (#1), Crown response (#2),
-silencing (#3), seconds-hand transitions (#4), developer connections (#5), paired
+silencing (#3), developer connections (#5), paired
 Simulator media (#6), dimmed runtime recovery (#7) and frozen progress (#8).
-Keep them separate unless evidence establishes a shared cause. Bounded successful
-tests do not close intermittent physical bugs.
+Keep them separate unless evidence establishes a shared cause. Resolution should
+consider the identified cause, correction, relevant tests and subsequent use;
+it does not require proof that a symptom can never recur.
 
-After the release-blocking work above: verify **#2 Crown response**, **#4 clock
-transitions** and **#7 dimmed recovery** within #10's supervised checks. Monitor
+The seconds-hand transition issue [#4](https://github.com/qayshp/TeachingTimer/issues/4)
+is closed as fixed by builds 33–34: stable timeline anchor and boundary
+normalization, passing follow-up recordings and no recent owner-observed
+physical recurrence. Reopen on recurrence; the separate Apple report retains
+its last inspected status.
+
+After the release-blocking work above: verify **#2 Crown response** and
+**#7 dimmed recovery** within #10's supervised checks. Monitor
 **#1 blank media** and **#3 silencing**, both reported absent since recent changes;
 keep them open as apparently mitigated. **#6 paired Simulator media** awaits
 Apple support guidance. **#5 connection failures** needs the existing requested

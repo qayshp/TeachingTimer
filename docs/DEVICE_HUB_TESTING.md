@@ -73,6 +73,11 @@ and real-class trials remain useful even if remote input works perfectly.
 
 ## Next seconds-hand step
 
+**November 6 resolution:** [issue #4](https://github.com/qayshp/TeachingTimer/issues/4)
+is closed as fixed by builds 33–34. See the [current resolution and evidence](ALWAYS_ON_HAND_TRANSITION.md#resolution--november-6).
+The plan below records the October 31 state, before the combined precision and
+stable-anchor corrections; it is retained as history, not outstanding work.
+
 The retained [clock-only probe](../tools/timeline-clock-probe/README.md) already
 reproduces whole-second backsteps without media, session, or landmark code, using
 both Path and Canvas. Fixed anchors and constant color did not reliably help.

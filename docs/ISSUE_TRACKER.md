@@ -10,7 +10,7 @@ Simulator results, physical observations and unverified mitigations.
 | [#1 Blank native media](https://github.com/qayshp/TeachingTimer/issues/1) | FB25305069 | Preventive native-view refresh helps some cases. On November 5 the maintainer corrected a transcription: no blank page has recurred since recent changes. Apparent mitigation; physical recurrence/root cause remain unresolved. |
 | [#2 Crown volume response](https://github.com/qayshp/TeachingTimer/issues/2) | FB25329167 | Retained control/refocus avoids a controlled regression. November 2 Beta 35 passes initial, media-return, Home-return and tap-refresh Crown checks with iPhone-speaker playback; intermittent reliability and other routes remain unproven. |
 | [#3 Unexpected audio silencing](https://github.com/qayshp/TeachingTimer/issues/3) | Draft only | A captured zero-volume request does not establish the initiating fault. On November 5 the maintainer corrected a transcription: no zero-volume event during timer adjustment has recurred since recent changes. Apparent mitigation only. |
-| [#4 Always-On seconds-hand backstep](https://github.com/qayshp/TeachingTimer/issues/4) | FB25329087 | [Exact-Date and anchor comparisons](ALWAYS_ON_HAND_TRANSITION.md#build-34-follow-up-stable-schedule-anchor) separate precision errors from moving-anchor regressions. Build 34 combines narrow normalization and a fixed epoch; bounded probe/app video, UI and locked-count checks pass. Signed release and owner-pilot assignment are complete. Hardware validation remains open; no universal cause or compositor defect claimed. Apple follow-up not sent. |
+| [#4 Always-On seconds-hand backstep](https://github.com/qayshp/TeachingTimer/issues/4) | FB25329087 | **Closed as fixed, November 6.** Builds 33–34 correct the reproduced precision and moving-anchor mechanisms. Follow-up recordings show no backward ticks; the owner reports no recent physical recurrence. [Evidence and resolution](ALWAYS_ON_HAND_TRANSITION.md#resolution--november-6). Reopen on recurrence. Apple status is separate; follow-up not sent. |
 | [#5 Watch developer connection failures](https://github.com/qayshp/TeachingTimer/issues/5) | FB25329139 | Apple could not diagnose with current information; coordinated failure/recovery evidence remains needed. |
 | [#6 Paired Simulator media discovery](https://github.com/qayshp/TeachingTimer/issues/6) | FB25294079 | No known-working companion-media baseline; Apple support clarification remains needed. |
 | [#7 Runtime recovery after dimmed relaunch](https://github.com/qayshp/TeachingTimer/issues/7) | Not separately filed | Build 30 reproduces activation error code 3; build 31 defers Start and recovers on later active wake in one matched Simulator trial. November 5 adds 1,280 seeded lifecycle events through the controller, plus a fresh passing action/focus suite. Physical behavior and arbitrary callback ordering remain unverified. |
@@ -56,8 +56,15 @@ appropriate.
 
 Keep symptoms separate unless evidence establishes a shared cause. A page
 callback is not proof of rendered pixels; a focus call or moving ring is not
-proof of a volume command, selected endpoint or audible output. Successful
-Simulator runs do not close physical-device bugs.
+proof of a volume command, selected endpoint or audible output. Simulator results
+alone do not establish a physical fix. Close issues when the identified cause,
+correction, relevant tests and subsequent use support resolution; record the
+limits and reopen on recurrence.
+
+On November 6, #4 was closed as completed with the owner's approval. The two
+clock corrections, passing follow-up recordings and no recent owner-observed
+physical recurrence support calling it fixed. This does not claim every
+historical occurrence had an identical cause or change Apple's report status.
 
 Issues #1 and #5 were updated on October 28 to match the image audit and Apple
 connection-report status. On November 5, #1 and #3 were annotated as apparently

@@ -38,9 +38,14 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
   that nor page reentry establishes continuously accurate progress.
 - Blank media and volume-to-zero have not recurred since recent changes, per the
   owner's November 5 correction; treat both as mitigated, not fixed. Crown
-  nonresponse, seconds-hand backsteps, frozen song progress and developer-
+  nonresponse, frozen song progress and developer-
   connection failures remain distinct [open issues](docs/ISSUE_TRACKER.md).
-  Runtime/clock fixes have bounded Simulator evidence, not universal hardware proof.
+  Runtime recovery still needs physical validation.
+- **Seconds-hand backstep fixed in builds 33–34:** the stable timeline anchor
+  and boundary normalization address the reproduced mechanisms. Subsequent
+  Simulator recordings show no backward ticks, and the owner reports no recent
+  physical recurrence. [Issue #4](https://github.com/qayshp/TeachingTimer/issues/4)
+  is closed as completed; reopen if the symptom returns.
 - Mindfulness runtime suitability for guided yoga teaching and automatic renewal
   still needs explicit Apple guidance. Beta review does not settle intended use.
 

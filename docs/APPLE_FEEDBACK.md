@@ -5,6 +5,12 @@ is not an Apple diagnosis or a verified fix. Raw device logs, identifiers and
 private evidence packages stay outside Git. Earlier attachment/submission
 results are recorded in the dated history below.
 
+**November 6 project resolution:** GitHub [issue #4](https://github.com/qayshp/TeachingTimer/issues/4)
+is closed as fixed by builds 33–34, supported by the reproduced mechanisms,
+passing follow-up recordings and no recent owner-observed physical recurrence.
+This does not change FB25329087's last inspected status below or imply that its
+prepared follow-up was sent. See the [resolution](ALWAYS_ON_HAND_TRANSITION.md#resolution--november-6).
+
 ## November 5 current status
 
 | Report | Scope | Displayed resolution |
@@ -53,8 +59,9 @@ Calendar correctly selects the preceding second, while Unix conversion hides
 the difference. This narrows the local explanation without establishing a
 compositor defect or the cause of every physical report. Build 33's bounded
 normalized probe corrected the exercised inputs with no measured backward tick;
-physical validation remains open. The evidence and follow-up draft are local
-and have **not been sent** to FB25329087.
+build 34 also fixed the moving schedule anchor. Later results support the
+project resolution above. The evidence and follow-up draft are local and have
+**not been sent** to FB25329087.
 
 ## October 26–28 reporting history
 
@@ -81,10 +88,11 @@ be disregarded. Physical incidents remain reported and unresolved.
 
 ## Remaining evidence gaps
 
-- **Seconds hand:** the minimal probe reproduces in Simulator; the physical
-  symptom is similar, but that probe was not tested on hardware. A fresh
-  physical transition-time diagnostic remains useful. The November 2 watchOS
-  27.2 comparison is now complete locally but has not been submitted; see
+- **Seconds hand:** the uncorrected minimal probe reproduced in Simulator;
+  the physical symptom was similar, but that probe was not tested on hardware.
+  The app issue is now resolved; a fresh physical transition-time diagnostic
+  would be useful if it recurs. The November 2 watchOS 27.2 comparison is
+  complete locally but has not been submitted; see
   [transition investigation](ALWAYS_ON_HAND_TRANSITION.md).
 - **Connection:** the Watch was already unlocked, fully awake, and on top of the
   laptop during the October 26 failure. The same build 16 installed on retry,

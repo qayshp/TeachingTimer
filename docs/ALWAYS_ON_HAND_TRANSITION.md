@@ -2,7 +2,9 @@
 
 Filed October 26 as **FB25329087**, with the standalone probe, recordings,
 frame analysis, and comparison notes. See [Apple feedback status](APPLE_FEEDBACK.md)
-for the remaining capture gaps. No physical-Watch fix is established.
+for Apple's separate status. **Resolved November 6:** the project considers this
+fixed by builds 33–34; [issue #4](https://github.com/qayshp/TeachingTimer/issues/4)
+is closed as completed. See the [resolution](#resolution--november-6).
 
 **November 2 update:** an exact-value trace now identifies a numerical boundary
 mechanism in the isolated probe. Earlier rounded timestamps could not rule out
@@ -371,6 +373,20 @@ analysis are under the active worktree's ignored
 GitHub runs deterministic clock-boundary tests and booted-Simulator lifecycle
 checks. It does **not** currently drive or record dim/wake transitions, so green
 CI is not evidence for this visual symptom. The current result supports keeping
-the two existing mitigations and monitoring [issue #4](https://github.com/qayshp/TeachingTimer/issues/4),
-without adding another speculative rendering workaround. No new Apple follow-up
-was sent during this check.
+the two existing corrections without adding another speculative rendering
+workaround. No new Apple follow-up was sent during this check.
+
+## Resolution — November 6
+
+With the owner's approval, issue #4 is closed as **fixed** by the stable timeline
+anchor and narrow boundary normalization introduced in builds 33–34. The
+reproduced mechanisms, targeted regression tests, passing follow-up recordings
+and absence of recent owner-observed physical recurrence together support
+resolution. A further controlled hardware test is not a prerequisite to closure.
+
+This does not establish that every historical hardware occurrence had the same
+cause or guarantee against recurrence. Reopen if the symptom returns, retaining
+the build, display transition and available recording/journal context. Earlier
+dated findings above remain historical evidence, not current unresolved status.
+Apple FB25329087 was last inspected Open on November 5; its status has not been
+changed and the prepared precision/anchor follow-up remains unsent.
