@@ -77,6 +77,10 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
         for event in events { record(event.name, extra: event.details) }
     }
 
+    func diagnosticSnapshots() async -> (runtime: LandmarkDiagnostics.Snapshot, interface: LandmarkDiagnostics.Snapshot) {
+        await diagnostics.snapshots()
+    }
+
     private func record(_ event: String, extra: [String: String] = [:]) {
         var details = extra
         details["launchID"] = launchID

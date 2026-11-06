@@ -17,6 +17,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | Physical Watch | The owner reports TestFlight **1.0 (261104.1939.6)** on the Watch; frozen song progress persists on this build. Installation is owner-reported, not a new developer-tool inventory or classroom validation. Unattended automatic-update cadence is not established. |
 | Owner pilot | The November 2 build-35 install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Its seven-build group inventory through 36 is historical. The later build-42 update is separately owner-confirmed. |
 | Rollback | Build 16 remains a preserved local checkpoint with its known media/volume issues. |
+| November 6 journal-sharing draft | Settings → About can prepare a filtered JSON report and open native sharing on the draft branch. Simulator fixture staging/hash checks passed; no file was sent or received. The owner chose Simulator-only work: no merge, TestFlight release or physical install. [Implementation and remaining gates](docs/DIAGNOSTIC_EXPORT_PLAN.md); #26 remains open. |
 | November 6 issue follow-up | #1, #2 and the original dimmed-start #7 are resolved. All 13 local Swift suites / 266 Python tests pass; fresh action, focus, media and count captures were reviewed. Hosted watchOS 26.5 testing caught a separate awake-runtime rejection (#27); the newer hosted path passed. [Full findings and evidence correction](docs/ISSUE_REVIEW_2026-11-06.md). No app behavior or physical device changed. |
 | November 6 CI expansion | At `d0ac054`, local and both hosted small/large Watch matrices passed recovery, intentional Stop, timer/media retirement and overdue-class launch checks. Each matrix exercised 20 process launches; all 13 Swift suites / 253 Python tests and both archive paths passed. [Exact models, runtime builds and limits](docs/AUTOMATION.md#booted-watch-smoke-check). CodeQL passed; no app behavior changed, no new TestFlight release was published and no physical Watch was accessed. |
 | November 5 cleanup follow-up | Gear-only class/settings control, complete Start/Resume session labels, strict compiler checks and booted Simulator smoke are implemented. All 13 Swift suites / 204 Python tests, 21 SE 3 action assertions and six lifecycle assertions passed. Both hosted paths executed the Watch app on watchOS 26.5 and 27.2 and passed archive verification at `8ddde8f`; see the [follow-up](docs/REVIEW_2026-11-05.md#hosted-follow-up--november-6). No physical-device action was performed. |
@@ -64,8 +65,9 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
    accessibility checks before a general release.
 3. Verify the exact public build and first external install; the invitation page
    is now open. Private email accepts descriptions and optional cropped
-   screenshots; [tester journal export](docs/DIAGNOSTIC_EXPORT_PLAN.md) is proposed
-   in #26, not implemented.
+   screenshots. [Tester journal export](docs/DIAGNOSTIC_EXPORT_PLAN.md) now has
+   an unmerged Simulator-only draft in #26; physical receipt, TestFlight delivery
+   and interruption/offline checks remain open before release.
 
 The [issue-linked roadmap](docs/ROADMAP.md) records acceptance criteria.
 No supervised device session or unattended playback run is scheduled here.

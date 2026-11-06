@@ -83,6 +83,9 @@ final class LandmarkController: ObservableObject {
     private let journal: LandmarkDiagnostics
     private let defaults: UserDefaults
     private var runID: String?
+    func diagnosticSnapshot() async -> LandmarkDiagnostics.Snapshot {
+        await journal.snapshot()
+    }
     init(defaults: UserDefaults = .standard, journal: LandmarkDiagnostics = LandmarkDiagnostics()) {
         self.defaults = defaults
         self.journal = journal

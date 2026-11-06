@@ -55,6 +55,54 @@ import Foundation
         let afterEmptyFlush = try Data(contentsOf: retryURL)
         assert(afterEmptyFlush == firstWrite) // Empty flush adds no duplicates.
 
+        // A report snapshot reads the known journal without making an export
+        // mutate or repair it. A fresh writer must load existing history even
+        // though there are no pending events to flush.
+        let readOnly = LandmarkDiagnostics(url: retryURL, capacity: 3)
+        let readOnlySnapshot = await readOnly.snapshot()
+        assert(readOnlySnapshot.events.map(\.event) == retried.map(\.event))
+        assert(readOnlySnapshot.sourceStatus == .available)
+        assert(readOnlySnapshot.pendingEventCount == 0 && !readOnlySnapshot.lastWriteFailed)
+        let afterSnapshot = try Data(contentsOf: retryURL)
+        assert(afterSnapshot == firstWrite)
+
+        let absentURL = directory.appendingPathComponent("not-created/journal.json")
+        let absent = await LandmarkDiagnostics(url: absentURL).snapshot()
+        assert(absent.sourceStatus == .missing && absent.events.isEmpty)
+        assert(!FileManager.default.fileExists(atPath: absentURL.deletingLastPathComponent().path))
+
+        let corruptReadURL = directory.appendingPathComponent("corrupt-read.json")
+        let corruptBytes = Data("not JSON; do not expose or repair this while exporting".utf8)
+        try corruptBytes.write(to: corruptReadURL)
+        let filesBefore = try FileManager.default.contentsOfDirectory(atPath: directory.path).sorted()
+        let corruptSnapshot = await LandmarkDiagnostics(url: corruptReadURL).snapshot()
+        assert(corruptSnapshot.sourceStatus == .unreadable && corruptSnapshot.events.isEmpty)
+        let corruptAfter = try Data(contentsOf: corruptReadURL)
+        let filesAfter = try FileManager.default.contentsOfDirectory(atPath: directory.path).sorted()
+        assert(corruptAfter == corruptBytes && filesAfter == filesBefore)
+        let directorySnapshot = await LandmarkDiagnostics(url: directory).snapshot()
+        assert(directorySnapshot.sourceStatus == .unreadable)
+
+        // A failed write must be visible and must not hide current queued data.
+        // This remains deterministic regardless of the ordinary flush timer.
+        let pendingParent = directory.appendingPathComponent("snapshot-blocked-parent")
+        try sentinel.write(to: pendingParent)
+        let pendingURL = pendingParent.appendingPathComponent("journal.json")
+        let pendingJournal = LandmarkDiagnostics(url: pendingURL, capacity: 3)
+        for index in 0..<5 { pendingJournal.record("pending-\(index)", details: [:]) }
+        await pendingJournal.flush()
+        let pendingSnapshot = await pendingJournal.snapshot()
+        assert(pendingSnapshot.events.map(\.event) == ["pending-2", "pending-3", "pending-4"])
+        assert(pendingSnapshot.pendingEventCount == 3 && pendingSnapshot.lastWriteFailed)
+        let stillBlocked = try Data(contentsOf: pendingParent)
+        assert(stillBlocked == sentinel)
+        try FileManager.default.removeItem(at: pendingParent)
+        await pendingJournal.flush()
+        let persistedSnapshot = await pendingJournal.snapshot()
+        assert(!persistedSnapshot.lastWriteFailed && persistedSnapshot.pendingEventCount == 0)
+        assert(persistedSnapshot.sourceStatus == .available)
+        assert(persistedSnapshot.events.map(\.event) == pendingSnapshot.events.map(\.event))
+
         // Producers may arrive from different queues. Only per-producer order is
         // guaranteed; each event must survive exactly once without races.
         let concurrentURL = directory.appendingPathComponent("concurrent.json")
@@ -67,6 +115,13 @@ import Foundation
                     }
                 }
             }
+        }
+        let concurrentSnapshot = await concurrent.snapshot()
+        assert(concurrentSnapshot.events.count == 400)
+        for producer in 0..<4 {
+            let sequence = concurrentSnapshot.events.filter { $0.details["producer"] == String(producer) }
+                .map { Int($0.details["sequence"]!)! }
+            assert(sequence == Array(0..<100))
         }
         await concurrent.flush()
         let concurrentEvents = try decoder.decode([LandmarkDiagnostics.Event].self, from: Data(contentsOf: concurrentURL))
@@ -116,6 +171,6 @@ import Foundation
         await ageAgain.flush()
         aged = try decoder.decode([LandmarkDiagnostics.Event].self, from: Data(contentsOf: ageURL))
         assert(aged.map(\.event) == ["boundary", "current", "clock_back"])
-        print("PASS: asynchronous/concurrent journal ordering, failed-write retry, bounded pending data, flush, retention, reopen and corrupt-history preservation")
+        print("PASS: asynchronous/concurrent journal ordering, read-only snapshots, explicit failed-write/pending data, flush, retention, reopen and corrupt-history preservation")
     }
 }

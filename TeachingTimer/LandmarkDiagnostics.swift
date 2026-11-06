@@ -19,6 +19,14 @@ final class LandmarkDiagnostics: @unchecked Sendable {
         let event: String
         let details: [String: String]
     }
+    struct Snapshot: Sendable {
+        enum SourceStatus: String, Sendable { case available, missing, unreadable }
+        let events: [Event]
+        // Describes available history, not proof of a durable disk write.
+        let sourceStatus: SourceStatus
+        let pendingEventCount: Int
+        let lastWriteFailed: Bool
+    }
     private let queue: DispatchQueue
     private let url: URL
     private let capacity: Int
@@ -26,6 +34,8 @@ final class LandmarkDiagnostics: @unchecked Sendable {
     private var events: [Event] = []
     private var pending: [Event] = []
     private var loaded = false
+    private var loadedSourceStatus: Snapshot.SourceStatus = .missing
+    private var lastWriteFailed = false
     private var flushScheduled = false
     private let log: Logger
 
@@ -61,6 +71,49 @@ final class LandmarkDiagnostics: @unchecked Sendable {
         }
     }
 
+    /// Takes an ordered, read-only copy on the existing writer queue. This
+    /// includes queued events even when disk writes fail, without flushing,
+    /// repairing, or replacing the original journal. Filter the report's shared
+    /// cutoff afterward: other writers may continue recording during collection.
+    func snapshot() async -> Snapshot {
+        await withCheckedContinuation { continuation in
+            queue.async {
+                let history: [Event]
+                let status: Snapshot.SourceStatus
+                if self.loaded {
+                    history = self.events
+                    status = self.loadedSourceStatus
+                } else {
+                    do {
+                        let decoder = JSONDecoder()
+                        decoder.dateDecodingStrategy = .iso8601
+                        history = try decoder.decode([Event].self, from: Data(contentsOf: self.url))
+                        status = .available
+                    } catch {
+                        history = []
+                        let cocoa = error as NSError
+                        let missing = cocoa.domain == NSCocoaErrorDomain
+                            && (cocoa.code == CocoaError.fileReadNoSuchFile.rawValue
+                                || cocoa.code == CocoaError.fileNoSuchFile.rawValue)
+                        status = missing ? .missing : .unreadable
+                    }
+                }
+                continuation.resume(returning: Snapshot(events: self.retainedEvents(history),
+                    sourceStatus: status, pendingEventCount: self.pending.count,
+                    lastWriteFailed: self.lastWriteFailed))
+            }
+        }
+    }
+
+    private func retainedEvents(_ history: [Event]) -> [Event] {
+        var retained = history + pending
+        if let retentionInterval, let latest = pending.last {
+            let cutoff = latest.timestamp.addingTimeInterval(-retentionInterval)
+            retained.removeAll { $0.timestamp < cutoff }
+        }
+        return Array(retained.suffix(capacity))
+    }
+
     private func writePending() {
         guard !pending.isEmpty else { return }
         do {
@@ -68,7 +121,10 @@ final class LandmarkDiagnostics: @unchecked Sendable {
                 if FileManager.default.fileExists(atPath: url.path) {
                     let decoder = JSONDecoder()
                     decoder.dateDecodingStrategy = .iso8601
-                    do { events = try decoder.decode([Event].self, from: Data(contentsOf: url)) }
+                    do {
+                        events = try decoder.decode([Event].self, from: Data(contentsOf: url))
+                        loadedSourceStatus = .available
+                    }
                     catch {
                         // Preserve the exact unreadable bytes before starting a
                         // new journal. If the backup fails, leave the old file
@@ -78,6 +134,7 @@ final class LandmarkDiagnostics: @unchecked Sendable {
                         try FileManager.default.copyItem(at: url, to: backup)
                         events = [Event(timestamp: Date(), event: "journal_recovered",
                             details: ["preservedFile": backup.lastPathComponent])]
+                        loadedSourceStatus = .unreadable
                     }
                 }
                 loaded = true
@@ -85,20 +142,18 @@ final class LandmarkDiagnostics: @unchecked Sendable {
             // Trim on writes, relative to the latest submitted event rather than
             // the worker's execution time. Keep future-dated entries after a
             // backwards clock correction. A size cap still bounds that case.
-            var retained = events + pending
-            if let retentionInterval, let latest = pending.last {
-                let cutoff = latest.timestamp.addingTimeInterval(-retentionInterval)
-                retained.removeAll { $0.timestamp < cutoff }
-            }
-            let next = Array(retained.suffix(capacity))
+            let next = retainedEvents(events)
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
             try encoder.encode(next).write(to: url, options: .atomic)
             events = next
+            loadedSourceStatus = .available
+            lastWriteFailed = false
             pending.removeAll(keepingCapacity: true)
         } catch {
+            lastWriteFailed = true
             log.error("Landmark journal write failed; existing history preserved: \(error.localizedDescription, privacy: .public)")
         }
     }

@@ -58,4 +58,10 @@ final class RuntimeDiagnostics: @unchecked Sendable {
         await writer.flush()
         await interfaceWriter.flush()
     }
+
+    func snapshots() async -> (runtime: LandmarkDiagnostics.Snapshot, interface: LandmarkDiagnostics.Snapshot) {
+        let runtime = await writer.snapshot()
+        let interface = await interfaceWriter.snapshot()
+        return (runtime, interface)
+    }
 }

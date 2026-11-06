@@ -26,8 +26,9 @@ final class WKExtendedRuntimeSession {
     var state: WKExtendedRuntimeSessionState = .notStarted
     var expirationDate: Date? = Date().addingTimeInterval(3600)
     var invalidationRequests = 0
+    var startRequests = 0
     init() { Self.instances.append(self) }
-    func start() {} // Success/failure is independently driven by the test.
+    func start() { startRequests += 1 } // Success/failure is independently driven by the test.
     func invalidate() { invalidationRequests += 1 }
     func confirmStart() { state = .running; delegate?.extendedRuntimeSessionDidStart(self) }
     func warn() { delegate?.extendedRuntimeSessionWillExpire(self) }
@@ -528,12 +529,56 @@ final class WKExtendedRuntimeSession {
         assert(uiEvents[1].details["sceneState"] == contextBefore["sceneState"])
         assert(uiEvents[1].details["launchElapsedSeconds"] != nil)
         observation.cancel()
+        await checkActiveDiagnosticSnapshot(in: directory)
         await checkSeededTransitions(in: directory)
         print("PASS: relaunch recovery, inactive deferral, duplicate activation, persistent Stop, manual resume, schedule edits, failed-start suppression across launches, legacy/missing/corrupt/mismatched/expired intent")
         print("PASS: early handoff ordering, inactive deferral, observed expiration error, rejected replacement no-loop, explicit reset, manual policy, narrow time/error boundaries, passive UI/runtime correlation")
         print("PASS: explicit new-class Start survives pending old invalidation without overlap; Stop/reset/class changes/retirement cancel it")
         print("PASS: automatic recovery waits for both scene/native readiness; deferred intent survives and Stop/reset/class changes/retirement/manual policy prevent recovery")
         print("PASS: queued explicit Start waits for scene/native readiness in both invalidation orders, respects user-initiated policy, and cancels while awaiting wake")
+    }
+
+    @MainActor private static func checkActiveDiagnosticSnapshot(in directory: URL) async {
+        let suite = "ActiveDiagnosticSnapshot." + UUID().uuidString
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let classStore = ClassStore(defaults: defaults)
+        classStore.begin(at: Date(), scheduledStart: Date().addingTimeInterval(-120), durationMinutes: 75)
+        let originalClass = classStore.context!
+        let classBytes = defaults.data(forKey: "teachingClassContext.v1")!
+        let intentStore = RuntimeIntentStore(defaults: defaults)
+        let model = ExtendedRuntimeController(
+            journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)),
+            intentStore: intentStore)
+        WKApplication.shared().applicationState = .active
+        model.applicationStateChanged("active")
+        model.synchronizeClass(originalClass)
+        model.start()
+        let native = WKExtendedRuntimeSession.instances.last!
+        native.confirmStart(); await drain()
+        assert(model.phase == .running && native.startRequests == 1)
+        let nativeCount = WKExtendedRuntimeSession.instances.count
+        let intent = intentStore.value
+        let intentBytes = defaults.data(forKey: "teachingRuntimeIntent.v1")!
+        let startedAt = model.startedAt
+        let context = model.diagnosticContext
+        var publications = 0
+        let observation = model.objectWillChange.sink { publications += 1 }
+        defer { observation.cancel() }
+
+        for _ in 0..<3 {
+            let snapshot = await model.diagnosticSnapshots()
+            assert(snapshot.runtime.events.contains { $0.event == "runtime_started" })
+            assert(snapshot.runtime.events.last?.details["runtimeID"] == context["runtimeID"])
+            assert(model.phase == .running && !model.needsRestart && model.startedAt == startedAt)
+            assert(model.diagnosticContext == context && publications == 0)
+            assert(WKExtendedRuntimeSession.instances.count == nativeCount)
+            assert(WKExtendedRuntimeSession.instances.last === native)
+            assert(native.state == .running && native.startRequests == 1 && native.invalidationRequests == 0)
+            assert(classStore.context == originalClass && defaults.data(forKey: "teachingClassContext.v1") == classBytes)
+            assert(intentStore.value == intent && defaults.data(forKey: "teachingRuntimeIntent.v1") == intentBytes)
+        }
+        print("PASS: active diagnostic snapshots preserve runtime identity, start/invalidation counts, class bytes, saved intent and observed state")
     }
 
     /// Replay issue #7's initial native-active / scene-inactive observation

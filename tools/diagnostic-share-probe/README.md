@@ -5,10 +5,13 @@ It does not modify TeachingTimer, read its files, or run a runtime session.
 The separate identity is `net.qays.TeachingTimer.DiagnosticShareProbe`.
 No account sign-in, recipient, server, upload, or automatic send is configured.
 
-The three buttons offer:
+The four buttons offer:
 
 - Harmless plain text, to check the basic native sharing interface.
 - A tiny synthetic JSON document exported with `FileRepresentation` and `.json`.
+- A roughly 1.4 MB JSON report with 6,000 synthetic events. Its representative
+  envelope is explicitly labelled as a fixture rather than the production export
+  schema. This checks uncompressed file delivery below the proposed 2 MiB cap.
 - A compressed ZIP of 34,000 generated events in three synthetic JSON files,
   exported with `FileRepresentation` and `.zip`. This checks a more realistic
   diagnostic-file size without touching real journals. The build records the
@@ -29,10 +32,42 @@ sh tools/diagnostic-share-probe/build.sh work/diagnostic-share-probe-new
 ```
 
 The script generates deterministic fixtures, validates the ZIP/JSON, compiles
-for the Mac's architecture, and signs only for Simulator. It refuses to
+for the Mac's architecture, and signs only for Simulator. The selected SDK path
+and version are saved separately from the deterministic fixture manifest. It refuses to
 overwrite an existing output directory. It never boots, installs, launches,
 selects or changes a device. The native export closure logs only a fixed file
 type when requested, not content or a successful-delivery claim.
+
+## Verify an actual received attachment
+
+Save the received attachment into a **different directory** through the receiving
+app's attachment action. Keep its original filename. Do not retrieve it from the
+probe's app bundle or sandbox and call that delivery. Then run:
+
+```sh
+python3 tools/diagnostic-share-probe/fixtures.py verify \
+  --manifest work/diagnostic-share-probe-new/fixtures.json \
+  --received /absolute/path/to/received/synthetic-report.json \
+  --fixture synthetic-report.json
+```
+
+Use `synthetic-small.json` or `synthetic-journals.zip` for the other fixtures.
+The verifier requires the filename, byte length and SHA-256 to match, parses the
+JSON/ZIP and checks its synthetic marker/counts. A renamed, truncated, modified
+or missing file fails. Record the sender, OS, route, recipient and receipt time
+separately: matching source bytes alone do not establish a transfer took place.
+Keep recipient details and raw evidence private.
+
+The fixture/verification tests run in the repository's existing Python suite:
+
+```sh
+python3 -m unittest discover -s Tests -p test_diagnostic_share_fixtures.py -v
+```
+
+These deterministic tests verify the helper's acceptance/rejection behavior, not
+native sharing. A Simulator with no usable receiving account may only establish
+sheet/compose behavior. Do not sign into an Apple Account, choose a real recipient
+or send a message merely to satisfy a Simulator test without authorization.
 
 ## Bounded manual observation
 

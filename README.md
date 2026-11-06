@@ -38,6 +38,11 @@ no app account or iPhone companion interface. Read the
 Initial feedback can be a description or cropped screenshot; no journal export
 is required or promised. To build from source, use the instructions below.
 
+**Draft work:** [private diagnostic sharing (#26)](https://github.com/qayshp/TeachingTimer/issues/26)
+adds report preparation and native file sharing under Settings → About. It is
+not released; Simulator file handoff is verified, recipient delivery is not.
+See the [implementation and validation plan](docs/DIAGNOSTIC_EXPORT_PLAN.md).
+
 1. Tap **Start class**, check **Suggested time**, then confirm the 60-minute class.
    **Custom schedule** changes only this class: adjust its start and choose 60 or
    75 minutes. When starting early, check the suggested quarter-hour carefully.

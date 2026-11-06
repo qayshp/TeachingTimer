@@ -23,6 +23,12 @@ for the dated review evidence. This is not an App Store release.
 | Privacy information | https://github.com/qayshp/TeachingTimer/blob/main/docs/PRIVACY.md |
 | License | MPL-2.0 |
 
+**November 6 draft-only addition:** [native diagnostic sharing](DIAGNOSTIC_EXPORT_PLAN.md)
+is implemented for Simulator evaluation but is not merged or distributed. Its
+successful compose/staging checks do not establish receipt. Do not add it to
+published test notes or promise general journal access until the physical and
+TestFlight delivery gates pass. No upload service or iPhone companion was added.
+
 ## Description
 
 Keep a large wall-clock seconds hand in view while teaching. Add a scheduled
@@ -121,6 +127,7 @@ manifest is present in the archive and IPA.
 | App-owned preferences and recovery values | [ClassContext](../TeachingTimer/ClassContext.swift), [RuntimeIntentStore](../TeachingTimer/RuntimeRenewalRules.swift), [LandmarkController](../TeachingTimer/LandmarkController.swift), [Settings](../TeachingTimer/ClassControlsView.swift) and [persistence recovery](../TeachingTimer/PersistenceDiagnostics.swift) read/write class timing, runtime intent, count result and settings through UserDefaults/@AppStorage. | The manifest declares UserDefaults reason `CA92.1`. The inspected uses are app-owned storage, consistent with [Apple's reason for app-only defaults](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype). This does not authorize reading another app's preferences. |
 | Monotonic media-refresh intervals | [MediaReloadPolicy](../TeachingTimer/MediaReloadPolicy.swift) compares `ProcessInfo.systemUptime` samples for dim duration and refresh cooldown. Those absolute samples remain private policy state. | The manifest declares system-boot-time reason `35F9.1`, covering elapsed intervals/timers. [Apple's rule](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype) distinguishes shareable in-app elapsed intervals from raw uptime and other derived data. Related [count](../TeachingTimer/LandmarkController.swift), [runtime](../TeachingTimer/ExtendedRuntimeController.swift) and [focus](../TeachingTimer/VolumeControlDiagnostics.swift) diagnostics use elapsed `ContinuousClock` durations; do not treat this declaration as permission to export raw boot-time values. |
 | Local operational journals and recovery files | [RuntimeDiagnostics](../TeachingTimer/RuntimeDiagnostics.swift) and [LandmarkDiagnostics](../TeachingTimer/LandmarkDiagnostics.swift) store timestamps, lifecycle/errors and count submissions on the Watch. Valid journals trim on writes at seven days and caps of 10,000/10,000/20,000 events. | There is no automatic developer upload. Corrupt-journal copies are separate files and can accumulate without a count/time cap; they are not covered by the valid journals' rolling limits. Preference recovery is separately one value per store. Exported copies need their own handling/retention assessment. |
+| Native diagnostic export — November 6 draft only | [Report builder](../TeachingTimer/DiagnosticReport.swift), [sharing UI](../TeachingTimer/DiagnosticSharingView.swift) and [prepared-file cache](../TeachingTimer/DiagnosticReportFile.swift) add an explicit filtered JSON share, with no automatic upload. | Report timestamps still disclose use times. Files are capped at 2 MiB, eight cached files, and cleanup after 24 hours on a later preparation; current sharing files are preserved. Cache age uses filename creation epochs, not filesystem timestamp APIs. Native receipt, off-device handling and the final distribution declarations remain unverified; this row updates the source inventory without changing the November 2 review history. |
 | Optional support intake | [Support](../SUPPORT.md) asks for a description first. Email received outside the app includes the sender, message and any chosen attachments; [the intake procedure](PRIVATE_SUPPORT_PLAN.md) separates private reports from public issues. | The owner chose descriptions and optional cropped screenshots for the public pilot, without requiring journals. This still involves contact/message data; final App Store privacy answers remain incomplete. Native attachments and general tester export remain unverified. |
 
 Apple excludes data processed solely on-device from its collection answers, but
@@ -131,8 +138,10 @@ all applicable criteria; voluntary email alone does not establish an exemption.
 ### Privacy decisions before broader distribution
 
 - **Known:** class state, preferences and journals stay on the Watch unless copied
-  separately; there is no in-app export/upload. Support email retains the sender,
-  message and chosen attachments as described in [the policy](PRIVACY.md).
+  separately in released builds. The unmerged draft adds explicit filtered-file
+  sharing but no upload service; its native delivery is unverified. Support email
+  retains the sender, message and chosen attachments as described in
+  [the policy](PRIVACY.md).
 - [ ] **Assess the label separately:** an empty manifest collection array is not
   an App Store answer. Apple excludes solely on-device processing; evaluate actual
   support intake separately under its [collection definition](https://developer.apple.com/app-store/app-privacy-details/).

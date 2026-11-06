@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        100000000000000000000030 /* DiagnosticSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000030; };
+        100000000000000000000029 /* DiagnosticReportFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000029; };
+        100000000000000000000028 /* DiagnosticReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000028; };
         100000000000000000000027 /* WallClockDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000027; };
         100000000000000000000024 = {isa = PBXBuildFile; fileRef = 200000000000000000000024; };
         100000000000000000000025 = {isa = PBXBuildFile; fileRef = 200000000000000000000025; };
@@ -39,6 +42,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+        200000000000000000000030 /* DiagnosticSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticSharingView.swift; sourceTree = "<group>"; };
+        200000000000000000000029 /* DiagnosticReportFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticReportFile.swift; sourceTree = "<group>"; };
+        200000000000000000000028 /* DiagnosticReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticReport.swift; sourceTree = "<group>"; };
         200000000000000000000027 /* WallClockDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallClockDisplay.swift; sourceTree = "<group>"; };
         200000000000000000000024 = {isa = PBXFileReference; lastKnownFileType = folder; path = Information; sourceTree = "<group>"; };
         200000000000000000000025 = {isa = PBXFileReference; lastKnownFileType = text; path = ../docs/PRIVACY.md; sourceTree = "<group>"; };
@@ -101,6 +107,9 @@
 				200000000000000000000003 /* ExtendedRuntimeController.swift */,
 				200000000000000000000006 /* SharedClockPage.swift */,
 				200000000000000000000008 /* SquircleClockViews.swift */,
+                200000000000000000000028 /* DiagnosticReport.swift */,
+                200000000000000000000029 /* DiagnosticReportFile.swift */,
+                200000000000000000000030 /* DiagnosticSharingView.swift */,
                 200000000000000000000027 /* WallClockDisplay.swift */,
 				000000000000000000000950,
 				000000000000000000000951,
@@ -282,6 +291,9 @@
 				100000000000000000000003 /* ExtendedRuntimeController.swift in Sources */,
 				100000000000000000000006 /* SharedClockPage.swift in Sources */,
 				100000000000000000000008 /* SquircleClockViews.swift in Sources */,
+                100000000000000000000028 /* DiagnosticReport.swift in Sources */,
+                100000000000000000000029 /* DiagnosticReportFile.swift in Sources */,
+                100000000000000000000030 /* DiagnosticSharingView.swift in Sources */,
                 100000000000000000000027 /* WallClockDisplay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
