@@ -1,7 +1,8 @@
 # Privacy and diagnostics
 
-Policy reviewed November 2, 2026, for the build-36 candidate. Navigation updated
-November 5, 2026; data handling is unchanged.
+Policy updated November 6, 2026 for native diagnostic sharing. Recipient
+delivery is still under owner-pilot validation; the policy describes how the
+implemented sharing feature handles data.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does
@@ -35,10 +36,34 @@ system/backup copies are outside that operation.
 
 ## Sharing is a separate choice
 
-Journals may be copied to a trusted Mac using Apple's developer tools. This was
-verified for the maintainer's TestFlight build on a developer-enabled Watch;
-access for ordinary testers is not established. This build has no in-app journal
-export or automatic collection by the developer.
+**Settings → About → Share diagnostics** prepares a JSON file for the last two
+hours, last 24 hours, or all retained events. Preparation alone sends nothing.
+Review the available time range, event counts, missing-history warnings and
+event preview before choosing **Share file…**. The native sharing sheet lets you
+choose a destination; it does not send directly to support or confirm receipt.
+Available destinations depend on the system. Actual attachment delivery remains
+unverified, so this feature is not yet a supported general tester intake route.
+
+The report includes app/build/OS versions, exact event timestamps, class/session
+and interface state, count timing and selected error codes. Generated run IDs
+are replaced with report-local labels. Unknown events and fields, free-form
+errors, raw system uptime, saved preference files and unreadable recovery copies
+are omitted. Reports can still reveal usage and teaching times; they are not
+anonymous. Missing or unreadable history and omitted fields are disclosed.
+The report is limited to 2 MiB; an oversized selection is rejected rather than
+silently shortened. No system logs, audio or other apps' data are collected.
+
+Prepared files are held in an app-owned cache, excluded from backup. Up to eight
+files (at most 16 MiB of report content) are kept. During a later preparation,
+files older than 24 hours are removed unless retained by the current sharing
+view. Cleanup is not scheduled in the background and cannot run if the app is
+never used again. The system may clear caches sooner. Leaving the sharing view
+does not immediately delete a file that its destination may still be reading.
+The original journals, prepared files and recipient copies have separate lifetimes.
+
+Developer-tool copying to a trusted Mac was separately verified for the
+maintainer's TestFlight build on a developer-enabled Watch; ordinary testers
+are not expected to use that route.
 
 Before sharing, inspect and minimize the data. GitHub issues are public: use
 cropped screenshots and sanitized excerpts. Arrange a private route with the
@@ -64,8 +89,8 @@ emailing the same address; copies already shared with another recipient or
 retained in backups may have separate lifetimes.
 
 Share only necessary details. The maintainer will ask before forwarding raw
-private evidence to Apple or another party. No journal attachment delivery or
-TestFlight file access is implied by the email route. In the Watch app,
+private evidence to Apple or another party. Email support and the native sharing
+sheet do not by themselves establish attachment delivery. In the Watch app,
 **Settings → About → Contact support** shows the address and QR code for the
 reporting steps. The [public issue form](https://github.com/qayshp/TeachingTimer/issues/new/choose)
 remains available for sanitized descriptions.

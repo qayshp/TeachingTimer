@@ -20,10 +20,11 @@ enum AppInformationPage: String, CaseIterable, Identifiable {
     }
 }
 
-/// Read-only destinations share the existing Settings navigation stack.
+/// Information and optional diagnostic sharing use the existing Settings stack.
 /// They do not own or change class, runtime, count, or volume state.
 struct AppInformationView: View {
     let page: AppInformationPage
+    let prepareDiagnostics: @MainActor (DiagnosticReport.Window, Set<URL>) async throws -> DiagnosticSharingView.Prepared
 
     var body: some View {
         Form {
@@ -80,7 +81,8 @@ struct AppInformationView: View {
                 Text("End class clears current timing, not diagnostics or settings. Unreadable saved values may have a separate local recovery copy. Removing the app removes its local container; exported or backup copies are separate.")
             }
             Section("Sharing is your choice") {
-                Text("Journal copying was verified with the maintainer’s TestFlight build and trusted Mac. Access for other testers is not established. This app has no journal export or upload.")
+                Text("About → Share diagnostics prepares a filtered file for a time interval you choose. Review it before opening native sharing. Nothing is sent automatically or directly to support. Attachment delivery is still being tested.")
+                Text("Prepared files stay in the app’s cache for sharing. Up to eight are kept; files older than a day are removed when another report is prepared, unless still in use. The system may clear cached files sooner. Recipient copies are separate.")
                 Text("Share only what is needed. Do not post raw journals or system logs in public GitHub issues.")
                 Text("Apple’s media services and system diagnostics follow your Apple settings. Data you choose to send to Apple or another recipient follows that recipient’s policies.")
             }
@@ -104,6 +106,12 @@ struct AppInformationView: View {
             }
             Section {
                 InformationWebsiteLink(key: "support")
+                NavigationLink {
+                    DiagnosticSharingView(prepare: prepareDiagnostics)
+                } label: {
+                    Label("Share diagnostics", systemImage: "square.and.arrow.up")
+                }
+                .accessibilityIdentifier("about-share-diagnostics")
             } header: {
                 Text("Support")
             } footer: {

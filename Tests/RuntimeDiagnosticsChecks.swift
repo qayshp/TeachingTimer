@@ -24,6 +24,15 @@ struct RuntimeDiagnosticsChecks {
         let entries = try decoder.decode([RuntimeDiagnostics.Event].self, from: Data(contentsOf: url))
         assert(entries.map(\.event) == ["runtime_started", "runtime_invalidated", "app_launched"])
         assert(entries[1].details["reason"] == "resigned_frontmost")
+
+        let originalBytes = try Data(contentsOf: url)
+        let snapshots = await RuntimeDiagnostics(fileURL: url, capacity: 3).snapshots()
+        assert(snapshots.runtime.sourceStatus == .available)
+        assert(snapshots.runtime.events.map(\.event) == entries.map(\.event))
+        assert(snapshots.interface.sourceStatus == .missing && snapshots.interface.events.isEmpty)
+        let unchangedBytes = try Data(contentsOf: url)
+        assert(unchangedBytes == originalBytes)
+        assert(!FileManager.default.fileExists(atPath: journal.interfaceFileURL.path))
         let bad = directory.appendingPathComponent("bad.json")
         try Data("unreadable".utf8).write(to: bad)
         let recovery = RuntimeDiagnostics(fileURL: bad)
@@ -70,6 +79,10 @@ struct RuntimeDiagnosticsChecks {
                                               from: Data(contentsOf: busy.interfaceFileURL))
         assert(transitions.count == 40)
         assert(transitions.allSatisfy { $0.event == "scene_state_changed" || $0.event == "luminance_changed" })
+        let busySnapshots = await busy.snapshots()
+        assert(busySnapshots.runtime.events.count == classes.count)
+        assert(busySnapshots.interface.events.count == transitions.count)
+        assert(busySnapshots.runtime.pendingEventCount == 0 && busySnapshots.interface.pendingEventCount == 0)
 
         // Background entry/exit and initial activation remain durable main-file
         // events with page context; they are not treated as routine wrist wakes.

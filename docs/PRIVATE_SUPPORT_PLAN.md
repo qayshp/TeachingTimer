@@ -1,6 +1,6 @@
 # Private support and diagnostic intake
 
-Updated November 2, 2026. **The approved support alias is configured in the
+Updated November 6, 2026. **The approved support alias is configured in the
 existing iCloud mailbox; incoming and outgoing plain email are verified.**
 No mail routing or MX records were changed. The owner has authorized the public
 beta with **description-based support and optional cropped screenshots**, without
@@ -32,34 +32,35 @@ making no automatic uploads, and ordinary testers are not promised journal expor
 
 ## Getting journals off the Watch
 
-The current app has no journal export, upload or attachment control. Journals
-are private files in the Watch app's container. Sending an ordinary email from
-Watch Mail, scanning the support QR code, or opening a support address does not
-attach them. The empty distribution container is packaging, not an iPhone
-companion or file-transfer service.
+Builds preceding the native-sharing pilot have no journal export or upload control. Ordinary Watch Mail,
+the support QR code and the distribution container do not attach app-private
+journals. The November 2 [owner pilot](TESTFLIGHT_PILOT_RESULTS.md) copied all
+three Beta journals through a developer-enabled SE 3 and trusted Mac; that is
+not an ordinary tester's retrieval path.
 
-The November 2 [owner pilot](TESTFLIGHT_PILOT_RESULTS.md) copied and validated all
-three TestFlight Beta journals through developer tools on one developer-enabled
-SE 3 and trusted Mac. This is distinct from development-app access and does not
-establish an ordinary tester’s retrieval path. Do not ask testers to attach
-journals they have no supported way to obtain.
+The [native-sharing owner pilot](DIAGNOSTIC_EXPORT_PLAN.md) adds **Settings → About →
+Share diagnostics**, a time-limited/filtered report, preview and explicit native
+share action, with no upload service or new iPhone companion. The owner approved
+merge after review/CI and an internal TestFlight test after class. Merge/release
+readiness remains in [current status](../DEVELOPMENT_STATUS.md); attachment receipt
+is not yet verified. Public-beta support still accepts descriptions and optional
+cropped screenshots; it does not require journals.
 
-Before offering tester-facing journal export, evaluate an explicit sharing flow on a physical
-Watch: first a harmless test file, then a minimized journal package, and verify
-the received attachment. A share sheet appearing is not proof of delivery.
-If native sharing cannot deliver files reliably, consider a user-triggered
-private upload with a clear preview and consent step. Neither path is
-implemented in TeachingTimer; update privacy wording before introducing an upload.
-This future export work does not block the chosen description-based public pilot.
+The November 6 SE 3 Simulator probe offered only Messages. A harmless 139-byte
+JSON and a 1,401,371-byte representative report reached compose; staged copies
+matched source hashes and parsed correctly. No recipient was selected or file
+sent, and cancellation returned. This extends the November 2 presentation checks
+without proving delivery. The planned owner TestFlight test will investigate
+physical receipt. Do not
+promise Mail support, a direct-to-support send, or a usable tester export until
+received attachments and the complete intended route are verified.
 
-A separate [native sharing probe](../tools/diagnostic-share-probe/README.md)
-was tested on the SE 3 Simulator, watchOS 27.2, November 2. Text, a 198-byte JSON
-and a 941,009-byte synthetic ZIP opened the native share sheet. JSON and ZIP
-reached Messages compose; the system requested both file representations.
-Only Messages was offered in this Simulator setup. No recipient was selected,
-nothing was sent, and cancellation returned correctly. This is promising
-attachment-presentation evidence, not proof of delivery, Mail support, or a
-usable tester-facing journal export.
+[Issue #26](https://github.com/qayshp/TeachingTimer/issues/26) tracks physical
+receipt, TestFlight, interruption/offline testing and the delivery decision.
+If native sharing is unreliable or cumbersome, evaluate the plan's explicit
+HTTPS fallback and its privacy obligations before deploying it. Recommend sharing
+after class: native activities may take foreground and end the runtime even
+though report preparation leaves class/session/count state unchanged.
 
 ## Handling a report
 
@@ -103,8 +104,8 @@ actual intake practice; optional support sharing is not automatically exempt.
   the tested developer-enabled Watch/trusted-Mac setup; general tester access
   remains unverified.
 - [x] Public pilot explicitly accepts descriptions and optional cropped
-  screenshots without requiring journal attachments; tester-usable journal
-  export and delivery remain unimplemented/unverified.
+  screenshots without requiring journal attachments. Native export now has a
+  separate owner-pilot validation path; general tester delivery remains unverified.
 
 An email route does not itself solve exporting journals from a TestFlight Watch
 app. If developer tools cannot copy that app's container, report the limitation

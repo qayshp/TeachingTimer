@@ -58,6 +58,14 @@ private struct ShareProbeView: View {
                     Text("JSON fixture missing").foregroundStyle(.red)
                 }
 
+                if let url = Bundle.main.url(forResource: "synthetic-report", withExtension: "json") {
+                    ShareLink(item: JSONFixture(url: url), preview: SharePreview("Synthetic report")) {
+                        Label("Share report", systemImage: "doc.text")
+                    }
+                } else {
+                    Text("Report fixture missing").foregroundStyle(.red)
+                }
+
                 if let url = Bundle.main.url(forResource: "synthetic-journals", withExtension: "zip") {
                     ShareLink(item: ZIPFixture(url: url), preview: SharePreview("Synthetic journal ZIP")) {
                         Label("Share ZIP", systemImage: "doc.zipper")

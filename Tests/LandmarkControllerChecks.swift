@@ -68,6 +68,23 @@ final class WKInterfaceDevice {
         let originalStartAngle = model.startAngle
         let originalWait = clock.waits.first!.0
         let submittedAtStart = device.submissions.count
+        let nextBeat = model.nextScheduledBeat
+        let originalResult = defaults.string(forKey: "landmarkResult.v2")
+        let progressBeforeSnapshot = model.progress
+        let clockBeforeSnapshot = clock.now
+        var snapshotPublications = 0
+        let snapshotObservation = model.objectWillChange.sink { snapshotPublications += 1 }
+        for _ in 0..<3 {
+            let snapshot = await model.diagnosticSnapshot()
+            assert(snapshot.events.contains { $0.event == "landmark_started" })
+            assert(model.isActive && model.result == .running && model.configuration.hapticsEnabled)
+            assert(model.startAngle == originalStartAngle && model.progress == progressBeforeSnapshot)
+            assert(model.nextScheduledBeat == nextBeat && model.beatsDelivered == 0)
+            assert(clock.now == clockBeforeSnapshot && clock.waits.count == 1 && clock.waits.first!.0 == originalWait)
+            assert(device.submissions.count == submittedAtStart && snapshotPublications == 0)
+            assert(defaults.string(forKey: "landmarkResult.v2") == originalResult)
+        }
+        snapshotObservation.cancel()
         model.start(configuration: .init(hapticsEnabled: false)); await drain()
         assert(model.isActive && model.configuration.hapticsEnabled)
         assert(model.startAngle == originalStartAngle)
@@ -194,6 +211,6 @@ final class WKInterfaceDevice {
         assert(late.details["pulse"] == "1" && late.details["landmark"] == "1")
         assert(events.contains { $0.event == "landmark_group_skipped" })
         assert(events.contains { $0.details["hapticName"] == "directionUp" })
-        print("PASS: groups 5/6 cancellation and restart isolation, late pulses continue with spacing, obsolete groups skip without disabling, arc/anchor survive, explicit Stop/Reset cancel both, 21 pulses, 64.8s completion, persistent end reasons")
+        print("PASS: active snapshots preserve count state, absolute deadline, haptic submissions and saved result; groups 5/6 cancellation/restart isolation, late spacing, obsolete-group skip, arc/anchor, 21 pulses and 64.8s completion")
     }
 }
