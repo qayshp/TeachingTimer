@@ -1,11 +1,59 @@
 # SPDX-License-Identifier: MPL-2.0
 import importlib.util
+import io
 from pathlib import Path
+import subprocess
+import sys
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('regression', Path(__file__).resolve().parents[1] / 'tools/simulator-regression/run.py')
 regression = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(regression)
+
+class CheckedCommandChecks(unittest.TestCase):
+    def test_failure_exposes_helper_diagnostics_and_preserves_exception(self):
+        log = io.StringIO()
+        with patch.object(regression.sys, 'stderr', log):
+            with self.assertRaises(subprocess.CalledProcessError) as raised:
+                regression.checked(sys.executable, '-c',
+                    'import sys; print("selected test simulator"); '
+                    'print("Device Hub window unavailable", file=sys.stderr); sys.exit(4)')
+        self.assertEqual(raised.exception.returncode, 4)
+        self.assertIn('Device Hub window unavailable', raised.exception.stderr)
+        self.assertIn('Device Hub window unavailable', log.getvalue())
+        self.assertIn('selected test simulator', log.getvalue())
+
+    def test_verbose_failure_keeps_bounded_tail(self):
+        log = io.StringIO()
+        with patch.object(regression.sys, 'stderr', log):
+            with self.assertRaises(subprocess.CalledProcessError):
+                regression.checked(sys.executable, '-c',
+                    'import sys; print("discard-this-prefix" + "x" * 10000 + "final diagnostic", '
+                    'file=sys.stderr); sys.exit(1)')
+        self.assertIn('last 4096 characters', log.getvalue())
+        self.assertIn('final diagnostic', log.getvalue())
+        self.assertNotIn('discard-this-prefix', log.getvalue())
+        self.assertLess(len(log.getvalue()), 4200)
+
+    def test_timeout_exposes_byte_diagnostics_without_replacing_error(self):
+        error = subprocess.TimeoutExpired(['fixture'], 1, output=b'partial output', stderr=b'waiting \xff')
+        log = io.StringIO()
+        with patch.object(regression.subprocess, 'run', side_effect=error), \
+                patch.object(regression.sys, 'stderr', log):
+            with self.assertRaises(subprocess.TimeoutExpired) as raised:
+                regression.checked('fixture', timeout=1)
+        self.assertIs(raised.exception, error)
+        self.assertIn('partial output', log.getvalue())
+        self.assertIn('waiting', log.getvalue())
+
+    def test_success_returns_output_without_emitting_helper_stderr(self):
+        log = io.StringIO()
+        with patch.object(regression.sys, 'stderr', log):
+            output = regression.checked(sys.executable, '-c',
+                'import sys; print(" result "); print("routine detail", file=sys.stderr)')
+        self.assertEqual(output, 'result')
+        self.assertEqual(log.getvalue(), '')
 
 class SimulatorRegressionChecks(unittest.TestCase):
     def test_only_running_native_view_service_is_selected(self):

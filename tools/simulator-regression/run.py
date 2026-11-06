@@ -12,11 +12,24 @@ from pathlib import Path
 import plistlib
 import shutil
 import subprocess
+import sys
 import time
 
 
 def checked(*args, timeout=30):
-    return subprocess.run([str(x) for x in args], check=True, capture_output=True, text=True, timeout=timeout).stdout.strip()
+    try:
+        return subprocess.run([str(x) for x in args], check=True, capture_output=True, text=True, timeout=timeout).stdout.strip()
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
+        # Captured helper diagnostics otherwise disappear from the suite's log:
+        # CalledProcessError.__str__ only reports the command and exit status.
+        # Keep the exception type/data intact for callers, and bound each excerpt.
+        for label, captured in (("stderr", error.stderr), ("stdout", error.stdout)):
+            if not captured:
+                continue
+            text = captured.decode("utf-8", errors="replace") if isinstance(captured, bytes) else captured
+            truncated = " (last 4096 characters)" if len(text) > 4096 else ""
+            print(f"Captured {label}{truncated}:\n{text[-4096:].rstrip()}", file=sys.stderr)
+        raise
 
 
 def reset_test_app(simulator, bundle):
