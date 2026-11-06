@@ -149,7 +149,7 @@ def main():
     def menu():
         ui('tap', .22, .12)
     def dismiss():
-        ui('tap', .23, .13)
+        ui('tap', .15, .13)  # Center of the native leading Back/Done button.
     def finish(scenario):
         if scenario == 'baseline' and not baseline_complete(results):
             raise AssertionError('Baseline actions do not match the complete contract')

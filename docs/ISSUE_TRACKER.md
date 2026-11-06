@@ -35,8 +35,8 @@ completion checklist:
 - [#11 First external beta and release readiness](https://github.com/qayshp/TeachingTimer/issues/11)
 - [#14 Release traceability and contribution safeguards](https://github.com/qayshp/TeachingTimer/issues/14)
 - [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15): invariant table and seeded tests implemented; performance measurement remains.
-- [#23 Hosted Simulator execution](https://github.com/qayshp/TeachingTimer/issues/23): CI currently compiles but does not boot/run the Watch app.
-- [#24 Release ordering and verification reuse](https://github.com/qayshp/TeachingTimer/issues/24): overlapping publishers, duplicated checks and a confirmed synthetic Pacific daylight-saving build-number reversal.
+- [#23 Hosted Simulator execution](https://github.com/qayshp/TeachingTimer/issues/23): implemented: both verification workflows now boot a disposable Watch and verify fresh launches and saved state; local checks passed, hosted result pending.
+- [#24 Release ordering and verification reuse](https://github.com/qayshp/TeachingTimer/issues/24): overlapping publishers, duplicated checks and a confirmed synthetic Pacific daylight-saving build-number reversal. Main Watch-check cancellation by later docs pushes is fixed with per-commit groups.
 
 Completed: [#12 documentation and changelog](https://github.com/qayshp/TeachingTimer/issues/12),
 [#13 teaching-face visual key](https://github.com/qayshp/TeachingTimer/issues/13),

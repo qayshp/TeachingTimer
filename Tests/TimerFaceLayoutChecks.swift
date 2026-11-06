@@ -24,7 +24,12 @@ import Foundation
             assert(layout.trackRadius == layout.dialRadius - layout.trackInset)
             assert(layout.countWidth >= 44 && layout.optionsWidth >= 44 && layout.actionHeight >= 44)
             assert(layout.volumeRefreshFrame.width >= 44 && layout.volumeRefreshFrame.height >= 44)
-            assert(layout.volumeRefreshFrame.minY >= 45) // Clear of Class button.
+            let settingsTarget = CGRect(x: layout.classControlCenter.x - 22,
+                                        y: layout.classControlCenter.y - 22, width: 44, height: 44)
+            assert(layout.dialFrame.contains(settingsTarget))
+            assert(!settingsTarget.intersects(layout.volumeRefreshFrame))
+            assert(!settingsTarget.intersects(layout.systemTimeTickRegion))
+            assert(layout.volumeRefreshFrame.minY >= 45) // Clear of settings button.
             assert(layout.volumeRefreshFrame.maxY + 4 < layout.actionFrame.minY)
             assert(layout.volumeFrame.maxY < layout.actionFrame.minY)
             var ticksUnderTime = 0

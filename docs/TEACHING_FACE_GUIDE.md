@@ -3,31 +3,32 @@
 Start a class, check the suggested schedule, and try phone volume before teaching.
 The clock hands always show real time; a class does not reset them.
 
-![SE 3 teaching face with a running class and count](images/review-2026-11-05/se3-active-count.png)
+![SE 3 teaching face with a running class and count](images/polish-2026-11-05/se3-count.png)
 
-November 5, 2026 capture: SE 3 40 mm Simulator, watchOS 27.2, Xcode 27.2;
-development build 41 from source `5fcef3c`. This is a simulated class. The red
-crossed-phone symbol is watchOS's disconnected-phone indicator; this image does
-not demonstrate working paired audio. The visual key below annotates the image
-without covering the hands or controls.
+November 5, 2026 interface refinement: SE 3 40 mm Simulator, watchOS 27.2,
+Xcode 27.2. The local development artifact is build **41**, source
+`683886f9491e-dirty`, built November 5 at 23:34:26 PST
+(`2026-11-06T07:34:26Z`). Its uncommitted changes included this interface refinement
+and the compiler callback fix. This is not a released TestFlight build.
 
-This guide shows the development interface; the externally available beta may
-be an earlier build. See [current status](../DEVELOPMENT_STATUS.md). A later
-small-screen refinement makes **Session off** readable beside Resume; its
-[before/after comparison](REVIEW_2026-11-05.md#usability-findings-and-verification)
-preserves the exact capture provenance.
+This is a simulated class. The red crossed-phone symbol is watchOS's
+disconnected-phone indicator; this image does not demonstrate working paired
+audio. The visual key below explains the image without covering the hands or
+controls. See [current status](../DEVELOPMENT_STATUS.md) for later source/build
+evidence; the externally available beta may be an earlier build.
 
 | Where to look | What it means / what to do |
 | --- | --- |
-| **Class ⚙**, upper left | Opens the class menu and Settings. Edit the current schedule, stop/resume its session, or explicitly begin/end a class. |
-| System time, upper right | watchOS supplies the digital time. The dial continues behind it and the Class button. |
+| **Gear ⚙**, upper left | Opens the class menu and Settings. Edit the current schedule, stop/resume its session, or explicitly begin/end a class. |
+| System time, upper right | watchOS supplies the digital time. The dial continues behind it and the gear button. |
 | Long, thin hand (yellow here) | Real-world seconds, ticking once per second when watchOS permits. |
 | Short, thick hand (white here) | Real-world minutes, including the current second's fraction of a minute. Its thickness distinguishes it in monochrome. |
 | Outer bright perimeter | For a 60-minute class, the time still ahead, clockwise toward the scheduled finish. Past time has less visual weight. A 75-minute class keeps its finish marker but omits this single-revolution progress line. |
-| Inward wedge, at the bottom in this example | Scheduled finish at `:30`. It is visible from the start and grows modestly halfway through the scheduled interval. |
+| Inward wedge | Scheduled class finish. It is visible from the start and grows modestly halfway through the scheduled interval. |
 | Speaker ring and small refresh arrow | Turn the Crown to change the **paired iPhone's** media volume. Tap the ring to request a refresh if it stops responding. Visual feedback alone does not confirm audible volume changed. |
 | **Stop count**, lower center | A one-minute count is active. Tap to cancel. When inactive it reads **1-min count**; without a class it offers **Start class**. |
-| Small inner dot/arc, just inside the right edge here | Time since the count tap, independent of the wall clock. It starts at the tap's clock position and grows for 60 seconds; a clock correction does not restart it. |
+| Small inner dot/arc | Time since the count tap, independent of the wall clock. It starts at the tap's clock position and grows for 60 seconds; a clock correction does not restart it. |
+| **Start session** or **Resume session**, when shown beside Count | Requests the session that supports wrist-down updates. Class timing and the count stay independent. |
 | Two dots, bottom | Two swipe pages: the teaching face and Apple's native media controls. |
 
 ## Three independent things
@@ -39,9 +40,11 @@ it uses the next. Check that suggestion when opening early or late. Custom
 schedule changes only this class.
 
 **Session** is the mindfulness runtime that helps keep the app available and
-the clock updating wrist-down. Stop session leaves the class intact. Resume
-requests a new session. An intentional Stop stays stopped after reopening;
-reopening can recover a session that was meant to run. **New class** and
+the clock updating wrist-down. **Stop session** leaves the class intact.
+**Start session** or **Resume session** requests a session without changing the
+class schedule.
+An intentional Stop stays stopped after reopening; reopening can recover a
+session that was meant to run. **New class** and
 **End class** are separate, confirmed actions. An old class clears 30 minutes
 after its scheduled end; the next class never starts silently.
 
@@ -49,7 +52,24 @@ after its scheduled end; the next class never starts silently.
 10, 20, 30, 40, 50 and 60 seconds. The inner arc fills at 60 seconds and remains
 while the final group finishes, normally around 64.8 seconds. This brief hold
 also occurs with vibrations disabled. Late or skipped haptics do not erase the
-arc. Class → Settings controls count vibrations and optional minutes remaining.
+arc. **Gear → Settings** controls count vibrations and optional minutes remaining.
+
+## When the session stops
+
+The separate recovery button says **Start session** when this app launch has
+not recorded a successful session start, or **Resume session** after one has run.
+Either requests wrist-down support without restarting class timing or a count.
+The gear menu explains the session under **Wrist-down updates**; it also shows
+the session's current status. An explicit Stop stays stopped until you request
+a session again. A **Start session** label after reopening does not mean your
+class schedule was lost.
+
+| SE 3 40 mm | Ultra 49 mm, maximum text |
+| --- | --- |
+| ![Count and complete Resume session action on SE 3](images/polish-2026-11-05/se3-resume.png) | ![Complete Resume session action on Ultra at maximum text size](images/polish-2026-11-05/ultra-resume-maximum.png) |
+
+These are Simulator captures of the same interface refinement, not physical
+haptic, Crown-volume or Always-On verification.
 
 ## Music during teaching
 

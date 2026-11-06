@@ -9,10 +9,10 @@ Built around real teaching on Apple Watch SE 3. This is still an experimental
 app with known media, volume and Always-On issues. Test it before relying on it
 in class and keep another timing method available.
 
-<img src="docs/images/layered-41/SE-3-40mm-normal.png" alt="Build 41 SE 3 Simulator teaching face with the full-screen dial behind the Class button and system time" width="240">
+<img src="docs/images/polish-2026-11-05/se3-count.png" alt="SE 3 Simulator teaching face with a gear button, foreground clock hands and an active count" width="240">
 
-*Build 41 layout, SE 3 40 mm Simulator. This edge-following layout is merged into
-the current app. The disconnected-phone symbol is Simulator state.
+*November 5 interface refinement, SE 3 40 mm Simulator. The gear opens class
+controls and Settings. The disconnected-phone symbol is Simulator state.
 The installed build and current source candidate are listed in
 [current verification](DEVELOPMENT_STATUS.md).*
 
@@ -51,14 +51,14 @@ is required or promised. To build from source, use the instructions below.
    mark 10–60 seconds. The arc fills at 60 seconds; the count normally ends at
    about 64.8 seconds, allowing time for the final group. Tap again to stop.
    Haptics may be late or skipped by watchOS.
-5. Tap **Class** (with the gear) → **Settings** to turn **Count vibrations** off
-   for the next count or enable **Minutes left**. Both preferences persist.
+5. Tap the **gear** at the upper left, then **Settings**. Turn **Count vibrations**
+   off for the next count or enable **Minutes left**. Both preferences persist.
    **Help**, **Privacy**, and **About** are also in Settings, including the app
    version, recovery guidance, source/license, and private support contact.
 
 **Start class** also requests a mindfulness session to help keep the app available
-during class. **Stop session / Resume session** affects that runtime while retaining
-class timing. **End class** clears timing and stops session/count. **New class**
+during class. **Stop session**, **Start session**, and **Resume session** affect
+that runtime while retaining class timing. **End class** clears timing and stops session/count. **New class**
 creates another schedule with confirmation. An old class retires 30 minutes after
 scheduled end; a new class never starts silently.
 
@@ -72,8 +72,10 @@ scheduled end; a new class never starts silently.
   from media is another recovery path. A visual acknowledgement does not prove
   focus or sound recovered. If playback is silent, the iPhone's volume controls
   have restored it in reported cases.
-- **Session off**: use **Resume**. Intentional Stop stays stopped across reopening;
-  automatic recovery is bounded and watchOS may reject it.
+- **Start session** or **Resume session** appears when the wrist-down session is
+  not running. Tap it to request a session without changing class timing.
+  Intentional Stop stays stopped across reopening; automatic recovery is bounded
+  and watchOS may reject it.
 
 The [known-issue map](docs/ISSUE_TRACKER.md) keeps symptoms and mitigations
 separate. [Contact support](SUPPORT.md)

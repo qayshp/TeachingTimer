@@ -28,22 +28,21 @@ struct SharedClockPage: View {
         GeometryReader { geometry in
             let layout = TimerFaceLayout(size: geometry.size)
             ZStack {
-                // Ticks sit behind the translucent Class backing and native time.
+                // Ticks sit behind the translucent settings backing and native time.
                 // Drawing must not intercept the button's touches or Crown focus.
                 clockFace(layer: .dial).allowsHitTesting(false)
                 Button { classSheet = ClassSheetRequest() } label: {
-                    HStack(spacing: 3) {
-                        Text("Class")
-                        Image(systemName: "gearshape").font(.system(size: 8, weight: .bold))
-                    }
-                    .font(.system(size: min(labelSize, 14), weight: .semibold))
-                    .padding(.horizontal, 7).padding(.vertical, 5)
-                    .background(Capsule().fill(.black.opacity(1 - SquircleClockTuning.obscuredTickOpacity)))
-                    .overlay(Capsule().strokeBorder(.primary, lineWidth: 1))
-                    .frame(width: 64, height: 44).contentShape(Rectangle())
+                    Image(systemName: "gearshape")
+                        .font(.system(size: min(labelSize + 3, 19), weight: .semibold))
+                        .frame(width: 30, height: 30)
+                        .background(Circle().fill(.black.opacity(1 - SquircleClockTuning.obscuredTickOpacity)))
+                        .overlay(Circle().strokeBorder(.primary, lineWidth: 1))
+                        .frame(width: 44, height: 44).contentShape(Rectangle())
                 }
                     .buttonStyle(.plain).position(layout.classControlCenter)
-                    .accessibilityLabel("Class options and settings").accessibilityIdentifier("class-options")
+                    .accessibilityLabel("Class options and settings")
+                    .accessibilityHint("Opens class timing, session controls, and settings.")
+                    .accessibilityIdentifier("class-options")
                 ClockAdditions(date: date, context: classStore.context,
                     showsClassProgress: showsClassProgress,
                     landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,
@@ -102,7 +101,6 @@ struct SharedClockPage: View {
     private var faceStatus: String {
         if session.phase == .starting { return "Starting…" }
         if session.phase == .expiring { return session.statusText }
-        if classStore.context != nil && !session.isActive { return "Session off" }
         if landmarks.isActive && !landmarks.configuration.hapticsEnabled { return "Visual count" }
         if showRemainingMinutes, let context = classStore.context {
             if date < context.scheduledStart { return "Starts " + context.scheduledStart.formatted(date: .omitted, time: .shortened) }
@@ -142,9 +140,8 @@ struct SharedClockPage: View {
                         .font(.system(size: min(labelSize, session.isActive ? (faceStatus.isEmpty ? 22 : 17) : 14), weight: .semibold))
                         if !faceStatus.isEmpty {
                             Text(faceStatus)
-                                // The split Count/Resume layout has less width.
-                                // Keep "Session off" complete across two lines
-                                // within the existing generous button height.
+                                // Keep count information with the count control;
+                                // the separate session action explains recovery.
                                 .font(.system(size: min(labelSize, session.isActive ? 12 : 10)))
                                 .lineLimit(session.isActive ? 1 : 2)
                                 .multilineTextAlignment(.center)
@@ -166,9 +163,12 @@ struct SharedClockPage: View {
                 .accessibilityHint("Six ten-second landmarks. Tap again to stop.")
                 if !session.isActive {
                     Button { guard !retireOldClass() else { return }; session.start() } label: {
-                        Text("Resume")
-                            .font(.system(size: min(labelSize, 12), weight: .semibold))
-                            .lineLimit(1).minimumScaleFactor(0.75)
+                        VStack(spacing: 1) {
+                            ForEach(session.actionTitle(hasClass: true).split(separator: " "), id: \.self) { word in
+                                Text(String(word)).lineLimit(1).minimumScaleFactor(0.75)
+                            }
+                        }
+                            .font(.system(size: min(labelSize, 11), weight: .semibold))
                             .padding(.horizontal, 4)
                             .frame(width: layout.optionsWidth, height: layout.actionHeight)
                             .background(.black, in: RoundedRectangle(cornerRadius: 12))
@@ -176,7 +176,9 @@ struct SharedClockPage: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Resume session").accessibilityIdentifier("runtime-toggle")
+                    .accessibilityLabel(session.actionTitle(hasClass: true))
+                    .accessibilityHint("Starts the session for wrist-down updates. Class timing is unchanged.")
+                    .accessibilityIdentifier("runtime-toggle")
                 }
             }
         }

@@ -105,8 +105,8 @@ def ensure_luminance(reduced, read_journals, toggle, launch_id, *, timeout=8,
 def missing_labels(rows, counting):
     readable = [r for r in rows if r['confidence'] >= .7]
     missing = []
-    if not any('class' in r['text'].casefold() and r['y'] < .2 for r in readable):
-        missing.append('Class')
+    # The upper-left control is icon-only. Its visibility needs human frame
+    # review; opening it is exercised separately by the action suite.
     # Count/Stop are the deliberate narrow-layout fallbacks.
     expected = ['stop count', 'stop'] if counting else ['1-min count', 'count']
     if not any(r['text'].casefold() in expected and .55 < r['y'] < .93 for r in readable):

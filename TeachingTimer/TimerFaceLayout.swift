@@ -23,10 +23,10 @@ struct TimerFaceLayout {
     }
     var trackRadius: CGFloat { max(0, dialRadius - trackInset) }
     var classControlCenter: CGPoint {
-        // Keep the capsule just inside the curved edge on larger displays too.
+        // Keep the settings circle just inside the curved edge on larger displays too.
         let r = Double(dialRadius), y = min(r, 23.0)
         let edge = r - pow(max(0, pow(r, cornerPower) - pow(r - y, cornerPower)), 1 / cornerPower)
-        return CGPoint(x: max(38, CGFloat(edge) + 35), y: 23)
+        return CGPoint(x: max(29, CGFloat(edge) + 24), y: 23)
     }
     // Approximate system-overlay footprint; watchOS owns the actual clock view.
     var systemTimeTickRegion: CGRect {

@@ -4,6 +4,17 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## November 5, 2026 — clearer controls and verification
+
+- Simplified the upper-left class/settings button to an outlined gear with a
+  44-point tap target and descriptive accessibility label.
+- Show **Start session** or **Resume session** in full on the recovery button.
+  Removed **Session off** from Count; the menu explains wrist-down sessions.
+- Added strict concurrency/compiler-warning checks and source/shell hygiene.
+- Added real disposable Watch Simulator launch/persistence checks to both CI
+  verification workflows. New documentation pushes no longer cancel preceding
+  main-branch app verification.
+
 ## November 4–5, 2026 — merged beta changes
 
 - Made **Session off** readable beside Resume on small Watch screens and at

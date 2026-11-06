@@ -71,7 +71,7 @@ struct ClassControlsView: View {
                         }
                     }
                     Section {
-                        classAction(session.isActive ? "Stop session" : "Resume session",
+                        classAction(session.actionTitle(hasClass: true),
                                     icon: session.isActive ? "pause.fill" : "play.fill",
                                     prominent: !session.isActive) {
                             if session.isActive { session.stop() } else { session.start() }
@@ -79,8 +79,10 @@ struct ClassControlsView: View {
                         }
                         .disabled(session.phase == .starting)
                         .accessibilityIdentifier("class-session-toggle")
+                    } header: {
+                        Text("Wrist-down updates")
                     } footer: {
-                        Text("Stopping keeps class timing. Wrist-down updates may slow.")
+                        Text("The session helps keep the clock updating with your wrist down. Stopping keeps your class schedule.")
                     }
                     Section("Schedule") {
                         classAction("Edit schedule", icon: "calendar") {

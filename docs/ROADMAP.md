@@ -34,7 +34,7 @@ is complete: a concise status page, user-facing changelog and separate historica
 checkpoints. The [edge-following dial work #19](https://github.com/qayshp/TeachingTimer/issues/19)
 is implemented and merged; its Simulator/form-factor checks passed. Physical
 validation of the merged layout is part of #10. All 60 ticks continue behind a
-translucent Class button and are subdued beneath system time.
+translucent settings button and are subdued beneath system time.
 
 ## Existing reliability work
 

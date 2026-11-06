@@ -1,6 +1,7 @@
 # Privacy and diagnostics
 
-Last reviewed November 2, 2026, for the build-36 candidate.
+Policy reviewed November 2, 2026, for the build-36 candidate. Navigation updated
+November 5, 2026; data handling is unchanged.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does
@@ -45,8 +46,9 @@ maintainer for larger captures. Sending diagnostics to Apple through Feedback
 Assistant is a separate action, not an automatic app feature. Copies already
 sent to Apple or a recipient follow that recipient's handling policies.
 
-**Class → Settings → Privacy → Full privacy policy** contains this complete policy
-offline. Help, About and the complete MPL license are also readable on the Watch.
+Tap the upper-left gear, then **Settings → Privacy → Full privacy policy**,
+to read this complete policy offline. Help, About and the complete MPL license
+are also readable on the Watch.
 Website destinations show an address and a QR code for a phone camera. Visiting
 GitHub or Mozilla is subject to those websites' policies; no journals or other
 app data are included in these addresses or QR codes.

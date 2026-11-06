@@ -21,7 +21,8 @@ You can also [build from source](../README.md#build-and-contribute).
 Open **Teaching Timer Beta** on the Watch. If you already have
 **Teaching Timer**, keep it installed: the two apps have separate classes,
 settings and journals, and Beta does not import the other app's data. Check the
-name and build in **Class → Settings → About** before reporting a problem.
+name and build in **Gear → Settings → About** before reporting a problem.
+The gear at the upper left opens both class controls and Settings.
 Teaching Timer has no app account or iPhone companion interface to configure;
 phone music still requires the paired iPhone. Known media-progress, blank-page,
 volume and Always-On issues remain; try the checks below outside class first.
@@ -36,8 +37,8 @@ finish marker, class-progress perimeter, count arc and audio controls.
    only this class; Cancel discards the draft. For an early start, check carefully:
    opening at 1:10 suggests 1:00, not 1:15. Use +15 minutes if needed.
    Starting also requests a mindfulness session to help keep the app available
-   and support wrist-down updates. If **Session off** appears, tap **Resume**;
-   the saved class schedule is separate from that session.
+   and support wrist-down updates. If **Start session** or **Resume session**
+   appears, tap it to request that session; your saved class schedule is unchanged.
 2. Read the hands as real time: the long thin hand is seconds, the shorter thick
    hand is minutes. The outer wedge marks scheduled finish. For 60 minutes, the
    stronger perimeter segment is time ahead; 75 minutes has the wedge without
@@ -46,7 +47,7 @@ finish marker, class-progress perimeter, count arc and audio controls.
    minute to fill. Groups of 1–6 vibrations begin at 10–60 seconds. The full arc
    remains briefly while the final group finishes; the count normally ends at
    about 64.8 seconds. This brief hold also occurs with vibrations off. Tap again
-   to stop. **Class → Settings → Count vibrations**
+   to stop. **Gear → Settings → Count vibrations**
    turns vibrations off for the next run. Delivery can be late or skipped by the
    system, so do not depend on it as an exact pacing signal.
 4. With phone music already playing, try the Crown and both pages before class.
@@ -64,9 +65,10 @@ finish marker, class-progress perimeter, count arc and audio controls.
   acknowledges the refresh request; it does **not** confirm sound recovered.
   If playback continues silently, phone volume controls have recovered it in
   reports. Neither workaround is guaranteed. Avoid repeated blind adjustments.
-- **Class → Stop session** keeps class timing. **Resume** restarts the mindfulness
-  runtime. Reopening can recover a session that was meant to run; intentional
-  Stop remains stopped. A failed recovery exposes Resume. With the session off,
+- **Gear → Stop session** keeps class timing. **Start session** or **Resume
+  session** on the face requests a mindfulness session for wrist-down updates.
+  Reopening can recover a session that was meant to run; intentional Stop remains
+  stopped. A failed recovery also offers that session action. Without a session,
   wrist-down updates may slow.
 - A count is separate from the class and runtime. Force-closing the app can
   recover a blank media page, but interrupts a count. Saved class timing should
@@ -74,7 +76,7 @@ finish marker, class-progress perimeter, count arc and audio controls.
 
 ## Between classes
 
-Use **Class → New class**, then confirm, for another class. **End class** clears
+Use **Gear → New class**, then confirm, for another class. **End class** clears
 its timing and stops the session/count. Neither is the same as Stop session.
 An old class also retires 30 minutes after its scheduled end; no new class starts
 silently. Editing the schedule preserves the original Start timestamp.
@@ -103,7 +105,7 @@ from external review and public availability.
 
 ## Help on the Watch
 
-Open **Class → Settings** before or during a class. **Help** explains the clock,
+Open **Gear → Settings** before or during a class. **Help** explains the clock,
 class/session controls, counts and media recovery. **Privacy** explains local
 data and sharing, with the full policy bundled offline. **About** shows the running
 version/build, private support contact, source code and the complete MPL 2.0 license.

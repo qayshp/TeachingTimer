@@ -47,7 +47,7 @@ struct AppInformationView: View {
                 Text("The suggested start usually uses the previous quarter-hour. Use Custom schedule if you are starting early.")
             }
             Section("Session or class?") {
-                Text("Stop session keeps class timing, but wrist-down updates may slow. Resume session restarts it. End class clears timing and stops the session and count.")
+                Text("A session helps keep this app active for wrist-down teaching. Stop session keeps your class schedule; Resume session requests wrist-down support again. End class clears timing and stops the session and count.")
                 Text("New class replaces the old class after confirmation. An old class also clears 30 minutes after its scheduled end.")
             }
             Section("One-minute count") {

@@ -19,12 +19,12 @@ class TimerControlEvidenceChecks(unittest.TestCase):
         self.assertEqual(controls.missing_labels([
             self.row('Class v', .1), self.row('Stop count', .77)], True), [])
 
-    def test_clock_only_frame_flags_both_controls(self):
-        self.assertEqual(controls.missing_labels([self.row('00:30', .1)], True), ['Class', 'Stop count'])
+    def test_clock_only_frame_flags_count_text(self):
+        self.assertEqual(controls.missing_labels([self.row('00:30', .1)], True), ['Stop count'])
 
     def test_wrong_region_and_uncertain_text_cannot_pass(self):
         self.assertEqual(controls.missing_labels([
-            self.row('Class', .7), self.row('Stop count', .77, .5)], True), ['Class', 'Stop count'])
+            self.row('Class', .7), self.row('Stop count', .77, .5)], True), ['Stop count'])
 
     def test_narrow_fallback_and_foreground_occlusion_are_distinct(self):
         self.assertEqual(controls.missing_labels([

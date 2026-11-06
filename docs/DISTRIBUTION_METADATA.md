@@ -64,10 +64,11 @@ Clock and count features work without music. No workout or HealthKit access is u
 2. Tap **1-min count**. Its inner arc fills over 60 seconds; vibration groups of
    1–6 begin every 10 seconds, with completion near 64.8 seconds. **Stop count**
    cancels immediately. Haptic delivery is system-controlled.
-3. Open **Class → Stop session**. Timing remains saved; **Resume** on the face or
-   **Class → Resume session** restarts the runtime. **End class** requires
-   confirmation and clears class timing. Intentional Stop persists on relaunch.
-4. Open **Class → Settings** for **Count vibrations**, **Minutes left**, and the
+3. Tap the upper-left **gear**, then **Stop session**. Timing remains saved;
+   **Start session** or **Resume session** on the face or in that menu requests
+   the wrist-down session. **End class** requires confirmation and clears class
+   timing. Intentional Stop persists on relaunch.
+4. Open **Gear → Settings** for **Count vibrations**, **Minutes left**, and the
    offline Help, Privacy and About pages. Vibration changes apply to the next count.
 5. For media testing, first play audio on the paired iPhone at modest volume.
    Timer Crown volume targets that phone. Swipe left for native Now Playing,
@@ -270,7 +271,7 @@ old session's invalidation is confirmed, and only when native application and
 SwiftUI scene state are active. After an expiration warning, it can invalidate
 the old session during the final 20 seconds and then attempt replacement.
 An explicit-renewal policy exists in code, but there is no user-facing policy
-switch. Manual Resume remains available. Renewal and 1 Hz wrist-down updates
+switch. Manual Start/Resume session remains available. Renewal and 1 Hz wrist-down updates
 are not guaranteed.
 
 [Apple's extended-runtime guidance](https://developer.apple.com/documentation/watchkit/using-extended-runtime-sessions)
