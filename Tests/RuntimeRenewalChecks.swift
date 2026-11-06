@@ -494,6 +494,7 @@ final class WKExtendedRuntimeSession {
                 assert(WKExtendedRuntimeSession.instances.count == before)
             }
         }
+        await checkPersistedDimmedRelaunch(in: directory)
         // UI observations share launch/runtime correlation without starting,
         // invalidating, renewing, or publishing any session state.
         let diagnosticURL = directory.appendingPathComponent("interface.json")
@@ -533,6 +534,87 @@ final class WKExtendedRuntimeSession {
         print("PASS: explicit new-class Start survives pending old invalidation without overlap; Stop/reset/class changes/retirement cancel it")
         print("PASS: automatic recovery waits for both scene/native readiness; deferred intent survives and Stop/reset/class changes/retirement/manual policy prevent recovery")
         print("PASS: queued explicit Start waits for scene/native readiness in both invalidation orders, respects user-initiated policy, and cancels while awaiting wake")
+    }
+
+    /// Replay issue #7's initial native-active / scene-inactive observation
+    /// against fresh stores, including intentional Stop saved before death.
+    /// The boundary double supplies recovery callbacks explicitly; this tests
+    /// the controller's response, not delivery of native watchOS notifications.
+    @MainActor private static func checkPersistedDimmedRelaunch(in directory: URL) async {
+        for state: RuntimeIntent.State in [.running, .stopped, .manualRecovery] {
+            for nativeReadyFirst in [false, true] {
+                for rejectedStart in state == .running ? [false, true] : [false] {
+                    let suite = "PersistedDimmedRelaunch." + UUID().uuidString
+                    let defaults = UserDefaults(suiteName: suite)!
+                    defer { defaults.removePersistentDomain(forName: suite) }
+                    let classStore = ClassStore(defaults: defaults)
+                    let now = Date()
+                    classStore.begin(at: now, scheduledStart: now.addingTimeInterval(-120), durationMinutes: 75)
+                    let savedClass = classStore.context!
+                    let originalClassBytes = defaults.data(forKey: "teachingClassContext.v1")!
+                    let originalIntent = RuntimeIntent(classID: savedClass.initialStartPressedAt, state: state)
+                    RuntimeIntentStore(defaults: defaults).save(originalIntent)
+                    let originalIntentBytes = defaults.data(forKey: "teachingRuntimeIntent.v1")!
+                    func relaunch(scene: String) -> ExtendedRuntimeController {
+                        let freshDefaults = UserDefaults(suiteName: suite)!
+                        let model = ExtendedRuntimeController(
+                            journal: RuntimeDiagnostics(fileURL: directory.appendingPathComponent(UUID().uuidString)),
+                            intentStore: RuntimeIntentStore(defaults: freshDefaults))
+                        model.applicationStateChanged(scene, details: ["luminanceReduced": String(scene != "active")])
+                        model.synchronizeClass(ClassStore(defaults: freshDefaults).context)
+                        return model
+                    }
+                    WKApplication.shared().applicationState = .active
+                    let reopened = relaunch(scene: "inactive")
+                    let before = WKExtendedRuntimeSession.instances.count
+                    reopened.applicationBecameActive(); reopened.applicationBecameActive()
+                    assert(WKExtendedRuntimeSession.instances.count == before)
+                    assert(defaults.data(forKey: "teachingRuntimeIntent.v1") == originalIntentBytes)
+                    if !nativeReadyFirst {
+                        WKApplication.shared().applicationState = .inactive
+                    }
+                    reopened.applicationStateChanged("active", details: ["luminanceReduced": "false"])
+                    reopened.applicationBecameActive()
+                    if !nativeReadyFirst {
+                        assert(WKExtendedRuntimeSession.instances.count == before)
+                        WKApplication.shared().applicationState = .active
+                        reopened.applicationBecameActive()
+                    }
+                    if state == .running {
+                        assert(WKExtendedRuntimeSession.instances.count == before + 1)
+                        let recovery = WKExtendedRuntimeSession.instances.last!
+                        if rejectedStart {
+                            // Match the captured error, before didStart. Even
+                            // this failure must remain a bounded manual fallback.
+                            recovery.end(.error, error: NSError(domain: "WKExtendedRuntimeSessionErrorDomain", code: 3))
+                            await drain()
+                            let expected = RuntimeIntent(classID: savedClass.initialStartPressedAt, state: .manualRecovery)
+                            assert(RuntimeIntentStore(defaults: defaults).value == expected)
+                            assert(reopened.needsRestart && !reopened.isActive)
+                            let retryLaunch = relaunch(scene: "inactive")
+                            retryLaunch.applicationBecameActive()
+                            retryLaunch.applicationStateChanged("active")
+                            retryLaunch.applicationBecameActive(); retryLaunch.applicationBecameActive()
+                            assert(RuntimeIntentStore(defaults: defaults).value == expected)
+                        } else {
+                            recovery.confirmStart(); await drain()
+                            assert(reopened.phase == .running && !reopened.needsRestart)
+                            assert(defaults.data(forKey: "teachingRuntimeIntent.v1") == originalIntentBytes)
+                        }
+                        reopened.applicationBecameActive(); reopened.applicationBecameActive()
+                        assert(WKExtendedRuntimeSession.instances.count == before + 1)
+                    } else {
+                        assert(WKExtendedRuntimeSession.instances.count == before)
+                        assert(defaults.data(forKey: "teachingRuntimeIntent.v1") == originalIntentBytes)
+                        if state == .stopped { assert(reopened.phase == .stopped && !reopened.needsRestart) }
+                        else { assert(reopened.needsRestart && !reopened.isActive) }
+                    }
+                    assert(defaults.data(forKey: "teachingClassContext.v1") == originalClassBytes)
+                    assert(ClassStore(defaults: defaults).context == savedClass)
+                }
+            }
+        }
+        print("PASS: eight persisted dimmed-relaunch cases preserve class bytes, respect saved Stop/manual recovery, recover once when ready, and bound captured code-3 failure across relaunch")
     }
 
     /// Mixed event histories supplement the named regression cases above.
