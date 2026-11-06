@@ -133,17 +133,23 @@ struct SharedClockPage: View {
                     if landmarks.isActive { landmarks.cancel() }
                     else { landmarks.start(configuration: .init(hapticsEnabled: countVibrationsEnabled)) }
                 } label: {
-                    VStack(spacing: 2) {
+                    VStack(spacing: session.isActive ? 2 : 1) {
                         ViewThatFits(in: .horizontal) {
                             Text(landmarks.isActive ? "Stop count" : "1-min count").fixedSize()
                             Text(landmarks.isActive ? "Stop" : "Count").fixedSize()
                             Image(systemName: landmarks.isActive ? "stop.fill" : "timer")
                         }
-                        .font(.system(size: min(labelSize, faceStatus.isEmpty ? 22 : 17), weight: .semibold))
+                        .font(.system(size: min(labelSize, session.isActive ? (faceStatus.isEmpty ? 22 : 17) : 14), weight: .semibold))
                         if !faceStatus.isEmpty {
                             Text(faceStatus)
-                                .font(.system(size: min(labelSize, 12)))
-                                .lineLimit(1).minimumScaleFactor(0.8)
+                                // The split Count/Resume layout has less width.
+                                // Keep "Session off" complete across two lines
+                                // within the existing generous button height.
+                                .font(.system(size: min(labelSize, session.isActive ? 12 : 10)))
+                                .lineLimit(session.isActive ? 1 : 2)
+                                .multilineTextAlignment(.center)
+                                .minimumScaleFactor(0.8)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     .padding(.horizontal, 6)
