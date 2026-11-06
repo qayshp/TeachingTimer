@@ -6,13 +6,17 @@ build was installed or passed hardware validation.
 
 ## November 4–5, 2026 — merged beta changes
 
+- Made **Session off** readable beside Resume on small Watch screens and at
+  larger text sizes, without changing Count or session behavior.
+- Added a current [teaching-face visual guide](docs/TEACHING_FACE_GUIDE.md).
 - Merged the full-screen dial and media-timeline isolation experiments. The owner
   reports TestFlight `1.0 (261104.1939.6)` installed; song progress still freezes,
   so isolation alone did not resolve [issue #8](https://github.com/qayshp/TeachingTimer/issues/8).
 - Adopted the rolled-mat/timer icon, with **BETA** and **DEV** badges for the
   respective builds and an unbadged release icon.
 - Verified automatic internal TestFlight releases from main, with Pacific date/time
-  build numbers. Documentation-only changes now skip app builds and publishing.
+  build numbers. Non-bundled documentation changes skip app builds and publishing;
+  the in-app privacy policy and license remain app inputs.
 - The public invitation now offers **View in TestFlight** (checked November 5);
   the first external installation remains to be verified.
 

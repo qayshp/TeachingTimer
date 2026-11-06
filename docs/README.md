@@ -40,6 +40,8 @@ installation or a physical-device test.
 
 ## Current additions
 
+- [November 5 full review](REVIEW_2026-11-05.md): pipelines, runtime tests, five-size Simulator inspection, issue triage, Apple status and local cleanup.
+
 - [V1 readiness review](V1_READINESS_REVIEW.md): current iterative audit, fixes, evidence and release gates.
 
 - [Build 26 on newer runtimes](RUNTIME_27_2_VALIDATION.md): 15-action pass, input-helper adjustment and paired-media test limits.

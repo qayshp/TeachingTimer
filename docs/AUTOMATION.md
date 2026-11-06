@@ -132,14 +132,17 @@ before selecting expensive checks or publishing.
 - Every push and pull request runs tracked-file/documentation validation and the
   Python tooling tests on Ubuntu.
 - Changes under the Watch app, Xcode project, app configuration or package
-  inputs also run the Mac Simulator build, Swift suites and unsigned archive
+  inputs, plus bundled `LICENSE`/`docs/PRIVACY.md` and the build-metadata script,
+  also run the Mac Simulator build, Swift suites and unsigned archive
   checks. Swift test-harness changes run that Mac verification without triggering
   a TestFlight upload.
 - Workflow changes run pinned `actionlint`; other tooling changes run the
-  Python tooling checks. Documentation-only changes skip the Mac/Xcode job.
+  Python tooling checks. Mac build harnesses, diagnostic fixtures and Swift
+  inspection helpers additionally receive Mac verification without publishing.
+  Non-bundled documentation changes skip the Mac/Xcode job.
 - Only app inputs, or an unrecognized path handled conservatively as an app
   input, can trigger automatic TestFlight publishing. CI/workflow configuration
-  changes and docs alone cannot publish.
+  changes and non-bundled docs alone cannot publish.
 - A manual release rehearsal or publish still runs the full verification path.
 
 `scripts/change-impact.py` is the shared classifier. Its unit tests cover

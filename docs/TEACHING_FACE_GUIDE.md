@@ -11,6 +11,12 @@ crossed-phone symbol is watchOS's disconnected-phone indicator; this image does
 not demonstrate working paired audio. The visual key below annotates the image
 without covering the hands or controls.
 
+This guide shows the development interface; the externally available beta may
+be an earlier build. See [current status](../DEVELOPMENT_STATUS.md). A later
+small-screen refinement makes **Session off** readable beside Resume; its
+[before/after comparison](REVIEW_2026-11-05.md#usability-findings-and-verification)
+preserves the exact capture provenance.
+
 | Where to look | What it means / what to do |
 | --- | --- |
 | **Class ⚙**, upper left | Opens the class menu and Settings. Edit the current schedule, stop/resume its session, or explicitly begin/end a class. |

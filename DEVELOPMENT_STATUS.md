@@ -15,6 +15,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | Physical Watch | The owner reports TestFlight **1.0 (261104.1939.6)** on the Watch; frozen song progress persists on this build. Installation is owner-reported, not a new developer-tool inventory or classroom validation. Unattended automatic-update cadence is not established. |
 | Owner pilot | The November 2 build-35 install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Its seven-build group inventory through 36 is historical. The later build-42 update is separately owner-confirmed. |
 | Rollback | Build 16 remains a preserved local checkpoint with its known media/volume issues. |
+| November 5 review | Runtime sequence coverage, release-input checks and clearer stopped-session text are committed. Full SE 3 Simulator suite and five-size layout inspection completed; see the [review and evidence limits](docs/REVIEW_2026-11-05.md). No physical-device action was performed for this review. |
 
 ## What works and what remains uncertain
 

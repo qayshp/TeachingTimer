@@ -13,7 +13,7 @@ Simulator results, physical observations and unverified mitigations.
 | [#4 Always-On seconds-hand backstep](https://github.com/qayshp/TeachingTimer/issues/4) | FB25329087 | [Exact-Date and anchor comparisons](ALWAYS_ON_HAND_TRANSITION.md#build-34-follow-up-stable-schedule-anchor) separate precision errors from moving-anchor regressions. Build 34 combines narrow normalization and a fixed epoch; bounded probe/app video, UI and locked-count checks pass. Signed release and owner-pilot assignment are complete. Hardware validation remains open; no universal cause or compositor defect claimed. Apple follow-up not sent. |
 | [#5 Watch developer connection failures](https://github.com/qayshp/TeachingTimer/issues/5) | FB25329139 | Apple could not diagnose with current information; coordinated failure/recovery evidence remains needed. |
 | [#6 Paired Simulator media discovery](https://github.com/qayshp/TeachingTimer/issues/6) | FB25294079 | No known-working companion-media baseline; Apple support clarification remains needed. |
-| [#7 Runtime recovery after dimmed relaunch](https://github.com/qayshp/TeachingTimer/issues/7) | Not separately filed | Build 30 reproduces exact activation error code 3 on watchOS 27.2. Build 31 defers the premature Start and recovers on later active wake in one matched Simulator trial; class bytes and Stop intent survive. Physical behavior and arbitrary callback ordering remain unverified. |
+| [#7 Runtime recovery after dimmed relaunch](https://github.com/qayshp/TeachingTimer/issues/7) | Not separately filed | Build 30 reproduces activation error code 3; build 31 defers Start and recovers on later active wake in one matched Simulator trial. November 5 adds 1,280 seeded lifecycle events through the controller, plus a fresh passing action/focus suite. Physical behavior and arbitrary callback ordering remain unverified. |
 | [#8 Frozen song progress](https://github.com/qayshp/TeachingTimer/issues/8) | FB25379883 | Timeline isolation merged in `2e02452`. The maintainer reports progress still freezes on TestFlight `1.0 (261104.1939.6)`, which includes the change. Isolation alone did not fix it; matched physical comparison remains open. |
 
 ## Release and maintenance work
@@ -22,6 +22,10 @@ Simulator results, physical observations and unverified mitigations.
 inspected Simulator count/Lock frames with missing control labels. This is
 separate from the withdrawn historical screenshot claims and has no physical
 reproduction. See the [original-image comparison](MEDIA_WAKE_REFRESH.md#fresh-missing-label-observation).
+The November 5 full count/Lock suite passed; all seven text-recognition warnings
+were hand occlusion in the original images. Some early multi-size captures lacked
+native/system elements that appeared later, so #17 remains open without assigning
+a cause. See the [full review](REVIEW_2026-11-05.md).
 
 The [roadmap](ROADMAP.md) orders these review follow-ups; each issue has its own
 completion checklist:
@@ -29,13 +33,17 @@ completion checklist:
 - [#9 Runtime intended use](https://github.com/qayshp/TeachingTimer/issues/9)
 - [#10 Physical reliability/battery/accessibility](https://github.com/qayshp/TeachingTimer/issues/10)
 - [#11 First external beta and release readiness](https://github.com/qayshp/TeachingTimer/issues/11)
-- [#13 Annotated onboarding](https://github.com/qayshp/TeachingTimer/issues/13)
 - [#14 Release traceability and contribution safeguards](https://github.com/qayshp/TeachingTimer/issues/14)
-- [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15)
+- [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15): invariant table and seeded tests implemented; performance measurement remains.
+- [#23 Hosted Simulator execution](https://github.com/qayshp/TeachingTimer/issues/23): CI currently compiles but does not boot/run the Watch app.
+- [#24 Release ordering and verification reuse](https://github.com/qayshp/TeachingTimer/issues/24): overlapping publishers, duplicated checks and a confirmed synthetic Pacific daylight-saving build-number reversal.
 
 Completed: [#12 documentation and changelog](https://github.com/qayshp/TeachingTimer/issues/12),
+[#13 teaching-face visual key](https://github.com/qayshp/TeachingTimer/issues/13),
 [#16 Simulator action contract](https://github.com/qayshp/TeachingTimer/issues/16),
-and [#19 full-screen dial around top controls](https://github.com/qayshp/TeachingTimer/issues/19).
+[#19 full-screen dial around top controls](https://github.com/qayshp/TeachingTimer/issues/19),
+[#22 bundled release inputs and diagnostic-tool coverage](https://github.com/qayshp/TeachingTimer/issues/22),
+and [#25 complete stopped-session label](https://github.com/qayshp/TeachingTimer/issues/25).
 
 ## Reporting evidence
 
