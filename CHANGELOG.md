@@ -4,6 +4,18 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## November 6, 2026 — private diagnostic-sharing pilot
+
+- Added **Settings → About → Share diagnostics**: choose a time window,
+  review a filtered report, then explicitly share a JSON file through the
+  native sharing screen. Nothing is sent automatically.
+- Show available dates, event counts and incomplete-history warnings. Reports
+  have a 2 MiB limit and prepared files use a bounded cache.
+- Merged [PR #28](https://github.com/qayshp/TeachingTimer/pull/28) for the owner’s
+  internal TestFlight pilot. Simulator file staging is verified; physical
+  receipt remains pending. Share after class because a native destination can
+  take foreground. See [validation](docs/DIAGNOSTIC_SHARING_VALIDATION.md).
+
 ## November 5, 2026 — clearer controls and verification
 
 - Simplified the upper-left class/settings button to an outlined gear with a

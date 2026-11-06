@@ -6,7 +6,14 @@ No physical device, account, recipient, backend or TestFlight distribution was
 changed during those tests. The owner subsequently approved merge after review
 and CI, followed by an internal TestFlight installation and sharing test after
 class. That planned test is not a received-file result; delivery remains pending.
-See [current status](../DEVELOPMENT_STATUS.md) for merge and release readiness.
+[PR #28](https://github.com/qayshp/TeachingTimer/pull/28) merged at
+`3e480165d0dc2946206a18fc59478b0dabb9a8a0`.
+[Release run 42278471558](https://github.com/qayshp/TeachingTimer/actions/runs/42278471558)
+subsequently made **1.0 (261106.1118.29)** available to the Maintainer pilot at
+11:38:20 PST: Apple processing `VALID`, testing notes, group membership and
+`IN_BETA_TESTING` were read back. Upload completed at 11:33:42 PST; availability
+was confirmed 277.19 seconds later. Installation and physical sharing remain
+unverified. See [current status](../DEVELOPMENT_STATUS.md).
 
 ## What was tested
 
@@ -82,6 +89,35 @@ The fixture verifier is tested against synthetic inputs. Pointing it at a source
 fixture validates the verifier, not native delivery. For the next delivery test,
 save the attachment through the receiving app and verify that independently
 received file as described in the probe README.
+
+## Hosted PR verification
+
+[Watch checks 42275512149](https://github.com/qayshp/TeachingTimer/actions/runs/42275512149)
+passed on synthetic merge `cf929b3b1e091effee5d2972c3f16f002fdb1337`, testing code
+head `684b76f`. The runner used Xcode 26.6 (17F113) and watchOS 26.5 (23T570).
+Its Series 6 40 mm and Ultra 49 mm smoke checks each exercised ten app launches.
+The 15 Swift suites, 275 Python tests, repository/model/QR checks, Simulator and
+helper builds, and both unsigned archive paths passed. This hosted lifecycle
+coverage does not exercise a recipient receiving a shared attachment.
+
+The final PR revision, `73d5457`, changed documentation and the bundled privacy
+wording. It passed a local rebuild with Swift warnings treated as errors and
+repository checks before merging. The hosted result above belongs to the
+earlier tested code revision; it is not relabeled as a run of the final merge.
+The [final PR-head checks 42278329750](https://github.com/qayshp/TeachingTimer/actions/runs/42278329750)
+subsequently completed successfully too, including their required result.
+
+The separate [merged-main Watch checks 42278471568](https://github.com/qayshp/TeachingTimer/actions/runs/42278471568)
+failed on the older watchOS 26.5 Series 6 smoke test with the existing
+[awake-runtime rejection, #27](https://github.com/qayshp/TeachingTimer/issues/27#issuecomment-6693599194).
+On the second running-recovery launch, native and SwiftUI state were active and
+luminance was not reduced at 0.167 seconds; Start at 0.168 was rejected with code 3
+at 0.344, and manual recovery was recorded at 0.345. Sharing had not been opened.
+The failure artifact is preserved without a rerun. The independent release workflow
+passed full verification of the same merged source with Xcode 27.2 (27B52) and
+watchOS 27.2 (24S118), including ten launches each on SE 3 40 mm and Ultra 4 49 mm,
+then began publishing. This is mixed CI evidence, not an all-green result or a
+successful physical sharing test.
 
 ## Before this becomes a supported sharing route
 
