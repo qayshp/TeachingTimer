@@ -38,6 +38,14 @@ class ChangeImpactChecks(unittest.TestCase):
         self.assertTrue(result["mac_verify"])
         self.assertTrue(result["publish"])
 
+    def test_embedded_documents_and_build_phase_script_publish(self):
+        for path in ["LICENSE", "docs/PRIVACY.md", "scripts/build-metadata.sh"]:
+            with self.subTest(path=path):
+                result = change_impact.classify_paths([path])
+                self.assertTrue(result["app_changed"])
+                self.assertTrue(result["mac_verify"])
+                self.assertTrue(result["publish"])
+
     def test_ci_and_python_tooling_changes_run_tool_tests_without_release(self):
         result = change_impact.classify_paths([
             ".github/workflows/check.yml", ".github/actionlint.yaml",
@@ -53,6 +61,25 @@ class ChangeImpactChecks(unittest.TestCase):
         result = change_impact.classify_paths(["Tests/ClockGeometryChecks.swift"])
         self.assertTrue(result["tooling_changed"])
         self.assertTrue(result["mac_verify"])
+        self.assertFalse(result["publish"])
+
+    def test_mac_build_harness_and_probe_edits_verify_without_publishing(self):
+        for path in ["scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
+                     "scripts/prepare-testflight.py", "scripts/prepare-testflight.sh",
+                     "scripts/inspect-artifact.py", "tools/native-volume-probe/build.sh",
+                     "tools/phone-audio-probe/Info.plist", "tools/timeline-clock-probe/TimelineClockProbe.swift",
+                     "tools/diagnostic-share-probe/DiagnosticShareProbe.swift",
+                     "tools/simulator-regression/ScreenText.swift", "scripts/information-qr.swift"]:
+            with self.subTest(path=path):
+                result = change_impact.classify_paths([path])
+                self.assertTrue(result["tooling_changed"])
+                self.assertTrue(result["mac_verify"])
+                self.assertFalse(result["publish"])
+
+    def test_probe_readme_still_skips_mac_build(self):
+        result = change_impact.classify_paths(["tools/native-volume-probe/README.md"])
+        self.assertTrue(result["docs_changed"])
+        self.assertFalse(result["mac_verify"])
         self.assertFalse(result["publish"])
 
     def test_unknown_path_fails_safe(self):

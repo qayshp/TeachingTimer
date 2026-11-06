@@ -14,12 +14,25 @@ APP_PREFIXES = (
     "TeachingTimer.xcodeproj/",
     "Configurations/",
 )
-APP_FILES = {"Package.swift", "Package.resolved"}
+# These inputs live outside the app folder but are embedded in its bundle or run
+# by an Xcode build phase. Treating them as documentation/tooling would ship stale
+# in-app Privacy/About content or revision metadata.
+APP_FILES = {"Package.swift", "Package.resolved", "LICENSE", "docs/PRIVACY.md",
+             "scripts/build-metadata.sh"}
 APP_SUFFIXES = {".xcconfig", ".entitlements", ".xcprivacy"}
 DOC_PREFIXES = ("docs/", ".github/ISSUE_TEMPLATE/")
 DOC_FILES = {"README", "README.md", "CHANGELOG.md", "SUPPORT.md", "LICENSE", "LICENSE.txt"}
 TOOL_PREFIXES = (".github/", "scripts/", "Tests/", "tools/")
 TOOL_FILES = {"AGENTS.md", "SECURITY.md", ".gitignore", ".gitattributes"}
+MAC_TOOL_FILES = {
+    "scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
+    "scripts/prepare-testflight.sh", "scripts/prepare-testflight.py",
+    "scripts/inspect-artifact.py",
+}
+MAC_PROBE_PREFIXES = (
+    "tools/phone-audio-probe/", "tools/native-volume-probe/",
+    "tools/timeline-clock-probe/", "tools/diagnostic-share-probe/",
+)
 
 
 def classify_paths(paths):
@@ -49,9 +62,9 @@ def classify_paths(paths):
             if (path.startswith((".github/workflows/", ".github/actions/"))
                     or path == ".github/actionlint.yaml"):
                 result["workflow_changed"] = True
-            if path.startswith("Tests/") and path.endswith(".swift"):
-                result["mac_verify"] = True
-            if path.startswith("scripts/") and path.endswith(".swift"):
+            if (path in MAC_TOOL_FILES or path.startswith(MAC_PROBE_PREFIXES)
+                    or (path.startswith(("Tests/", "scripts/", "tools/"))
+                        and path.endswith(".swift"))):
                 result["mac_verify"] = True
         else:
             # A new or unrecognized build input must not silently bypass release checks.
