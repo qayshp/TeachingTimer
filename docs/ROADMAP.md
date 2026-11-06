@@ -1,6 +1,6 @@
 # Active roadmap
 
-Updated November 5, 2026 after the full repository/Simulator review. GitHub issues own the task
+Updated November 6, 2026 after the compiler, UI and hosted Simulator follow-up. GitHub issues own the task
 checklists; this page owns their order. [Current status](../DEVELOPMENT_STATUS.md)
 owns build, installation and distribution facts.
 
@@ -14,7 +14,6 @@ owns build, installation and distribution facts.
 | P1 — [#11](https://github.com/qayshp/TeachingTimer/issues/11) | External beta installation | The public invitation now offers joining instructions. Verify exact eligible build and one new tester's install/update/support experience; internal-owner success is separate. |
 | P1 — [#14](https://github.com/qayshp/TeachingTimer/issues/14) | Contribution and release safeguards | Main still has no required-check enforcement. Define a practical recovery/bypass policy; retain durable source tags/notes after workflow artifacts expire. |
 | P2 — [#24](https://github.com/qayshp/TeachingTimer/issues/24) | Release order and verification reuse | Avoid overlapping publishers, reduce duplicate Mac verification, and handle decreasing Pacific-local numbers at daylight-saving fall-back. Synthetic numbering failure is confirmed; no rejected upload is claimed. |
-| P2 — [#23](https://github.com/qayshp/TeachingTimer/issues/23) | Hosted Simulator smoke execution | Establish a bounded disposable boot/install/launch/journal check on the hosted runner. Current CI compiles for Simulator and runs host tests; it does not execute the Watch app. |
 | P2 — [#17](https://github.com/qayshp/TeachingTimer/issues/17) | Transient missing Simulator controls | Keep original early/delayed captures and separate capture timing, dim state and actual missing pixels. Current count/Lock OCR warnings were hand occlusion; early multi-size captures still merit follow-up. |
 | P3 — [#15](https://github.com/qayshp/TeachingTimer/issues/15) | Performance baseline | Runtime invariant table and 1,280 seeded mixed events are implemented. Measure render cost before caching geometry; physical battery work remains in #10. |
 
@@ -28,6 +27,10 @@ now has a [teaching-face visual key](TEACHING_FACE_GUIDE.md);
 release gating, manual build-number validation and diagnostic-tool compilation.
 The narrow [#25](https://github.com/qayshp/TeachingTimer/issues/25) recovery-label
 layout fix is recorded in the review's before/after captures.
+[#23](https://github.com/qayshp/TeachingTimer/issues/23) is also complete: real
+hosted Watch launches and class/Stop persistence passed on watchOS 26.5 and 27.2.
+The follow-up adds compiler/source hygiene and clearer gear/session controls;
+main verification can no longer be cancelled by a later docs-only push.
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
 is complete: a concise status page, user-facing changelog and separate historical
