@@ -14,6 +14,6 @@ for probe in phone-audio-probe native-volume-probe timeline-clock-probe diagnost
     sh "tools/$probe/build.sh" "$tool_output/$probe"
 done
 for helper in HubInput ScreenText MediaPixels ControlOutline; do
-    xcrun --sdk macosx swiftc "tools/simulator-regression/$helper.swift" -o "$tool_output/$helper"
+    xcrun --sdk macosx swiftc -warnings-as-errors "tools/simulator-regression/$helper.swift" -o "$tool_output/$helper"
 done
 printf 'All four Simulator fixtures and four inspection helpers compiled. Nothing launched.\n'

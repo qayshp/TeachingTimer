@@ -14,6 +14,26 @@ See the [automation map](docs/AUTOMATION.md) for coverage and the combined
 interactive Simulator runner. `python3 scripts/check-repository.py` checks
 published local links, source notices and structured files without device access.
 
+## Source style and compiler diagnostics
+
+Use four spaces for Swift, Python and shell source, LF line endings, a final
+newline and no trailing whitespace. `.editorconfig` records these defaults;
+repository checks enforce source hygiene and parse tracked shell scripts without
+executing them. Markdown hard-break spaces are preserved. Keep formatting changes
+focused on the code being edited instead of reformatting unrelated files.
+
+Debug, Release and TestFlight builds enable complete Swift concurrency checking
+and treat Swift compiler warnings as errors. Standalone model checks, diagnostic fixtures and inspection helpers also reject
+compiler warnings. The language mode remains Swift 5; this is not a Swift 6
+migration. Native WatchKit sessions are not declared `Sendable`: delegate callbacks
+carry a private immutable identity token, and native state is accessed only on
+the controller's main actor.
+
+Xcode 27.2 still emits `Metadata extraction skipped, no AppIntents.framework
+dependency found` from Apple's metadata tool. Teaching Timer declares no App
+Intents. Keep that tool diagnostic visible; do not add an unused framework or
+suppress unrelated warnings just to remove it.
+
 ## Repository layout
 
 - `TeachingTimer/`: production watchOS source, assets and privacy manifest.

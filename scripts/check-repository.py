@@ -25,7 +25,7 @@ PRIVATE_SUFFIXES = ('.p12', '.p8', '.mobileprovision', '.provisionprofile', '.ke
                     '.ipa', '.dSYM.zip', '.tar', '.tar.gz', '.log', '.xcuserstate', '.xccheckout', '.xcscmblueprint')
 GENERATED_DIRECTORIES = {'build', '.build', 'xcuserdata', '__pycache__'}
 GENERATED_BUNDLES = ('.app', '.xcarchive', '.logarchive', '.dSYM', '.xcresult')
-SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml'}
+SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml', '.xcconfig'}
 FENCE = re.compile(r'^ {0,3}(`{3,}|~{3,})(.*)$')
 HEADING = re.compile(r'^ {0,3}#{1,6}(?:[ \t]+(.*)|[ \t]*)$')
 
@@ -85,6 +85,21 @@ def private_artifact(name):
             or path.suffix in {'.pyc', '.pyo', '.pyd'})
 
 
+def source_hygiene(name, text):
+    """Small shared style rules, without reformatting source or adding a toolchain."""
+    errors = []
+    if "\r" in text:
+        errors.append(f"{name}: use LF line endings")
+    if text and not text.endswith("\n"):
+        errors.append(f"{name}: add a final newline")
+    for number, line in enumerate(text.splitlines(), 1):
+        if line != line.rstrip():
+            errors.append(f"{name}:{number}: remove trailing whitespace")
+        if "\t" in line[:len(line) - len(line.lstrip())]:
+            errors.append(f"{name}:{number}: use spaces for source indentation")
+    return errors
+
+
 def check_files(root, paths):
     """Return actionable errors; paths are repository-relative tracked names."""
     errors = []
@@ -110,9 +125,17 @@ def check_files(root, paths):
             elif path.suffix in {'.plist', '.xcprivacy'}:
                 plistlib.loads(path.read_bytes())
             elif path.suffix in SOURCE_SUFFIXES:
+                # read_bytes preserves CRLF for the line-ending check.
+                source = path.read_bytes().decode('utf-8')
+                errors.extend(source_hygiene(name, source))
                 if path.suffix == '.py':
-                    compile(path.read_text(), str(path), 'exec')
-                if 'SPDX-License-Identifier: MPL-2.0' not in '\n'.join(path.read_text().splitlines()[:10]):
+                    compile(source, str(path), 'exec')
+                elif path.suffix == '.sh':
+                    # Parse only: never execute tracked scripts during hygiene checks.
+                    parsed = subprocess.run(['sh', '-n', str(path)], capture_output=True, text=True)
+                    if parsed.returncode:
+                        errors.append(f'{name}: shell syntax: {parsed.stderr.strip()}')
+                if 'SPDX-License-Identifier: MPL-2.0' not in '\n'.join(source.splitlines()[:10]):
                     errors.append(f'{name}: missing MPL source notice')
             elif path.suffix == '.md':
                 body, _ = markdown(name)
@@ -160,7 +183,7 @@ def main():
     errors = check_files(ROOT, [p for p in paths if p])
     if errors:
         raise SystemExit('\n'.join(errors))
-    print('Repository checks passed: tracked local Markdown links and heading fragments, JSON/plists, source notices and private-artifact exclusions.')
+    print('Repository checks passed: tracked local Markdown links and heading fragments, JSON/plists, source style/syntax, source notices and private-artifact exclusions.')
 
 
 if __name__ == '__main__':

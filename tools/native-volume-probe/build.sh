@@ -10,7 +10,7 @@ probe_app="$probe_output/NativeVolumeProbe.app"
 mkdir -p "$probe_app"
 probe_sdk=$(xcrun --sdk watchsimulator --show-sdk-path)
 probe_arch=$(uname -m)
-xcrun --sdk watchsimulator swiftc -parse-as-library -sdk "$probe_sdk" \
+xcrun --sdk watchsimulator swiftc -warnings-as-errors -parse-as-library -sdk "$probe_sdk" \
     -target "$probe_arch-apple-watchos26.0-simulator" \
     "$probe_source/NativeVolumeProbe.swift" -o "$probe_app/NativeVolumeProbe"
 cp "$probe_source/Info.plist" "$probe_app/Info.plist"

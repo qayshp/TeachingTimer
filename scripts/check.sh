@@ -13,7 +13,7 @@ suite_count=0
 check() {
     check_name=$1
     shift
-    swiftc "$@" -o "$check_dir/$check_name"
+    swiftc -warnings-as-errors "$@" -o "$check_dir/$check_name"
     "$check_dir/$check_name"
     suite_count=$((suite_count + 1))
 }

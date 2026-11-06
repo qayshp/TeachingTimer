@@ -19,7 +19,7 @@ with wave.open(sys.argv[1], 'wb') as f:
 PY
 probe_sdk=$(xcrun --sdk iphonesimulator --show-sdk-path)
 probe_arch=$(uname -m)
-xcrun --sdk iphonesimulator swiftc -parse-as-library -swift-version 5 -sdk "$probe_sdk" \
+xcrun --sdk iphonesimulator swiftc -warnings-as-errors -parse-as-library -swift-version 5 -sdk "$probe_sdk" \
     -target "$probe_arch-apple-ios26.0-simulator" "$probe_source/PhoneAudioProbe.swift" \
     -o "$probe_app/PhoneAudioProbe"
 codesign --force --sign - "$probe_app"

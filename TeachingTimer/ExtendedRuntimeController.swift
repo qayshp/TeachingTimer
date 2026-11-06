@@ -305,11 +305,31 @@ final class ExtendedRuntimeController: NSObject, ObservableObject {
     }
 }
 
+// WatchKit's delegate is nonisolated and its session is not Sendable. Transfer
+// only an identity token; all session API access stays on the controller's actor.
+// Retaining the object prevents address reuse while a queued callback is waiting.
+// This does not make the native session itself Sendable or expose it to callers.
+private final class RuntimeSessionIdentity: @unchecked Sendable {
+    private let retainedSession: WKExtendedRuntimeSession
+
+    init(_ session: WKExtendedRuntimeSession) {
+        retainedSession = session
+    }
+
+    func matches(_ session: WKExtendedRuntimeSession) -> Bool {
+        retainedSession === session
+    }
+}
+
 extension ExtendedRuntimeController: WKExtendedRuntimeSessionDelegate {
     nonisolated func extendedRuntimeSessionDidStart(_ session: WKExtendedRuntimeSession) {
+        let identity = RuntimeSessionIdentity(session)
         Task { @MainActor in
-            guard session === runtimeSession else { return }
-            if stopRequested { session.invalidate(); return }
+            guard let session = runtimeSession, identity.matches(session) else { return }
+            if stopRequested {
+                session.invalidate()
+                return
+            }
             startedAt = Date()
             phase = .running
             needsRestart = false
@@ -319,8 +339,9 @@ extension ExtendedRuntimeController: WKExtendedRuntimeSessionDelegate {
         }
     }
     nonisolated func extendedRuntimeSessionWillExpire(_ session: WKExtendedRuntimeSession) {
+        let identity = RuntimeSessionIdentity(session)
         Task { @MainActor in
-            guard session === runtimeSession, !stopRequested else { return }
+            guard let session = runtimeSession, identity.matches(session), !stopRequested else { return }
             phase = .expiring
             expirationWarningReceived = true
             renewalPending = renewalPolicy == .automatic
@@ -332,8 +353,9 @@ extension ExtendedRuntimeController: WKExtendedRuntimeSessionDelegate {
     }
     nonisolated func extendedRuntimeSession(_ session: WKExtendedRuntimeSession,
         didInvalidateWith reason: WKExtendedRuntimeSessionInvalidationReason, error: (any Error)?) {
+        let identity = RuntimeSessionIdentity(session)
         Task { @MainActor in
-            guard session === runtimeSession else { return }
+            guard let session = runtimeSession, identity.matches(session) else { return }
             let failure = error as NSError?
             let reasonName: String
             switch reason {

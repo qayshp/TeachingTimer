@@ -60,7 +60,7 @@ print(json.dumps(manifest, indent=2))
 PY
 
 xcodebuild -version > "$probe_output/xcode-version.txt"
-xcrun --sdk watchsimulator swiftc -parse-as-library -swift-version 6 -sdk "$probe_sdk" \
+xcrun --sdk watchsimulator swiftc -warnings-as-errors -parse-as-library -swift-version 6 -sdk "$probe_sdk" \
     -target "$probe_arch-apple-watchos26.0-simulator" \
     "$probe_source/DiagnosticShareProbe.swift" -o "$probe_app/DiagnosticShareProbe"
 codesign --force --sign - "$probe_app"

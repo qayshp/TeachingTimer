@@ -210,8 +210,23 @@ final class WKExtendedRuntimeSession {
         let fresh = WKExtendedRuntimeSession.instances.last!
         assert(fresh !== old)
         fresh.confirmStart(); await drain()
-        old.end(.error); old.warn(); await drain()
+        old.end(.error); old.warn(); old.confirmStart(); await drain()
         assert(foreground.phase == .running)
+        // Queued delegate identity tokens retain their native object just until
+        // delivery, so a stale callback cannot alias a new object's reused address.
+        // They must neither mutate the current runtime nor leak the stale session.
+        var unrelated: WKExtendedRuntimeSession? = WKExtendedRuntimeSession()
+        weak let pendingCallbackSession = unrelated
+        foreground.extendedRuntimeSessionDidStart(unrelated!)
+        foreground.extendedRuntimeSessionWillExpire(unrelated!)
+        foreground.extendedRuntimeSession(unrelated!, didInvalidateWith: .error, error: nil)
+        WKExtendedRuntimeSession.instances.removeAll { $0 === unrelated }
+        unrelated = nil
+        assert(pendingCallbackSession != nil)
+        await drain()
+        assert(pendingCallbackSession == nil)
+        assert(foreground.phase == .running && fresh.invalidationRequests == 0)
+
         // Explicit Stop while start is awaiting didStart must invalidate it,
         // without allowing any automatic successor.
         let starting = try controller(); starting.start()

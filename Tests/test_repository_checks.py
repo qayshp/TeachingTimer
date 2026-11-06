@@ -2,6 +2,7 @@
 import importlib.util
 from pathlib import Path
 import tempfile
+import shlex
 import unittest
 
 SPEC = importlib.util.spec_from_file_location('repository_checks', Path(__file__).resolve().parents[1] / 'scripts/check-repository.py')
@@ -18,7 +19,7 @@ class RepositoryChecks(unittest.TestCase):
     def write(self, name, text):
         path = self.root / name
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text)
+        path.write_text(text if not text or text.endswith("\n") else text + "\n")
         return name
 
     def test_published_links_and_encoded_paths(self):
@@ -92,6 +93,27 @@ class RepositoryChecks(unittest.TestCase):
         self.assertFalse(checker.private_artifact('scripts/DerivedDataInfo.swift'))
         self.assertFalse(checker.private_artifact('TeachingTimer/Assets.xcassets/Contents.json'))
         self.assertFalse(checker.private_artifact('TeachingTimer.xcodeproj/xcshareddata/xcschemes/TeachingTimer.xcscheme'))
+
+    def test_source_hygiene_reports_file_and_line(self):
+        errors = checker.source_hygiene('source.swift', '\tlet value = 1 \r\nlet other = 2')
+        self.assertEqual(len(errors), 4)
+        self.assertTrue(any('LF line endings' in error for error in errors))
+        self.assertTrue(any('final newline' in error for error in errors))
+        self.assertTrue(any('source.swift:1: remove trailing' in error for error in errors))
+        self.assertTrue(any('source.swift:1: use spaces' in error for error in errors))
+        self.assertEqual(checker.source_hygiene('source.swift', '    let value = 1\n'), [])
+
+    def test_tracked_shell_is_parsed_without_executing(self):
+        marker = self.root / 'SHOULD_NOT_EXIST'
+        name = self.write('script.sh', '# SPDX-License-Identifier: MPL-2.0\ntouch ' + shlex.quote(str(marker)))
+        self.assertEqual(checker.check_files(self.root, [name]), [])
+        self.assertFalse(marker.exists())
+        self.write('script.sh', '# SPDX-License-Identifier: MPL-2.0\nif true; then')
+        self.assertIn('shell syntax', checker.check_files(self.root, [name])[0])
+
+    def test_source_hygiene_does_not_change_markdown_hard_breaks(self):
+        name = self.write('README.md', 'A line  \nAnother line\n')
+        self.assertEqual(checker.check_files(self.root, [name]), [])
 
     def test_python_syntax_errors_fail(self):
         name = self.write('tool.py', '# SPDX-License-Identifier: MPL-2.0\nif True print(1)')
