@@ -49,7 +49,7 @@ class ChangeImpactChecks(unittest.TestCase):
     def test_ci_and_python_tooling_changes_run_tool_tests_without_release(self):
         result = change_impact.classify_paths([
             ".github/workflows/check.yml", ".github/actionlint.yaml",
-            "scripts/change-impact.py", "Tests/test_change_impact.py"
+            "scripts/change-impact.py", "Tests/test_change_impact.py", ".editorconfig"
         ])
         self.assertTrue(result["tooling_changed"])
         self.assertTrue(result["workflow_changed"])
@@ -64,7 +64,7 @@ class ChangeImpactChecks(unittest.TestCase):
         self.assertFalse(result["publish"])
 
     def test_mac_build_harness_and_probe_edits_verify_without_publishing(self):
-        for path in ["scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
+        for path in ["scripts/simulator-smoke.py", "scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
                      "scripts/prepare-testflight.py", "scripts/prepare-testflight.sh",
                      "scripts/inspect-artifact.py", "tools/native-volume-probe/build.sh",
                      "tools/phone-audio-probe/Info.plist", "tools/timeline-clock-probe/TimelineClockProbe.swift",

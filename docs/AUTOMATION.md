@@ -10,22 +10,25 @@ does not replace the separate physical teaching checklist.
 python3 scripts/check-repository.py
 sh scripts/check-tools.sh
 sh scripts/check.sh
-python3 scripts/verify-build.py work/verification-new
+python3 scripts/verify-build.py work/verification-new --simulator-smoke
 sh scripts/check-simulator-tools.sh work/simulator-tools-new
 ```
 
 `verify-build.py` includes the repository, tooling and Swift checks, a Simulator
-build and unsigned archives. Run the smaller commands when iterating; use the
-complete verification for a candidate. The output directory must be new.
+build and unsigned archives. With `--simulator-smoke`, it also boots a new
+disposable Watch and exercises real app launches. Omit that flag for build-only
+verification. Run smaller commands when iterating; use complete verification
+for a candidate. The output directory must be new.
 The separate Simulator-tools check compiles all four diagnostic fixtures and
 four UI-inspection helpers. It does not launch them or produce audio.
 
 | Layer | Automated coverage | Boundary |
 | --- | --- | --- |
-| Repository | Tracked local Markdown targets and heading fragments, source notices, Python syntax, JSON/plist parsing, standalone Swift suite wiring and private/generated-file exclusions. | Heading checks cover the repository's ATX/plain-text/inline-code forms, including duplicate IDs. Remote URLs, non-Markdown fragments, reference links and other heading syntax remain outside this bounded checker; it is not a general Markdown renderer or legal audit. |
+| Repository | Tracked local Markdown targets and heading fragments, source notices, source whitespace/line-ending hygiene, Python and shell syntax, JSON/plist parsing, standalone Swift suite wiring and private/generated-file exclusions. | Heading checks cover the repository's ATX/plain-text/inline-code forms, including duplicate IDs. Remote URLs, non-Markdown fragments, reference links and other heading syntax remain outside this bounded checker; it is not a general Markdown renderer or legal audit. |
 | Swift models/controllers | Class anchoring/persistence, clock edges, geometry/layout, runtime intent/renewal, landmark deadlines/cancellation/restart, journal retention and volume/media policies. | Standalone executables use WatchKit boundary doubles; they cannot establish watchOS acceptance or physical effects. |
 | Python tooling | Device command failures/retries, journal summaries, build inspection, action/evidence classification and suite result handling. | Device/process boundaries are faked. Test success is not a successful transfer or deployment. |
 | Build/archive | Simulator compilation, website QR decoding, bundled policy/license/website resources, exact reviewed privacy-manifest declarations, and structural inspection of development/distribution archives. Signed export checks inspect the Watch manifest again in the IPA. | Manifest comparison is not an API-usage audit or Apple privacy approval. Unsigned success is not signed distribution, installation or App Store validation. QR decoding is not a physical camera test. |
+| Booted Watch smoke | Creates a disposable Watch on the newest available compatible runtime, installs the Debug app, and checks three real process launches: timer, media, then timer again. A synthetic saved class and intentional Stop must survive byte-for-byte, with fresh matching journal callbacks. | Screenshots require human review; callbacks do not prove rendering, swipes, Crown ownership, phone audio, runtime acceptance or haptics. No existing Simulator or physical device is targeted. |
 | Diagnostic tools | Compiles the phone-audio, native-volume, timeline-clock and diagnostic-share Simulator fixtures, plus HubInput, ScreenText, MediaPixels and ControlOutline helpers. | Compilation catches SDK and syntax regressions; no simulator boots, UI interactions, audio, sharing or device behavior is tested. |
 
 The manifest check rejects missing, unreadable or changed tracking/data-collection
@@ -41,12 +44,44 @@ Setext headings, custom HTML anchors or richer heading markup in a linked target
 Private ignored evidence is outside repository validation.
 
 GitHub Actions runs the noninteractive verification with its recorded toolchain.
-The Mac job compiles the app for Watch Simulator but does not boot it or drive its
-UI. The Mac jobs also compile the four diagnostic fixtures and four UI-inspection
-helpers. The Swift model/controller suites are separate host executables that use
+The Watch-check and release verification jobs compile and run the booted Watch
+smoke check described below. They also compile the four diagnostic fixtures and
+four UI-inspection helpers. The Swift model/controller suites are separate host
+executables that use
 WatchKit boundary doubles. Interactive Watch Simulator scenarios require the
 local Device Hub workflow below. See [build evidence](BUILD_VERIFICATION.md) for
 retained artifacts. CI does not touch physical devices.
+
+### Booted Watch smoke check
+
+```sh
+python3 scripts/simulator-smoke.py \
+  --app /absolute/path/to/Debug-watchsimulator/TeachingTimer.app \
+  --output work/simulator-smoke-new
+```
+
+The smoke check requires an available Watch runtime and an ad-hoc-signed Debug
+artifact; a missing runtime or failed check fails CI rather than silently
+skipping. It creates its own unpaired Watch, preferring SE 3 40 mm when supported
+by the newest compatible runtime. It seeds a synthetic 60-minute class with an
+intentional Stop into the newly installed, never-launched container, then checks
+fresh timer/media/timer launch IDs, page callbacks, preserved schedule and no
+runtime start. These are process relaunches, **not swipe gestures**. No production
+test hook, Device Hub window, paired phone, account or release credential is used.
+
+An eight-minute work budget and shorter command/launch deadlines bound the
+checks; cleanup has its own bounded timeout. On success or ordinary failure/interruption it shuts down and deletes only
+the device it created. Forced runner termination can prevent final cleanup; on
+hosted runners the disposable runner is the final boundary. CI retains the
+command logs, synthetic journals, screenshots, runtime/build metadata and result
+manifest for 14 days, including failure evidence. Existing devices and evidence
+are not reset. Local output directories are retained for review.
+
+Python tests cover runtime selection, missing-runtime failure, stale/wrong-page
+journal rejection, synthetic state preservation and cleanup ownership. The first
+local run passed on watchOS 27.2 / SE 3 40 mm; hosted results must independently
+confirm the configured CI runtimes. Screenshots settle briefly after appearance,
+but the result deliberately keeps `renderingVerified=false`.
 
 ### November 2, 2026 — Swift CodeQL coverage check
 
@@ -151,6 +186,12 @@ the app input rules conservative and extend the tests when project layout or
 generated app resources change. The Watch-check workflow has a stable
 required-result job that reports success only after every applicable check
 passes. Unknown paths take the full verification and publishing path.
+Main-branch Watch checks use a concurrency group per commit, so a later docs-only
+push cannot cancel unfinished verification of an earlier app change. Pull-request
+runs still replace older runs of the same PR because their comparison includes
+the entire proposed diff. This does not deduplicate the release workflow or
+serialize TestFlight publishers; [#24](https://github.com/qayshp/TeachingTimer/issues/24)
+tracks those separate concerns.
 
 The release workflow still separates credential-free verification/rehearsal
 from internal publishing. It supports an immutable dispatch revision and unused

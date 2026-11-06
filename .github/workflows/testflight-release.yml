@@ -141,13 +141,16 @@ jobs:
         run: sh automation/scripts/check-tools.sh
       - name: Verify application models, Simulator and unsigned archives
         working-directory: source
-        run: python3 scripts/verify-build.py "$RUNNER_TEMP/application-verification"
+        run: python3 scripts/verify-build.py "$RUNNER_TEMP/application-verification" --simulator-smoke
       - name: Retain non-secret verification report
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: testflight-checks-${{ github.run_id }}
-          path: ${{ runner.temp }}/application-verification/verification.json
+          path: |
+            ${{ runner.temp }}/application-verification/verification.json
+            ${{ runner.temp }}/application-verification/*.log
+            ${{ runner.temp }}/application-verification/simulator-smoke/
           retention-days: 14
           if-no-files-found: ignore
 

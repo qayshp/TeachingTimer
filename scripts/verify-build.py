@@ -41,6 +41,8 @@ def run_step(name, command, output, timeout=1200):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path, help='New artifact directory; never overwrites')
+    parser.add_argument('--simulator-smoke', action='store_true',
+                        help='Create, boot, test and delete one disposable Watch Simulator')
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -64,6 +66,13 @@ def main():
         ('archive', ['sh', 'scripts/check-archive.sh', str(output / 'development-archive')]),
         ('distribution-rehearsal', ['sh', 'scripts/prepare-testflight.sh', str(output / 'distribution-archive')]),
     ]
+    if args.simulator_smoke:
+        index = next(i for i, (name, _) in enumerate(steps) if name == 'simulator') + 1
+        steps.insert(index, ('simulator-smoke', [
+            'python3', 'scripts/simulator-smoke.py',
+            '--app', str(output / 'DerivedData/Build/Products/Debug-watchsimulator/TeachingTimer.app'),
+            '--output', str(output / 'simulator-smoke')]))
+    report['bootedSimulatorRequested'] = args.simulator_smoke
     try:
         for name, command in steps:
             print('Running ' + name, flush=True)
