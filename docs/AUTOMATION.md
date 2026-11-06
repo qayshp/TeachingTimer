@@ -15,8 +15,9 @@ sh scripts/check-simulator-tools.sh work/simulator-tools-new
 ```
 
 `verify-build.py` includes the repository, tooling and Swift checks, a Simulator
-build and unsigned archives. With `--simulator-smoke`, it also boots a new
-disposable Watch and exercises real app launches. Omit that flag for build-only
+build and unsigned archives. With `--simulator-smoke`, it also boots disposable
+small and large Watches serially and exercises real app launches, runtime recovery
+and class retirement. Omit that flag for build-only
 verification. Run smaller commands when iterating; use complete verification
 for a candidate. The output directory must be new.
 The separate Simulator-tools check compiles all four diagnostic fixtures and
@@ -28,7 +29,7 @@ four UI-inspection helpers. It does not launch them or produce audio.
 | Swift models/controllers | Class anchoring/persistence, clock edges, geometry/layout, runtime intent/renewal, landmark deadlines/cancellation/restart, journal retention and volume/media policies. | Standalone executables use WatchKit boundary doubles; they cannot establish watchOS acceptance or physical effects. |
 | Python tooling | Device command failures/retries, journal summaries, build inspection, action/evidence classification and suite result handling. | Device/process boundaries are faked. Test success is not a successful transfer or deployment. |
 | Build/archive | Simulator compilation, website QR decoding, bundled policy/license/website resources, exact reviewed privacy-manifest declarations, and structural inspection of development/distribution archives. Signed export checks inspect the Watch manifest again in the IPA. | Manifest comparison is not an API-usage audit or Apple privacy approval. Unsigned success is not signed distribution, installation or App Store validation. QR decoding is not a physical camera test. |
-| Booted Watch smoke | Creates a disposable Watch on the newest available compatible runtime, installs the Debug app, and checks three real process launches: timer, media, then timer again. A synthetic saved class and intentional Stop must survive byte-for-byte, with fresh matching journal callbacks. | Screenshots require human review; callbacks do not prove rendering, swipes, Crown ownership, phone audio, runtime acceptance or haptics. No existing Simulator or physical device is targeted. |
+| Booted Watch smoke | Runs serially on disposable small/large Watches using the same newest available compatible runtime. Checks saved class/Stop persistence, real running-intent recovery after process replacement, live retirement on timer and media pages, and overdue-class retirement on launch. Fresh journals and persisted values must agree. | Screenshots require human review. No swipe/menu interaction, pixel assertion, Crown ownership, phone audio, physical haptics or full-duration WatchKit expiry/renewal is tested. No existing Simulator or physical device is targeted. |
 | Diagnostic tools | Compiles the phone-audio, native-volume, timeline-clock and diagnostic-share Simulator fixtures, plus HubInput, ScreenText, MediaPixels and ControlOutline helpers. | Compilation catches SDK and syntax regressions; no simulator boots, UI interactions, audio, sharing or device behavior is tested. |
 
 The manifest check rejects missing, unreadable or changed tracking/data-collection
@@ -62,20 +63,52 @@ python3 scripts/simulator-smoke.py \
 
 The smoke check requires an available Watch runtime and an ad-hoc-signed Debug
 artifact; a missing runtime or failed check fails CI rather than silently
-skipping. It creates its own unpaired Watch, preferring SE 3 40 mm when supported
-by the newest compatible runtime. It seeds a synthetic 60-minute class with an
-intentional Stop into the newly installed, never-launched container, then checks
-fresh timer/media/timer launch IDs, page callbacks, preserved schedule and no
-runtime start. These are process relaunches, **not swipe gestures**. No production
-test hook, Device Hub window, paired phone, account or release credential is used.
+skipping. The default `--watch-size matrix` creates its own unpaired Watches for
+the smallest and largest supported millimeter sizes on the newest compatible
+runtime and runs them serially. The matrix fails if two distinct sizes are
+unavailable or the selected runtime changes between runs. Use `--watch-size small`
+or `--watch-size large` for a focused local run; neither alone establishes a
+passing matrix.
 
-An eight-minute work budget and shorter command/launch deadlines bound the
-checks; cleanup has its own bounded timeout. On success or ordinary failure/interruption it shuts down and deletes only
-the device it created. Forced runner termination can prevent final cleanup; on
-hosted runners the disposable runner is the final boundary. CI retains the
-command logs, synthetic journals, screenshots, runtime/build metadata and result
-manifest for 14 days, including failure evidence. Existing devices and evidence
-are not reset. Local output directories are retained for review.
+Each Watch runs the same scenarios:
+
+- **Intentional Stop:** a synthetic 60-minute class and stopped intent must survive
+  timer/media/timer process launches byte-for-byte, with fresh page callbacks and
+  no runtime start.
+- **Running-intent recovery:** two timer process launches must restore the same
+  class and intent, recover automatically while awake, and report ordered recovery
+  callbacks with a distinct runtime identity for each process.
+- **Live class retirement:** separate fixtures reach the real retirement deadline
+  while the timer page has a running session and while the media page has stopped
+  intent. The same process must remove class and intent without restarting them.
+  The running timer case also requires runtime invalidation and a renewal decision
+  that rejects restarting after the explicit stop. Reopening must keep the class
+  absent.
+- **Overdue launch:** a class already past retirement, with saved running intent,
+  must retire on launch without starting a runtime.
+
+Fixtures are written only into fresh, never-launched app installations on the
+owned test device. No live preferences or system clocks are changed. Live
+retirement fixtures are seeded 60 seconds before their deadline on the timer page
+and 45 seconds before it on the media page; overdue retirement is five seconds
+past its deadline. This tests the app's **scheduled end plus 30 minutes** retirement
+rule, not WatchKit's full-duration session expiry or automatic renewal. Each
+launch and live retirement includes a three-second observation of its required
+postconditions, followed by another check after screenshot capture.
+
+Page selection uses launch arguments and fresh page callbacks; no swipe gestures
+or open-menu interactions are tested. No production test hook, Device Hub window,
+paired phone, account or release credential is used. Screenshots remain evidence
+for human review, and the result keeps `renderingVerified=false`.
+
+An eight-minute work budget **per Watch**, plus shorter command/launch deadlines,
+bounds the checks; cleanup has its own bounded timeout. On success or ordinary
+failure/interruption it shuts down and deletes only the device it created. Forced
+runner termination can prevent final cleanup; on hosted runners the disposable
+runner is the final boundary. CI retains command logs, synthetic journals,
+screenshots, runtime/build metadata, per-size results and the combined manifest
+for 14 days, including failure evidence. Existing devices and evidence are not
+reset. Local output directories are retained for review.
 
 The CI workflows additionally pass `--prepare-ci-runtime`. This guarded dependency
 step runs only on **GitHub-hosted** runners and writes its evidence under
@@ -94,12 +127,24 @@ SDK/runtime; the release runner checks Xcode 27.2. Local smoke uses the already
 installed newest compatible runtime and never downloads one.
 
 Python tests cover runtime selection, missing-runtime failure, stale/wrong-page
-journal rejection, synthetic state preservation and cleanup ownership. Local runs passed on watchOS 27.2 / SE 3 40 mm. The first
+journal rejection, synthetic state preservation and cleanup ownership. The earlier
+three-launch Stop-persistence smoke passed locally on watchOS 27.2 / SE 3 40 mm. The first
 [hosted Watch check](https://github.com/qayshp/TeachingTimer/actions/runs/42183165891)
 also passed all three launches on watchOS 26.5 / Xcode 26.6 in 87.117 seconds,
-with clean device removal. The separate Xcode 27.2 release-runner runtime
-provisioning still needs a successful hosted result. Screenshots settle briefly after appearance,
-but the result deliberately keeps `renderingVerified=false`.
+with clean device removal. The subsequent November 6
+[release verification](https://github.com/qayshp/TeachingTimer/actions/runs/42184213880)
+at source `8ddde8f` passed that earlier smoke on watchOS 27.2 / Xcode 27.2 in
+152.214 seconds, after 94.781 seconds of runtime setup including download/install.
+These are results for the earlier smoke, not the expanded small/large recovery
+and retirement matrix described above.
+
+The expanded matrix passed locally on November 6 using Xcode 27.2 / watchOS 27.2
+(24S118): SE 3 40 mm in 213.050 seconds and Ultra 4 49 mm in 209.940 seconds.
+Both completed ten process launches, two timed retirements and an overdue-launch
+check, with clean Simulator removal. All 13 Swift suites and 253 Python tests,
+fixture/helper builds, Simulator compilation and unsigned archives passed.
+Expanded hosted execution remains pending; the runs above establish only the
+earlier three-launch smoke coverage.
 
 ### November 2, 2026 — Swift CodeQL coverage check
 

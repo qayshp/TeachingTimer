@@ -42,7 +42,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path, help='New artifact directory; never overwrites')
     parser.add_argument('--simulator-smoke', action='store_true',
-                        help='Create, boot, test and delete one disposable Watch Simulator')
+                        help='Run recovery/retirement checks on disposable small and large Watches')
     parser.add_argument('--prepare-ci-runtime', action='store_true',
                         help='Prepare the matching Watch runtime on GitHub-hosted runners only')
     args = parser.parse_args()
@@ -74,6 +74,7 @@ def main():
         index = next(i for i, (name, _) in enumerate(steps) if name == 'simulator') + 1
         steps.insert(index, ('simulator-smoke', [
             'python3', 'scripts/simulator-smoke.py',
+            '--watch-size', 'matrix',
             '--app', str(output / 'DerivedData/Build/Products/Debug-watchsimulator/TeachingTimer.app'),
             '--output', str(output / 'simulator-smoke')]))
     if args.prepare_ci_runtime:
