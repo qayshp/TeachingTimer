@@ -1,9 +1,10 @@
 # Teaching Timer
 
-A watchOS-only clock for teaching yoga: prominent wall-clock hands, scheduled
+A Watch-first clock for teaching yoga: prominent wall-clock hands, scheduled
 class progress, one-minute visual counts with optional vibrations, and native
-media controls. No iPhone companion app, workout tracking, heart-rate collection,
-account, advertising, or analytics.
+media controls. An optional iPhone support app helps email diagnostic reports;
+teaching works independently on the Watch. No workout tracking, heart-rate
+collection, account, advertising, or analytics.
 
 Built around real teaching on Apple Watch SE 3. This is still an experimental
 app with known media, volume and Always-On issues. Test it before relying on it
@@ -155,3 +156,12 @@ and the [issue/Apple-feedback index](docs/ISSUE_TRACKER.md). Please use the bug
 form and keep raw device logs and personal diagnostics out of public reports.
 
 Current remaining work and physical/TestFlight gates: [active roadmap](docs/ROADMAP.md).
+
+### Optional iPhone support companion (development)
+
+Teaching remains independent on the Watch. The optional iPhone app can request a
+report while the Watch app is open, or the Watch can send one from
+**Settings → Help → Send diagnostics to iPhone**. On iPhone, **Email support** prefills the support address and attaches
+the received report. The Watch share sheet is removed in this development change.
+Physical transfer, email receipt and upgrade preservation still require validation.
+See [companion validation](docs/OPTIONAL_COMPANION.md).

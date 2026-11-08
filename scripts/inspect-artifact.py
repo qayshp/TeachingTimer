@@ -85,7 +85,7 @@ def inspect(path):
     info = plistlib.loads((app / 'Info.plist').read_bytes())
     metadata = app / 'BuildInfo.plist'
     revision = plistlib.loads(metadata.read_bytes()).get('revision') if metadata.exists() else None
-    checks = {'watchOnly': info.get('WKWatchOnly') is True,
+    checks = {'watchOnly': (info.get('WKWatchOnly') is True or info.get('WKRunsIndependentlyOfCompanionApp') is True),
               'binaryPresent': (app / info['CFBundleExecutable']).is_file(),
               'revisionRecorded': bool(revision),
               'privacyManifestMatchesPolicy': privacy_manifest_matches_policy(app)}
@@ -93,7 +93,9 @@ def inspect(path):
     if container_info:
         checks.update(containerIdentifierIsWatchPrefix=info['CFBundleIdentifier'].startswith(container_info['CFBundleIdentifier'] + '.'),
                       containerVersionMatches=all(info[key] == container_info[key] for key in ('CFBundleVersion', 'CFBundleShortVersionString')),
-                      noCompanionRequirement='WKCompanionAppBundleIdentifier' not in info)
+                      noCompanionRequirement=('WKCompanionAppBundleIdentifier' not in info or
+                          (info.get('WKRunsIndependentlyOfCompanionApp') is True and
+                           info.get('WKCompanionAppBundleIdentifier') == container_info['CFBundleIdentifier'])))
     # Preserve inspection of historical teaching checkpoints from before these pages.
     if int(info['CFBundleVersion'].split('.')[0]) >= 27:
         checks['informationResourcesPresent'] = information_resources_present(app)

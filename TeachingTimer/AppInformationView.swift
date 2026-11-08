@@ -39,6 +39,14 @@ struct AppInformationView: View {
 
     private var help: some View {
         Group {
+            Section("Support") {
+                NavigationLink {
+                    DiagnosticSharingView(prepare: prepareDiagnostics)
+                } label: {
+                    Label("Send diagnostics to iPhone", systemImage: "square.and.arrow.up")
+                }
+                .accessibilityIdentifier("help-send-diagnostics")
+            }
             Section("Read the clock") {
                 Text("The long hand shows seconds. The shorter, thicker hand shows minutes. Both show real time.")
                 Text("The outer wedge marks the scheduled finish. For a 60-minute class, the stronger perimeter line shows time ahead. A 75-minute class shows the wedge only.")
@@ -81,7 +89,7 @@ struct AppInformationView: View {
                 Text("End class clears current timing, not diagnostics or settings. Unreadable saved values may have a separate local recovery copy. Removing the app removes its local container; exported or backup copies are separate.")
             }
             Section("Sharing is your choice") {
-                Text("About → Share diagnostics prepares a filtered file for a time interval you choose. Review it before opening native sharing. Nothing is sent automatically or directly to support. Attachment delivery is still being tested.")
+                Text("Help → Send diagnostics to iPhone prepares a filtered report. Confirm sending it to the optional companion, then review and email it from your phone. Nothing is emailed automatically.")
                 Text("Prepared files stay in the app’s cache for sharing. Up to eight are kept; files older than a day are removed when another report is prepared, unless still in use. The system may clear cached files sooner. Recipient copies are separate.")
                 Text("Share only what is needed. Do not post raw journals or system logs in public GitHub issues.")
                 Text("Apple’s media services and system diagnostics follow your Apple settings. Data you choose to send to Apple or another recipient follows that recipient’s policies.")
@@ -106,12 +114,7 @@ struct AppInformationView: View {
             }
             Section {
                 InformationWebsiteLink(key: "support")
-                NavigationLink {
-                    DiagnosticSharingView(prepare: prepareDiagnostics)
-                } label: {
-                    Label("Share diagnostics", systemImage: "square.and.arrow.up")
-                }
-                .accessibilityIdentifier("about-share-diagnostics")
+
             } header: {
                 Text("Support")
             } footer: {

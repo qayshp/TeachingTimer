@@ -1,8 +1,7 @@
 # Privacy and diagnostics
 
-Policy updated November 6, 2026 for native diagnostic sharing. Recipient
-delivery is still under owner-pilot validation; the policy describes how the
-implemented sharing feature handles data.
+Policy updated November 8, 2026 for the optional iPhone support companion.
+Physical file transfer and email delivery remain under owner-pilot validation.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does
@@ -36,13 +35,17 @@ system/backup copies are outside that operation.
 
 ## Sharing is a separate choice
 
-**Settings → About → Share diagnostics** prepares a JSON file for the last two
-hours, last 24 hours, or all retained events. Preparation alone sends nothing.
-Review the available time range, event counts, missing-history warnings and
-event preview before choosing **Share file…**. The native sharing sheet lets you
-choose a destination; it does not send directly to support or confirm receipt.
-Available destinations depend on the system. Actual attachment delivery remains
-unverified, so this feature is not yet a supported general tester intake route.
+**Settings → Help → Send diagnostics to iPhone** prepares a filtered report.
+The iPhone support app is optional; teaching remains independent on the Watch.
+An explicit request from the iPhone collects the last two hours while the Watch
+app is open. Alternatively, review and send a selected interval from Watch Help. Watch Connectivity transfers it to
+the paired companion; no developer server receives it. The phone keeps the latest
+received report in local application support, excluded from backup, until replaced,
+deleted using the app, or the app is removed. Email support opens a composer with
+our address and the report attached; the user reviews and sends it. A configured
+Apple Mail account is needed for that composer. Phone file export is available
+for other mail apps. Neither an opened composer nor completed device transfer
+establishes email delivery. Physical transfer and email delivery remain unverified.
 
 The report includes app/build/OS versions, exact event timestamps, class/session
 and interface state, count timing and selected error codes. Generated run IDs
@@ -55,8 +58,8 @@ silently shortened. No system logs, audio or other apps' data are collected.
 
 Prepared files are held in an app-owned cache, excluded from backup. Up to eight
 files (at most 16 MiB of report content) are kept. During a later preparation,
-files older than 24 hours are removed unless retained by the current sharing
-view. Cleanup is not scheduled in the background and cannot run if the app is
+files older than 24 hours are removed unless retained by the current report
+view or an outstanding transfer. Cleanup is not scheduled in the background and cannot run if the app is
 never used again. The system may clear caches sooner. Leaving the sharing view
 does not immediately delete a file that its destination may still be reading.
 The original journals, prepared files and recipient copies have separate lifetimes.
@@ -89,8 +92,7 @@ emailing the same address; copies already shared with another recipient or
 retained in backups may have separate lifetimes.
 
 Share only necessary details. The maintainer will ask before forwarding raw
-private evidence to Apple or another party. Email support and the native sharing
-sheet do not by themselves establish attachment delivery. In the Watch app,
+private evidence to Apple or another party. Opening email support does not establish attachment delivery. In the Watch app,
 **Settings → About → Contact support** shows the address and QR code for the
 reporting steps. The [public issue form](https://github.com/qayshp/TeachingTimer/issues/new/choose)
 remains available for sanitized descriptions.

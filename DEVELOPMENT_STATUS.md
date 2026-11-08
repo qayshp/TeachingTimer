@@ -56,6 +56,17 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 - Mindfulness runtime suitability for guided yoga teaching and automatic renewal
   still needs explicit Apple guidance. Beta review does not settle intended use.
 
+## Optional companion development — November 8
+
+The companion branch adds an optional iPhone support app and moves Watch export to
+Settings → Help → Send diagnostics to iPhone. Phone-initiated requests prepare the
+last two hours while the Watch app is open. The Watch share sheet is removed.
+The existing distribution IDs are preserved and Watch execution stays independent.
+Simulator compilation, unsigned distribution archive and model/tool checks passed;
+physical file transfer, email receipt and TestFlight upgrade preservation remain
+unverified. This branch is not a new installed or uploaded TestFlight build.
+See [companion validation](docs/OPTIONAL_COMPANION.md).
+
 ## Next validation
 
 1. Investigate frozen progress on the timeline-isolated build with matched

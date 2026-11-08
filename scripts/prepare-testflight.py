@@ -59,9 +59,11 @@ def package_checks(container, watch):
                 watchIdentifier=watch.get('CFBundleIdentifier') == WATCH_ID,
                 containerExportComplianceDeclared=container.get('ITSAppUsesNonExemptEncryption') is False,
                 watchExportComplianceDeclared=watch.get('ITSAppUsesNonExemptEncryption') is False,
-                watchOnly=watch.get('WKWatchOnly') is True,
+                watchOnly=(watch.get('WKWatchOnly') is True or watch.get('WKRunsIndependentlyOfCompanionApp') is True),
                 watchApplication=watch.get('WKApplication') is True,
-                noCompanionRequirement='WKCompanionAppBundleIdentifier' not in watch,
+                noCompanionRequirement=('WKCompanionAppBundleIdentifier' not in watch or
+                    (watch.get('WKRunsIndependentlyOfCompanionApp') is True and
+                     watch.get('WKCompanionAppBundleIdentifier') == CONTAINER_ID)),
                 versionsMatch=all(container.get(k) == watch.get(k) and bool(watch.get(k))
                                   for k in ('CFBundleVersion', 'CFBundleShortVersionString')),
                 mindfulnessRuntime='mindfulness' in watch.get('WKBackgroundModes', []))

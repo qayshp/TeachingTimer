@@ -3,12 +3,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import CoreTransferable
 import SwiftUI
-import UniformTypeIdentifiers
 
-/// Preparation is read-only. Only the explicit ShareLink opens a destination;
-/// neither preparing a file nor an export callback establishes delivery.
+/// Preparation is read-only. Only an explicit action queues a device transfer;
+/// Preparing or transferring a file does not establish email delivery.
 struct DiagnosticSharingView: View {
     struct Prepared: Sendable {
         let report: DiagnosticReport.Report
@@ -16,6 +14,7 @@ struct DiagnosticSharingView: View {
     }
 
     let prepare: @MainActor (DiagnosticReport.Window, Set<URL>) async throws -> Prepared
+    @ObservedObject private var companion = DiagnosticCompanion.shared
     @State private var window: DiagnosticReport.Window = .lastTwoHours
     @State private var prepared: Prepared?
     @State private var preparing = false
@@ -27,15 +26,12 @@ struct DiagnosticSharingView: View {
             if let prepared {
                 summary(prepared)
                 Section {
-                    ShareLink(item: ReportAttachment(url: prepared.file.url),
-                              preview: SharePreview("Teaching Timer diagnostics")) {
-                        Label("Share file…", systemImage: "square.and.arrow.up")
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .accessibilityIdentifier("diagnostics-share-file")
+                    Button("Send report to iPhone") { companion.send(prepared.file.url) }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(companion.installed != true)
+                    Text(companion.status)
                 } footer: {
-                    Text("Choose a private recipient. This does not send directly to support. Opening sharing does not confirm delivery.")
-                    Text("Share after class: opening another app can interrupt wrist-down support.")
+                    Text("Open the optional iPhone app to email support. Share after class.")
                 }
                 Section {
                     NavigationLink("Preview events") { preview(prepared.report) }
@@ -45,6 +41,10 @@ struct DiagnosticSharingView: View {
                 Section {
                     Text("Review a report before sharing. Nothing is sent automatically.")
                         .font(.caption)
+                }
+                Section {
+                    Text(companion.status)
+                    Button("Check connection") { companion.checkConnection() }
                 }
                 Section {
                     Picker("Include", selection: $window) {
@@ -158,16 +158,6 @@ struct DiagnosticSharingView: View {
                 }
             }
         }.navigationTitle("Preview")
-    }
-}
-
-private struct ReportAttachment: Transferable {
-    let url: URL
-
-    static var transferRepresentation: some TransferRepresentation {
-        FileRepresentation(exportedContentType: .json) { item in
-            SentTransferredFile(item.url)
-        }
     }
 }
 
