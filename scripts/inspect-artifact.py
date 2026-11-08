@@ -85,7 +85,7 @@ def inspect(path):
     info = plistlib.loads((app / 'Info.plist').read_bytes())
     metadata = app / 'BuildInfo.plist'
     revision = plistlib.loads(metadata.read_bytes()).get('revision') if metadata.exists() else None
-    checks = {'watchOnly': (info.get('WKWatchOnly') is True or info.get('WKRunsIndependentlyOfCompanionApp') is True),
+    checks = {'independentWatch': (info.get('WKWatchOnly') is True or info.get('WKRunsIndependentlyOfCompanionApp') is True),
               'binaryPresent': (app / info['CFBundleExecutable']).is_file(),
               'revisionRecorded': bool(revision),
               'privacyManifestMatchesPolicy': privacy_manifest_matches_policy(app)}

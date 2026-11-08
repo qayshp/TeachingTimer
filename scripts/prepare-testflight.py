@@ -59,7 +59,7 @@ def package_checks(container, watch):
                 watchIdentifier=watch.get('CFBundleIdentifier') == WATCH_ID,
                 containerExportComplianceDeclared=container.get('ITSAppUsesNonExemptEncryption') is False,
                 watchExportComplianceDeclared=watch.get('ITSAppUsesNonExemptEncryption') is False,
-                watchOnly=(watch.get('WKWatchOnly') is True or watch.get('WKRunsIndependentlyOfCompanionApp') is True),
+                independentWatch=(watch.get('WKWatchOnly') is True or watch.get('WKRunsIndependentlyOfCompanionApp') is True),
                 watchApplication=watch.get('WKApplication') is True,
                 noCompanionRequirement=('WKCompanionAppBundleIdentifier' not in watch or
                     (watch.get('WKRunsIndependentlyOfCompanionApp') is True and

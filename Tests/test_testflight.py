@@ -76,14 +76,14 @@ class TestFlightChecks(unittest.TestCase):
         watch['WKCompanionAppBundleIdentifier'] = 'wrong.example'
         self.assertFalse(pilot.package_checks(container, watch)['noCompanionRequirement'])
         watch['WKRunsIndependentlyOfCompanionApp'] = False
-        self.assertFalse(pilot.package_checks(container, watch)['watchOnly'])
+        self.assertFalse(pilot.package_checks(container, watch)['independentWatch'])
 
     def test_incompatible_package_is_rejected(self):
         container, watch = self.package()
         watch.update(CFBundleVersion='27', WKCompanionAppBundleIdentifier=pilot.CONTAINER_ID,
                      WKWatchOnly=False, WKBackgroundModes=[])
         checks = pilot.package_checks(container, watch)
-        for key in ('versionsMatch', 'noCompanionRequirement', 'watchOnly', 'mindfulnessRuntime'):
+        for key in ('versionsMatch', 'noCompanionRequirement', 'independentWatch', 'mindfulnessRuntime'):
             self.assertFalse(checks[key], key)
 
     def test_both_payloads_require_explicit_export_compliance_declaration(self):
