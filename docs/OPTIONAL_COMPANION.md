@@ -48,3 +48,20 @@ Apple documents that after adding an iOS companion and publishing it to the
 App Store, reverting that product to watch-only is not supported. Independent
 Watch execution remains supported. This PR is not an App Store publication.
 Reference: https://developer.apple.com/documentation/technotes/tn3157-updating-your-watchos-project-for-swiftui-and-widgetkit
+
+## Maintainer TestFlight pilot — November 8
+
+**1.0 (261108.1359.32)** from PR #29 revision `3f20c2577a828563661a173870b113a68eb32cc0`
+is available to the Maintainer pilot. [Release run 42527911603](https://github.com/qayshp/TeachingTimer/actions/runs/42527911603)
+verified a clean source checkout, all 15 Swift suites / 277 Python tests, ten
+lifecycle launches each on watchOS 27.2 SE 3 40 mm and Ultra 4 49 mm, helper
+builds and both archive paths. Signing/export and Apple processing passed;
+notes, group membership and `IN_BETA_TESTING` were read back. Availability was
+confirmed at 14:20:25 PST, 96.36 seconds after upload completed.
+
+A pre-upload icon check found an alpha channel in the iPhone asset. The initial
+run was cancelled before upload, the icon was converted to an opaque format,
+and a regression check was added before the successful run. Only one build was
+uploaded. The temporary exact-branch environment allowance was removed afterward;
+only main remains allowed. PR #29 remains unmerged. Physical installation,
+transfer, email receipt and upgrade preservation are still unverified.
