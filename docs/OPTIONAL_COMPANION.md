@@ -31,3 +31,20 @@ or account is added. Phone export supports alternative mail apps.
 Apple documents that WCSession.transferFile is unsupported in Simulator:
 https://developer.apple.com/documentation/watchconnectivity/wcsession/transferfile(_:metadata:)
 Simulator builds and screenshots therefore cannot establish paired delivery.
+
+## Local results — November 8
+
+Xcode 27.2 with iOS 27.2 and watchOS 27.2: companion and Watch Simulator build
+and launch passed; phone installation detection reported the paired Watch app
+present. A manually seeded synthetic report exercised phone inbox restoration
+UI only, not delivery. Unsigned distribution archive and structural checks passed,
+including independent execution and unchanged parent/Watch bundle IDs. All 15
+Swift suites and 276 Python checks passed. Physical transfer, mail composition
+with a configured account, receipt and upgrade preservation remain pending.
+
+## Distribution commitment
+
+Apple documents that after adding an iOS companion and publishing it to the
+App Store, reverting that product to watch-only is not supported. Independent
+Watch execution remains supported. This PR is not an App Store publication.
+Reference: https://developer.apple.com/documentation/technotes/tn3157-updating-your-watchos-project-for-swiftui-and-widgetkit
