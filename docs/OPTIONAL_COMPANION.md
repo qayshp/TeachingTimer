@@ -105,3 +105,15 @@ confirmed at 19:14:05 PST, approximately 97 seconds after upload completed.
 The temporary branch release allowance was removed; only main remains allowed.
 No physical installation or new-build delivery test was performed by the agent.
 PR #29 remains unmerged. Recheck both installed version labels after updating.
+
+## PR verification environment correction — November 12
+
+PR run 43147024003 failed its immediate running-session relaunch on the older
+Xcode 26.6 / watchOS 26.5 default runner: Start at +0.109 seconds, WatchKit error
+3 at +0.266 seconds despite active/awake readiness, then persisted manual recovery.
+This matches open issue #27. The second failed check was its required-result
+aggregator. The release run used Xcode 27.2 / watchOS 27.2 and passed.
+PR verification now uses the same xcode-27 environment as release verification;
+a CI test guards that alignment and keeps real-runtime failures fatal. This
+corrects toolchain drift; it does not establish a fix for issue #27 or remove
+watchOS 26 deployment compatibility. Failed evidence is retained privately.

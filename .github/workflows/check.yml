@@ -78,8 +78,9 @@ jobs:
     name: Watch Simulator and archive verification
     needs: changes
     if: needs.changes.outputs.mac_verify == 'true'
-    runs-on: macos-26
-    timeout-minutes: 35
+    # Match the reviewed release toolchain; macos-26 defaults to older Xcode.
+    runs-on: xcode-27
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Verify models, tools, Simulator and unsigned archives
