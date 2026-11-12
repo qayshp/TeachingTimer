@@ -10,6 +10,8 @@ on:
   pull_request:
 permissions:
   contents: read
+env:
+  DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
 concurrency:
   # A later docs-only main push must not cancel an earlier app verification.
   # PR ranges include the whole proposed diff, so newer PR runs may replace old ones.

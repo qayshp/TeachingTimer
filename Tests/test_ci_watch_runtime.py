@@ -24,6 +24,8 @@ class CIWatchRuntimeChecks(unittest.TestCase):
                      for name in ('check.yml', 'testflight-release.yml')]
         verify = [re.search(r'^  verify:\n(.*?)(?=^  [a-z][\w-]*:|\Z)', text,
                             re.M | re.S).group(1) for text in workflows]
+        selections = [re.search(r'^  DEVELOPER_DIR: (.+)$', text, re.M).group(1) for text in workflows]
+        self.assertEqual(selections, ['/Applications/Xcode_27.2.app/Contents/Developer'] * 2)
         runners = [re.search(r'runs-on: (.+)', text).group(1) for text in verify]
         self.assertEqual(runners, ['xcode-27', 'xcode-27'])
         for text in verify:
