@@ -79,7 +79,7 @@ actual intake practice; optional support sharing is not automatically exempt.
 - [x] Alias configured at the existing mail provider.
 - [x] Harmless inbound test received and its contents verified.
 - [x] Outgoing plain email from the alias sent, received and contents verified.
-- [x] Approved address added to About/support QR destination and repository guide.
+- [x] Approved address added to Help → Contact support, its QR destination and the repository guide.
 - [x] Privacy/support wording describes actual handling; no automatic uploads.
 - [x] TestFlight feedback email saved to the monitored route and verified after reload.
 - [x] Owner pilot retrieves and validates all three TestFlight Beta journals in

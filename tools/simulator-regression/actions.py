@@ -257,7 +257,7 @@ def main():
         # Read-only Settings destinations must render and return without changing
         # a draft, saved class, or intentional runtime state.
         offset = len(events())
-        for page, text in [('Help', 'read the clock'), ('Privacy', 'your data'), ('About', 'version')]:
+        for page, text in [('Help', 'using teaching'), ('Privacy', 'your privacy'), ('About', 'version')]:
             tap(prefix + '-' + page.lower(), page, scroll=True)
             rows = capture(prefix + '-' + page.lower() + '-opened', recognize=True)
             rendered = ' '.join(row['text'] for row in rows).casefold()

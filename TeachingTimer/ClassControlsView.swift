@@ -40,18 +40,10 @@ struct ClassControlsView: View {
                     Section {
                         Toggle("Count vibrations", isOn: $countVibrationsEnabled)
                             .accessibilityIdentifier("settings-count-vibrations")
-                    } footer: {
-                        Text("Off: visual counts only. Applies to the next count.")
-                    }
-                    Section {
                         Toggle("Minutes left", isOn: $showRemainingMinutes)
                             .accessibilityIdentifier("settings-minutes-left")
                     } footer: {
-                        Text("Show minutes remaining on the timer face.")
-                    }
-                    Section {
-                        Text("Saved for future classes. Music and system alerts are unchanged.")
-                            .font(.caption)
+                        Text("Vibrations apply to the next count.")
                     }
                     Section {
                         ForEach(AppInformationPage.allCases) { page in

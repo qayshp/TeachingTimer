@@ -107,10 +107,13 @@ from external review and public availability.
 ## Help on the Watch
 
 Open **Gear → Settings** before or during a class. **Help** explains the clock,
-class/session controls, counts and media recovery. **Privacy** explains local
-data and sharing, with the full policy bundled offline. **About** shows the running
-version/build, private support contact, source code and the complete MPL 2.0 license.
-Website destinations show an address and a QR code to scan with your phone. Public
+class timing, counts, sessions and media recovery in separate short topics.
+**Help → Contact support** shows a QR code for your phone; **Send diagnostics to
+iPhone** is separate. **Privacy** summarizes local data and sharing, with the
+full policy bundled offline. **About** shows the running version/build, source
+code and complete MPL 2.0 license. Website addresses are secondary to their scan
+codes. On iPhone, direct links and **Contact support** avoid scanning or typing
+on the Watch. Public
 GitHub issues are for sanitized reports, not raw journals or system logs.
 **Help → Send diagnostics to iPhone** offers report preparation and transfer on
 companion-enabled builds. A support link or QR code itself sends no diagnostics.

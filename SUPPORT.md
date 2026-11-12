@@ -15,9 +15,10 @@ information or other personal details. Never send passwords or verification code
 
 ## Sending from your phone or computer
 
-In build 30 and later, open **gear → Settings → About → Contact support** on
-the Watch and scan the QR code with your phone. On an earlier build, use the
-email address above directly. Then use your usual email app to send a description.
+In current builds, open **gear → Settings → Help → Contact support** on
+the Watch and scan the QR code with your phone. Earlier builds put this under
+About. You can also use the email address above directly, or the phone app’s
+Contact support action, to send a description without a report.
 No GitHub account is required to email support.
 
 Scanning the support QR code does not attach journals. No developer connection
@@ -33,7 +34,7 @@ send a report. Teaching works without the phone app.
 
 On iPhone, check the saved report's preparation time and selected window, then
 choose **Email support**. Apple Mail supplies our address and the attachment;
-review the message and send it. If Mail is not configured, **Export received
+review the message and send it. If Mail is not configured, **Report options → Export received
 report…** offers other apps, where you may need to enter the support address.
 Nothing is emailed automatically. Delete the received report when finished.
 

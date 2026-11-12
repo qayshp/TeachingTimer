@@ -17,7 +17,12 @@ is not email delivery. The iPhone copies the temporary file before the delegate
 returns, bounds input at 2 MiB, checks JSON, and retains only the latest report.
 It restores that report after reopening and offers deletion. Email support uses
 Apple Mail with recipient, subject, body and JSON attachment prefilled. No server
-or account is added. Phone export supports alternative mail apps.
+or account is added. Phone Report options → Export received report supports alternative mail apps.
+Received reports and Email support appear before new-request controls. Contact
+support can open an email without a report; About & privacy is a secondary page.
+Deletion requires confirmation and refuses to delete a newer report that arrived
+while the confirmation was open. On Watch, Report details holds the full summary
+and event previews; Connection details is a separate page.
 
 ## Validation gates
 

@@ -4,6 +4,20 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## November 12, 2026 — shorter Help and support pages
+
+- Help now opens short topics for music, class timing, counts and sessions.
+  Contact support lives in Help; About focuses on version and licensing.
+- Reduce Settings and Privacy scrolling. Keep full policy and license available
+  offline; distinguish reading a policy on Watch from opening it on iPhone.
+- Give Watch report preparation/sending prominent actions; move journal detail,
+  event previews and connection diagnostics into secondary pages.
+- Keep Watch QR codes fully visible on dedicated scan pages, with raw website
+  addresses secondary. Phone links open directly.
+- Put received reports and Email support first on iPhone. Report options holds
+  export/deletion; deletion requires confirmation and protects a newer arrival.
+  Offer ordinary support email without a report and show errors immediately.
+
 ## November 12, 2026 — optional phone support and reliable report status
 
 - Watch **Settings → Help → Send diagnostics to iPhone** replaces the Watch

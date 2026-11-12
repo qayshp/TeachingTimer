@@ -39,66 +39,52 @@ struct AppInformationView: View {
 
     private var help: some View {
         Group {
-            Section("Support") {
+            Section("Using Teaching Timer") {
+                ForEach(HelpTopic.allCases) { topic in
+                    NavigationLink {
+                        HelpTopicView(topic: topic)
+                    } label: {
+                        Label(topic.title, systemImage: topic.symbol)
+                    }
+                    .accessibilityIdentifier("help-" + topic.rawValue)
+                }
+            }
+            Section {
+                InformationWebsiteLink(key: "support")
                 NavigationLink {
                     DiagnosticSharingView(prepare: prepareDiagnostics)
                 } label: {
-                    Label("Send diagnostics to iPhone", systemImage: "square.and.arrow.up")
+                    Label("Send diagnostics to iPhone", systemImage: "iphone.and.arrow.forward")
                 }
                 .accessibilityIdentifier("help-send-diagnostics")
-            }
-            Section("Read the clock") {
-                Text("The long hand shows seconds. The shorter, thicker hand shows minutes. Both show real time.")
-                Text("The outer wedge marks the scheduled finish. For a 60-minute class, the stronger perimeter line shows time ahead. A 75-minute class shows the wedge only.")
-            }
-            Section("Start a class") {
-                Text("Check the suggested start and end before starting. Custom schedule changes this class only; future classes still default to 60 minutes.")
-                Text("The suggested start usually uses the previous quarter-hour. Use Custom schedule if you are starting early.")
-            }
-            Section("Session or class?") {
-                Text("A session helps keep this app active for wrist-down teaching. Stop session keeps your class schedule; Resume session requests wrist-down support again. End class clears timing and stops the session and count.")
-                Text("New class replaces the old class after confirmation. An old class also clears 30 minutes after its scheduled end.")
-            }
-            Section("One-minute count") {
-                Text("Tap 1-min count to start the inner arc. Tap again to stop. The arc measures one minute from your tap.")
-                Text("Groups of 1–6 vibrations begin every 10 seconds. The final group finishes after the minute. Vibrations may be late or skipped. Count vibrations in Settings applies to the next count.")
-            }
-            Section("Music and volume") {
-                Text("Swipe left for media and right for the timer. Timer Crown volume targets the paired iPhone; Now Playing may show Watch playback instead.")
-                Text("If media is blank or song progress is stuck, swipe away and back. If timer volume stops responding, tap its volume display to refresh, or visit media and return.")
-                Text("If playback continues silently, try the iPhone’s volume controls. A refresh acknowledgement does not confirm that audio recovered.")
-            }
-            Section("Reopen the app") {
-                Text("Saved class timing restores after reopening. A running session is recovered when possible; an intentional Stop stays stopped. Check Resume session if recovery fails. Force-closing the app ends an active count.")
+            } header: {
+                Text("Support")
+            } footer: {
+                Text("A description is enough to ask for help. Share diagnostics after class.")
             }
         }
     }
 
     private var privacy: some View {
         Group {
-            Section("Your data") {
-                Text("No account, ads, tracking, or analytics. Teaching Timer does not automatically send its diagnostic journals to the developer.")
+            Section("Your privacy") {
+                Text("No account, ads, tracking, or analytics. Nothing is automatically uploaded to the developer.")
             }
-            Section("Stored on your Watch") {
-                Text("Class times, session recovery intent, settings, and the latest count result are saved locally.")
-                Text("Diagnostic journals record timestamps, app and system versions, session and interface events, count timing, and errors. They can reveal when you taught or used the app. They do not record song titles, audio, actual volume, health data, or poses.")
+            Section("On your devices") {
+                Text("Class timing, settings and diagnostic history stay on your Watch. Journals can reveal when you used the app; they exclude song titles, audio, actual volume, health data and poses.")
+                Text("History is limited to seven days and event caps. Heavy use can shorten it. End class does not erase diagnostics or settings.")
             }
-            Section("Retention and removal") {
-                Text("Journals retain up to seven days as events are written, capped at 10,000 session, 10,000 interface, and 20,000 count events. Heavy use can shorten that history.")
-                Text("Unreadable journals may be saved as separate recovery files. Those copies are not cleared by the journal limits and can accumulate until separately removed or the app is deleted.")
-                Text("End class clears current timing, not diagnostics or settings. Unreadable saved values may have a separate local recovery copy. Removing the app removes its local container; exported or backup copies are separate.")
-            }
-            Section("Sharing is your choice") {
-                Text("Help → Send diagnostics to iPhone prepares a filtered report. You can also request a report from the optional iPhone app. Review and email it from your phone. Nothing is emailed automatically.")
-                Text("Prepared files stay in the app’s cache for sharing. Up to eight are kept; files older than a day are removed when another report is prepared, unless still in use. The system may clear cached files sooner. Recipient copies are separate.")
-                Text("Share only what is needed. Do not post raw journals or system logs in public GitHub issues.")
-                Text("Apple’s media services and system diagnostics follow your Apple settings. Data you choose to send to Apple or another recipient follows that recipient’s policies.")
+            Section("Optional sharing") {
+                Text("Help → Send diagnostics to iPhone, or a request from the phone app, prepares a filtered report. Review it on your phone before emailing. Nothing is emailed automatically.")
+                Text("The phone keeps the latest report until replaced or deleted. Recipient copies are separate. Do not post raw reports publicly.")
             }
             Section {
-                NavigationLink("Full privacy policy") {
+                NavigationLink("Full policy on Watch") {
                     LocalInformationDocument(title: "Policy", name: "PRIVACY", extension: "md")
                 }
-                InformationWebsiteLink(key: "privacy")
+                InformationWebsiteLink(key: "privacy", label: "Read policy on iPhone")
+            } footer: {
+                Text("The full policy includes storage limits, recovery copies and removal details. It is available here offline.")
             }
         }
     }
@@ -112,28 +98,11 @@ struct AppInformationView: View {
                     Text("A teaching clock for Apple Watch.")
                 }
             }
-            Section {
-                InformationWebsiteLink(key: "support")
-
-            } header: {
-                Text("Support")
-            } footer: {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Email for private support:")
-                    Text("teachingtimer@qays.net")
-                        .font(.caption2).lineLimit(1).minimumScaleFactor(0.5)
-                    Text("Include your app version and a short description. No logs are needed to start.")
-                }
-            }
-            Section {
+            Section("Open source") {
                 InformationWebsiteLink(key: "source")
                 NavigationLink("License: MPL 2.0") {
                     LocalInformationDocument(title: "License", name: "LICENSE", extension: nil)
                 }
-            } header: {
-                Text("Open source")
-            } footer: {
-                Text("Read the license here. Website pages show an address and a QR code for your phone.")
             }
         }
     }
@@ -151,6 +120,82 @@ struct AppInformationView: View {
     }
 }
 
+private enum HelpTopic: String, CaseIterable, Identifiable {
+    case music, clock, count, session
+    var id: Self { self }
+    var title: String {
+        switch self {
+        case .music: "Music & volume"
+        case .clock: "Class timing"
+        case .count: "One-minute count"
+        case .session: "Sessions & recovery"
+        }
+    }
+    var navigationTitle: String {
+        switch self {
+        case .count: "Count"
+        case .session: "Sessions"
+        default: title
+        }
+    }
+    var symbol: String {
+        switch self {
+        case .music: "speaker.wave.2"
+        case .clock: "clock"
+        case .count: "timer"
+        case .session: "arrow.clockwise"
+        }
+    }
+}
+
+private struct HelpTopicView: View {
+    let topic: HelpTopic
+    var body: some View {
+        Form {
+            switch topic {
+            case .music:
+                Section("Media stuck?") {
+                    Text("If media is blank or song progress is stuck, swipe to the timer and back.")
+                }
+                Section("Volume not responding?") {
+                    Text("Tap the timer’s volume display to refresh, or visit media and return. If playback continues silently, try the iPhone’s volume controls.")
+                }
+                Section("Playback source") {
+                    Text("Timer Crown volume targets the paired iPhone. Now Playing may show Watch playback instead. A refresh acknowledgement does not confirm audio recovery.")
+                }
+            case .clock:
+                Section("Read the clock") {
+                    Text("The long hand shows seconds; the shorter, thicker hand shows minutes. Both show real time.")
+                    Text("The outer wedge marks the scheduled finish. For a 60-minute class, the stronger perimeter line shows time ahead. A 75-minute class shows the wedge only.")
+                }
+                Section("Start a class") {
+                    Text("Check the suggested start and finish. The start usually uses the previous quarter-hour. Custom schedule changes this class only; future classes still default to 60 minutes.")
+                }
+                Section("Between classes") {
+                    Text("New class replaces the old class after confirmation. An old class clears 30 minutes after its scheduled finish.")
+                }
+            case .count:
+                Section("Visual count") {
+                    Text("Tap 1-min count to start the inner arc. Tap again to stop. The arc measures one minute from your tap.")
+                }
+                Section("Optional vibrations") {
+                    Text("Groups of 1–6 vibrations begin every 10 seconds. The final group finishes after the minute. Vibrations may be late or skipped.")
+                    Text("Count vibrations in Settings applies to the next count. Turn it off for visual counts only.")
+                }
+            case .session:
+                Section("Wrist-down updates") {
+                    Text("A session helps keep the app active for wrist-down teaching. Stop session keeps your class schedule; Resume session requests wrist-down support again.")
+                }
+                Section("Reopen the app") {
+                    Text("Saved class timing restores. A running session recovers when possible; an intentional Stop stays stopped. Use Resume session if recovery fails.")
+                    Text("Force-closing ends an active count. End class clears timing and stops the session and count.")
+                }
+            }
+        }
+        .navigationTitle(topic.navigationTitle)
+    }
+}
+
 private struct InformationWebsite: Decodable {
     let title: String
     let url: URL
@@ -164,6 +209,7 @@ private struct InformationWebsite: Decodable {
 
 private struct InformationWebsiteLink: View {
     let key: String
+    var label: String? = nil
 
     private var navigationTitle: String {
         switch key {
@@ -181,26 +227,35 @@ private struct InformationWebsiteLink: View {
 
     var body: some View {
         if let site = InformationWebsite.all[key] {
-            NavigationLink(site.title) {
+            NavigationLink(label ?? site.title) {
                 Form {
                     if let qrCode {
                         Section {
                             Image(qrCode, scale: 1, label: Text("QR code for " + site.title))
                                 .interpolation(.none).resizable()
-                                .frame(width: 120, height: 120)
+                                .scaledToFit()
+                                .frame(maxWidth: 120, maxHeight: 120)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 4)
-                        }.listRowBackground(Color.white)
-                    }
-                    Section {
-                        Text("Scan with your phone’s camera, or enter the address in a browser.")
-                    }
-                    Section("Address") {
-                        Text(site.url.absoluteString).font(.footnote)
-                            .fixedSize(horizontal: false, vertical: true)
+                                .padding(6)
+                        } footer: {
+                            Text("Scan with your iPhone camera to open this page.")
+                        }
+                        .listRowBackground(Color.white)
                     }
                     if key == "support" {
-                        Section { Text("This page has the private support email. No GitHub account is needed to email support. Journals are not attached automatically.") }
+                        Section("Email support") {
+                            Text("teachingtimer@qays.net").font(.footnote)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text("Include the app version and a short description. No logs or GitHub account are needed.")
+                        }
+                    }
+                    Section {
+                        NavigationLink("Website address") {
+                            Form {
+                                Text(site.url.absoluteString).font(.footnote)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }.navigationTitle("Address")
+                        }
                     }
                 }.navigationTitle(navigationTitle)
             }

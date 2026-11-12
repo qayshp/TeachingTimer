@@ -67,6 +67,16 @@ Ultra, and include the new iPhone Simulator build. Local checks pass all 16 Swif
 suites and 282 Python tests including the subsequent release-metadata retry.
 See the [review](docs/REVIEW_2026-11-12.md) for evidence and remaining limits.
 
+## Support-page usability follow-up — November 12
+
+Source now uses shorter Help topics, Help-based contact/support, compact Settings
+and Privacy summaries, and dedicated Watch scan pages. Phone support prioritizes
+received reports, offers ordinary email without a report and confirms deletion.
+Local Simulator builds and model/tool checks pass; the interactive OCR-driven run
+was incomplete after a helper timeout. Direct screen inspection and a decoded
+SE 3 Support QR are recorded in the [review](docs/REVIEW_2026-11-12.md#follow-up-page-usability).
+This source follow-up does not establish a new physical installation.
+
 ## Optional companion — November 12
 
 The companion adds an optional iPhone support app and moves Watch export to

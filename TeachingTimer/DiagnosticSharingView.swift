@@ -24,28 +24,35 @@ struct DiagnosticSharingView: View {
     var body: some View {
         Form {
             if let prepared {
-                summary(prepared)
                 Section {
-                    Button("Send report to iPhone") { companion.send(prepared.file.url) }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(companion.installed != true)
-                    Text(companion.status)
+                    if prepared.report.journals.contains(where: { ($0.status != .available && $0.status != .missing) || $0.lastWriteFailed }) {
+                        Text("Some history couldn’t be read. Check Report details before sending.").font(.caption)
+                    }
+                    Button { companion.send(prepared.file.url) } label: {
+                        VStack(spacing: 4) {
+                            Text("Send to iPhone").font(.headline)
+                            Text("\(prepared.report.eventCount) events").font(.caption)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(companion.installed != true)
+                    .accessibilityLabel("Send report to iPhone")
+                    .accessibilityValue("\(prepared.report.eventCount) events, " + windowTitle)
+                    connectionSummary
                 } footer: {
-                    Text("Open the optional iPhone app to email support. Share after class.")
+                    Text("Review and email it from the iPhone app. Nothing is emailed automatically.")
                 }
                 Section {
-                    NavigationLink("Preview events") { preview(prepared.report) }
-                    Button("Choose another time") { self.prepared = nil }
+                    Text(windowTitle).font(.caption)
+                    NavigationLink("Report details") {
+                        Form {
+                            summary(prepared)
+                            NavigationLink("Preview events") { preview(prepared.report) }
+                        }.navigationTitle("Report")
+                    }
+                    Button("Change time window") { self.prepared = nil }
                 }
             } else {
-                Section {
-                    Text("Review a report before sharing. Nothing is sent automatically.")
-                        .font(.caption)
-                }
-                Section {
-                    Text(companion.status)
-                    Button("Check connection") { companion.checkConnection() }
-                }
                 Section {
                     Picker("Include", selection: $window) {
                         Text("Last 2 hours").tag(DiagnosticReport.Window.lastTwoHours)
@@ -64,21 +71,30 @@ struct DiagnosticSharingView: View {
                     .disabled(preparing)
                     .accessibilityIdentifier("diagnostics-prepare")
                 } footer: {
-                    Text("Saved history may be shorter than this interval. Preparing a report doesn’t change your class or stop the count.")
+                    Text("Review before sending. Saved history may be shorter. Preparation keeps your class and count running.")
                 }
                 if let failure { Section { Text(failure) } }
+                Section { connectionSummary }
             }
-            Section("Connection details") {
-                Text("Version \(DiagnosticCompanion.build)").font(.caption)
-                Text(companion.connection).font(.caption)
-                ForEach(Array(companion.events.enumerated()), id: \.offset) { _, event in
-                    Text(event).font(.caption)
+            Section {
+                NavigationLink("Connection details") {
+                    Form {
+                        Button("Check connection") { companion.checkConnection() }
+                        Text(companion.status).font(.caption)
+                        Text("Version \(DiagnosticCompanion.build)").font(.caption)
+                        Text(companion.connection).font(.caption)
+                        ForEach(Array(companion.events.enumerated()), id: \.offset) { _, event in
+                            Text(event).font(.caption)
+                        }
+                    }.navigationTitle("Connection")
                 }
-            }
-            Section("Before sharing") {
-                Text("Includes app and watchOS versions, timestamps, session and interface events, count timing, and error codes. Times can reveal when you taught or used the app.")
-                Text("Excludes song titles, audio, actual volume, saved preference files, and system logs. Unapproved fields and free-form errors are left out.")
-                Text("Do not post this file in a public GitHub issue. The recipient can keep a copy.")
+                NavigationLink("What is included?") {
+                    Form {
+                        Text("Includes app and watchOS versions, timestamps, session and interface events, count timing, and error codes. Times can reveal when you taught or used the app.")
+                        Text("Excludes song titles, audio, actual volume, saved preferences and system logs. Unapproved fields and free-form errors are left out.")
+                        Text("Do not post this file publicly. The recipient can keep a copy.")
+                    }.navigationTitle("Report privacy")
+                }
             }
         }
         // Show the new summary from its beginning, not the old picker offset.
@@ -106,8 +122,23 @@ struct DiagnosticSharingView: View {
     }
 
     @ViewBuilder
+    private var connectionSummary: some View {
+        if companion.installed == true {
+            Text(companion.status).font(.caption)
+        } else {
+            Text(companion.installed == false ? "Install the optional iPhone app to send." : "iPhone connection not ready.")
+                .font(.caption)
+            Button("Check connection") { companion.checkConnection() }
+        }
+    }
+
+    private var windowTitle: String {
+        DiagnosticRequest.Window(rawValue: window.rawValue)?.title ?? "Selected history"
+    }
+
+    @ViewBuilder
     private func summary(_ prepared: Prepared) -> some View {
-        Section("Ready to share") {
+        Section("Report summary") {
             Text("\(prepared.report.eventCount) events · \(ByteCountFormatter.string(fromByteCount: Int64(prepared.file.byteCount), countStyle: .file))")
             if let start = prepared.report.actualStart, let end = prepared.report.actualEnd {
                 Text("From \(start.formatted(date: .abbreviated, time: .standard))")
