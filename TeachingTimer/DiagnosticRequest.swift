@@ -37,6 +37,21 @@ enum DiagnosticRequest {
         }
     }
 
+    /// Older companions reject an unknown request without a reason. Retrying
+    /// that protocol mismatch cannot help until both app versions are updated.
+    static func failureMessage(reason: String) -> String {
+        switch reason {
+        case "unknown", "update-required", "invalid-request", "invalid-window":
+            "Update Teaching Timer on both devices, then compare their versions."
+        case "busy-or-not-ready":
+            "Watch is busy or still opening. Keep its app open, then retry."
+        case "preparation-failed":
+            "Watch couldn’t prepare the report. Try from Watch Help."
+        default:
+            "Watch couldn’t queue the report. Check connection and retry."
+        }
+    }
+
     enum Outcome: String, Sendable {
         case queued
         case transportNotReady = "transport-not-ready"

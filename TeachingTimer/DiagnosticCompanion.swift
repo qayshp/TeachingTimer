@@ -98,7 +98,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
                 guard self.request.id == id else { return }
                 self.peerBuild = build
                 self.record("Watch reply: \(accepted ? "queued" : reason)")
-                self.status = accepted ? "Report queued on Watch. Waiting for transfer…" : "Watch could not queue report (\(reason)). Open both apps and retry."
+                self.status = accepted ? "Report queued on Watch. Waiting for transfer…" : DiagnosticRequest.failureMessage(reason: reason)
                 if !accepted { self.request.finish(id) }
             }
         }, errorHandler: { error in

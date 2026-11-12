@@ -7,6 +7,12 @@ import Foundation
 
 @main struct DiagnosticRequestChecks {
     @MainActor static func main() async {
+        for reason in ["unknown", "update-required", "invalid-request", "invalid-window"] {
+            precondition(DiagnosticRequest.failureMessage(reason: reason).contains("both devices"),
+                         "A protocol mismatch needs an update, not a retry loop")
+        }
+        precondition(DiagnosticRequest.failureMessage(reason: "preparation-failed").contains("Watch Help"))
+        precondition(!DiagnosticRequest.failureMessage(reason: "future-unrecognized-error").contains("future-unrecognized-error"))
         var pending = DiagnosticRequest.Pending()
         let first = pending.begin()!
         precondition(pending.begin() == nil, "Duplicate requests must be blocked")
