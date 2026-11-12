@@ -1,6 +1,7 @@
 # V1 readiness review — November 2, 2026
 
-This is the active review record. [Current verification](../DEVELOPMENT_STATUS.md)
+This is a dated review record; its support/export observations are historical.
+The [companion record](OPTIONAL_COMPANION.md) documents the later delivery route. [Current verification](../DEVELOPMENT_STATUS.md)
 owns the candidate and installed-build status. The initial review left the
 physical Watch untouched while TestFlight preparation/upload and support setup
 proceeded. The user subsequently authorized a supervised physical owner pilot;

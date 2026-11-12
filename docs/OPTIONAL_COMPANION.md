@@ -63,8 +63,9 @@ A pre-upload icon check found an alpha channel in the iPhone asset. The initial
 run was cancelled before upload, the icon was converted to an opaque format,
 and a regression check was added before the successful run. Only one build was
 uploaded. The temporary exact-branch environment allowance was removed afterward;
-only main remains allowed. PR #29 remains unmerged. Physical installation,
-transfer, email receipt and upgrade preservation are still unverified.
+only main remained allowed. At that checkpoint, PR #29 was unmerged and
+physical installation, transfer, email receipt and upgrade preservation were
+unverified. The later physical result is recorded below.
 
 ## Connection and mail follow-up — November 11
 

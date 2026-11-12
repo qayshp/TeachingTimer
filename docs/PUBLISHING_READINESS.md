@@ -1,6 +1,6 @@
 # Publishing readiness
 
-Reviewed November 5, 2026. The
+Updated November 12, 2026; public invitation last checked November 5. The
 [public invitation](https://testflight.apple.com/join/YA2WSmae) now offers
 **View in TestFlight** and joining instructions. The public group was initially
 configured with a 100-tester cap. Exact eligible-build membership and a new
@@ -20,7 +20,7 @@ records exact revisions and checks.
 
 - [README](../README.md): what the app does, how to obtain/build it, known limits.
 - [First-class guide](TESTER_GUIDE.md): setup, controls, recovery, between classes.
-- [Privacy](PRIVACY.md): local data, optional sharing, unresolved beta export access.
+- [Privacy](PRIVACY.md): local data and optional companion sharing.
 - [Issues](ISSUE_TRACKER.md): distinct symptoms, workarounds and Apple reports.
 - [Contributing](../CONTRIBUTING.md): code layout, checks and device boundaries.
 
@@ -130,7 +130,7 @@ records each checkpoint. At that earlier stage the pilot was manual and owner-on
 or physical update occurred during the initial preparation; the subsequently
 authorized [owner pilot](TESTFLIGHT_PILOT_RESULTS.md) records physical results. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
 The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) now has a configured
-alias and verified incoming/outgoing plain email as of November 2. Native Watch
-and diagnostic attachment delivery remain unverified, separately from ordinary
-email. Limited developer-tool Beta journal access passed during the owner pilot;
-ordinary tester access remains unverified.
+alias and verified incoming/outgoing plain email as of November 2. One physical
+companion diagnostic email was verified November 11. Startup, first-composer,
+update and interruption reliability remain under validation; see the
+[companion record](OPTIONAL_COMPANION.md).

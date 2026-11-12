@@ -1,66 +1,48 @@
 # Private support and diagnostic intake
 
-Updated November 6, 2026. **The approved support alias is configured in the
-existing iCloud mailbox; incoming and outgoing plain email are verified.**
-No mail routing or MX records were changed. The owner has authorized the public
-beta with **description-based support and optional cropped screenshots**, without
-requiring journal attachments. This is not an automatic upload service. Keep public issues limited to sanitized
-descriptions. The harmless incoming test and one authorized outgoing message
-from the alias were received and their contents checked on November 2. Neither
-test included attachments; native Watch and diagnostic attachment delivery remain
-unverified.
+Updated November 12, 2026. The approved support address is
+[teachingtimer@qays.net](mailto:teachingtimer@qays.net) in the existing iCloud
+mailbox. Incoming and outgoing plain email were verified November 2; one
+Watch-to-iPhone-to-support diagnostic attachment was verified November 11.
+No mail routing or MX records were changed. Nothing is uploaded automatically.
 
-## Recommended route
+## Support route
 
-Use [teachingtimer@qays.net](mailto:teachingtimer@qays.net), the configured support
-alias in the existing mailbox. [The public support guide](../SUPPORT.md) is
-source build 30's support QR destination. Initial
-reports should contain a description, app/build and OS versions, approximate
-incident time with time zone, the affected page, playback source/output route if
-relevant, and whether page switching or another recovery helped. No journal or
-system capture is needed for the first message.
+A description and optional cropped screenshot are sufficient for ordinary
+support. Include app/build and OS versions, approximate incident time and time
+zone, affected page, media source/output route if relevant, and whether a
+recovery action helped. Do not require journals for an initial report.
 
-The qays.net alias uses the existing iCloud Mail provider. It can receive reports;
-outgoing plain email from the alias also reached the intended recipient in the
-verified test. Diagnostic attachment delivery remains untested. No MX records
-or inbound mail provider were changed.
+The [public guide](../SUPPORT.md) is the support QR destination. Scanning the
+QR code does not attach diagnostics. Builds with the optional iPhone companion
+can request a selected window on the phone or send a prepared report from
+Watch **Settings → Help → Send diagnostics to iPhone**. The phone's **Email
+support** supplies the recipient and attachment; the user reviews and sends it.
+Other phone export destinations may require manually entering the address.
 
-For the initial public pilot, email is the reporting route. A short description
-is sufficient to open a report; a cropped screenshot can help when available.
-Diagnostic sharing remains a separate, deliberate action. The Watch app continues
-making no automatic uploads, and ordinary testers are not promised journal export.
+The companion keeps only the latest received report, excluded from backup,
+until replaced or deleted. Exact timestamps can reveal teaching/app use.
+Sharing is optional and best done after class. Teaching on the Watch remains
+independent of the phone app.
 
-## Getting journals off the Watch
+## Evidence and limits
 
-Builds preceding the native-sharing pilot have no journal export or upload control. Ordinary Watch Mail,
-the support QR code and the distribution container do not attach app-private
-journals. The November 2 [owner pilot](TESTFLIGHT_PILOT_RESULTS.md) copied all
-three Beta journals through a developer-enabled SE 3 and trusted Mac; that is
-not an ordinary tester's retrieval path.
+- The November 2 developer-enabled Watch/trusted-Mac pilot copied the three
+  Beta journals. That is not an ordinary tester workflow.
+- The November 6 native Watch share-sheet experiment reached Messages compose
+  in Simulator with matching bytes; this did not prove delivery. The owner later
+  received an emailed native Watch report, but entering the support recipient on
+  Watch was too cumbersome, so the optional companion replaced that route.
+- The November 11 companion report reached support as valid schema-1 JSON with
+  85 events. Initial linking and the first Mail sheet needed recovery. One
+  success does not establish startup, update or interruption reliability.
+- [Current build status](../DEVELOPMENT_STATUS.md) and the
+  [companion validation record](OPTIONAL_COMPANION.md) separate availability,
+  installation, transfer and email receipt. Follow-up fixes need device testing.
 
-The [native-sharing owner pilot](DIAGNOSTIC_EXPORT_PLAN.md) adds **Settings → About →
-Share diagnostics**, a time-limited/filtered report, preview and explicit native
-share action, with no upload service or new iPhone companion. The owner approved
-merge after review/CI and an internal TestFlight test after class. Merge/release
-readiness remains in [current status](../DEVELOPMENT_STATUS.md); attachment receipt
-is not yet verified. Public-beta support still accepts descriptions and optional
-cropped screenshots; it does not require journals.
-
-The November 6 SE 3 Simulator probe offered only Messages. A harmless 139-byte
-JSON and a 1,401,371-byte representative report reached compose; staged copies
-matched source hashes and parsed correctly. No recipient was selected or file
-sent, and cancellation returned. This extends the November 2 presentation checks
-without proving delivery. The planned owner TestFlight test will investigate
-physical receipt. Do not
-promise Mail support, a direct-to-support send, or a usable tester export until
-received attachments and the complete intended route are verified.
-
-[Issue #26](https://github.com/qayshp/TeachingTimer/issues/26) tracks physical
-receipt, TestFlight, interruption/offline testing and the delivery decision.
-If native sharing is unreliable or cumbersome, evaluate the plan's explicit
-HTTPS fallback and its privacy obligations before deploying it. Recommend sharing
-after class: native activities may take foreground and end the runtime even
-though report preparation leaves class/session/count state unchanged.
+[Issue #26](https://github.com/qayshp/TeachingTimer/issues/26) tracks remaining
+validation. No HTTPS upload service is planned for the current implementation.
+App reports do not include or collect Apple's system sysdiagnose.
 
 ## Handling a report
 
@@ -104,9 +86,9 @@ actual intake practice; optional support sharing is not automatically exempt.
   the tested developer-enabled Watch/trusted-Mac setup; general tester access
   remains unverified.
 - [x] Public pilot explicitly accepts descriptions and optional cropped
-  screenshots without requiring journal attachments. Native export now has a
-  separate owner-pilot validation path; general tester delivery remains unverified.
+  screenshots without requiring journal attachments. Optional companion export has one verified physical delivery; repeated and
+  general tester delivery remain under validation.
 
-An email route does not itself solve exporting journals from a TestFlight Watch
-app. If developer tools cannot copy that app's container, report the limitation
-and evaluate user-triggered export before inviting testers who need that path.
+The companion route does not require developer tools. If it is unavailable or
+fails, accept a description and screenshot; do not require testers to extract
+app containers or system captures.
