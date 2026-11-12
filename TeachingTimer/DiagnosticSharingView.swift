@@ -68,6 +68,13 @@ struct DiagnosticSharingView: View {
                 }
                 if let failure { Section { Text(failure) } }
             }
+            Section("Connection details") {
+                Text("Version \(DiagnosticCompanion.build)").font(.caption)
+                Text(companion.connection).font(.caption)
+                ForEach(Array(companion.events.enumerated()), id: \.offset) { _, event in
+                    Text(event).font(.caption)
+                }
+            }
             Section("Before sharing") {
                 Text("Includes app and watchOS versions, timestamps, session and interface events, count timing, and error codes. Times can reveal when you taught or used the app.")
                 Text("Excludes song titles, audio, actual volume, saved preference files, and system logs. Unapproved fields and free-form errors are left out.")

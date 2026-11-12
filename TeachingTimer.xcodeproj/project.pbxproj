@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        A10000000000000000000006 = {isa = PBXBuildFile; fileRef = A20000000000000000000004; };
+        A10000000000000000000007 = {isa = PBXBuildFile; fileRef = A20000000000000000000004; };
         A10000000000000000000004 = {isa = PBXBuildFile; fileRef = A20000000000000000000003; };
         A10000000000000000000005 = {isa = PBXBuildFile; fileRef = 200000000000000000000014; };
 
@@ -49,6 +51,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+        A20000000000000000000004 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticRequest.swift; sourceTree = "<group>"; };
         A20000000000000000000003 = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PhoneSupport/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 
         A20000000000000000000001 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticCompanion.swift; sourceTree = "<group>"; };
@@ -122,7 +125,7 @@
                 200000000000000000000028 /* DiagnosticReport.swift */,
                 200000000000000000000029 /* DiagnosticReportFile.swift */,
                 200000000000000000000030 /* DiagnosticSharingView.swift */,
-                A20000000000000000000001, A20000000000000000000002, A20000000000000000000003,
+                A20000000000000000000004, A20000000000000000000001, A20000000000000000000002, A20000000000000000000003,
                 200000000000000000000027 /* WallClockDisplay.swift */,
 				000000000000000000000950,
 				000000000000000000000951,
@@ -278,7 +281,7 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-        A30000000000000000000001 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000002, A10000000000000000000003, ); runOnlyForDeploymentPostprocessing = 0; };
+        A30000000000000000000001 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000007, A10000000000000000000002, A10000000000000000000003, ); runOnlyForDeploymentPostprocessing = 0; };
 
 		700000000000000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -309,6 +312,7 @@
                 100000000000000000000028 /* DiagnosticReport.swift in Sources */,
                 100000000000000000000029 /* DiagnosticReportFile.swift in Sources */,
                 100000000000000000000030 /* DiagnosticSharingView.swift in Sources */,
+                A10000000000000000000006,
                 A10000000000000000000001,
                 100000000000000000000027 /* WallClockDisplay.swift in Sources */,
 			);

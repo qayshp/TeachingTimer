@@ -8,7 +8,7 @@ parent identity. Local Debug/Release retain watch-only packaging.
 ## Flow
 
 The iPhone requests a report only while Watch Connectivity reports the Watch app
-reachable. The explicit phone request prepares the last two hours of filtered diagnostics on the Watch and queues the transfer. The Watch app must be open to prepare the report.
+reachable. The explicit phone request prepares the selected window (last 2 hours, last 24 hours, or all retained events) of filtered diagnostics on the Watch and queues the transfer. The Watch app must be open to prepare the report.
 Watch Settings → Help → Send diagnostics to iPhone prepares a report from read-only
 snapshots. Missing companion status is read after connectivity activation; install
 changes update it. Sending queues a file, with one outstanding transfer allowed.
@@ -65,3 +65,29 @@ and a regression check was added before the successful run. Only one build was
 uploaded. The temporary exact-branch environment allowance was removed afterward;
 only main remains allowed. PR #29 remains unmerged. Physical installation,
 transfer, email receipt and upgrade preservation are still unverified.
+
+## Connection and mail follow-up — November 11
+
+A physical build-32 report reached the support mailbox through the iPhone mail
+composer: valid schema-1 JSON, 58,129 bytes and 85 events. This confirms one
+end-to-end delivery, not universal reliability. The initial companion request
+appeared unresponsive until both apps were force closed. The first mail sheet
+was gray; dismissing and preparing a fresh report recovered it.
+
+The request previously acknowledged receipt before checking provider readiness
+or queueing the file. It now replies only after preparation and a successful
+queue submission, or returns an explicit failure. Queueing is not receipt or
+email delivery. A 60-second UI wait expires honestly without cancelling an
+already queued file. The phone disables duplicate requests while waiting.
+Both apps expose their build and bounded, in-memory connection events; phone
+replies include the Watch build. Connection events also go to the system log,
+with codes rather than free-form errors. They are not added to exported journals.
+The phone rechecks connectivity on foreground activation. The phone time-window
+picker does not change Watch defaults or teaching state.
+
+Mail presentation now uses one immutable draft containing the attachment instead
+of separate presentation/payload state. This removes an empty-sheet state from
+our UI; whether it eliminates the observed gray screen needs physical testing.
+Simulator cannot establish file transfer or configured-Mail delivery. The new
+queue helper has deterministic tests for each window, preparation failure,
+transport refusal, and preparation-before-queue ordering.

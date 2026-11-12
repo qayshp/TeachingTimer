@@ -13,27 +13,33 @@ struct SupportApp: App {
 
 struct SupportView: View {
     @ObservedObject private var companion = DiagnosticCompanion.shared
-    @State private var composing = false
-    @State private var attachment: Data?
+    @State private var draft: MailDraft?
+    @State private var window: DiagnosticCompanion.Window = .lastTwoHours
+    @Environment(\.scenePhase) private var scenePhase
+    private struct MailDraft: Identifiable { let id = UUID(); let data: Data }
     @State private var notice = ""
     var body: some View {
         NavigationStack {
             Form {
                 Section {
                     Text("Teaching Timer").font(.title2)
+                    Text("Version \(DiagnosticCompanion.build)").font(.caption).textSelection(.enabled)
                     Text("Optional support for your independent Watch app. Teaching works without this iPhone app.")
                 }
                 Section("Diagnostics") {
                     Text(companion.status)
                     Button("Check connection") { companion.checkConnection() }
-                    Button("Get diagnostics from Watch") { companion.requestReport() }
-                        .disabled(companion.installed != true)
-                    Text("This requests the last two hours of diagnostics from your Watch. Keep its app open. Reports contain usage timestamps and diagnostic events. Nothing is emailed automatically.")
+                    Picker("Include", selection: $window) {
+                        ForEach(DiagnosticCompanion.Window.allCases) { Text($0.title).tag($0) }
+                    }.disabled(companion.requesting)
+                    Button(companion.requesting ? "Waiting for Watch…" : "Get diagnostics from Watch") { companion.requestReport(window: window) }
+                        .disabled(companion.installed != true || companion.requesting)
+                    Text("This requests the selected diagnostic time window from your Watch. Saved history may be shorter. Keep its app open. Reports contain usage timestamps and diagnostic events. Nothing is emailed automatically.")
                     if let url = companion.received {
                         Button("Email support") {
                             do {
-                                attachment = try Data(contentsOf: url)
-                                if MFMailComposeViewController.canSendMail() { composing = true }
+                                let data = try Data(contentsOf: url)
+                                if MFMailComposeViewController.canSendMail() { draft = MailDraft(data: data) }
                                 else { notice = "Set up an account in Apple Mail to compose support email, or share the saved report with another mail app." }
                             } catch { notice = "Couldn’t read the report. Request it again." }
                         }
@@ -45,14 +51,22 @@ struct SupportView: View {
                     }
                     if !notice.isEmpty { Text(notice) }
                 }
+                Section("Connection details") {
+                    Text(companion.connection).font(.caption).textSelection(.enabled)
+                    if let build = companion.peerBuild { Text("Watch version \(build)").font(.caption) }
+                    ForEach(Array(companion.events.enumerated()), id: \.offset) { _, event in
+                        Text(event).font(.caption).textSelection(.enabled)
+                    }
+                }
                 Section("Privacy") {
                     Text("Transfers stay between your paired devices. Email is sent only when you confirm it in the composer. The latest received report replaces the previous one and is excluded from device backup. Delete it when finished. Recipient copies are separate.")
                     Text("Support: teachingtimer@qays.net")
                 }
             }
             .navigationTitle("Watch support")
-            .sheet(isPresented: $composing) {
-                if let attachment { SupportMail(data: attachment) }
+            .sheet(item: $draft) { draft in SupportMail(data: draft.data) }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { companion.checkConnection() }
             }
         }
     }
