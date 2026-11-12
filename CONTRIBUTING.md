@@ -3,7 +3,9 @@
 Keep changes small and run the checks appropriate to the affected files. For
 documentation-only edits, run `python3 scripts/check-repository.py`; tooling
 changes also need `sh scripts/check-tools.sh`. App, Swift-test or build-input
-changes need `sh scripts/check.sh` plus a Watch Simulator build. The
+changes need `sh scripts/check.sh` plus the affected Simulator build. Companion
+changes also need the `TeachingTimerTestFlight` iPhone Simulator build, which
+compiles its embedded Watch target; avoid forcing a global iPhone SDK. The
 [automation map](docs/AUTOMATION.md) explains how CI selects those checks.
 The bundled `docs/PRIVACY.md` and `LICENSE` are app inputs, even though they are
 documents; changes to them need app verification.
@@ -36,7 +38,10 @@ suppress unrelated warnings just to remove it.
 
 ## Repository layout
 
-- `TeachingTimer/`: production watchOS source, assets and privacy manifest.
+- `TeachingTimer/`: production watchOS source, shared diagnostic transport/model,
+  assets and privacy manifest.
+- `PhoneSupport/`: optional iPhone report-request and email interface. Teaching
+  features must remain independent on the Watch.
 - `TeachingTimer.xcodeproj/` and `Configurations/`: shared project/build settings;
   keep developer-specific Xcode state and signing material out of Git.
 - `Tests/`: deterministic Swift checks, WatchKit boundary doubles and Python
@@ -64,7 +69,8 @@ publish private capture paths as downloadable evidence or commit raw journals.
 ## Preserve these boundaries
 
 - Class schedule, mindfulness runtime, and landmark counting are independent.
-- No HealthKit workaround, iPhone companion, custom media controls, or Crown gesture.
+- No HealthKit workaround, custom media controls, or Crown gesture. The optional
+  iPhone companion is limited to diagnostics; it must not own teaching state.
 - Both hands remain wall-clock hands, discrete at the one-second timeline cadence,
   above controls. Never animate them with a high-frequency sweep.
 - Count scheduling uses absolute `ContinuousClock` deadlines and a per-run ID.
