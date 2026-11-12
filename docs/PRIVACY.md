@@ -97,6 +97,6 @@ retained in backups may have separate lifetimes.
 
 Share only necessary details. The maintainer will ask before forwarding raw
 private evidence to Apple or another party. Opening email support does not establish attachment delivery. In the Watch app,
-**Settings → About → Contact support** shows the address and QR code for the
+**Settings → Help → Contact support** shows the address and QR code for the
 reporting steps. The [public issue form](https://github.com/qayshp/TeachingTimer/issues/new/choose)
 remains available for sanitized descriptions.
