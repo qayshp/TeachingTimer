@@ -163,5 +163,6 @@ Teaching remains independent on the Watch. The optional iPhone app can request a
 report while the Watch app is open, or the Watch can send one from
 **Settings → Help → Send diagnostics to iPhone**. On iPhone, **Email support** prefills the support address and attaches
 the received report. The Watch share sheet is removed in this development change.
-Physical transfer, email receipt and upgrade preservation still require validation.
+One physical Watch-to-phone-to-support-email delivery is verified. Startup,
+mail presentation, and upgrade reliability remain under validation.
 See [companion validation](docs/OPTIONAL_COMPANION.md).

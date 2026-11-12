@@ -91,3 +91,17 @@ our UI; whether it eliminates the observed gray screen needs physical testing.
 Simulator cannot establish file transfer or configured-Mail delivery. The new
 queue helper has deterministic tests for each window, preparation failure,
 transport refusal, and preparation-before-queue ordering.
+
+## Maintainer follow-up release — November 11
+
+**1.0 (261111.1849.33)** is available to Maintainers from source
+`ee83fb446e4b2e70d79a1ce4ed522d8493fb551d`.
+[Release run 43144012103](https://github.com/qayshp/TeachingTimer/actions/runs/43144012103)
+passed 16 Swift suites, 277 Python tests, repository/QR/helper checks, the booted
+SE 3 40 mm and Ultra 4 49 mm lifecycle matrix, and unsigned archive checks.
+Signed archive/export/upload passed. Apple processing was VALID; testing notes,
+Maintainer group membership and IN_BETA_TESTING were read back. Availability was
+confirmed at 19:14:05 PST, approximately 97 seconds after upload completed.
+The temporary branch release allowance was removed; only main remains allowed.
+No physical installation or new-build delivery test was performed by the agent.
+PR #29 remains unmerged. Recheck both installed version labels after updating.
