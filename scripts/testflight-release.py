@@ -38,6 +38,15 @@ class ReleaseError(Exception):
     pass
 
 
+class APIError(ReleaseError):
+    """Safe routing context; never retains credentials or server response bodies."""
+    def __init__(self, status, method, path):
+        super().__init__('App Store Connect returned HTTP ' + str(status))
+        self.status = status
+        self.method = method
+        self.path = path
+
+
 def now():
     return datetime.now(timezone.utc).isoformat()
 
@@ -94,7 +103,7 @@ class Apple:
                     self.sleep(min(30, max(1, int(retry))) if retry.isdigit() else 2 ** attempt)
                     continue
                 # Do not store arbitrary server response bodies or request headers.
-                raise ReleaseError('App Store Connect returned HTTP ' + str(error.code)) from None
+                raise APIError(error.code, method, url[len(API):].split('?', 1)[0]) from None
             except (URLError, TimeoutError):
                 raise ReleaseError('App Store Connect connection failed; resume the recorded release') from None
         raise ReleaseError('API retry limit reached')
@@ -278,9 +287,22 @@ def publish_metadata(apple, journal, notes, timeout, interval, sleep=time.sleep,
         apple.set_notes(identifier, notes)
         wait_for(journal, 'notes_verified', lambda: (apple.notes(identifier) or {}).get('attributes', {}).get('whatsNew') == notes,
                  bool, lambda _: False, timeout, interval, sleep, clock)
+    def assigned():
+        try:
+            # assign checks membership before any write, including each retry.
+            apple.assign(identifier)
+        except APIError as error:
+            if (error.status == 404 and error.method == 'POST'
+                    and error.path == 'betaGroups/' + GROUP_ID + '/relationships/builds'):
+                # Observed just after VALID: a later metadata-only resume worked.
+                # A missing destination (GET 404), auth error or other mutation
+                # failure remains fatal. Never repeat the upload here.
+                journal.observe('assignment_not_yet_available', error.status)
+                return False
+            raise
+        return apple.group_contains(identifier)
     with journal.stage('maintainer_assignment'):
-        apple.assign(identifier)
-        wait_for(journal, 'group_verified', lambda: apple.group_contains(identifier), bool, lambda _: False,
+        wait_for(journal, 'group_verified', assigned, bool, lambda _: False,
                  timeout, interval, sleep, clock)
     with journal.stage('testflight_availability'):
         wait_for(journal, 'internal_testing', lambda: apple.testing_state(identifier),

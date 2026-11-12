@@ -565,8 +565,13 @@ as public artifacts. The report's `installed` field remains false.
 Polling defaults to 15 seconds with a bounded wait. `availabilityConfirmedAt`
 means first observed server-side readiness after notes/group readback; it is not
 an exact server transition, client refresh, Watch download or installation time.
-Apple failure/compliance states stop the release visibly. No processing timeout
-or failed request is reported as success.
+Apple failure/compliance states stop the release visibly. A 404 from the specific
+Maintainer build-assignment POST just after processing is retried within the
+existing deadline, with membership rechecked before each write. Destination GET
+failures, authentication errors and other mutation errors still stop immediately.
+The November 12 observed assignment failure recovered through metadata-only
+resume; tests now cover that narrow retry. No processing timeout or failed
+request is reported as success.
 
 An interrupted or failed upload is never blindly repeated. The report preserves
 whether the upload command actually succeeded. After a successful upload, the

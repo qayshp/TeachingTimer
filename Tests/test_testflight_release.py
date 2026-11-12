@@ -135,6 +135,49 @@ class ReleaseChecks(unittest.TestCase):
                 release.publish_metadata(apple, journal, 'Notes', 30, 15, clock.sleep, clock)
             self.assertNotEqual(journal.data['status'], 'available')
 
+    def test_assignment_404_after_valid_processing_recovers_without_new_upload(self):
+        with tempfile.TemporaryDirectory() as folder:
+            journal = self.journal(folder); apple = FakeApple(); clock = FakeClock()
+            assign = apple.assign; attempts = []
+            def eventual(identifier):
+                attempts.append(identifier)
+                if len(attempts) == 1:
+                    raise release.APIError(404, 'POST', 'betaGroups/' + release.GROUP_ID + '/relationships/builds')
+                assign(identifier)
+            apple.assign = eventual
+            release.publish_metadata(apple, journal, 'Notes', 60, 15, clock.sleep, clock)
+            self.assertEqual(clock.value, 15)
+            self.assertEqual(attempts, ['build-42', 'build-42'])
+            self.assertEqual(journal.data['status'], 'available')
+            self.assertEqual(apple.writes, 2)  # One notes write and one assignment.
+            self.assertFalse(journal.data['uploaded'])  # Metadata never uploads.
+
+    def test_assignment_404_retry_is_bounded_and_recorded(self):
+        with tempfile.TemporaryDirectory() as folder:
+            journal = self.journal(folder); apple = FakeApple(); clock = FakeClock()
+            def unavailable(_):
+                raise release.APIError(404, 'POST', 'betaGroups/' + release.GROUP_ID + '/relationships/builds')
+            apple.assign = unavailable
+            with self.assertRaisesRegex(release.ReleaseError, 'group_verified timed out'):
+                release.publish_metadata(apple, journal, 'Notes', 31, 15, clock.sleep, clock)
+            self.assertEqual(clock.value, 31)
+            self.assertEqual(journal.data['stages'][-1]['status'], 'failed')
+            self.assertEqual(len([o for o in journal.data['observations'] if o['kind'] == 'assignment_not_yet_available']), 4)
+            self.assertNotEqual(journal.data['status'], 'available')
+
+    def test_other_assignment_errors_are_not_retried(self):
+        path = 'betaGroups/' + release.GROUP_ID + '/relationships/builds'
+        for status, method, resource in [(403, 'POST', path), (409, 'POST', path), (500, 'POST', path),
+                                         (404, 'GET', path), (404, 'POST', 'other')]:
+            with self.subTest(status=status, method=method, path=resource), tempfile.TemporaryDirectory() as folder:
+                journal = self.journal(folder); apple = FakeApple(); clock = FakeClock()
+                def rejected(_):
+                    raise release.APIError(status, method, resource)
+                apple.assign = rejected
+                with self.assertRaises(release.APIError):
+                    release.publish_metadata(apple, journal, 'Notes', 60, 15, clock.sleep, clock)
+                self.assertEqual(clock.value, 0)
+
     def test_invalid_build_numbers(self):
         for value in ['0','-1','42; echo nope','42\n','00042','1.0','1234567890','nan','261104.1602.0']:
             with self.subTest(value=value), self.assertRaises(release.ReleaseError): release.build_number(value)
@@ -190,6 +233,8 @@ class APIchecks(unittest.TestCase):
             opener=Opener();clock=FakeClock();apple=release.Apple(lambda:'secret-token',opener,clock.sleep)
             with self.assertRaisesRegex(release.ReleaseError,'HTTP 429') as error: apple.request(method,'builds')
             self.assertEqual(opener.calls,count)
+            self.assertIsInstance(error.exception, release.APIError)
+            self.assertEqual((error.exception.status, error.exception.method, error.exception.path), (429, method, 'builds'))
             self.assertNotIn('secret-token',str(error.exception));self.assertNotIn('private',str(error.exception))
 
     def test_notes_create_update_and_noop(self):
