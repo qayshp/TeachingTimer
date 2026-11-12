@@ -11,7 +11,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | --- | --- |
 | External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
 | Public invitation, checked November 5 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae) now offers **View in TestFlight** and joining instructions. Initial configured limit: 100. The public page does not expose the eligible build/version; a new external tester's installation remains unverified. |
-| Latest verified internal TestFlight release | **1.0 (261112.0129.36)**, source `37f7ff64a6ae`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43191773551) passed app verification, signing, upload and Apple processing, then received HTTP 404 at group assignment. A metadata-only resume confirmed Maintainer membership and `IN_BETA_TESTING` November 12 at 01:55:07 PST, without another upload. Adds request isolation, validated saved reports and clearer phone UI. This is availability, not a confirmed installation. |
+| Latest verified internal TestFlight release | **1.0 (261112.0232.39)**, source `16a38f1d9067`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43201277099) passed verification, signing/export, upload, Apple `VALID`, notes/group readback and Maintainer `IN_BETA_TESTING`, available November 12 at 02:56:32 PST. Adds the shorter Help/support flows, dedicated scan pages and clearer phone report actions. Availability does not establish installation. |
 | First hosted internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). Subsequent app-affecting main pushes publish through the same gated workflow. |
 | Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. TestFlight `1.0 (261104.1939.6)` includes the change; the owner reports song progress still freezes. Isolation alone did not fix the issue. |
 | Physical Watch / companion | The owner matched both devices to **261108.1359.32** after reinstalling the Watch app. After force closing both apps, a phone-requested report reached support: 58,129 bytes / 85 events, matching that build. Initial linking and a gray Mail sheet required recovery. Latest follow-up build installation remains unconfirmed. |
@@ -75,7 +75,10 @@ received reports, offers ordinary email without a report and confirms deletion.
 Local Simulator builds and model/tool checks pass; the interactive OCR-driven run
 was incomplete after a helper timeout. Direct screen inspection and a decoded
 SE 3 Support QR are recorded in the [review](docs/REVIEW_2026-11-12.md#follow-up-page-usability).
-This source follow-up does not establish a new physical installation.
+[Hosted app checks](https://github.com/qayshp/TeachingTimer/actions/runs/43201276938),
+[CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/43201276336), and the
+release workflow all passed at `16a38f1d9067`. Build 261112.0232.39 is available
+to Maintainers. No new physical installation is established.
 
 ## Optional companion — November 12
 
