@@ -34,17 +34,18 @@ An installation by a new external tester has not yet been verified.
 Open the link on your paired iPhone with Apple's TestFlight app,
 then install **Teaching Timer Beta** on your Watch. The app targets watchOS 26
 or later; the latest physical pilot used watchOS 27.2. Teaching Timer requires
-no app account or iPhone companion interface. Read the
+no app account; the optional iPhone interface is only for diagnostics. Read the
 [first-class guide](docs/TESTER_GUIDE.md) and [privacy notes](docs/PRIVACY.md).
-Initial feedback can be a description or cropped screenshot; no journal export
-is required or promised. To build from source, use the instructions below.
+Initial feedback can be a description or cropped screenshot; journal attachments
+are optional. To build from source, use the instructions below.
 
-**Owner-pilot validation:** [private diagnostic sharing (#26)](https://github.com/qayshp/TeachingTimer/issues/26)
-adds report preparation and native file sharing under Settings → About. The owner
-approved an internal TestFlight test after review and CI. Simulator file handoff
-is verified; recipient delivery is not. See [current build status](DEVELOPMENT_STATUS.md)
-for availability; general testers are not required to send journals.
-See the [implementation and validation plan](docs/DIAGNOSTIC_EXPORT_PLAN.md).
+**Optional diagnostic support:** builds with the iPhone companion can request a
+report on the phone or send one from Watch **Settings → Help → Send diagnostics
+to iPhone**. The phone's **Email support** prefills the recipient and attachment.
+One physical delivery to support is verified; startup, update and first-composer
+reliability remain under validation in [#26](https://github.com/qayshp/TeachingTimer/issues/26).
+Check [current build status](DEVELOPMENT_STATUS.md) for availability; a description
+or screenshot is enough for ordinary support. [Companion guide](docs/OPTIONAL_COMPANION.md).
 
 1. Tap **Start class**, check **Suggested time**, then confirm the 60-minute class.
    **Custom schedule** changes only this class: adjust its start and choose 60 or
@@ -157,12 +158,12 @@ form and keep raw device logs and personal diagnostics out of public reports.
 
 Current remaining work and physical/TestFlight gates: [active roadmap](docs/ROADMAP.md).
 
-### Optional iPhone support companion (development)
+### Optional iPhone support companion
 
 Teaching remains independent on the Watch. The optional iPhone app can request a
 report while the Watch app is open, or the Watch can send one from
 **Settings → Help → Send diagnostics to iPhone**. On iPhone, **Email support** prefills the support address and attaches
-the received report. The Watch share sheet is removed in this development change.
+the received report. The Watch share sheet has been replaced by this phone route.
 One physical Watch-to-phone-to-support-email delivery is verified. Startup,
 mail presentation, and upgrade reliability remain under validation.
 See [companion validation](docs/OPTIONAL_COMPANION.md).

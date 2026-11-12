@@ -1,7 +1,6 @@
 # Privacy and diagnostics
 
-Policy updated November 8, 2026 for the optional iPhone support companion.
-Physical file transfer and email delivery remain under owner-pilot validation.
+Policy updated November 12, 2026 for the optional iPhone support companion.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does
@@ -33,19 +32,24 @@ lifetimes. End class clears current class timing; it does not erase diagnostics.
 Removing the app removes its local container; previously exported copies and
 system/backup copies are outside that operation.
 
+Connection diagnostics show recent activation, reachability, request and transfer
+events on each device. These bounded in-memory events also go to Apple’s local
+system log. They are not added to exported reports; no automatic support upload
+is performed.
+
 ## Sharing is a separate choice
 
 **Settings → Help → Send diagnostics to iPhone** prepares a filtered report.
 The iPhone support app is optional; teaching remains independent on the Watch.
-An explicit request from the iPhone collects the last two hours while the Watch
-app is open. Alternatively, review and send a selected interval from Watch Help. Watch Connectivity transfers it to
+An explicit request from the iPhone collects the selected interval (last 2 hours,
+last 24 hours, or all retained events) while the Watch app is open. Alternatively, review and send a selected interval from Watch Help. Watch Connectivity transfers it to
 the paired companion; no developer server receives it. The phone keeps the latest
 received report in local application support, excluded from backup, until replaced,
 deleted using the app, or the app is removed. Email support opens a composer with
 our address and the report attached; the user reviews and sends it. A configured
 Apple Mail account is needed for that composer. Phone file export is available
 for other mail apps. Neither an opened composer nor completed device transfer
-establishes email delivery. Physical transfer and email delivery remain unverified.
+establishes email delivery.
 
 The report includes app/build/OS versions, exact event timestamps, class/session
 and interface state, count timing and selected error codes. Generated run IDs

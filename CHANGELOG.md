@@ -4,6 +4,19 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## November 12, 2026 — optional phone support and reliable report status
+
+- Watch **Settings → Help → Send diagnostics to iPhone** replaces the Watch
+  share sheet. Teaching stays independent of the optional phone app.
+- Choose 2 hours, 24 hours or all retained events on either device. Phone
+  **Email support** supplies the recipient and attachment for review.
+- Show builds, connection details, report age/window and explicit queue/failure
+  states. Delayed reports and callbacks cannot complete a newer request.
+- Validate incoming and restored report files before offering them for email.
+  Present the mail composer together with its attachment.
+- Align PR/release toolchains and add companion compilation and report regressions
+  to CI. Physical follow-up remains needed; see [status](DEVELOPMENT_STATUS.md).
+
 ## November 6, 2026 — private diagnostic-sharing pilot
 
 - Added **Settings → About → Share diagnostics**: choose a time window,

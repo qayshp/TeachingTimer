@@ -1,22 +1,15 @@
 # Diagnostic sharing and delivery plan
 
-Updated November 6, 2026. **The owner approved merging after review and CI, then
-using the internal TestFlight build for classroom and journal-sharing validation.**
-Merge/release readiness is tracked in [current status](../DEVELOPMENT_STATUS.md).
-No received attachment has yet been validated;
-[issue #26](https://github.com/qayshp/TeachingTimer/issues/26) remains open.
-General testers can still use [description-based private support](../SUPPORT.md).
-See the [validation record](DIAGNOSTIC_SHARING_VALIDATION.md) for completed checks
-and the limits of the current evidence.
+Current implementation and physical validation are documented in the
+[optional companion guide](OPTIONAL_COMPANION.md) and [support steps](../SUPPORT.md).
+One Watch-to-phone-to-email report was received and validated November 11.
+[#26](https://github.com/qayshp/TeachingTimer/issues/26) remains open for reliability
+and upgrade validation. The optional companion supersedes the original native
+Watch sharing proposal below: manual recipient entry proved unsuitable.
 
-## November 8 development follow-up
-
-The optional [iPhone support companion](OPTIONAL_COMPANION.md) supersedes the native
-Watch sharing proposal below. The owner found manual recipient entry unsuitable;
-the physical Watch offered both Mail and Messages, without a prefilled recipient.
-The original staging evidence remains historical. The new companion keeps teaching
-independent and supplies pre-addressed email on the phone; physical delivery remains
-an open gate. The Watch share sheet is removed in the companion branch.
+Everything below is the **historical November 6 design**, retained to explain
+that decision. Its proposed UI, alternatives and unverified-delivery statements
+do not describe current companion-enabled builds.
 
 ## Original decision and evidence
 

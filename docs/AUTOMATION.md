@@ -122,8 +122,9 @@ This provision was necessary because the first Xcode 27.2 hosted image had the
 Watch SDK but **no Watch runtime**. The first attempt correctly failed before
 signing or uploading. Download logs and before/after inventories are retained;
 no laptop platforms, physical devices, accounts or license agreements are changed.
-CI timeouts include this dependency step. The macOS 26 runner checks its selected
-SDK/runtime; the release runner checks Xcode 27.2. Local smoke uses the already
+CI timeouts include this dependency step. Both PR/main verification and release verification use the xcode-27 hosted
+runner with Xcode 27.2 explicitly selected. The older default-runner failure
+remains recorded under #27; alignment is not a runtime bug fix. Local smoke uses the already
 installed newest compatible runtime and never downloads one.
 
 Python tests cover runtime selection, missing-runtime failure, stale/wrong-page
@@ -303,3 +304,15 @@ The owner subsequently confirmed build 42 installed through the paired iPhone's
 TestFlight app without a developer connection. This separate delivery result is
 recorded with the release evidence; unattended automatic-update timing remains
 unestablished and is not included in CI's server-readiness measurements.
+
+## Companion regression coverage
+
+The shared verification entry point also builds the real iPhone support app and
+embedded Watch app for Simulator using a generic iOS Simulator destination.
+It deliberately avoids a global iPhone SDK override, which would miscompile the
+Watch target. Both PR checks and release verification execute this step.
+`DiagnosticRequestChecks` exercises real report-builder output, request retry
+isolation, stale/unsolicited receipt, preparation-before-queue ordering, failed
+queue/preparation, malformed/oversized input and corrupted saved-report rejection.
+These tests run in the regular Swift CI suite; they do not establish paired-device
+file delivery or native Mail delivery. Those remain physical validation gates.

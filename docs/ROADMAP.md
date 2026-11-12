@@ -1,6 +1,6 @@
 # Active roadmap
 
-Updated November 6, 2026 after the compiler, UI and hosted Simulator follow-up. GitHub issues own the task
+Updated November 12, 2026 after the companion and CI consistency review. GitHub issues own the task
 checklists; this page owns their order. [Current status](../DEVELOPMENT_STATUS.md)
 owns build, installation and distribution facts.
 
@@ -13,7 +13,7 @@ owns build, installation and distribution facts.
 | P1 — [#27](https://github.com/qayshp/TeachingTimer/issues/27) | Awake-relaunch runtime rejection | Compare cold/running-process relaunch timing against the captured hosted failure; verify a bounded correction without weakening the runtime assertion. |
 | P1 — [#10](https://github.com/qayshp/TeachingTimer/issues/10) | Release-critical hardware validation | Supervised media/route/count checks, teaching-length renewal and battery results, readable controls and accessibility. Requires coordinated physical use. |
 | P1 — [#11](https://github.com/qayshp/TeachingTimer/issues/11) | External beta installation | The public invitation now offers joining instructions. Verify exact eligible build and one new tester's install/update/support experience; internal-owner success is separate. |
-| P1 — [#26](https://github.com/qayshp/TeachingTimer/issues/26) | Private tester journal sharing | Validate harmless native attachment delivery, then implement bounded report export or an explicitly approved private upload route. [Proposed design](DIAGNOSTIC_EXPORT_PLAN.md); no export is shipped. |
+| P1 — [#26](https://github.com/qayshp/TeachingTimer/issues/26) | Private tester journal sharing | Optional companion and filtered report export implemented; one physical email delivery verified. Retest startup, request retries, first Mail composition and upgrade preservation. [Validation](OPTIONAL_COMPANION.md). |
 | P1 — [#14](https://github.com/qayshp/TeachingTimer/issues/14) | Contribution and release safeguards | Main still has no required-check enforcement. Define a practical recovery/bypass policy; retain durable source tags/notes after workflow artifacts expire. |
 | P2 — [#24](https://github.com/qayshp/TeachingTimer/issues/24) | Release order and verification reuse | Avoid overlapping publishers, reduce duplicate Mac verification, and handle decreasing Pacific-local numbers at daylight-saving fall-back. Synthetic numbering failure is confirmed; no rejected upload is claimed. |
 | P2 — [#17](https://github.com/qayshp/TeachingTimer/issues/17) | Transient missing Simulator controls | Keep original early/delayed captures and separate capture timing, dim state and actual missing pixels. Current count/Lock OCR warnings were hand occlusion; early multi-size captures still merit follow-up. |
@@ -91,5 +91,5 @@ No test, physical installation or automatic monitor is scheduled by this roadmap
 - [Changelog](../CHANGELOG.md) summarizes changes for testers;
   [publishing readiness](PUBLISHING_READINESS.md) retains release gates.
 
-Continue to preserve the standalone watchOS scope, native media/volume controls,
+Continue to preserve independent Watch teaching with optional phone support, native media/volume controls,
 monotonic count timing, explicit Stop intent and independent class context.

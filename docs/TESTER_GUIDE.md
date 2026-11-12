@@ -95,9 +95,10 @@ an empty native media view from a black page. Do not interrupt teaching merely
 to gather evidence. [Email support](../SUPPORT.md) with a short description, or
 use the [issue tracker](ISSUE_TRACKER.md) for a sanitized public report. Never
 post raw journals or system logs publicly. See [privacy and diagnostics](PRIVACY.md).
-The initial public beta accepts descriptions and cropped screenshots without
-journal attachments. There is no tester-facing journal export; do not attempt
-developer-tool collection merely to report a problem.
+A description or cropped screenshot is enough. Builds with the optional iPhone
+companion also support private report transfer and pre-addressed email; see the
+[reporting steps](../SUPPORT.md#optional-iphone-diagnostics-companion). Older public
+builds may lack that feature. No developer tools are needed.
 
 The [current limitations](../DEVELOPMENT_STATUS.md) remain part of the beta.
 The [distribution record](TESTFLIGHT_PREPARATION.md) separates owner-pilot results
@@ -111,6 +112,5 @@ data and sharing, with the full policy bundled offline. **About** shows the runn
 version/build, private support contact, source code and the complete MPL 2.0 license.
 Website destinations show an address and a QR code to scan with your phone. Public
 GitHub issues are for sanitized reports, not raw journals or system logs.
-There is currently no in-app journal export or upload. A support link or QR code
-does not send diagnostics; begin with a description and arrange any file sharing
-with the maintainer separately.
+**Help → Send diagnostics to iPhone** offers report preparation and transfer on
+companion-enabled builds. A support link or QR code itself sends no diagnostics.

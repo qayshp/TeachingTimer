@@ -20,26 +20,33 @@ the Watch and scan the QR code with your phone. On an earlier build, use the
 email address above directly. Then use your usual email app to send a description.
 No GitHub account is required to email support.
 
-A generally validated journal-sharing route is not yet established. Scanning
-the support QR code or sending an email does not attach journals. If more evidence would help, the
-maintainer will explain what is needed and arrange a private route for files
-you can obtain. The maintainer retrieved TestFlight journals using a trusted
-Mac and a developer-enabled Watch, but this is not an ordinary tester export
-path. Native Watch attachment delivery is still being evaluated; you are not
-expected to extract these files yourself.
+Scanning the support QR code does not attach journals. No developer connection
+is needed to send a description.
 
-## Optional iPhone diagnostics companion (development)
+## Optional iPhone diagnostics companion
 
-The follow-up in [issue #26](https://github.com/qayshp/TeachingTimer/issues/26)
-replaces the Watch share sheet with **Settings → Help → Send diagnostics to iPhone**.
-The optional iPhone app can request the last two hours while the Watch app is open.
-On the phone, **Email support** supplies the address and attachment using Apple Mail.
-If Mail is not configured, use phone export with another mail app. Nothing is
-emailed automatically. Installation status is checked separately from connectivity.
+If your installed build includes the companion, open Teaching Timer on both
+paired devices. On iPhone, choose **Last 2 hours**, **Last 24 hours**, or **All
+retained events**, then **Get diagnostics from Watch**. Alternatively, use
+Watch **Settings → Help → Send diagnostics to iPhone** to prepare, preview and
+send a report. Teaching works without the phone app.
 
-See [companion validation](docs/OPTIONAL_COMPANION.md). Device transfer, email
-receipt and the TestFlight packaging upgrade remain unverified. Until those gates
-pass, use email descriptions and optional screenshots for ordinary support.
+On iPhone, check the saved report's preparation time and selected window, then
+choose **Email support**. Apple Mail supplies our address and the attachment;
+review the message and send it. If Mail is not configured, **Export received
+report…** offers other apps, where you may need to enter the support address.
+Nothing is emailed automatically. Delete the received report when finished.
+
+If a request fails, compare the phone's build at the top with Watch **Settings →
+About**. **Connection details** helps distinguish installation, reachability,
+queueing and receipt. Keep the Watch app open for a phone request. A delayed
+report can still arrive after the wait expires; check its preparation time.
+
+One complete physical delivery to support was verified November 11. Initial
+linking and first Mail presentation needed recovery in that test; follow-up
+fixes still need physical validation. See [build availability](DEVELOPMENT_STATUS.md)
+and [companion validation](docs/OPTIONAL_COMPANION.md). Older public builds may
+lack these controls; ordinary support never requires a journal attachment.
 
 ## Public reports and known issues
 

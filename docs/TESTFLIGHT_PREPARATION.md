@@ -59,7 +59,10 @@ migrate the development app's data. Do not remove the development app to test it
 Apple's installed Xcode 27.2 Watch-only template includes an empty
 `com.apple.product-type.application.watchapp2-container` target. Build 28 follows
 that packaging: an iOS distribution stub embeds the single-target Watch app.
-There is no iPhone app UI, companion functionality, or additional source code.
+That description applies to the original watch-only package. Since PR #29, the
+same parent bundle is a real optional iPhone support app. The embedded Watch
+declares independent execution; the companion handles diagnostics only. See
+[companion packaging and validation](OPTIONAL_COMPANION.md).
 The Watch retains `WKWatchOnly = YES`, its mindfulness mode, and no
 `WKCompanionAppBundleIdentifier`. The outer identifier is the Watch identifier's
 prefix. This refines the earlier proposed bare `net.qays.TeachingTimer` Watch ID;

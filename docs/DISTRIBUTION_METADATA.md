@@ -61,8 +61,9 @@ absence of an app account. The detailed draft below and the separate
 [runtime-use inquiry](#runtime-use-briefing-for-apple--not-submitted) were not
 submitted as standalone requests; no Apple intended-use guidance has been received.
 
-Teaching Timer Beta is a Watch-only clock for yoga teachers. Its iOS container
-packages the Watch app; there is no iPhone interface, app login or test account.
+Teaching Timer Beta is a Watch-first clock for yoga teachers. The optional iPhone
+interface requests diagnostic reports and prepares support email; it is not
+required for teaching. No app login or test account is required.
 Clock and count features work without music. No workout or HealthKit access is used.
 
 1. Open the Watch app. Tap **Start class**, check the suggested quarter-hour and

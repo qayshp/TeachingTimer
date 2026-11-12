@@ -138,3 +138,4 @@ remain stable. Raw journals, private device captures, generated builds and signe
 checkpoints belong in ignored local storage; they are not public documentation.
 
 - [Optional iPhone support companion](OPTIONAL_COMPANION.md): transfer flow and remaining physical validation.
+- [November 12 companion and CI review](REVIEW_2026-11-12.md) — consistency fixes and regression coverage.
