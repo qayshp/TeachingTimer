@@ -22,11 +22,14 @@ struct SupportView: View {
         NavigationStack {
             Form {
                 Section {
-                    Text("Teaching Timer").font(.title2)
-                    Text("Version \(DiagnosticCompanion.build)").font(.caption).textSelection(.enabled)
-                    Text("Optional support for your independent Watch app. Teaching works without this iPhone app.")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Teaching Timer").font(.title2)
+                        Text("Version \(DiagnosticCompanion.build)").font(.caption).textSelection(.enabled)
+                        Text("Optional support for your Watch. Teaching works without this iPhone app.")
+                            .font(.subheadline)
+                    }
                 }
-                Section("Diagnostics") {
+                Section {
                     Text(companion.status)
                     Button("Check connection") { companion.checkConnection() }
                     Picker("Include", selection: $window) {
@@ -34,11 +37,24 @@ struct SupportView: View {
                     }.disabled(companion.requesting)
                     Button(companion.requesting ? "Waiting for Watch…" : "Get diagnostics from Watch") { companion.requestReport(window: window) }
                         .disabled(companion.installed != true || companion.requesting)
-                    Text("This requests the selected diagnostic time window from your Watch. Saved history may be shorter. Keep its app open. Reports contain usage timestamps and diagnostic events. Nothing is emailed automatically.")
-                    if let url = companion.received {
+                } header: {
+                    Text("Diagnostics")
+                } footer: {
+                    Text("Keep the Watch app open. Saved history may be shorter than the selected window. Reports contain usage timestamps and diagnostic events. Nothing is emailed automatically.")
+                }
+                if let url = companion.received {
+                    Section("Saved report") {
+                        if let summary = companion.receivedSummary {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Prepared \(summary.generatedAt.formatted(date: .abbreviated, time: .shortened))")
+                                Text("\(summary.window.title) · \(summary.events) events")
+                                Text("Watch build \(summary.build)")
+                            }.font(.caption)
+                        }
                         Button("Email support") {
+                            notice = ""
                             do {
-                                let data = try Data(contentsOf: url)
+                                let data = try DiagnosticInbox.read(url)
                                 if MFMailComposeViewController.canSendMail() { draft = MailDraft(data: data) }
                                 else { notice = "Set up an account in Apple Mail to compose support email, or share the saved report with another mail app." }
                             } catch { notice = "Couldn’t read the report. Request it again." }
@@ -49,13 +65,15 @@ struct SupportView: View {
                             catch { notice = "Couldn’t delete the report. Try again." }
                         }
                     }
-                    if !notice.isEmpty { Text(notice) }
                 }
-                Section("Connection details") {
-                    Text(companion.connection).font(.caption).textSelection(.enabled)
-                    if let build = companion.peerBuild { Text("Watch version \(build)").font(.caption) }
-                    ForEach(Array(companion.events.enumerated()), id: \.offset) { _, event in
-                        Text(event).font(.caption).textSelection(.enabled)
+                if !notice.isEmpty { Section { Text(notice) } }
+                Section {
+                    DisclosureGroup("Connection details") {
+                        Text(companion.connection).font(.caption).textSelection(.enabled)
+                        if let build = companion.peerBuild { Text("Watch version \(build)").font(.caption) }
+                        ForEach(Array(companion.events.enumerated()), id: \.offset) { _, event in
+                            Text(event).font(.caption).textSelection(.enabled)
+                        }
                     }
                 }
                 Section("Privacy") {

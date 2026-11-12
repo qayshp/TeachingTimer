@@ -14,17 +14,17 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
     @Published var status = "Checking companion…"
     @Published var installed: Bool?
     typealias Window = DiagnosticRequest.Window
-    static var build: String {
+    nonisolated static var build: String {
         let info = Bundle.main.infoDictionary ?? [:]
         return "\(info["CFBundleShortVersionString"] as? String ?? "?") (\(info["CFBundleVersion"] as? String ?? "?"))"
     }
     @Published private(set) var connection = "Activating…"
     @Published private(set) var events: [String] = []
-    @Published private(set) var requesting = false
+    @Published private var request = DiagnosticRequest.Pending()
+    var requesting: Bool { request.id != nil }
     @Published private(set) var peerBuild: String?
     var prepareReport: (@MainActor (Window) async throws -> URL)?
     private let logger = Logger(subsystem: "net.qays.TeachingTimer", category: "DiagnosticCompanion")
-    private var requestID: UUID?
 
     private func record(_ event: String) {
         logger.notice("\(event, privacy: .public)")
@@ -35,16 +35,19 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
     }
     private var preparing = false
     @Published var received: URL?
+    @Published private(set) var receivedSummary: DiagnosticInbox.Summary?
     private var transport: WCSession?
     var pendingFiles: Set<URL> { Set(transport?.outstandingFileTransfers.map { $0.file.fileURL } ?? []) }
-
 
     override private init() {
         super.init()
 #if os(iOS)
         if let folder = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
             let url = folder.appendingPathComponent("TeachingTimer-diagnostics.json")
-            if FileManager.default.fileExists(atPath: url.path) { received = url }
+            if let data = try? DiagnosticInbox.read(url) {
+                received = url
+                receivedSummary = try? DiagnosticInbox.summary(data)
+            }
         }
 #endif
         guard WCSession.isSupported() else { status = "Companion connection unavailable."; return }
@@ -69,10 +72,10 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
         guard let transport, transport.activationState == .activated else { return }
 #if os(watchOS)
         installed = transport.isCompanionAppInstalled
-        status = installed == true ? "Ready to send to iPhone." : "Install Teaching Timer on your iPhone to email reports. The phone app is optional for teaching."
+        if !requesting { status = installed == true ? "Ready to send to iPhone." : "Install Teaching Timer on your iPhone to email reports. The phone app is optional for teaching." }
 #else
         installed = transport.isWatchAppInstalled
-        status = installed == true ? "Ready to request a report." : "Install Teaching Timer on your paired Watch."
+        if !requesting { status = installed == true ? "Ready to request a report." : "Install Teaching Timer on your paired Watch." }
 #endif
     }
 
@@ -84,51 +87,49 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
         guard transport.isReachable else {
             status = "Open Teaching Timer on your Watch, then try again."; return
         }
-        let id = UUID()
-        requestID = id
-        requesting = true
+        guard let id = request.begin() else { return }
         status = "Requesting report…"
         record("Request started: \(window.rawValue)")
-        transport.sendMessage(["request": "diagnostics-v1", "window": window.rawValue], replyHandler: { response in
+        transport.sendMessage(["request": "diagnostics-v2", "window": window.rawValue, "requestID": id.uuidString], replyHandler: { response in
             let accepted = response["received"] as? Bool == true
             let reason = response["reason"] as? String ?? "unknown"
             let build = response["build"] as? String
             Task { @MainActor in
-                guard self.requestID == id else { return }
+                guard self.request.id == id else { return }
                 self.peerBuild = build
                 self.record("Watch reply: \(accepted ? "queued" : reason)")
                 self.status = accepted ? "Report queued on Watch. Waiting for transfer…" : "Watch could not queue report (\(reason)). Open both apps and retry."
-                if !accepted { self.requesting = false; self.requestID = nil }
+                if !accepted { self.request.finish(id) }
             }
         }, errorHandler: { error in
             let code = (error as NSError).code
             Task { @MainActor in
-                guard self.requestID == id else { return }
+                guard self.request.id == id else { return }
                 self.record("Request failed: WC error \(code)")
                 self.status = "Couldn’t contact Watch (\(code)). Open both apps and retry."
-                self.requesting = false
-                self.requestID = nil
+                self.request.finish(id)
             }
         })
         Task { @MainActor in
             try? await Task.sleep(for: .seconds(60))
-            guard self.requestID == id else { return }
-            self.requestID = nil
-            self.requesting = false
+            guard self.request.id == id else { return }
+            self.request.finish(id)
             self.status = "Report has not arrived. Check connection and retry; a queued transfer may still arrive later."
             self.record("Request wait expired; delivery unconfirmed")
         }
     }
 
     @discardableResult
-    func send(_ url: URL) -> Bool {
+    func send(_ url: URL, requestID: UUID? = nil) -> Bool {
         guard let transport, transport.activationState == .activated, installed == true else {
             status = "Install and open the optional iPhone app, then retry."; return false
         }
         guard transport.outstandingFileTransfers.isEmpty else {
             status = "A report is already waiting to transfer."; return false
         }
-        transport.transferFile(url, metadata: ["kind": "diagnostics-v1"])
+        var metadata = ["kind": "diagnostics-v1"]
+        if let requestID { metadata["requestID"] = requestID.uuidString }
+        transport.transferFile(url, metadata: metadata)
         status = "Waiting to transfer to iPhone…"
         record("Report queued for paired device")
         return true
@@ -154,7 +155,14 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
     }
 #endif
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
-        guard message["request"] as? String == "diagnostics-v1" else { replyHandler(["received": false]); return }
+        let protocolName = message["request"] as? String
+        guard protocolName == "diagnostics-v1" || protocolName == "diagnostics-v2" else {
+            replyHandler(["received": false, "reason": "update-required", "build": Self.build]); return
+        }
+        let requestID = (message["requestID"] as? String).flatMap(UUID.init(uuidString:))
+        guard protocolName != "diagnostics-v2" || requestID != nil else {
+            replyHandler(["received": false, "reason": "invalid-request", "build": Self.build]); return
+        }
         let windowValue = message["window"] as? String ?? Window.lastTwoHours.rawValue
         let reply = CompanionReply(replyHandler)
         Task { @MainActor in
@@ -168,7 +176,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
             }
             self.preparing = true
             defer { self.preparing = false }
-            let outcome = await DiagnosticRequest.enqueue(window: window, prepare: prepare, send: self.send)
+            let outcome = await DiagnosticRequest.enqueue(window: window, prepare: prepare, send: { self.send($0, requestID: requestID) })
             self.record("Report request outcome: \(outcome)")
             if outcome == .preparationFailed { self.status = "Couldn’t prepare report. Try from Watch Help." }
             reply.finish(accepted: outcome == .queued, reason: outcome.rawValue, build: Self.build)
@@ -189,24 +197,32 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     nonisolated func session(_ session: WCSession, didReceive file: WCSessionFile) {
+        let requestID = (file.metadata?["requestID"] as? String).flatMap(UUID.init(uuidString:))
         // Copy before returning: Watch Connectivity removes its temporary file.
         guard file.metadata?["kind"] as? String == "diagnostics-v1" else { return }
         do {
-            let values = try file.fileURL.resourceValues(forKeys: [.fileSizeKey])
-            guard let size = values.fileSize, size > 0, size <= 2 * 1024 * 1024 else { throw CocoaError(.fileReadCorruptFile) }
-            let data = try Data(contentsOf: file.fileURL)
-            guard let report = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  report["schemaVersion"] as? Int == 1,
-                  report["journals"] is [[String: Any]] else { throw CocoaError(.fileReadCorruptFile) }
+            let data = try DiagnosticInbox.read(file.fileURL)
+            let summary = try DiagnosticInbox.summary(data)
             let folder = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let destination = folder.appendingPathComponent("TeachingTimer-diagnostics.json")
             try data.write(to: destination, options: [.atomic, .completeFileProtection])
             var excluded = destination
             var resource = URLResourceValues(); resource.isExcludedFromBackup = true
             try excluded.setResourceValues(resource)
-            Task { @MainActor in self.received = destination; self.requestID = nil; self.requesting = false; self.record("Report saved on receiving device"); self.status = "Report received. Review it before emailing support." }
+            Task { @MainActor in
+                self.received = destination
+                self.receivedSummary = summary
+                let matched = self.request.finish(requestID)
+                self.record("Report saved; matches pending request: \(matched)")
+                if !self.requesting { self.status = "Report received. Review it before emailing support." }
+            }
         } catch {
-            Task { @MainActor in self.status = "Couldn’t save the report. Request it again." }
+            Task { @MainActor in
+                if self.request.finish(requestID) || !self.requesting {
+                    self.status = "Couldn’t save the report. Request it again."
+                }
+                self.record("Report could not be saved")
+            }
         }
     }
 }

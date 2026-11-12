@@ -89,7 +89,7 @@ struct AppInformationView: View {
                 Text("End class clears current timing, not diagnostics or settings. Unreadable saved values may have a separate local recovery copy. Removing the app removes its local container; exported or backup copies are separate.")
             }
             Section("Sharing is your choice") {
-                Text("Help → Send diagnostics to iPhone prepares a filtered report. Confirm sending it to the optional companion, then review and email it from your phone. Nothing is emailed automatically.")
+                Text("Help → Send diagnostics to iPhone prepares a filtered report. You can also request a report from the optional iPhone app. Review and email it from your phone. Nothing is emailed automatically.")
                 Text("Prepared files stay in the app’s cache for sharing. Up to eight are kept; files older than a day are removed when another report is prepared, unless still in use. The system may clear cached files sooner. Recipient copies are separate.")
                 Text("Share only what is needed. Do not post raw journals or system logs in public GitHub issues.")
                 Text("Apple’s media services and system diagnostics follow your Apple settings. Data you choose to send to Apple or another recipient follows that recipient’s policies.")

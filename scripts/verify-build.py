@@ -38,6 +38,29 @@ def run_step(name, command, output, timeout=1200):
     return record
 
 
+def verification_steps(output):
+    steps = [
+        ('xcode', ['xcodebuild', '-version']),
+        ('developer-directory', ['xcode-select', '-p']),
+        ('sdks', ['xcodebuild', '-showsdks']),
+        ('swift', ['xcrun', 'swift', '--version']),
+        ('repository', ['python3', 'scripts/check-repository.py']),
+        ('models', ['sh', 'scripts/check.sh']),
+        ('tools', ['sh', 'scripts/check-tools.sh']),
+        ('information-qr', ['swift', 'scripts/information-qr.swift', '--check', 'TeachingTimer/Information']),
+        ('simulator', ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimer',
+                       '-configuration', 'Debug', '-sdk', 'watchsimulator', '-derivedDataPath', str(output / 'DerivedData'),
+                       '-resultBundlePath', str(output / 'Simulator.xcresult'), 'CODE_SIGN_IDENTITY=-', 'DEVELOPMENT_TEAM=', 'build']),
+        ('companion-simulator', ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimerTestFlight',
+                                 '-configuration', 'TestFlight', '-destination', 'generic/platform=iOS Simulator',
+                                 '-derivedDataPath', str(output / 'CompanionDerivedData'), 'CODE_SIGNING_ALLOWED=NO', 'build']),
+        ('simulator-tools', ['sh', 'scripts/check-simulator-tools.sh', str(output / 'simulator-tools')]),
+        ('archive', ['sh', 'scripts/check-archive.sh', str(output / 'development-archive')]),
+        ('distribution-rehearsal', ['sh', 'scripts/prepare-testflight.sh', str(output / 'distribution-archive')]),
+    ]
+    return steps
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path, help='New artifact directory; never overwrites')
@@ -54,22 +77,7 @@ def main():
     dirty = bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True).strip())
     report = {'revision': revision, 'sourceDirty': dirty, 'distributionSigned': False, 'simulatorSigning': 'ad-hoc', 'uploaded': False, 'installed': False,
               'scope': 'Unsigned structural/build checks, not distribution approval or device validation', 'steps': []}
-    steps = [
-        ('xcode', ['xcodebuild', '-version']),
-        ('developer-directory', ['xcode-select', '-p']),
-        ('sdks', ['xcodebuild', '-showsdks']),
-        ('swift', ['xcrun', 'swift', '--version']),
-        ('repository', ['python3', 'scripts/check-repository.py']),
-        ('models', ['sh', 'scripts/check.sh']),
-        ('tools', ['sh', 'scripts/check-tools.sh']),
-        ('information-qr', ['swift', 'scripts/information-qr.swift', '--check', 'TeachingTimer/Information']),
-        ('simulator', ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimer',
-                       '-configuration', 'Debug', '-sdk', 'watchsimulator', '-derivedDataPath', str(output / 'DerivedData'),
-                       '-resultBundlePath', str(output / 'Simulator.xcresult'), 'CODE_SIGN_IDENTITY=-', 'DEVELOPMENT_TEAM=', 'build']),
-        ('simulator-tools', ['sh', 'scripts/check-simulator-tools.sh', str(output / 'simulator-tools')]),
-        ('archive', ['sh', 'scripts/check-archive.sh', str(output / 'development-archive')]),
-        ('distribution-rehearsal', ['sh', 'scripts/prepare-testflight.sh', str(output / 'distribution-archive')]),
-    ]
+    steps = verification_steps(output)
     if args.simulator_smoke:
         index = next(i for i, (name, _) in enumerate(steps) if name == 'simulator') + 1
         steps.insert(index, ('simulator-smoke', [

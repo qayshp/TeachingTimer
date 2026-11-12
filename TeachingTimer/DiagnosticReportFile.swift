@@ -7,8 +7,8 @@ import CryptoKit
 import Foundation
 
 /// Immutable share files only. This utility never opens or changes a journal.
-/// Call off the main actor. A native sharing sheet has no delivery/completion
-/// callback, so files survive view dismissal and are cleaned on a later prepare.
+/// Call off the main actor. Files survive view dismissal for queued companion
+/// transfers and are cleaned on a later prepare; callers protect pending files.
 /// Preparation and cleanup are serialized even if a dismissed view's task
 /// overlaps a new view. The recursive lock permits prepare's cleanup step.
 enum DiagnosticReportFile {
