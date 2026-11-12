@@ -28,22 +28,18 @@ Mac and a developer-enabled Watch, but this is not an ordinary tester export
 path. Native Watch attachment delivery is still being evaluated; you are not
 expected to extract these files yourself.
 
-## Diagnostic-sharing owner pilot
+## Optional iPhone diagnostics companion (development)
 
-The implementation tracked by [issue #26](https://github.com/qayshp/TeachingTimer/issues/26)
-adds **Settings → About → Share diagnostics**. Choose an interval, prepare and
-review the report, then choose **Share file…**. Preparation sends nothing. The
-report is filtered and bounded, and the screen warns when history is missing.
-Use a private destination; do not attach raw diagnostics to public GitHub issues.
+The follow-up in [issue #26](https://github.com/qayshp/TeachingTimer/issues/26)
+replaces the Watch share sheet with **Settings → Help → Send diagnostics to iPhone**.
+The optional iPhone app can request the last two hours while the Watch app is open.
+On the phone, **Email support** supplies the address and attachment using Apple Mail.
+If Mail is not configured, use phone export with another mail app. Nothing is
+emailed automatically. Installation status is checked separately from connectivity.
 
-The owner has approved an internal TestFlight test after review and CI; see
-[current build status](DEVELOPMENT_STATUS.md) for availability. **Recipient delivery
-is still unverified.** In the current Simulator,
-only Messages is offered. Small and realistic synthetic files reached its
-composer intact, but no message was sent and no recipient received a file.
-Physical Watch and TestFlight receipt checks remain necessary. Do not assume
-that the support email address is an iMessage destination. Keep using email
-descriptions and optional screenshots until a complete route is verified.
+See [companion validation](docs/OPTIONAL_COMPANION.md). Device transfer, email
+receipt and the TestFlight packaging upgrade remain unverified. Until those gates
+pass, use email descriptions and optional screenshots for ordinary support.
 
 ## Public reports and known issues
 

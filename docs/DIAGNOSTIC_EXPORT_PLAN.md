@@ -9,7 +9,16 @@ General testers can still use [description-based private support](../SUPPORT.md)
 See the [validation record](DIAGNOSTIC_SHARING_VALIDATION.md) for completed checks
 and the limits of the current evidence.
 
-## Decision and evidence
+## November 8 development follow-up
+
+The optional [iPhone support companion](OPTIONAL_COMPANION.md) supersedes the native
+Watch sharing proposal below. The owner found manual recipient entry unsuitable;
+the physical Watch offered both Mail and Messages, without a prefilled recipient.
+The original staging evidence remains historical. The new companion keeps teaching
+independent and supplies pre-addressed email on the phone; physical delivery remains
+an open gate. The Watch share sheet is removed in the companion branch.
+
+## Original decision and evidence
 
 Native `ShareLink` is the smallest candidate: no server, account service or iPhone
 companion is needed. The implementation prepares a bounded file and asks the user to

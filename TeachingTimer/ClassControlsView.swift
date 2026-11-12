@@ -27,51 +27,7 @@ struct ClassControlsView: View {
     @AppStorage("showRemainingMinutes") private var showRemainingMinutes = false
 
     private func prepareDiagnostics(window: DiagnosticReport.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
-        // One time boundary for all stores. Snapshot and encode without forcing
-        // a write, stopping the session, or delaying the MainActor's haptics.
-        let cutoff = Date()
-        async let runtime = session.diagnosticSnapshots()
-        async let count = landmarks.diagnosticSnapshot()
-        let (runtimeSnapshots, countSnapshot) = await (runtime, count)
-        try Task.checkCancellation()
-        let worker = Task.detached(priority: .utility) {
-            try Task.checkCancellation()
-            let bundle = Bundle.main
-            let revision: String
-            if let url = bundle.url(forResource: "BuildInfo", withExtension: "plist"),
-               let data = try? Data(contentsOf: url),
-               let info = try? PropertyListDecoder().decode([String: String].self, from: data) {
-                revision = info["revision"] ?? "unknown"
-            } else { revision = "unknown" }
-            let os = ProcessInfo.processInfo.operatingSystemVersion
-            let metadata = DiagnosticReport.Metadata(
-                version: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0",
-                build: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0",
-                revision: revision,
-                osVersion: "\(os.majorVersion).\(os.minorVersion).\(os.patchVersion)")
-            let sources: [(DiagnosticReport.Source, LandmarkDiagnostics.Snapshot)] = [
-                (.runtime, runtimeSnapshots.runtime), (.interface, runtimeSnapshots.interface),
-                (.landmarks, countSnapshot)
-            ]
-            var snapshots: [DiagnosticReport.Source: DiagnosticReport.Snapshot] = [:]
-            for (source, snapshot) in sources {
-                snapshots[source] = DiagnosticReport.Snapshot(events: snapshot.events.map {
-                    DiagnosticReport.Event(timestamp: $0.timestamp, event: $0.event, details: $0.details)
-                },
-                    status: DiagnosticReport.SnapshotStatus(rawValue: snapshot.sourceStatus.rawValue) ?? .unreadable,
-                    pendingEventCount: snapshot.pendingEventCount, lastWriteFailed: snapshot.lastWriteFailed)
-            }
-            let prepared = try DiagnosticReport.build(snapshots: snapshots, metadata: metadata,
-                                                      window: window, cutoff: cutoff)
-            try Task.checkCancellation()
-            let file = try DiagnosticReportFile.prepare(data: prepared.data, preserving: preserving)
-            return DiagnosticSharingView.Prepared(report: prepared.report, file: file)
-        }
-        return try await withTaskCancellationHandler {
-            try await worker.value
-        } onCancel: {
-            worker.cancel()
-        }
+        try await DiagnosticReportPreparation.prepare(session: session, landmarks: landmarks, window: window, preserving: preserving)
     }
 
     var body: some View {
@@ -364,3 +320,56 @@ struct ClassControlsView: View {
     }
 }
 
+
+@MainActor
+enum DiagnosticReportPreparation {
+    static func prepare(session: ExtendedRuntimeController, landmarks: LandmarkController, window: DiagnosticReport.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
+        // One time boundary for all stores. Snapshot and encode without forcing
+        // a write, stopping the session, or delaying the MainActor's haptics.
+        let preserving = preserving.union(DiagnosticCompanion.shared.pendingFiles)
+        let cutoff = Date()
+        async let runtime = session.diagnosticSnapshots()
+        async let count = landmarks.diagnosticSnapshot()
+        let (runtimeSnapshots, countSnapshot) = await (runtime, count)
+        try Task.checkCancellation()
+        let worker = Task.detached(priority: .utility) {
+            try Task.checkCancellation()
+            let bundle = Bundle.main
+            let revision: String
+            if let url = bundle.url(forResource: "BuildInfo", withExtension: "plist"),
+               let data = try? Data(contentsOf: url),
+               let info = try? PropertyListDecoder().decode([String: String].self, from: data) {
+                revision = info["revision"] ?? "unknown"
+            } else { revision = "unknown" }
+            let os = ProcessInfo.processInfo.operatingSystemVersion
+            let metadata = DiagnosticReport.Metadata(
+                version: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0",
+                build: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0",
+                revision: revision,
+                osVersion: "\(os.majorVersion).\(os.minorVersion).\(os.patchVersion)")
+            let sources: [(DiagnosticReport.Source, LandmarkDiagnostics.Snapshot)] = [
+                (.runtime, runtimeSnapshots.runtime), (.interface, runtimeSnapshots.interface),
+                (.landmarks, countSnapshot)
+            ]
+            var snapshots: [DiagnosticReport.Source: DiagnosticReport.Snapshot] = [:]
+            for (source, snapshot) in sources {
+                snapshots[source] = DiagnosticReport.Snapshot(events: snapshot.events.map {
+                    DiagnosticReport.Event(timestamp: $0.timestamp, event: $0.event, details: $0.details)
+                },
+                    status: DiagnosticReport.SnapshotStatus(rawValue: snapshot.sourceStatus.rawValue) ?? .unreadable,
+                    pendingEventCount: snapshot.pendingEventCount, lastWriteFailed: snapshot.lastWriteFailed)
+            }
+            let prepared = try DiagnosticReport.build(snapshots: snapshots, metadata: metadata,
+                                                      window: window, cutoff: cutoff)
+            try Task.checkCancellation()
+            let file = try DiagnosticReportFile.prepare(data: prepared.data, preserving: preserving)
+            return DiagnosticSharingView.Prepared(report: prepared.report, file: file)
+        }
+        return try await withTaskCancellationHandler {
+            try await worker.value
+        } onCancel: {
+            worker.cancel()
+        }
+    }
+
+}

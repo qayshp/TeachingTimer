@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MPL-2.0
 import importlib.util
 import json
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -17,6 +18,20 @@ def watch(version='27.2', available=True):
 
 
 class CIWatchRuntimeChecks(unittest.TestCase):
+    def test_pr_verification_uses_release_toolchain_and_preserves_real_smoke(self):
+        root = Path(__file__).resolve().parents[1]
+        workflows = [(root / '.github/workflows' / name).read_text()
+                     for name in ('check.yml', 'testflight-release.yml')]
+        verify = [re.search(r'^  verify:\n(.*?)(?=^  [a-z][\w-]*:|\Z)', text,
+                            re.M | re.S).group(1) for text in workflows]
+        selections = [re.search(r'^  DEVELOPER_DIR: (.+)$', text, re.M).group(1) for text in workflows]
+        self.assertEqual(selections, ['/Applications/Xcode_27.2.app/Contents/Developer'] * 2)
+        runners = [re.search(r'runs-on: (.+)', text).group(1) for text in verify]
+        self.assertEqual(runners, ['xcode-27', 'xcode-27'])
+        for text in verify:
+            self.assertIn('--simulator-smoke --prepare-ci-runtime', text)
+            self.assertNotIn('continue-on-error', text)
+
     def test_refuses_local_self_hosted_and_non_temporary_output(self):
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / 'evidence'

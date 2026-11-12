@@ -68,12 +68,22 @@ class TestFlightChecks(unittest.TestCase):
         watch['CFBundleIdentifier'] = 'com.qayshp.TeachingTimer'
         self.assertFalse(pilot.package_checks(container, watch)['watchIdentifier'])
 
+    def test_optional_companion_requires_independence_and_matching_identity(self):
+        container, watch = self.package()
+        watch.update(WKWatchOnly=False, WKRunsIndependentlyOfCompanionApp=True,
+                     WKCompanionAppBundleIdentifier=pilot.CONTAINER_ID)
+        self.assertTrue(all(pilot.package_checks(container, watch).values()))
+        watch['WKCompanionAppBundleIdentifier'] = 'wrong.example'
+        self.assertFalse(pilot.package_checks(container, watch)['noCompanionRequirement'])
+        watch['WKRunsIndependentlyOfCompanionApp'] = False
+        self.assertFalse(pilot.package_checks(container, watch)['independentWatch'])
+
     def test_incompatible_package_is_rejected(self):
         container, watch = self.package()
         watch.update(CFBundleVersion='27', WKCompanionAppBundleIdentifier=pilot.CONTAINER_ID,
                      WKWatchOnly=False, WKBackgroundModes=[])
         checks = pilot.package_checks(container, watch)
-        for key in ('versionsMatch', 'noCompanionRequirement', 'watchOnly', 'mindfulnessRuntime'):
+        for key in ('versionsMatch', 'noCompanionRequirement', 'independentWatch', 'mindfulnessRuntime'):
             self.assertFalse(checks[key], key)
 
     def test_both_payloads_require_explicit_export_compliance_declaration(self):

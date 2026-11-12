@@ -136,3 +136,5 @@ behavior:
 Other dated investigations retain their existing paths so issue/report links
 remain stable. Raw journals, private device captures, generated builds and signed
 checkpoints belong in ignored local storage; they are not public documentation.
+
+- [Optional iPhone support companion](OPTIONAL_COMPANION.md): transfer flow and remaining physical validation.
