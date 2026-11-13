@@ -64,6 +64,13 @@ WatchKit boundary doubles. Interactive Watch Simulator scenarios require the
 local Device Hub workflow below. See [build evidence](BUILD_VERIFICATION.md) for
 retained artifacts. CI does not touch physical devices.
 
+Native-tooling changes request full Mac verification in Watch checks without
+duplicating that complete run in the release workflow. App candidates and
+manual TestFlight rehearsals still receive release verification. See the
+[measured timing review](CI_EFFICIENCY.md) for the gate, savings and next options;
+the change does not remove native fixtures, real runtime observations or security
+analysis.
+
 ### Booted Watch smoke check
 
 ```sh

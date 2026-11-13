@@ -18,6 +18,22 @@ def watch(version='27.2', available=True):
 
 
 class CIWatchRuntimeChecks(unittest.TestCase):
+    def test_release_gate_does_not_skip_watch_guardrails_or_manual_rehearsals(self):
+        root = Path(__file__).resolve().parents[1] / '.github/workflows'
+        check = (root / 'check.yml').read_text()
+        release = (root / 'testflight-release.yml').read_text()
+        def job(text, name):
+            return re.search(r'^  ' + name + r':\n(.*?)(?=^  [a-z][\w-]*:|\Z)', text,
+                             re.M | re.S).group(1)
+        self.assertIn("if: needs.changes.outputs.mac_verify == 'true'", job(check, 'verify'))
+        self.assertIn("if: needs.changes.outputs.release_verify == 'true'", job(release, 'verify'))
+        self.assertIn('release_verify: ${{ steps.impact.outputs.release_verify }}', job(release, 'changes'))
+        self.assertIn('python3 scripts/change-impact.py --all', job(release, 'changes'))
+        self.assertIn("needs.changes.outputs.release_verify != 'true'", job(release, 'tooling-checks'))
+        # Skipping a redundant non-publishing pass must not relax publication.
+        self.assertIn("needs.changes.outputs.publish == 'true'", job(release, 'release'))
+        self.assertIn("needs.verify.result == 'success'", job(release, 'release'))
+
     def test_pr_verification_uses_release_toolchain_and_preserves_real_smoke(self):
         root = Path(__file__).resolve().parents[1]
         workflows = [(root / '.github/workflows' / name).read_text()

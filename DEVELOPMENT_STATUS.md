@@ -90,6 +90,14 @@ the TestFlight app and physical installation are unchanged. The subsequent
 corrects the Ultra measurement issue and adds 18 independent regression cases.
 The broader early-rendering investigation in #17 remains open.
 
+Hosted follow-up at `b573bcdf29f7` passed Watch checks, release verification and
+CodeQL. Both Mac jobs completed all 17 verification stages, including genuine
+OCR and outline fixtures; publishing was skipped. CodeQL's extracted database
+contains all 29 production Swift files across Watch and phone. The
+[CI efficiency review](docs/CI_EFFICIENCY.md) records the measured timings and
+removes the duplicate release-side Mac pass for non-publishing tooling changes,
+while preserving full release verification for app candidates/manual rehearsals.
+
 ## Optional companion — November 12
 
 The companion adds an optional iPhone support app and moves Watch export to

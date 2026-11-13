@@ -74,6 +74,10 @@ def classify_paths(paths):
             result["app_changed"] = True
             result["mac_verify"] = True
     result["publish"] = result["app_changed"] or result["unknown_changed"]
+    # Watch checks own full Mac verification for native tooling changes. The
+    # release workflow needs its additional full pass only for a candidate app.
+    # Manual rehearsals use --all below, retaining complete release verification.
+    result["release_verify"] = result["mac_verify"] and result["publish"]
     return result
 
 
@@ -103,7 +107,7 @@ def main():
     if args.all:
         values = {"app_changed": True, "docs_changed": False, "tooling_changed": True,
                   "workflow_changed": False,
-                  "unknown_changed": False, "mac_verify": True, "publish": True}
+                  "unknown_changed": False, "mac_verify": True, "publish": True, "release_verify": True}
     elif args.paths is not None:
         values = classify_paths(args.paths)
     else:

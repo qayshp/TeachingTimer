@@ -38,6 +38,11 @@ on failure. Both Watch-check and TestFlight verification workflows also retain
 stderr and the result report. It does not upload application archives, signing profiles, private
 journals or device captures. Workflow actions are pinned to commit hashes.
 
+Watch checks own full Mac verification for non-publishing native-tooling pushes.
+The release workflow retains cheap self-checks for those changes and reserves
+its full pass for app candidates or manual rehearsals. The same native guards
+remain in `verify-build.py`; [timing evidence and policy](CI_EFFICIENCY.md).
+
 ## Inspect a candidate artifact
 
 ```

@@ -39,6 +39,7 @@ jobs:
       workflow_changed: ${{ steps.impact.outputs.workflow_changed }}
       unknown_changed: ${{ steps.impact.outputs.unknown_changed }}
       mac_verify: ${{ steps.impact.outputs.mac_verify }}
+      release_verify: ${{ steps.impact.outputs.release_verify }}
       publish: ${{ steps.impact.outputs.publish }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -60,7 +61,7 @@ jobs:
   tooling-checks:
     name: Release tooling checks
     needs: changes
-    if: needs.changes.outputs.tooling_changed == 'true' && needs.changes.outputs.mac_verify != 'true'
+    if: needs.changes.outputs.tooling_changed == 'true' && needs.changes.outputs.release_verify != 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -89,7 +90,9 @@ jobs:
   verify:
     name: Verify reviewed source
     needs: changes
-    if: needs.changes.outputs.mac_verify == 'true'
+    # Tooling-only pushes receive full Mac verification in Watch checks. This
+    # second pass is for app candidates and explicit manual rehearsals/publishes.
+    if: needs.changes.outputs.release_verify == 'true'
     runs-on: xcode-27
     timeout-minutes: 40
     outputs:

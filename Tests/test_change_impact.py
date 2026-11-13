@@ -4,6 +4,8 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 import importlib.util
 from pathlib import Path
+import subprocess
+import sys
 import unittest
 
 
@@ -14,6 +16,31 @@ SPEC.loader.exec_module(change_impact)
 
 
 class ChangeImpactChecks(unittest.TestCase):
+    def test_release_verification_only_repeats_for_app_candidates(self):
+        cases = [
+            (['README.md'], False, False),
+            (['scripts/testflight-release.py'], False, False),
+            (['tools/simulator-regression/ControlOutline.swift'], True, False),
+            (['Tests/TimerFaceLayoutChecks.swift'], True, False),
+            (['.github/workflows/testflight-release.yml'], False, False),
+            (['TeachingTimer/ContentView.swift'], True, True),
+            (['PhoneSupport/SupportView.swift'], True, True),
+            (['docs/PRIVACY.md'], True, True),
+            (['unknown-build-input'], True, True),
+            (['TeachingTimer/ContentView.swift', 'README.md'], True, True),
+        ]
+        for paths, watch_verify, release_verify in cases:
+            with self.subTest(paths=paths):
+                result = change_impact.classify_paths(paths)
+                self.assertEqual(result['mac_verify'], watch_verify)
+                self.assertEqual(result['release_verify'], release_verify)
+
+    def test_manual_rehearsal_and_publish_keep_complete_verification(self):
+        output = subprocess.check_output([sys.executable, str(MODULE_PATH), '--all'], text=True)
+        values = dict(line.split('=', 1) for line in output.splitlines())
+        for key in ('mac_verify', 'release_verify', 'publish'):
+            self.assertEqual(values[key], 'true')
+
     def test_documentation_only_skips_build_and_release(self):
         result = change_impact.classify_paths([
             "docs/ISSUE_TRACKER.md", "README.md", ".github/ISSUE_TEMPLATE/bug_report.yml"

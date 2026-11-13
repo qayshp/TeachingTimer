@@ -27,6 +27,7 @@ installation or a physical-device test.
 | [Repository review](REPOSITORY_REVIEW_2026-10-29.md) | October 29 organization, test additions and verification boundaries. |
 | [Automation map](AUTOMATION.md) | Offline/CI, interactive Simulator and physical evidence boundaries. |
 | [Build verification](BUILD_VERIFICATION.md) | Reproducible build/archive checks and artifact inspection. |
+| [CI timing and safeguards](CI_EFFICIENCY.md) | Measured bottlenecks, duplicate-verification reduction and ranked improvements that preserve useful checks. |
 | [Simulator regression runner](../tools/simulator-regression/README.md) | Interactive lifecycle, action, focus and rendering checks with bounded evidence capture. |
 | [Device Hub testing](DEVICE_HUB_TESTING.md) | Lock/Always-On, haptic sound and remote-input limits. |
 | [Time-edge checks](TIME_EDGE_TESTS.md) | Scheduled-time, clock-change and monotonic-count cases. |

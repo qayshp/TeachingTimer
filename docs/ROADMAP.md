@@ -40,6 +40,10 @@ main verification can no longer be cancelled by a later docs-only push.
 Screenshot OCR [#30](https://github.com/qayshp/TeachingTimer/issues/30) is corrected
 and the full local action suite passes on SE 3 and Ultra. CI now executes the
 recognizer instead of only compiling it; [coverage and remaining measurement limits](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
+The [CI timing review](CI_EFFICIENCY.md) removes duplicate release-side Mac
+verification for non-publishing tooling pushes. Exact-source reuse for actual
+app releases and publication ordering remain in #24; no deadline or security
+guard was removed.
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
 is complete: a concise status page, user-facing changelog and separate historical
