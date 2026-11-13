@@ -1,13 +1,28 @@
 # Build and release evidence
 
 Run `python3 scripts/verify-build.py NEW_OUTPUT_DIRECTORY` from the repository.
-The directory must not exist. This command never installs or uploads an app. The Simulator build uses
-local ad-hoc signing; both device archives remain unsigned. It records the exact source commit and dirty state, selected Xcode path,
-Xcode/Swift versions and installed SDKs, then runs repository consistency and model/tool checks,
-decodes the website QR assets against their configured destinations,
-Simulator build, isolated phone audio-fixture build, development archive and
-future distribution-identity archive. The fixture build generates audio locally
-and never launches playback.
+The source checkout must be clean and committed, and the output directory must
+not exist. Put output outside the checkout or under ignored `work/`; creating an
+unignored directory in the checkout would itself make the source dirty. Dirty
+input is rejected before checks begin. Commit or set aside pending changes
+before starting, and leave the source unchanged while verification runs.
+
+This command never installs or uploads an app. The Watch Simulator build uses
+local ad-hoc signing; both device archives remain unsigned. Verification records
+the exact commit, selected Xcode path, Xcode/Swift versions and installed SDKs.
+It runs repository and model/tool checks, decodes the website QR assets, builds
+the Watch app and the combined iPhone/Watch Simulator target, compiles diagnostic
+fixtures/helpers, executes native OCR/outline checks, and creates development
+and distribution-identity archives. Audio fixtures generate their own test
+audio; verification never starts playback.
+
+Add `--simulator-smoke` to create disposable small/large Watches and exercise
+fresh-process recovery, intentional Stop, saved state and real class-retirement
+deadlines. This is separate from building for Simulator. It does not drive
+Device Hub or validate paired media playback, Crown volume, tactile haptics or
+physical-Watch behavior. CI also supplies `--prepare-ci-runtime`, which prepares
+the matching Watch runtime on a GitHub-hosted runner and requires
+`--simulator-smoke`; that runtime-preparation option is not for local use.
 
 The early `control-outline-smoke` stage compiles the actual outline helper and
 runs 18 independent synthetic cases before the slower Simulator checks. It
@@ -27,21 +42,43 @@ local workflow and are not established by this stage.
 Every step has its own log and status in `verification.json`. Failed commands
 and timeouts remain failures; their partial output is retained. Simulator build
 results also have an `.xcresult` bundle. Local archive directories retain the
-app, symbols and inspection report. Artifacts from a dirty tree are explicitly
-marked and should not be presented as an exact clean-commit release.
+app, symbols and inspection report.
 
-GitHub Actions uses the same command on its available macOS 26 runner. It records
-its actual toolchain rather than assuming it matches the development Mac.
-It retains verification logs, metadata and Simulator results for 14 days, even
-on failure. Both Watch-check and TestFlight verification workflows also retain
+Report schema 2 records `revision`/`sourceDirty` before the run and
+`sourceRevisionAfter`/`sourceDirtyAfter` afterward. `complete=true` requires every
+requested stage to pass and the source to remain clean at the same commit.
+Dirty input, edits during verification or unavailable final Git state leave the
+report incomplete and fail the command, even if individual build stages passed.
+On GitHub Actions, the report also binds repository ID, workflow reference/SHA,
+event/ref, run ID and attempt in its `ci` metadata. A local report without that
+identity is useful local evidence, but cannot substitute for trusted hosted
+main-push evidence in an automatic release.
+
+GitHub's full verification jobs use the `xcode-27` runner label and explicitly
+select `/Applications/Xcode_27.2.app/Contents/Developer`. Reports record the
+actual toolchain rather than assuming it matches the development Mac. The
+Watch-check and manual TestFlight verification workflows retain logs, metadata
+and Simulator results for 14 days, even on failure. They also retain
 `screen-text-smoke/`: synthetic images, expected labels, raw OCR responses,
-stderr and the result report. It does not upload application archives, signing profiles, private
-journals or device captures. Workflow actions are pinned to commit hashes.
+stderr and the result report. These verification artifacts do not upload whole
+application archives, signing profiles, private physical-device journals or
+physical-device captures. Workflow actions are pinned to commit hashes.
 
 Watch checks own full Mac verification for non-publishing native-tooling pushes.
-The release workflow retains cheap self-checks for those changes and reserves
-its full pass for app candidates or manual rehearsals. The same native guards
-remain in `verify-build.py`; [timing evidence and policy](CI_EFFICIENCY.md).
+The release workflow retains cheap self-checks for those changes. For automatic
+main-branch app candidates, it reuses the completed successful Watch workflow's
+exact-source schema-2 report and digest-verified artifact, instead of repeating
+the Mac matrix and unsigned archives. Repository/workflow identity, source/run
+attempt, clean before/after state and every required stage must match; stale,
+incomplete or failed evidence blocks publication. PR evidence is not promoted
+to a main release. Manual rehearsals and publishing requests still run fresh
+full verification, including the two-size booted smoke. Signed publishing still
+creates and checks its own archive from the immutable source.
+
+The November 13 read-only consumer check accepted real hosted evidence, while
+the corresponding tooling-only release workflow correctly skipped app work.
+An automatic app-candidate publish through reuse was not exercised by that
+validation. See [timing evidence, provenance and event limits](CI_EFFICIENCY.md#november-13-validation).
 
 ## Inspect a candidate artifact
 

@@ -46,15 +46,16 @@ does not prove all branches are analyzed or establish an absence of defects.
 ## Implemented: avoid duplicate non-publishing Mac verification
 
 The change classifier now distinguishes `mac_verify` from `release_verify`.
-Watch checks retain their existing Mac gate. The release workflow repeats full
-verification only for an app candidate (`mac_verify && publish`) or a manual
-rehearsal/publish using `--all`.
+Watch checks retain their existing Mac gate. Release verification is required
+only for an app candidate (`mac_verify && publish`) or a manual rehearsal/publish
+using `--all`. Automatic candidates now reuse exact-source Watch evidence as
+described below; manual requests still perform a fresh full pass.
 
 Native-tooling pushes still get the complete Watch verification and cheap
 release-side repository/Python checks, but no second Mac matrix/archive pass.
-App/unknown-input pushes and manual rehearsals keep their previous verification.
-The publication job still requires successful release verification; the
-credential-bearing environment and group assignment are unchanged.
+App/unknown-input pushes retain the same required verification coverage through
+reuse. The publication job still requires successful release verification;
+the credential-bearing environment and group assignment are unchanged.
 
 Replaying the actual `b731197`→`b573bcd` native-tooling diff through the new
 classifier gives `mac_verify=true`, `publish=false`, `release_verify=false`.
@@ -164,11 +165,44 @@ than a new publication gate.
 This saves one complete duplicate Mac pass for an automatic app release. It does
 not promise a fixed wall-time reduction: the earlier two passes overlapped and
 worker timing varies. Signed publishing still builds its own archive from source.
-Local routing, report and failure-case tests are distinct from a hosted evidence
-reuse check; live validation is recorded after the new producer run completes.
 Read-only checks against existing GitHub evidence already reject a successful
 docs-only run (`6f1d76e`, skipped Mac job) and a legacy full report (`b573bcd`,
 missing schema-2 provenance). Neither negative test signs or publishes anything.
+
+### November 13 validation
+
+The implementation at
+[`c14b1a24fc2d51836d13499ce3df5304b8164889`](https://github.com/qayshp/TeachingTimer/commit/c14b1a24fc2d51836d13499ce3df5304b8164889)
+passed the following hosted checks. Wall time runs from workflow creation to
+its final applicable job completing.
+
+| Workflow | Wall time | Observed result |
+| --- | ---: | --- |
+| [Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/43392488060) | 17m 13s | All applicable jobs and all 17 verification stages passed. |
+| [Release tooling/lint](https://github.com/qayshp/TeachingTimer/actions/runs/43392488017) | 28s | Passed; source resolution, reuse, manual verification and publishing were correctly skipped for a non-app change. |
+| [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/43392488119) | 20m 35s | Swift, Python, Actions and the final result passed. |
+
+All 356 Python tests, repository checks and workflow lint passed. The schema-2
+Watch report identifies the same full source SHA before and after verification,
+both clean, and binds repository `1379015152`, the main-push workflow, run
+`43392488060` and attempt `1`.
+
+The actual consumer was also run read-only against GitHub while that producer
+was still running. It waited for completion, downloaded and checked artifact
+`14022690104`, and saved a receipt with `status=verified` and `verified=true`.
+The artifact's verified digest was
+`sha256:ce26060420e5c33fbf04bf3d3316e2d2fead9de59c873a12ac99ab6d3c7f39fe`.
+The receipt records 1,037.587 seconds (17m 17.6s), including the wait for the
+existing Watch job; this was not another Mac verification pass.
+
+This establishes successful consumption of real GitHub metadata and a complete
+schema-2 report. The automatic release workflow's reuse job was intentionally
+skipped on this tooling-only push, so it does **not** establish a live app-candidate
+release, signing, upload or TestFlight assignment through the new route. Routing
+and failed/cancelled/missing-evidence gates are covered by the workflow-expression,
+shell and consumer regression tests; those tests are separate from this live
+successful read. Manual fresh-verification routing is likewise covered by tests,
+not a new hosted manual event in this validation.
 
 ## Next optimizations, in order
 
@@ -203,3 +237,5 @@ removed in this pass. No physical device was used or build published.
 
 Private timing manifests, original logs, validated verification artifacts and
 CodeQL coverage evidence are under `work/ci-efficiency-2026-11-12/`.
+The November 13 reuse receipt and validated report are under
+`work/verification-reuse-2026-11-13/live-c14b1a2/`.

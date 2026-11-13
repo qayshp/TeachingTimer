@@ -111,9 +111,13 @@ The November 13 tooling pass replaces automatic releases' duplicate Mac pass
 with exact-source reuse of a completed trusted main-push Watch verification.
 Manual rehearsal/publish retains fresh full verification. Schema-2 reports check
 source cleanliness/revision before and after tests; the consumer binds run,
-attempt, artifact digest and all required stages. Local and hosted validation
-are recorded separately in the efficiency review. App behavior, signing and
-distribution groups are unchanged.
+attempt, artifact digest and all required stages. At `c14b1a2`, all 356 local
+Python tests, repository checks and workflow lint pass; hosted Watch checks,
+release tooling/lint and CodeQL also pass. A live read-only consumer accepted
+the new exact-source Watch artifact and all 17 stages. This tooling-only push
+did not exercise an app-candidate publish; that gate's failure/manual routing is
+covered by workflow-expression tests. The efficiency review records the exact
+evidence and limits. App behavior, signing and distribution groups are unchanged.
 
 ## Optional companion — November 12
 
