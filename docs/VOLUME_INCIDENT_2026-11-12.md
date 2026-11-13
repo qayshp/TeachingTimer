@@ -61,6 +61,16 @@ records begin after both classes, and matching volume records begin much later.
 Recent control queries decode successfully, corroborating the retention limit.
 Missing old commands therefore do not establish that the Watch sent nothing.
 
+A bounded check of seven dedicated media/audio/remote payloads adds one proxied
+Watch `mediaremoted` diagnostic from before the successful morning class. It
+records an application-triggered, simulated fault with unsymbolicated frames;
+it is not proof the daemon crashed or terminated, or of the afternoon cause.
+Apple's [report field guide](https://developer.apple.com/documentation/xcode/interpreting-the-json-format-of-a-crash-report)
+distinguishes this diagnostic flag from an actual crash; it does not identify a
+Simulator device. Preserve the report for Apple's interpretation. Other inspected
+payloads contain old preferences, empty audio summaries or capture-time state,
+not class-time volume history. No full Watch unified-log archive was recovered.
+
 Watch collection was blocked by developer-image metadata retrieval despite
 working journal access and a usable local image. The separate
 [collection guide](WATCH_LOG_COLLECTION.md#november-13-device-services-and-retention)
