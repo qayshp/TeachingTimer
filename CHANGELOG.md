@@ -4,6 +4,16 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## November 13, 2026 — watch-face launcher candidate
+
+- Add a **Teaching Timer** complication for circular, corner, inline and
+  rectangular watch-face slots. Open the app once after installation, then add
+  it while editing a compatible watch face.
+- Tapping opens the existing Watch app without starting or resetting a class.
+  The launcher does not read class data or request repeating timeline updates.
+- Simulator tap verification, signed release availability and physical-Watch
+  validation remain separate checks; see [current status](DEVELOPMENT_STATUS.md).
+
 ## November 12, 2026 — shorter Help and support pages
 
 - Help now opens short topics for music, class timing, counts and sessions.

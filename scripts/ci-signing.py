@@ -20,9 +20,10 @@ import sys
 TEAM = 'QV8ZH37356'
 CONTAINER = 'net.qays.TeachingTimer'
 WATCH = CONTAINER + '.watchkitapp'
+COMPLICATION = WATCH + '.complications'
 REQUIRED = ('ASC_KEY_ID', 'ASC_ISSUER_ID', 'ASC_PRIVATE_KEY_BASE64',
             'DISTRIBUTION_CERTIFICATE_BASE64', 'DISTRIBUTION_CERTIFICATE_PASSWORD',
-            'CONTAINER_PROFILE_BASE64', 'WATCH_PROFILE_BASE64')
+            'CONTAINER_PROFILE_BASE64', 'WATCH_PROFILE_BASE64', 'COMPLICATION_PROFILE_BASE64')
 
 
 def run(*args):
@@ -83,7 +84,8 @@ def setup(folder):
         certificate = decode('DISTRIBUTION_CERTIFICATE_BASE64', 'distribution.p12')
         mapping = {}
         for variable, identifier, name in [('CONTAINER_PROFILE_BASE64', CONTAINER, 'container.mobileprovision'),
-                                           ('WATCH_PROFILE_BASE64', WATCH, 'watch.mobileprovision')]:
+                                           ('WATCH_PROFILE_BASE64', WATCH, 'watch.mobileprovision'),
+                                           ('COMPLICATION_PROFILE_BASE64', COMPLICATION, 'complication.mobileprovision')]:
             file = decode(variable, name)
             profile = plistlib.loads(run('security', 'cms', '-D', '-i', str(file)))
             if not profile_valid(profile, identifier):
@@ -117,10 +119,11 @@ def setup(folder):
         config = folder / 'signing.xcconfig'
         config.write_text('CODE_SIGN_STYLE = Manual\nCODE_SIGN_IDENTITY = Apple Distribution\n'
             + 'DEVELOPMENT_TEAM = ' + TEAM + '\n'
-            + 'PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*] = ' + mapping[CONTAINER] + '\n'
-            + 'PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*] = ' + mapping[WATCH] + '\n')
+            + 'TEACHINGTIMER_CONTAINER_PROFILE = ' + mapping[CONTAINER] + '\n'
+            + 'TEACHINGTIMER_WATCH_PROFILE = ' + mapping[WATCH] + '\n'
+            + 'TEACHINGTIMER_COMPLICATION_PROFILE = ' + mapping[COMPLICATION] + '\n')
         (folder / 'signing.json').write_text(json.dumps(dict(teamID=TEAM, profiles=mapping, xcconfig=str(config))))
-        print('Temporary signing identity and both distribution profiles installed.')
+        print('Temporary signing identity and all three distribution profiles installed.')
         return key
     except BaseException:
         cleanup(folder)

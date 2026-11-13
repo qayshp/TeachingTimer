@@ -61,6 +61,28 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 - Mindfulness runtime suitability for guided yoga teaching and automatic renewal
   still needs explicit Apple guidance. Beta review does not settle intended use.
 
+## Watch-face launcher candidate — November 13
+
+The new source candidate adds a static **Teaching Timer** complication in all
+four accessory families: circular, corner, inline and rectangular. Available
+slots depend on the selected watch face. Open the updated Watch app once, then
+add the launcher while editing that face. Tapping opens the app without creating
+or resetting a class; normal saved-state and runtime recovery rules still apply.
+The separate extension reads no app data and requests no repeating timeline
+updates. See the [quick-launch guide](docs/TEACHING_FACE_GUIDE.md#quick-launch-from-a-watch-face).
+
+The Simulator app and both unsigned archives build successfully. All 16 Swift
+suites and 368 Python checks pass, including extension packaging and three-payload
+release safeguards. On SE 3 40 mm / watchOS 27.2 Simulator, the corner launcher
+appeared in the picker, rendered on Infograph, and opened the app when tapped.
+It did not create a class, and a second return preserved an active class byte for
+byte. Other families and physical-Watch interaction remain separate checks.
+The third App Store profile for
+`net.qays.TeachingTimer.watchkitapp.complications` is configured in the protected
+`COMPLICATION_PROFILE_BASE64` secret; it reuses the existing distribution
+certificate and expires November 4, 2027. This source checkpoint does not establish
+a new TestFlight release or physical installation. Tracked in [issue #31](https://github.com/qayshp/TeachingTimer/issues/31).
+
 ## November 12 review verification
 
 PR #29 is merged. [App checks](https://github.com/qayshp/TeachingTimer/actions/runs/43191773559)

@@ -31,4 +31,4 @@ test -x "$app/TeachingTimer"
 test -f "$app/Info.plist"
 printf 'PASS: archive contains the Watch application: %s\n' "$app"
 
-python3 scripts/inspect-artifact.py "$archive_dir/TeachingTimer.xcarchive" > "$archive_dir/readiness.json"
+python3 scripts/inspect-artifact.py "$archive_dir/TeachingTimer.xcarchive" --require-complication > "$archive_dir/readiness.json"

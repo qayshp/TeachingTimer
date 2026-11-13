@@ -265,6 +265,14 @@ class SigningChecks(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'Missing GitHub'): signing.setup(Path(folder)/'keys')
             run.assert_not_called()
 
+    def test_missing_complication_profile_fails_before_touching_keychain(self):
+        environment = {name: 'synthetic' for name in signing.REQUIRED if name != 'COMPLICATION_PROFILE_BASE64'}
+        with tempfile.TemporaryDirectory() as folder, patch.dict('os.environ', environment, clear=True), \
+                patch.object(signing, 'run') as run:
+            with self.assertRaisesRegex(ValueError, 'COMPLICATION_PROFILE_BASE64'):
+                signing.setup(Path(folder) / 'keys')
+            run.assert_not_called()
+
 
 @unittest.skipUnless(platform.system()=='Darwin' and shutil.which('swiftc') and shutil.which('openssl'), 'Apple CryptoKit token helper')
 class TokenChecks(unittest.TestCase):
@@ -374,21 +382,25 @@ class CredentialCleanupChecks(unittest.TestCase):
     def test_setup_failure_restores_search_list_and_preserves_preexisting_profiles(self):
         with tempfile.TemporaryDirectory() as folder:
             home=Path(folder);private=home/'private'; calls=[]
-            uuids=['12345678-1234-1234-1234-123456789ABC','12345678-1234-1234-1234-123456789ABD']
+            uuids=['12345678-1234-1234-1234-123456789ABC','12345678-1234-1234-1234-123456789ABD',
+                   '12345678-1234-1234-1234-123456789ABE']
             profiles=[]
-            for identifier,uuid in zip([signing.CONTAINER,signing.WATCH],uuids):
+            for identifier,uuid in zip([signing.CONTAINER,signing.WATCH,signing.COMPLICATION],uuids):
                 profiles.append(dict(TeamIdentifier=[signing.TEAM],UUID=uuid,ExpirationDate=datetime.now()+timedelta(days=2),
                     Entitlements={'application-identifier':signing.TEAM+'.'+identifier,'get-task-allow':False,'beta-reports-active':True}))
             existing=home/'Library/MobileDevice/Provisioning Profiles'/(uuids[0]+'.mobileprovision')
             existing.parent.mkdir(parents=True);existing.write_bytes(b'container-profile')
             env=dict(ASC_KEY_ID='key',ASC_ISSUER_ID='issuer',ASC_PRIVATE_KEY_BASE64=base64.b64encode(b'fixture-key').decode(),
                 DISTRIBUTION_CERTIFICATE_BASE64=base64.b64encode(b'fixture-certificate').decode(),DISTRIBUTION_CERTIFICATE_PASSWORD='fixture-password',
-                CONTAINER_PROFILE_BASE64=base64.b64encode(b'container-profile').decode(),WATCH_PROFILE_BASE64=base64.b64encode(b'watch-profile').decode())
+                CONTAINER_PROFILE_BASE64=base64.b64encode(b'container-profile').decode(),
+                WATCH_PROFILE_BASE64=base64.b64encode(b'watch-profile').decode(),
+                COMPLICATION_PROFILE_BASE64=base64.b64encode(b'complication-profile').decode())
             def run(*args):
                 calls.append(args)
                 if args[1:]==('list-keychains','-d','user'):return b'"original.keychain-db"\n'
                 if args[1:4]==('cms','-D','-i'):
-                    return plistlib.dumps(profiles[0 if 'container' in args[-1] else 1])
+                    index = 0 if 'container.mobileprovision' in args[-1] else 1 if 'watch.mobileprovision' in args[-1] else 2
+                    return plistlib.dumps(profiles[index])
                 if args[1]=='create-keychain':Path(args[-1]).touch()
                 if args[1:5]==('list-keychains','-d','user','-s') and str(private/'release.keychain-db') in args:
                     raise ValueError('synthetic search-list installation failure')
@@ -399,6 +411,55 @@ class CredentialCleanupChecks(unittest.TestCase):
             self.assertEqual(existing.read_bytes(),b'container-profile')
             self.assertIn(('security','list-keychains','-d','user','-s','original.keychain-db'),calls)
             remaining=list(home.rglob('*.mobileprovision'));self.assertEqual(remaining,[existing])
+
+    def test_setup_assigns_distinct_profiles_to_watch_app_and_complication_then_cleans_all(self):
+        with tempfile.TemporaryDirectory() as folder:
+            home = Path(folder)
+            private = home / 'private'
+            identifiers = [signing.CONTAINER, signing.WATCH, signing.COMPLICATION]
+            profiles = {}
+            environment = {
+                'ASC_KEY_ID': 'synthetic-key', 'ASC_ISSUER_ID': 'synthetic-issuer',
+                'ASC_PRIVATE_KEY_BASE64': base64.b64encode(b'synthetic-api-key').decode(),
+                'DISTRIBUTION_CERTIFICATE_BASE64': base64.b64encode(b'synthetic-p12').decode(),
+                'DISTRIBUTION_CERTIFICATE_PASSWORD': 'synthetic-password'}
+            for index, (identifier, variable, name) in enumerate(zip(identifiers,
+                    ['CONTAINER_PROFILE_BASE64', 'WATCH_PROFILE_BASE64', 'COMPLICATION_PROFILE_BASE64'],
+                    ['container', 'watch', 'complication'])):
+                profiles[name + '.mobileprovision'] = dict(TeamIdentifier=[signing.TEAM],
+                    UUID=f'12345678-1234-1234-1234-123456789AB{index}',
+                    ExpirationDate=datetime.now() + timedelta(days=2), Entitlements={
+                        'application-identifier': signing.TEAM + '.' + identifier,
+                        'get-task-allow': False, 'beta-reports-active': True})
+                environment[variable] = base64.b64encode((name + '-profile').encode()).decode()
+            calls = []
+            def run(*args):
+                calls.append(args)
+                if args[1:] == ('list-keychains', '-d', 'user'):
+                    return b'"original.keychain-db"\n'
+                if args[1:4] == ('cms', '-D', '-i'):
+                    return plistlib.dumps(profiles[Path(args[-1]).name])
+                if args[1] == 'create-keychain':
+                    Path(args[-1]).touch()
+                if args[1] == 'delete-keychain':
+                    Path(args[-1]).unlink()
+                return b''
+            with patch.dict('os.environ', environment, clear=True), \
+                    patch.object(signing.Path, 'home', return_value=home), patch.object(signing, 'run', side_effect=run):
+                key = signing.setup(private)
+                self.assertEqual(key.read_bytes(), b'synthetic-api-key')
+                configuration = json.loads((private / 'signing.json').read_text())
+                self.assertEqual(set(configuration['profiles']), set(identifiers))
+                config = (private / 'signing.xcconfig').read_text()
+                self.assertNotIn('PROVISIONING_PROFILE_SPECIFIER[sdk=', config)
+                for variable, profile in zip(['CONTAINER', 'WATCH', 'COMPLICATION'], profiles.values()):
+                    self.assertIn('TEACHINGTIMER_' + variable + '_PROFILE = ' + profile['UUID'], config)
+                # Two installed locations plus the three private decoded inputs.
+                self.assertEqual(len(list(home.rglob('*.mobileprovision'))), 9)
+                signing.cleanup(private)
+            self.assertFalse(private.exists())
+            self.assertEqual(list(home.rglob('*.mobileprovision')), [])
+            self.assertIn(('security', 'list-keychains', '-d', 'user', '-s', 'original.keychain-db'), calls)
 
 
 class TimingAndProcessChecks(unittest.TestCase):

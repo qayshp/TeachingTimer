@@ -312,6 +312,7 @@ jobs:
           DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.DISTRIBUTION_CERTIFICATE_PASSWORD }}
           CONTAINER_PROFILE_BASE64: ${{ secrets.CONTAINER_PROFILE_BASE64 }}
           WATCH_PROFILE_BASE64: ${{ secrets.WATCH_PROFILE_BASE64 }}
+          COMPLICATION_PROFILE_BASE64: ${{ secrets.COMPLICATION_PROFILE_BASE64 }}
         run: python3 automation/scripts/ci-signing.py setup "$RUNNER_TEMP/testflight-signing"
       - name: Compile API authentication helper
         if: github.event_name == 'push' || inputs.mode == 'publish'

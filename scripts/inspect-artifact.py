@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import plistlib
+import re
 import subprocess
 from xml.parsers.expat import ExpatError
 
@@ -79,7 +80,66 @@ def application_paths(path):
     return watches[0], top
 
 
-def inspect(path):
+def complication_checks(app, watch_info, required=False):
+    """Validate current launcher packaging without rejecting older checkpoints.
+
+    Current build checks explicitly require the extension. Historical app/archive
+    inspection remains useful without one, but a present extension is never
+    silently ignored. This structural check is not distribution validation.
+    """
+    extensions = list((app / 'PlugIns').glob('*.appex'))
+    if not extensions and not required:
+        return {}
+    expected = app / 'PlugIns/TeachingTimerComplications.appex'
+    checks = {'complicationPresent': expected in extensions,
+              'complicationOnlyExpectedExtension': extensions == [expected]}
+    if expected not in extensions:
+        return checks
+    contained = (not (app / 'PlugIns').is_symlink() and not expected.is_symlink()
+                 and expected.resolve().is_relative_to(app.resolve()))
+    checks['complicationContainedInWatchApp'] = contained
+    if not contained:
+        return checks
+    try:
+        info = plistlib.loads((expected / 'Info.plist').read_bytes())
+    except (OSError, ValueError, plistlib.InvalidFileException, ExpatError):
+        info = None
+    checks['complicationMetadataValid'] = isinstance(info, dict)
+    if not isinstance(info, dict):
+        return checks
+    identifiers = {'com.qayshp.TeachingTimer': 'com.qayshp.TeachingTimer.complications',
+                   'net.qays.TeachingTimer.watchkitapp': 'net.qays.TeachingTimer.watchkitapp.complications'}
+    extension = info.get('NSExtension')
+    executable = info.get('CFBundleExecutable')
+    version = info.get('MinimumOSVersion')
+    watch_version = watch_info.get('MinimumOSVersion', '26.0')
+
+    def os_version(value):
+        if not isinstance(value, str) or re.fullmatch(r'\d+(?:\.\d+){0,2}', value) is None:
+            return None
+        parts = tuple(map(int, value.split('.')))
+        return parts + (0,) * (3 - len(parts))
+
+    minimum = os_version(version)
+    checks.update(
+        complicationIdentifier=(watch_info.get('CFBundleIdentifier') in identifiers
+            and info.get('CFBundleIdentifier') == identifiers[watch_info['CFBundleIdentifier']]),
+        complicationExtensionPoint=(isinstance(extension, dict)
+            and extension.get('NSExtensionPointIdentifier') == 'com.apple.widgetkit-extension'),
+        complicationPackageType=info.get('CFBundlePackageType') == 'XPC!',
+        complicationPlatform=info.get('CFBundleSupportedPlatforms') in (['WatchOS'], ['WatchSimulator']),
+        complicationVersionsMatch=all(info.get(key) == watch_info.get(key)
+            and bool(info.get(key)) for key in ('CFBundleVersion', 'CFBundleShortVersionString')),
+        complicationMinimumOS=(minimum is not None and minimum >= (26, 0, 0)
+            and minimum == os_version(watch_version)),
+        complicationBinaryPresent=(isinstance(executable, str) and bool(executable)
+            and Path(executable).name == executable and not (expected / executable).is_symlink()
+            and (expected / executable).is_file()),
+    )
+    return checks
+
+
+def inspect(path, require_complication=False):
     archive = path if path.suffix == '.xcarchive' else None
     app, container = application_paths(path)
     info = plistlib.loads((app / 'Info.plist').read_bytes())
@@ -89,6 +149,7 @@ def inspect(path):
               'binaryPresent': (app / info['CFBundleExecutable']).is_file(),
               'revisionRecorded': bool(revision),
               'privacyManifestMatchesPolicy': privacy_manifest_matches_policy(app)}
+    checks.update(complication_checks(app, info, require_complication))
     container_info = plistlib.loads((container / 'Info.plist').read_bytes()) if container else None
     if container_info:
         checks.update(containerIdentifierIsWatchPrefix=info['CFBundleIdentifier'].startswith(container_info['CFBundleIdentifier'] + '.'),
@@ -128,8 +189,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('artifact', type=Path)
     parser.add_argument('--require-signed', action='store_true', help='Also reject missing/invalid signatures or expired/missing profiles')
+    parser.add_argument('--require-complication', action='store_true', help='Require the current Watch launcher extension; omit for historical checkpoints')
     args = parser.parse_args()
-    result = inspect(args.artifact.resolve())
+    result = inspect(args.artifact.resolve(), require_complication=args.require_complication)
     print(json.dumps(result, indent=2))
     if not all(result['checks'].values()) or (args.require_signed and not (result['signatureValid'] and result['unexpiredEmbeddedProfile'])):
         raise SystemExit(1)

@@ -26,6 +26,7 @@ class ChangeImpactChecks(unittest.TestCase):
             (['.github/workflows/testflight-release.yml'], False, False),
             (['TeachingTimer/ContentView.swift'], True, True),
             (['PhoneSupport/SupportView.swift'], True, True),
+            (['TeachingTimerComplications/TeachingTimerComplication.swift'], True, True),
             (['docs/PRIVACY.md'], True, True),
             (['unknown-build-input'], True, True),
             (['TeachingTimer/ContentView.swift', 'README.md'], True, True),

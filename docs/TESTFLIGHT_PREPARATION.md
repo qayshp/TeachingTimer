@@ -48,6 +48,7 @@ not a completed teaching trial or general tester-export solution.
 | Existing development/teaching Watch app | `com.qayshp.TeachingTimer` |
 | App Store Connect record / distribution container | `net.qays.TeachingTimer` |
 | TestFlight Watch app and its data container | `net.qays.TeachingTimer.watchkitapp` |
+| Watch-face launcher extension | `net.qays.TeachingTimer.watchkitapp.complications` |
 | Isolated volume / timeline fixtures | `net.qays.TeachingTimer.VolumeProbe` / `net.qays.TeachingTimer.ClockProbe` |
 
 Normal Debug/Release builds retain the development identity and **Teaching Timer**
@@ -541,6 +542,15 @@ The publishing environment needs these secrets:
 | `DISTRIBUTION_CERTIFICATE_PASSWORD` | That `.p12` export password |
 | `CONTAINER_PROFILE_BASE64` | Base64 App Store profile for `net.qays.TeachingTimer` |
 | `WATCH_PROFILE_BASE64` | Base64 App Store profile for `net.qays.TeachingTimer.watchkitapp` |
+| `COMPLICATION_PROFILE_BASE64` | Base64 App Store profile for `net.qays.TeachingTimer.watchkitapp.complications` |
+
+The watch-face launcher adds a third signed payload inside the Watch app. Before
+publishing that candidate, register the extension identifier, create its explicit
+App Store provisioning profile using the existing CI distribution certificate,
+and store it as `COMPLICATION_PROFILE_BASE64` in the protected publishing
+environment. A new certificate is not required. Source support and unsigned
+verification do not establish that this profile or a signed release is ready;
+see [current status](../DEVELOPMENT_STATUS.md).
 
 Use an App Manager team API key for TestFlight metadata/distribution. Team keys
 have role-level access across the account's apps; the release client additionally
@@ -560,8 +570,11 @@ iterations imported successfully. This changes the encrypted package format,
 not the certificate signature or signing identity; no certificate was revoked.
 The initial hosted attempt stopped at import, before archiving or uploading.
 
-A temporary runner keychain and SDK-specific manual signing configuration use
-both profiles. Profiles must be unexpired, explicit App Store profiles for the
+A temporary runner keychain and per-target manual signing configuration use
+all three profiles. The Watch app and complication extension need distinct
+profile assignments even though both build for watchOS; a single SDK-wide
+Watch profile would sign the extension with the wrong identity. Export mappings
+must include all three identifiers. Profiles must be unexpired, explicit App Store profiles for the
 expected team and identifiers. Cleanup restores the previous keychain search
 list and removes only credentials/profiles created by this run. Secrets are not
 needed by normal pull-request verification.
@@ -618,7 +631,7 @@ Primary references: [GitHub Xcode signing](https://docs.github.com/en/actions/ho
 [Release automation PR 21](https://github.com/qayshp/TeachingTimer/pull/21) merged
 as `9dd7c1cde7bf7d53cf696d797a898c704ab65a3d`. All 13 Swift suites,
 161 Python tests, actionlint, Watch CI, CodeQL and AccessLint passed. The seven
-publishing secrets are configured with a dedicated API key, distribution
+publishing secrets at that checkpoint were configured with a dedicated API key, distribution
 certificate and two App Store profiles; existing signing credentials were not
 revoked. The new certificate/profiles expire November 4, 2027 at 08:25:55 UTC.
 

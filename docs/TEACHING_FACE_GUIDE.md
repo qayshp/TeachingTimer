@@ -3,6 +3,30 @@
 Start a class, check the suggested schedule, and try phone volume before teaching.
 The clock hands always show real time; a class does not reset them.
 
+## Quick launch from a watch face
+
+The new launcher candidate lets you add **Teaching Timer** as a complication.
+Check [current status](../DEVELOPMENT_STATUS.md) for build availability.
+
+1. Open Teaching Timer on the Watch once after installing the updated build.
+2. Press and hold your watch face, tap **Edit**, and choose **Complications**.
+3. Select a supported slot and choose **Teaching Timer**, then finish editing.
+
+Tap the complication to open the app. This does not start a new class, reset its
+schedule or request a session independently of the app's normal recovery logic.
+It supports circular, corner, inline and rectangular layouts; each watch face
+decides which slots are available. The complication is a static launcher rather
+than a live class timer, so it does not need access to saved class data or regular
+timeline refreshes.
+
+![Teaching Timer launcher at the top left of an Infograph watch face](images/complication-2026-11-13/se3-infograph-launcher.png)
+
+November 13, 2026: SE 3 40 mm Simulator, watchOS 27.2. The corner launcher
+appeared in the picker and opened Teaching Timer when tapped. Other families
+are supported by the extension; this image documents the corner layout.
+
+## Dial and controls
+
 ![SE 3 teaching face with a running class and count](images/polish-2026-11-05/se3-count.png)
 
 November 5, 2026 interface refinement: SE 3 40 mm Simulator, watchOS 27.2,

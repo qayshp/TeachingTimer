@@ -71,6 +71,16 @@ that runtime while retaining class timing. **End class** clears timing and stops
 creates another schedule with confirmation. An old class retires 30 minutes after
 scheduled end; a new class never starts silently.
 
+### Open from your watch face
+
+The new source candidate adds a **Teaching Timer** complication for quick launch;
+see [current verification](DEVELOPMENT_STATUS.md) for release availability. Open
+the updated Watch app once, then press and hold your watch face, tap **Edit**,
+choose **Complications**, and select **Teaching Timer** for a supported slot.
+Circular, corner, inline and rectangular layouts are supported; available slots
+depend on the watch face. Tap the complication to open the app without starting
+or resetting a class. It is a launcher, not a live class-progress display.
+
 ## When something goes wrong
 
 - Frozen song progress or blank media: swipe to the timer and back to recreate

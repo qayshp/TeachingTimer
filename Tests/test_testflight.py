@@ -26,7 +26,10 @@ class TestFlightChecks(unittest.TestCase):
                          ITSAppUsesNonExemptEncryption=False)
         watch = dict(container, CFBundleIdentifier=pilot.WATCH_ID, WKWatchOnly=True,
                      WKApplication=True, WKBackgroundModes=['mindfulness'])
-        return container, watch
+        complication = dict(container, CFBundleIdentifier=pilot.COMPLICATION_ID,
+                            CFBundlePackageType='XPC!', CFBundleSupportedPlatforms=['WatchOS'],
+                            NSExtension={'NSExtensionPointIdentifier': 'com.apple.widgetkit-extension'})
+        return container, watch, complication
 
     def profile(self):
         return dict(TeamIdentifier=['TEAM'], ExpirationDate=datetime.now() + timedelta(days=30),
@@ -35,11 +38,13 @@ class TestFlightChecks(unittest.TestCase):
 
     def exported_package(self, root, manifest=(ROOT / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes()):
         ipa = root / 'candidate.ipa'
-        container, watch = self.package()
+        container, watch, complication = self.package()
         with zipfile.ZipFile(ipa, 'w') as archive:
             archive.writestr('Payload/TeachingTimerDistribution.app/Info.plist', plistlib.dumps(container))
             archive.writestr('Payload/TeachingTimerDistribution.app/Watch/TeachingTimer.app/Info.plist',
                              plistlib.dumps(watch))
+            archive.writestr('Payload/TeachingTimerDistribution.app/Watch/TeachingTimer.app/PlugIns/TeachingTimerComplications.appex/Info.plist',
+                             plistlib.dumps(complication))
             if manifest is not None:
                 archive.writestr('Payload/TeachingTimerDistribution.app/Watch/TeachingTimer.app/PrivacyInfo.xcprivacy',
                                  manifest)
@@ -48,7 +53,10 @@ class TestFlightChecks(unittest.TestCase):
     def export_command(self, *args):
         """Synthetic tool responses; never inspect a real signing identity."""
         app = Path(args[-1])
-        identifier = pilot.WATCH_ID if 'Watch' in app.parts else pilot.CONTAINER_ID
+        if app.name == 'embedded.mobileprovision':
+            app = app.parent
+        identifier = (pilot.COMPLICATION_ID if app.suffix == '.appex' else
+                      pilot.WATCH_ID if 'Watch' in app.parts else pilot.CONTAINER_ID)
         output = b''
         if args[:4] == ('security', 'cms', '-D', '-i'):
             profile = self.profile()
@@ -63,43 +71,70 @@ class TestFlightChecks(unittest.TestCase):
         return subprocess.CompletedProcess(args, 0, output, b'')
 
     def test_only_separate_distribution_identity_is_accepted(self):
-        container, watch = self.package()
-        self.assertTrue(all(pilot.package_checks(container, watch).values()))
+        container, watch, complication = self.package()
+        self.assertTrue(all(pilot.package_checks(container, watch, complication).values()))
         watch['CFBundleIdentifier'] = 'com.qayshp.TeachingTimer'
-        self.assertFalse(pilot.package_checks(container, watch)['watchIdentifier'])
+        self.assertFalse(pilot.package_checks(container, watch, complication)['watchIdentifier'])
 
     def test_optional_companion_requires_independence_and_matching_identity(self):
-        container, watch = self.package()
+        container, watch, complication = self.package()
         watch.update(WKWatchOnly=False, WKRunsIndependentlyOfCompanionApp=True,
                      WKCompanionAppBundleIdentifier=pilot.CONTAINER_ID)
-        self.assertTrue(all(pilot.package_checks(container, watch).values()))
+        self.assertTrue(all(pilot.package_checks(container, watch, complication).values()))
         watch['WKCompanionAppBundleIdentifier'] = 'wrong.example'
-        self.assertFalse(pilot.package_checks(container, watch)['noCompanionRequirement'])
+        self.assertFalse(pilot.package_checks(container, watch, complication)['noCompanionRequirement'])
         watch['WKRunsIndependentlyOfCompanionApp'] = False
-        self.assertFalse(pilot.package_checks(container, watch)['independentWatch'])
+        self.assertFalse(pilot.package_checks(container, watch, complication)['independentWatch'])
 
     def test_incompatible_package_is_rejected(self):
-        container, watch = self.package()
+        container, watch, complication = self.package()
         watch.update(CFBundleVersion='27', WKCompanionAppBundleIdentifier=pilot.CONTAINER_ID,
                      WKWatchOnly=False, WKBackgroundModes=[])
-        checks = pilot.package_checks(container, watch)
+        checks = pilot.package_checks(container, watch, complication)
         for key in ('versionsMatch', 'noCompanionRequirement', 'independentWatch', 'mindfulnessRuntime'):
             self.assertFalse(checks[key], key)
 
-    def test_both_payloads_require_explicit_export_compliance_declaration(self):
-        for kind in ('container', 'watch'):
+    def test_complication_requires_correct_identity_platform_extension_point_and_versions(self):
+        fields = [('CFBundleIdentifier', pilot.WATCH_ID, 'complicationIdentifier'),
+                  ('CFBundleSupportedPlatforms', ['iPhoneOS'], 'complicationPlatform'),
+                  ('CFBundlePackageType', 'APPL', 'complicationPackageType'),
+                  ('NSExtension', {'NSExtensionPointIdentifier': 'wrong.extension'}, 'complicationExtensionPoint'),
+                  ('CFBundleVersion', '27', 'versionsMatch'),
+                  ('CFBundleShortVersionString', '2.0', 'versionsMatch')]
+        for field, value, failed_check in fields:
+            with self.subTest(field=field):
+                container, watch, complication = self.package()
+                complication[field] = value
+                checks = pilot.package_checks(container, watch, complication)
+                self.assertFalse(checks[failed_check])
+                self.assertTrue(all(value for key, value in checks.items() if key != failed_check))
+
+    def test_missing_or_multiple_complication_extensions_are_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            watch = Path(folder) / 'TeachingTimer.app'
+            with self.assertRaisesRegex(ValueError, 'exactly one'):
+                pilot.complication_path(watch)
+            extension = watch / 'PlugIns/TeachingTimerComplications.appex'
+            extension.mkdir(parents=True)
+            self.assertEqual(pilot.complication_path(watch), extension)
+            (watch / 'PlugIns/Unexpected.appex').mkdir()
+            with self.assertRaisesRegex(ValueError, 'exactly one'):
+                pilot.complication_path(watch)
+
+    def test_all_payloads_require_explicit_export_compliance_declaration(self):
+        for kind in ('container', 'watch', 'complication'):
             for value in (None, True, 0):
                 with self.subTest(kind=kind, value=value):
-                    container, watch = self.package()
-                    payload = container if kind == 'container' else watch
+                    container, watch, complication = self.package()
+                    payload = {'container': container, 'watch': watch, 'complication': complication}[kind]
                     if value is None:
                         payload.pop('ITSAppUsesNonExemptEncryption')
                     else:
                         payload['ITSAppUsesNonExemptEncryption'] = value
-                    checks = pilot.package_checks(container, watch)
+                    checks = pilot.package_checks(container, watch, complication)
                     self.assertFalse(checks[kind + 'ExportComplianceDeclared'])
-                    other = 'watch' if kind == 'container' else 'container'
-                    self.assertTrue(checks[other + 'ExportComplianceDeclared'])
+                    for other in {'container', 'watch', 'complication'} - {kind}:
+                        self.assertTrue(checks[other + 'ExportComplianceDeclared'])
 
     def test_app_store_profile_is_distinct_from_development(self):
         profile = self.profile()
@@ -127,7 +162,7 @@ class TestFlightChecks(unittest.TestCase):
         self.assertFalse(pilot.entitlement_checks(values, pilot.WATCH_ID, 'TEAM')['debuggingDisabled'])
         self.assertFalse(pilot.entitlement_checks(values, pilot.CONTAINER_ID, 'OTHER')['application'])
 
-    def test_export_checks_both_signed_apps_and_parses_xml_entitlements(self):
+    def test_export_checks_all_signed_payloads_and_parses_xml_entitlements(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             ipa = self.exported_package(root)
@@ -135,24 +170,26 @@ class TestFlightChecks(unittest.TestCase):
                 result = pilot.export_checks(ipa, root, 'TEAM')
             self.assertTrue(result['passed'])
             self.assertEqual(result['sha256'], hashlib.sha256(ipa.read_bytes()).hexdigest())
-            self.assertEqual(result['signatures'], {'container': True, 'watch': True})
-            self.assertEqual(command.call_count, 6)
+            self.assertEqual(result['signatures'], {'container': True, 'watch': True, 'complication': True})
+            self.assertEqual(command.call_count, 9)
             # ':' requests plist output. A bare '-' can return human-readable
             # text on current codesign, which broke the first real export audit.
             entitlement_calls = [call.args for call in command.call_args_list
                                  if call.args[:3] == ('codesign', '-d', '--entitlements')]
-            self.assertEqual(len(entitlement_calls), 2)
+            self.assertEqual(len(entitlement_calls), 3)
             self.assertTrue(all(call[3] == ':-' for call in entitlement_calls))
 
-    def test_export_rejects_bad_signature_or_signed_entitlements_on_either_app(self):
-        for kind in ('container', 'watch'):
+    def test_export_rejects_bad_signature_or_signed_entitlements_on_every_payload(self):
+        for kind in ('container', 'watch', 'complication'):
             for failure in ('signature', 'entitlements'):
                 with self.subTest(kind=kind, failure=failure), tempfile.TemporaryDirectory() as folder:
                     root = Path(folder)
                     ipa = self.exported_package(root)
                     def command(*args):
                         result = self.export_command(*args)
-                        actual_kind = 'watch' if 'Watch' in Path(args[-1]).parts else 'container'
+                        app = Path(args[-1])
+                        actual_kind = ('complication' if app.suffix == '.appex' else
+                                       'watch' if 'Watch' in app.parts else 'container')
                         if actual_kind != kind:
                             return result
                         if failure == 'signature' and args[1] == '--verify':
@@ -250,7 +287,8 @@ class SignedSourceChecks(unittest.TestCase):
                 signing = Path(folder) / 'signing.json'
                 signing.write_text(json.dumps(dict(teamID='TEAM000001', xcconfig=str(config), profiles={
                     pilot.CONTAINER_ID: '12345678-1234-1234-1234-123456789ABC',
-                    pilot.WATCH_ID: '12345678-1234-1234-1234-123456789ABD'})))
+                    pilot.WATCH_ID: '12345678-1234-1234-1234-123456789ABD',
+                    pilot.COMPLICATION_ID: '12345678-1234-1234-1234-123456789ABE'})))
                 extra += ['--signing-config', str(signing)]
             def run(name, command, destination, timeout):
                 commands.append((name, command))
@@ -259,11 +297,14 @@ class SignedSourceChecks(unittest.TestCase):
                     container = archive / 'Products/Applications/TeachingTimerDistribution.app'
                     watch = container / 'Watch/TeachingTimer.app'
                     watch.mkdir(parents=True)
-                    container_info, watch_info = TestFlightChecks.package()
+                    container_info, watch_info, complication_info = TestFlightChecks.package()
                     if build_number:
-                        container_info['CFBundleVersion'] = watch_info['CFBundleVersion'] = build_number
+                        container_info['CFBundleVersion'] = watch_info['CFBundleVersion'] = complication_info['CFBundleVersion'] = build_number
                     (container / 'Info.plist').write_bytes(plistlib.dumps(container_info))
                     (watch / 'Info.plist').write_bytes(plistlib.dumps(watch_info))
+                    extension = watch / 'PlugIns/TeachingTimerComplications.appex'
+                    extension.mkdir(parents=True)
+                    (extension / 'Info.plist').write_bytes(plistlib.dumps(complication_info))
                     (archive / 'Info.plist').write_bytes(plistlib.dumps({'ApplicationProperties': {
                         'ApplicationPath': 'Applications/TeachingTimerDistribution.app', 'Team': 'TEAM000001' if manual else 'TEAM'}}))
                 elif name == 'export':
@@ -403,7 +444,7 @@ class SignedSourceChecks(unittest.TestCase):
                 (root / 'untracked.swift').write_text('new source\n')
                 self.assertTrue(pilot.source_state()['dirty'])
 
-    def test_ci_override_keeps_exact_source_and_both_payload_versions(self):
+    def test_ci_override_keeps_exact_source_and_all_payload_versions(self):
         clean = {'head': self.head, 'dirty': False}
         report, error, commands, _, _, _ = self.prepare([clean, clean], build_number='42', separate_source=True)
         self.assertIsNone(error)
@@ -412,14 +453,14 @@ class SignedSourceChecks(unittest.TestCase):
         self.assertIn('CURRENT_PROJECT_VERSION=42', commands[0][1])
         self.assertTrue(report['sourceRevisionVerified'])
 
-    def test_manual_ci_signing_uses_two_profiles_without_interactive_provisioning(self):
+    def test_manual_ci_signing_uses_three_profiles_without_interactive_provisioning(self):
         clean = {'head': self.head, 'dirty': False}
         report, error, commands, _, _, options = self.prepare([clean, clean], manual=True)
         self.assertIsNone(error)
         self.assertIn('-xcconfig', commands[0][1])
         self.assertTrue(all('-allowProvisioningUpdates' not in command for _, command in commands))
         self.assertEqual(options[0]['signingStyle'], 'manual')
-        self.assertEqual(set(options[0]['provisioningProfiles']), {pilot.CONTAINER_ID, pilot.WATCH_ID})
+        self.assertEqual(set(options[0]['provisioningProfiles']), {pilot.CONTAINER_ID, pilot.WATCH_ID, pilot.COMPLICATION_ID})
         self.assertTrue(options[0]['testFlightInternalTestingOnly'])
         self.assertEqual(report['stage'], 'signed_internal_testflight_export_verified')
 

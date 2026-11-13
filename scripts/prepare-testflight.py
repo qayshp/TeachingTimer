@@ -23,6 +23,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 CONTAINER_ID = 'net.qays.TeachingTimer'
 WATCH_ID = CONTAINER_ID + '.watchkitapp'
+COMPLICATION_ID = WATCH_ID + '.complications'
 
 
 def module(name, file):
@@ -54,17 +55,30 @@ def verify_signed_source(before, after, archived_revision):
         raise ValueError('Archive revision does not exactly match the captured clean HEAD; refusing export')
 
 
-def package_checks(container, watch):
+def complication_path(watch):
+    extensions = list((watch / 'PlugIns').glob('*.appex'))
+    if len(extensions) != 1:
+        raise ValueError('Expected exactly one embedded Watch complication extension')
+    return extensions[0]
+
+
+def package_checks(container, watch, complication):
     return dict(containerIdentifier=container.get('CFBundleIdentifier') == CONTAINER_ID,
                 watchIdentifier=watch.get('CFBundleIdentifier') == WATCH_ID,
+                complicationIdentifier=complication.get('CFBundleIdentifier') == COMPLICATION_ID,
+                complicationExtensionPoint=complication.get('NSExtension', {}).get(
+                    'NSExtensionPointIdentifier') == 'com.apple.widgetkit-extension',
+                complicationPackageType=complication.get('CFBundlePackageType') == 'XPC!',
+                complicationPlatform=complication.get('CFBundleSupportedPlatforms') == ['WatchOS'],
                 containerExportComplianceDeclared=container.get('ITSAppUsesNonExemptEncryption') is False,
                 watchExportComplianceDeclared=watch.get('ITSAppUsesNonExemptEncryption') is False,
+                complicationExportComplianceDeclared=complication.get('ITSAppUsesNonExemptEncryption') is False,
                 independentWatch=(watch.get('WKWatchOnly') is True or watch.get('WKRunsIndependentlyOfCompanionApp') is True),
                 watchApplication=watch.get('WKApplication') is True,
                 noCompanionRequirement=('WKCompanionAppBundleIdentifier' not in watch or
                     (watch.get('WKRunsIndependentlyOfCompanionApp') is True and
                      watch.get('WKCompanionAppBundleIdentifier') == CONTAINER_ID)),
-                versionsMatch=all(container.get(k) == watch.get(k) and bool(watch.get(k))
+                versionsMatch=all(container.get(k) == watch.get(k) == complication.get(k) and bool(watch.get(k))
                                   for k in ('CFBundleVersion', 'CFBundleShortVersionString')),
                 mindfulnessRuntime='mindfulness' in watch.get('WKBackgroundModes', []))
 
@@ -103,13 +117,16 @@ def export_checks(ipa, output, team):
     if len(watches) != 1:
         raise ValueError('Expected exactly one exported Watch payload')
     watch = watches[0]
+    complication = complication_path(watch)
     checks = package_checks(plistlib.loads((container / 'Info.plist').read_bytes()),
-                            plistlib.loads((watch / 'Info.plist').read_bytes()))
+                            plistlib.loads((watch / 'Info.plist').read_bytes()),
+                            plistlib.loads((complication / 'Info.plist').read_bytes()))
     checks['watchPrivacyManifestMatchesPolicy'] = artifact.privacy_manifest_matches_policy(watch)
     signatures = {}
     profiles = {}
     entitlements = {}
-    for kind, app, identifier in [('container', container, CONTAINER_ID), ('watch', watch, WATCH_ID)]:
+    for kind, app, identifier in [('container', container, CONTAINER_ID), ('watch', watch, WATCH_ID),
+                                   ('complication', complication, COMPLICATION_ID)]:
         signatures[kind] = artifact.command('codesign', '--verify', '--deep', '--strict', app).returncode == 0
         decoded = artifact.command('security', 'cms', '-D', '-i', app / 'embedded.mobileprovision')
         if decoded.returncode != 0:
@@ -134,7 +151,7 @@ def main(argv=None):
     parser.add_argument('--external-eligible', action='store_true',
                         help='With --signed, permit eligibility for external TestFlight review; never uploads or invites')
     parser.add_argument('--source', type=Path, help='Separate clean application checkout; defaults to this repository')
-    parser.add_argument('--build-number', help='Override both payload build numbers without editing committed source')
+    parser.add_argument('--build-number', help='Override all payload build numbers without editing committed source')
     parser.add_argument('--signing-config', type=Path, help='Private CI signing configuration; requires --signed')
     args = parser.parse_args(argv)
     if args.external_eligible and not args.signed:
@@ -152,7 +169,7 @@ def main(argv=None):
     signing = None
     if args.signing_config:
         signing = json.loads(args.signing_config.read_text())
-        if (set(signing.get('profiles', {})) != {CONTAINER_ID, WATCH_ID}
+        if (set(signing.get('profiles', {})) != {CONTAINER_ID, WATCH_ID, COMPLICATION_ID}
                 or not re.fullmatch(r'[A-Z0-9]{10}', signing.get('teamID', ''))
                 or any(not re.fullmatch(r'[A-Fa-f0-9-]{36}', value) for value in signing['profiles'].values())
                 or not Path(signing.get('xcconfig', '')).is_file()):
@@ -205,12 +222,14 @@ def main(argv=None):
             raise ValueError('TestFlight requires the watch-only distribution container')
         container_info = plistlib.loads((container / 'Info.plist').read_bytes())
         watch_info = plistlib.loads((watch / 'Info.plist').read_bytes())
-        report.update(checks=package_checks(container_info, watch_info), version=inspection['version'],
+        complication_info = plistlib.loads((complication_path(watch) / 'Info.plist').read_bytes())
+        report.update(checks=package_checks(container_info, watch_info, complication_info), version=inspection['version'],
                       build=inspection['build'], revision=inspection['revision'])
         if not all(report['checks'].values()) or not all(inspection['checks'].values()):
             raise ValueError('Archive identity, packaging, resources or symbols failed validation')
         if args.build_number and (inspection['build'] != args.build_number or any(
-                info.get('CFBundleVersion') != args.build_number for info in (container_info, watch_info))):
+                info.get('CFBundleVersion') != args.build_number
+                for info in (container_info, watch_info, complication_info))):
             raise ValueError('Archive did not retain the requested build number')
         report['stage'] = 'unsigned_archive_verified'
         if args.signed:

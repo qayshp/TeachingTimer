@@ -11,6 +11,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 APP_PREFIXES = (
     "TeachingTimer/",
+    "TeachingTimerComplications/",
     "PhoneSupport/",
     "TeachingTimer.xcodeproj/",
     "Configurations/",
