@@ -37,6 +37,9 @@ and both hosted paths passed; [exact coverage](AUTOMATION.md#booted-watch-smoke-
 still excludes menu interactions, physical audio/haptics and full-length renewal.
 The follow-up adds compiler/source hygiene and clearer gear/session controls;
 main verification can no longer be cancelled by a later docs-only push.
+Screenshot OCR [#30](https://github.com/qayshp/TeachingTimer/issues/30) is corrected
+and the full local action suite passes on SE 3 and Ultra. CI now executes the
+recognizer instead of only compiling it; [coverage and remaining measurement limits](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
 is complete: a concise status page, user-facing changelog and separate historical

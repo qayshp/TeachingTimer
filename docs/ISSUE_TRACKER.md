@@ -27,6 +27,11 @@ The November 5 full count/Lock suite passed; all seven text-recognition warnings
 were hand occlusion in the original images. Some early multi-size captures lacked
 native/system elements that appeared later, so #17 remains open without assigning
 a cause. See the [full review](REVIEW_2026-11-05.md).
+The November 12 full SE/Ultra runs passed their action assertions and completed
+counts while reported locked. Original-image review attributes the text warnings
+to foreground hands; Ultra's outline flags expose fixed horizontal sampling
+insets in the measurement helper. That calibration limitation is recorded in #17
+separately from app disappearance. [Follow-up evidence](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
 
 The [roadmap](ROADMAP.md) orders these review follow-ups; each issue has its own
 completion checklist:
@@ -40,6 +45,7 @@ new automated coverage, the hosted failure and a next action for every open issu
 - [#26 Private tester journal sharing](https://github.com/qayshp/TeachingTimer/issues/26): [proposed export and delivery gates](DIAGNOSTIC_EXPORT_PLAN.md); no feature or upload service is shipped.
 - [#14 Release traceability and contribution safeguards](https://github.com/qayshp/TeachingTimer/issues/14)
 - [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15): invariant table and seeded tests implemented; performance measurement remains.
+- [#30 Screenshot OCR stability](https://github.com/qayshp/TeachingTimer/issues/30): fixed by bounded CPU-backed fast recognition, exact multi-scale corroboration and observed icon/label pairs. Full SE/Ultra actions pass; CI executes real recognition on nine synthetic labels. [Evidence](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
 - [#24 Release ordering and verification reuse](https://github.com/qayshp/TeachingTimer/issues/24): overlapping publishers, duplicated checks and a confirmed synthetic Pacific daylight-saving build-number reversal. Main Watch-check cancellation by later docs pushes is fixed with per-commit groups.
 
 Completed: [#12 documentation and changelog](https://github.com/qayshp/TeachingTimer/issues/12),

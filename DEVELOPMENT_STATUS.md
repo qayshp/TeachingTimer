@@ -80,6 +80,14 @@ SE 3 Support QR are recorded in the [review](docs/REVIEW_2026-11-12.md#follow-up
 release workflow all passed at `16a38f1d9067`. Build 261112.0232.39 is available
 to Maintainers. No new physical installation is established.
 
+The subsequent [OCR follow-up](docs/REVIEW_2026-11-12.md#screenshot-ocr-follow-up)
+restores the complete interactive check: all 21 actions pass on both SE 3 40 mm
+and Ultra 4 49 mm. SE lifecycle/relaunch, three retirement scenarios and locked
+full-count captures on both sizes also pass. All 16 Swift suites and 298 Python
+tests pass. Changes through `5d9bd66` are test tooling and documentation only;
+the TestFlight app and physical installation are unchanged. The separate Ultra
+outline-measurement calibration limitation remains recorded in #17.
+
 ## Optional companion — November 12
 
 The companion adds an optional iPhone support app and moves Watch export to
