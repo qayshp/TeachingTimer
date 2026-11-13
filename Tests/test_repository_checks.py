@@ -83,7 +83,8 @@ class RepositoryChecks(unittest.TestCase):
         cases = ['.env', 'config/.env.production', 'signing/login.keychain-db', 'signing/login.keychain',
                  'release.ipa', 'release.dSYM.zip', 'Results.xcresult/Info.plist',
                  'DerivedData-local/build-setting.txt', '.build/package-cache', 'build/product',
-                 'workspace.xcuserstate', 'helper.pyc']
+                 'workspace.xcuserstate', 'helper.pyc', 'Widget.appex/Info.plist',
+                 'build-products/Widget.appex/Widget']
         for name in cases:
             with self.subTest(name=name):
                 # The published-file guard must work even if git add --force

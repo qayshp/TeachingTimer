@@ -5,8 +5,10 @@ The clock hands always show real time; a class does not reset them.
 
 ## Quick launch from a watch face
 
-The new launcher candidate lets you add **Teaching Timer** as a complication.
-Check [current status](../DEVELOPMENT_STATUS.md) for build availability.
+Maintainer TestFlight build **261113.0211.55** adds **Teaching Timer** as a
+complication. Check [current status](../DEVELOPMENT_STATUS.md) for distribution
+and physical-test limits. For the TestFlight version, choose the
+**Teaching Timer Beta** group in the Watch's complication picker.
 
 1. Open Teaching Timer on the Watch once after installing the updated build.
 2. Press and hold your watch face, tap **Edit**, and choose **Complications**.

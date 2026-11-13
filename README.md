@@ -73,9 +73,10 @@ scheduled end; a new class never starts silently.
 
 ### Open from your watch face
 
-The new source candidate adds a **Teaching Timer** complication for quick launch;
-see [current verification](DEVELOPMENT_STATUS.md) for release availability. Open
-the updated Watch app once, then press and hold your watch face, tap **Edit**,
+A **Teaching Timer** complication is available for quick launch in Maintainer
+TestFlight build **261113.0211.55** and later; see [current verification](DEVELOPMENT_STATUS.md)
+for distribution and physical-test limits. Open the updated Watch app once, then
+press and hold your watch face, tap **Edit**,
 choose **Complications**, and select **Teaching Timer** for a supported slot.
 Circular, corner, inline and rectangular layouts are supported; available slots
 depend on the watch face. Tap the complication to open the app without starting

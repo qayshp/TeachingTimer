@@ -11,7 +11,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | --- | --- |
 | External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
 | Public invitation, checked November 5 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae) now offers **View in TestFlight** and joining instructions. Initial configured limit: 100. The public page does not expose the eligible build/version; a new external tester's installation remains unverified. |
-| Latest verified internal TestFlight release | **1.0 (261112.0232.39)**, source `16a38f1d9067`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43201277099) passed verification, signing/export, upload, Apple `VALID`, notes/group readback and Maintainer `IN_BETA_TESTING`, available November 12 at 02:56:32 PST. Adds the shorter Help/support flows, dedicated scan pages and clearer phone report actions. Availability does not establish installation. |
+| Latest verified internal TestFlight release | **1.0 (261113.0211.55)**, source `425767d7340f`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43407153075) passed exact-source Watch verification, three-payload signing/export, upload, Apple `VALID`, notes/group readback and Maintainer `IN_BETA_TESTING`, available November 13 at 02:33:56 PST. Adds the watch-face launcher. Physical installation/complication use is unverified; the prior physical journal still identifies build 39. |
 | First hosted internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). Subsequent app-affecting main pushes publish through the same gated workflow. |
 | Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. TestFlight `1.0 (261104.1939.6)` includes the change; the owner reports song progress still freezes. Isolation alone did not fix the issue. |
 | Physical Watch / companion | The November 12 Watch-prepared report reached support and parsed: **261112.0232.39**, source `16a38f1d9067`, 1,225,763 bytes / 1,628 events. Fresh Watch journals corroborate it. The phone's installed build was not independently read. The earlier build-32 phone-requested delivery remains a separate successful flow; first linking/Mail recovery remains historical. [Current observations](docs/VOLUME_INCIDENT_2026-11-12.md). |
@@ -61,9 +61,9 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 - Mindfulness runtime suitability for guided yoga teaching and automatic renewal
   still needs explicit Apple guidance. Beta review does not settle intended use.
 
-## Watch-face launcher candidate — November 13
+## Watch-face launcher — November 13
 
-The new source candidate adds a static **Teaching Timer** complication in all
+Build **261113.0211.55** adds a static **Teaching Timer** complication in all
 four accessory families: circular, corner, inline and rectangular. Available
 slots depend on the selected watch face. Open the updated Watch app once, then
 add the launcher while editing that face. Tapping opens the app without creating
@@ -73,15 +73,21 @@ updates. See the [quick-launch guide](docs/TEACHING_FACE_GUIDE.md#quick-launch-f
 
 The Simulator app and both unsigned archives build successfully. All 16 Swift
 suites and 368 Python checks pass, including extension packaging and three-payload
-release safeguards. On SE 3 40 mm / watchOS 27.2 Simulator, the corner launcher
-appeared in the picker, rendered on Infograph, and opened the app when tapped.
-It did not create a class, and a second return preserved an active class byte for
-byte. Other families and physical-Watch interaction remain separate checks.
+release safeguards. On SE 3 40 mm / watchOS 27.2 Simulator, corner and circular
+launchers appeared in Infograph, and the rectangular launcher appeared in Modular.
+All three opened the app when tapped and preserved saved class bytes. Opening
+with no class did not create one. Inline rendering and physical-Watch interaction
+remain separate checks. [Watch CI](https://github.com/qayshp/TeachingTimer/actions/runs/43407153076)
+passed all 17 verification stages on clean source. The independent
+[CodeQL run](https://github.com/qayshp/TeachingTimer/actions/runs/43407152903)
+also passed Actions, Python and the full Swift build/analysis.
 The third App Store profile for
 `net.qays.TeachingTimer.watchkitapp.complications` is configured in the protected
 `COMPLICATION_PROFILE_BASE64` secret; it reuses the existing distribution
-certificate and expires November 4, 2027. This source checkpoint does not establish
-a new TestFlight release or physical installation. Tracked in [issue #31](https://github.com/qayshp/TeachingTimer/issues/31).
+certificate and expires November 4, 2027. Signed export checked all three profiles,
+identities, signatures, entitlements and matching versions. Apple processing and
+Maintainer availability passed; that does not establish installation. Tracked in
+[issue #31](https://github.com/qayshp/TeachingTimer/issues/31).
 
 ## November 12 review verification
 

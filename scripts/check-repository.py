@@ -24,7 +24,7 @@ PRIVATE_NAMES = {'RuntimeDiagnostics.json', 'InterfaceDiagnostics.json', 'Landma
 PRIVATE_SUFFIXES = ('.p12', '.p8', '.mobileprovision', '.provisionprofile', '.keychain', '.keychain-db',
                     '.ipa', '.dSYM.zip', '.tar', '.tar.gz', '.log', '.xcuserstate', '.xccheckout', '.xcscmblueprint')
 GENERATED_DIRECTORIES = {'build', '.build', 'xcuserdata', '__pycache__'}
-GENERATED_BUNDLES = ('.app', '.xcarchive', '.logarchive', '.dSYM', '.xcresult')
+GENERATED_BUNDLES = ('.app', '.appex', '.xcarchive', '.logarchive', '.dSYM', '.xcresult')
 SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml', '.xcconfig'}
 FENCE = re.compile(r'^ {0,3}(`{3,}|~{3,})(.*)$')
 HEADING = re.compile(r'^ {0,3}#{1,6}(?:[ \t]+(.*)|[ \t]*)$')

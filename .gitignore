@@ -13,6 +13,7 @@ build/
 DerivedData*/
 .build/
 *.app
+*.appex
 *.ipa
 *.xcarchive
 *.dSYM
