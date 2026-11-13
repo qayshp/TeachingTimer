@@ -26,6 +26,11 @@ class TimerControlEvidenceChecks(unittest.TestCase):
         self.assertEqual(controls.missing_labels([
             self.row('Class', .7), self.row('Stop count', .77, .5)], True), ['Stop count'])
 
+    def test_fast_text_needs_corroboration_to_clear_a_review_warning(self):
+        row = dict(self.row('Stop count', .77, .5), recognitionLevel='fast', corroborated=True)
+        self.assertEqual(controls.missing_labels([row], True), [])
+        self.assertEqual(controls.missing_labels([dict(row, corroborated=False)], True), ['Stop count'])
+
     def test_narrow_fallback_and_foreground_occlusion_are_distinct(self):
         self.assertEqual(controls.missing_labels([
             self.row('Class', .1), self.row('Count', .77)], False), [])

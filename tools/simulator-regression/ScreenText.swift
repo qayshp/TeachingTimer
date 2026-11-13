@@ -83,8 +83,13 @@ do {
     let rows = (original + additions).map { row -> [String: Any] in
         let comparison = original.contains { $0.text == row.text && $0.x == row.x && $0.y == row.y }
             ? scaled : insetScaled
+        // An icon may become extra text at just one scale ("eg Privacy").
+        // Preserve the original row; both inset reads must independently agree
+        // with that exact word and center before this alternate confirmation.
+        let verified = corroborated(row, in: comparison) ||
+            (corroborated(row, in: insetOriginal) && corroborated(row, in: insetScaled))
         return ["text": row.text, "x": row.x, "y": row.y, "confidence": row.confidence,
-                "recognitionLevel": "fast", "corroborated": corroborated(row, in: comparison)]
+                "recognitionLevel": "fast", "corroborated": verified]
     }
     FileHandle.standardOutput.write(try JSONSerialization.data(withJSONObject: rows, options: [.sortedKeys]))
     log("complete")

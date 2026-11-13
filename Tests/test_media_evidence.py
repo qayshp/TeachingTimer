@@ -21,6 +21,12 @@ class MediaEvidenceTests(unittest.TestCase):
         self.assertEqual(observation([dict(text='Not Playing', confidence=.99, x=.5, y=.4)],
                                      metrics()), 'NOT_PLAYING_TEXT_PRESENT')
 
+    def test_fast_text_cannot_certify_media_without_corroboration(self):
+        row = dict(text='Not Playing', confidence=.5, x=.5, y=.4,
+                   recognitionLevel='fast', corroborated=True)
+        self.assertEqual(observation([row], metrics()), 'NOT_PLAYING_TEXT_PRESENT')
+        self.assertEqual(observation([dict(row, corroborated=False)], metrics()), 'CONTENT_PRESENT_REVIEW_REQUIRED')
+
     def test_system_text_cannot_certify_content(self):
         self.assertEqual(observation([dict(text='Not Playing', confidence=.99, x=.5, y=.1)],
                                      metrics(0)), 'NEAR_BLACK_CONTENT_REVIEW_REQUIRED')

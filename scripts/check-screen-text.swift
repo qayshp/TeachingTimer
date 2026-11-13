@@ -51,7 +51,7 @@ func render(name: String, labels: [[String]], output: URL) throws -> Fixture {
     NSGraphicsContext.current = context
     NSColor.black.setFill()
     NSRect(x: 0, y: 0, width: imageWidth, height: imageHeight).fill()
-    // The leading Help symbol exercises icon-inset recognition and conversion
+    // Leading Help/Privacy symbols exercise icon-inset recognition and conversion
     // back to full-image coordinates. These remain synthetic screenshot labels.
     let isNavigation = name == "settings"
     var expected: [Label] = []
@@ -61,8 +61,9 @@ func render(name: String, labels: [[String]], output: URL) throws -> Fixture {
                           width: Double(imageWidth) - 20, height: 60)
         NSColor(calibratedWhite: 0.12, alpha: 1).setFill()
         NSBezierPath(roundedRect: card, xRadius: 12, yRadius: 12).fill()
-        if isNavigation && index == 1 {
-            guard let symbol = NSImage(systemSymbolName: "questionmark.circle", accessibilityDescription: nil)?
+        if isNavigation && (index == 1 || index == 2) {
+            let symbolName = index == 1 ? "questionmark.circle" : "hand.raised.fill"
+            guard let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)?
                 .withSymbolConfiguration(NSImage.SymbolConfiguration(paletteColors: [.white])) else {
                 throw SmokeFailure("Could not create the synthetic navigation icon")
             }

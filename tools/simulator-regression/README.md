@@ -169,7 +169,9 @@ image sizes. Fast scores are retained unchanged: an actionable row needs raw
 confidence at least 0.5 and identical text at nearby normalized centers in both
 passes. An icon-inset region is checked at both sizes to recover otherwise
 missing lines such as Help; its coordinates are converted to the full screenshot.
-It never replaces an uncertain original line or assembles guessed labels.
+Both inset reads may also confirm an existing original word and center when an
+icon becomes extra text in the full-frame enlarged read. Original words and raw
+scores remain unchanged; the helper never assembles guessed labels.
 The two scales are a consistency check, not independent proof of accuracy.
 Exact permitted labels, known icon/label pairs, duplicate rejection, clipped-row
 exclusion and post-action persisted-state assertions remain necessary. Legacy
