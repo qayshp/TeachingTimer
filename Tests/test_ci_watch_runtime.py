@@ -26,13 +26,17 @@ class CIWatchRuntimeChecks(unittest.TestCase):
             return re.search(r'^  ' + name + r':\n(.*?)(?=^  [a-z][\w-]*:|\Z)', text,
                              re.M | re.S).group(1)
         self.assertIn("if: needs.changes.outputs.mac_verify == 'true'", job(check, 'verify'))
-        self.assertIn("if: needs.changes.outputs.release_verify == 'true'", job(release, 'verify'))
+        self.assertIn("if: needs.changes.outputs.release_verify == 'true'", job(release, 'source'))
+        self.assertIn("if: github.event_name == 'workflow_dispatch' && needs.changes.outputs.release_verify == 'true'", job(release, 'verify'))
+        self.assertIn("if: github.event_name == 'push' && needs.changes.outputs.release_verify == 'true'", job(release, 'verify-reused'))
         self.assertIn('release_verify: ${{ steps.impact.outputs.release_verify }}', job(release, 'changes'))
         self.assertIn('python3 scripts/change-impact.py --all', job(release, 'changes'))
         self.assertIn("needs.changes.outputs.release_verify != 'true'", job(release, 'tooling-checks'))
         # Skipping a redundant non-publishing pass must not relax publication.
         self.assertIn("needs.changes.outputs.publish == 'true'", job(release, 'release'))
         self.assertIn("needs.verify.result == 'success'", job(release, 'release'))
+        self.assertIn("needs.verify-reused.result == 'success'", job(release, 'release'))
+        self.assertIn("needs.source.result == 'success'", job(release, 'release'))
 
     def test_pr_verification_uses_release_toolchain_and_preserves_real_smoke(self):
         root = Path(__file__).resolve().parents[1]

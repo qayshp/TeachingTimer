@@ -126,32 +126,72 @@ or manual events. The baseline above remains the pre-migration measurement.
 Database metadata, original source hashes, SARIF/rule comparisons and run/job
 records are retained privately alongside the baseline evidence.
 
+## Implemented: exact-source verification reuse
+
+Automatic main-branch app releases no longer repeat the Watch workflow's complete
+Mac verification. The release workflow resolves immutable source and inputs on
+Ubuntu, then uses `scripts/reuse-watch-verification.py` to wait for the trusted
+`.github/workflows/check.yml` **push to main** at that exact full SHA. Manual
+rehearsal and publish keep fresh full Mac verification, including branch
+rehearsals; PR results are never promoted into main-release evidence.
+
+Reuse requires a completed successful workflow, successful Mac/required/repository
+jobs, and applicable workflow lint. It binds the repository and head-repository
+IDs, workflow ID/path, source SHA and run attempt. Exactly one unexpired
+`verification-SHA-attempt` artifact must match those identities and GitHub's
+SHA-256 digest. The consumer reads only the expected JSON report, without
+extracting or executing archive contents, and bounds download/report sizes.
+
+Report schema 2 includes CI identity and source state at both ends of verification.
+Source must start and finish clean at the same revision. All 17 required stages
+must occur exactly once and pass, including two-size booted smoke, runtime
+preparation, native OCR/outline fixtures, model/tool suites and both unsigned
+archive paths. Incomplete, mismatched, skipped, failed, cancelled, malformed or
+expired evidence stops publication. A newer failed attempt cannot be replaced
+by an older green result. The consumer rechecks the selected run/attempt after
+download and records its origin, digest and wait duration in a receipt.
+
+Pending work may be awaited for up to 40 minutes. An unavailable API or invalid
+result fails visibly, with no automatic fallback that could bypass a failed
+Watch run. Rerun the relevant checks or use a manual fresh-verification release.
+No new signing credentials or privileged workflow trigger is involved. The
+release job still requires validated source, the appropriate verification path,
+and release-side checks before entering its environment. Signing, immutable-source
+and archive/export checks, IPA identity, uncertain-upload handling and sole
+Maintainer assignment are unchanged. CodeQL remains a separate workflow rather
+than a new publication gate.
+
+This saves one complete duplicate Mac pass for an automatic app release. It does
+not promise a fixed wall-time reduction: the earlier two passes overlapped and
+worker timing varies. Signed publishing still builds its own archive from source.
+Local routing, report and failure-case tests are distinct from a hosted evidence
+reuse check; live validation is recorded after the new producer run completes.
+Read-only checks against existing GitHub evidence already reject a successful
+docs-only run (`6f1d76e`, skipped Mac job) and a legacy full report (`b573bcd`,
+missing schema-2 provenance). Neither negative test signs or publishes anything.
+
 ## Next optimizations, in order
 
-1. **Reuse exact-source verification for actual app releases.** The two full
-   passes still exist for publishing app pushes. One verified main-branch result
-   could serve both, but it must bind the repository, trusted workflow, source
-   SHA, successful applicable checks and evidence provenance. PR and post-merge
-   verification remain distinct. Publication currently waits for its own full
-   verification/lint, not the separate Watch Required result or CodeQL; decide
-   the desired publication gates explicitly. Ordering remains [#24](https://github.com/qayshp/TeachingTimer/issues/24).
-2. **Parallelize small/large smoke on isolated workers.** All cases have useful
+1. **Parallelize small/large smoke on isolated workers.** All cases have useful
    purposes; keep them and their timing assertions. Two workers could overlap
    the per-size runs, but require the same app/runtime, both complete reports,
    failure propagation and owned-device cleanup. This is a measured experiment,
    not a claimed speedup. Direct threads are unsuitable because the runner
    installs process signal handlers; shared-host concurrency also needs a load
    check against the known awake-recovery issue #27.
-3. **Use narrower native-tool verification where dependencies are known.**
+2. **Use narrower native-tool verification where dependencies are known.**
    Helper-only edits could compile/run the native guards without rebuilding
    unchanged app archives and the full matrix. Unknown dependencies must select
    full checks, and pipeline/app changes plus manual full checks must retain
    appropriate coverage. This needs a tested dependency map, not blanket skips.
-4. **Improve failure order before adding build concurrency.** Running native
+3. **Improve failure order before adding build concurrency.** Running native
    helpers/archives before the long booted matrix would report those failures
    sooner, without reducing successful-run duration. Later, measure bounded
    parallel host checks or independent builds with isolated outputs; avoid
    competing heavy compilation during timing-sensitive smoke observations.
+
+Publisher serialization, source ordering and daylight-saving build-number policy
+remain in [#24](https://github.com/qayshp/TeachingTimer/issues/24).
 
 Keep the real OCR and outline checks: they exercise failure paths compilation
 missed. Keep both packaging archives, cross-OS Python checks, fresh-process

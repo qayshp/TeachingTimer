@@ -30,6 +30,7 @@ MAC_TOOL_FILES = {
     "scripts/prepare-testflight.sh", "scripts/prepare-testflight.py",
     "scripts/inspect-artifact.py",
     "scripts/check-control-outline.sh",
+    "scripts/reuse-watch-verification.py",
 }
 MAC_PROBE_PREFIXES = (
     "tools/phone-audio-probe/", "tools/native-volume-probe/",
@@ -75,8 +76,8 @@ def classify_paths(paths):
             result["mac_verify"] = True
     result["publish"] = result["app_changed"] or result["unknown_changed"]
     # Watch checks own full Mac verification for native tooling changes. The
-    # release workflow needs its additional full pass only for a candidate app.
-    # Manual rehearsals use --all below, retaining complete release verification.
+    # release workflow requires exact-source evidence only for a candidate app.
+    # Main pushes reuse Watch checks; manual rehearsals retain a fresh full pass.
     result["release_verify"] = result["mac_verify"] and result["publish"]
     return result
 

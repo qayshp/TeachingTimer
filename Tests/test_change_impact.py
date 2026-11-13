@@ -20,6 +20,7 @@ class ChangeImpactChecks(unittest.TestCase):
         cases = [
             (['README.md'], False, False),
             (['scripts/testflight-release.py'], False, False),
+            (['scripts/reuse-watch-verification.py'], True, False),
             (['tools/simulator-regression/ControlOutline.swift'], True, False),
             (['Tests/TimerFaceLayoutChecks.swift'], True, False),
             (['.github/workflows/testflight-release.yml'], False, False),

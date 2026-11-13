@@ -93,7 +93,7 @@ jobs:
         with:
           name: verification-${{ github.sha }}-${{ github.run_attempt }}
           retention-days: 14
-          if-no-files-found: warn
+          if-no-files-found: error
           path: |
             ${{ runner.temp }}/TeachingTimerVerification/*.log
             ${{ runner.temp }}/TeachingTimerVerification/verification.json

@@ -15,7 +15,7 @@ owns build, installation and distribution facts.
 | P1 — [#11](https://github.com/qayshp/TeachingTimer/issues/11) | External beta installation | The public invitation now offers joining instructions. Verify exact eligible build and one new tester's install/update/support experience; internal-owner success is separate. |
 | P1 — [#26](https://github.com/qayshp/TeachingTimer/issues/26) | Private tester journal sharing | Optional companion and filtered report export implemented; one physical email delivery verified. Retest startup, request retries, first Mail composition and upgrade preservation. [Validation](OPTIONAL_COMPANION.md). |
 | P1 — [#14](https://github.com/qayshp/TeachingTimer/issues/14) | Contribution and release safeguards | Main still has no required-check enforcement. Define a practical recovery/bypass policy; retain durable source tags/notes after workflow artifacts expire. |
-| P2 — [#24](https://github.com/qayshp/TeachingTimer/issues/24) | Release order and verification reuse | Avoid overlapping publishers, reduce duplicate Mac verification, and handle decreasing Pacific-local numbers at daylight-saving fall-back. Synthetic numbering failure is confirmed; no rejected upload is claimed. |
+| P2 — [#24](https://github.com/qayshp/TeachingTimer/issues/24) | Release ordering | Exact-source Watch verification reuse is implemented. Serialize publishers and handle decreasing Pacific-local numbers at daylight-saving fall-back. Synthetic numbering failure is confirmed; no rejected upload is claimed. |
 | P2 — [#17](https://github.com/qayshp/TeachingTimer/issues/17) | Transient missing Simulator controls | Keep original early/delayed captures and separate capture timing, dim state and actual missing pixels. The Ultra outline checker is calibrated with regression coverage; older early-rendering observations still merit follow-up. |
 | P3 — [#15](https://github.com/qayshp/TeachingTimer/issues/15) | Performance baseline | Runtime invariant table and 1,280 seeded mixed events are implemented. Measure render cost before caching geometry; physical battery work remains in #10. |
 
@@ -41,9 +41,9 @@ Screenshot OCR [#30](https://github.com/qayshp/TeachingTimer/issues/30) is corre
 and the full local action suite passes on SE 3 and Ultra. CI now executes the
 recognizer instead of only compiling it; [coverage and remaining measurement limits](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
 The [CI timing review](CI_EFFICIENCY.md) removes duplicate release-side Mac
-verification for non-publishing tooling pushes. Exact-source reuse for actual
-app releases and publication ordering remain in #24; no deadline or security
-guard was removed.
+verification for non-publishing tooling pushes. Automatic app releases now reuse
+trusted exact-source Watch verification; manual releases retain fresh checks.
+Publication ordering remains in #24; no deadline or security guard was removed.
 Selective Swift CodeQL routing now keeps full scans for production, dependency,
 project and security-configuration changes, plus weekly/manual runs. Python and
 Actions still scan every change. Hosted full-scan source/rule comparison and a

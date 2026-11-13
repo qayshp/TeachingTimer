@@ -469,6 +469,15 @@ stable required-result job reports whether its applicable checks passed. Manual
 rehearsals and publishes always run full verification. See
 [automation check boundaries](AUTOMATION.md#maintainer-testflight-release).
 
+For automatic main pushes, the credential-free verification gate waits for the
+trusted Watch-check workflow's successful run at that exact source SHA. It checks
+the run attempt, required jobs, artifact digest, clean before/after source and
+complete stage report. A PR result, skipped Mac job or older source cannot be
+substituted. Failed, missing, expired or malformed evidence stops the release;
+manual dispatch remains a fresh full-verification fallback. The receipt and
+release timing record identify the originating Watch run, attempt and artifact.
+See the [verification contract](CI_EFFICIENCY.md#implemented-exact-source-verification-reuse).
+
 After app verification passes, the workflow automatically signs, uploads, waits
 for Apple processing and assigns that build to the internal Maintainer pilot.
 Failed verification never reaches the publishing job. Each published workflow
@@ -486,7 +495,8 @@ workflow from: main**, then provide an unused integer build number, testing note
 and either `rehearsal` or `publish`. Rehearsal remains the default and never
 uploads. The tools and application come from the exact selected workflow commit;
 there is no free-form application-ref input. The release job checks out the same
-SHA verified by the first job. A command-line build-number override changes both
+SHA selected by the source job and accepted by the applicable verification gate.
+A command-line build-number override changes both
 payloads without dirtying source; the archive retains its exact revision.
 
 The credential-bearing publishing environment permits only `main`. Merge reviewed
@@ -508,7 +518,10 @@ that can expose default-branch caches even when no signing secret is supplied.
 The hosted `xcode-27` runner explicitly selects Xcode 27.2 and records its actual
 version/build. GitHub's published image may differ from the local Mac; a missing
 or incompatible toolchain fails rather than silently selecting an older SDK.
-No Simulator is created/booted and no physical device is contacted.
+Full verification boots disposable small and large Watch Simulators; no physical
+device is contacted. Reuse reads a validated report; signed publishing still
+creates and verifies its own archive/export from immutable source. It never
+reuses a Simulator binary or unsigned archive as a signed release.
 Verification also compiles the four standalone diagnostic fixtures and four
 Simulator-inspection helpers through `scripts/check-simulator-tools.sh`; it
 does not exercise their audio, sharing or UI behavior.

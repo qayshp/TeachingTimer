@@ -87,14 +87,11 @@ jobs:
         run: |
           "$RUNNER_TEMP/bin/actionlint" .github/workflows/*.yml
 
-  verify:
-    name: Verify reviewed source
+  source:
+    name: Resolve immutable release source
     needs: changes
-    # Tooling-only pushes receive full Mac verification in Watch checks. This
-    # second pass is for app candidates and explicit manual rehearsals/publishes.
     if: needs.changes.outputs.release_verify == 'true'
-    runs-on: xcode-27
-    timeout-minutes: 40
+    runs-on: ubuntu-latest
     outputs:
       source_sha: ${{ steps.source.outputs.sha }}
       build_number: ${{ steps.source.outputs.build_number }}
@@ -139,6 +136,85 @@ jobs:
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('sha=' + sha + '\n')
           PY
+
+  verify-reused:
+    name: Reuse exact-source Watch verification
+    needs: [changes, source]
+    if: github.event_name == 'push' && needs.changes.outputs.release_verify == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      run_id: ${{ steps.reuse.outputs.run_id }}
+      run_attempt: ${{ steps.reuse.outputs.run_attempt }}
+      artifact_id: ${{ steps.reuse.outputs.artifact_id }}
+      artifact_digest: ${{ steps.reuse.outputs.artifact_digest }}
+    steps:
+      - name: Check out trusted release tools
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Require completed exact-source Watch checks and evidence
+        id: reuse
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ needs.source.outputs.source_sha }}
+        run: |
+          python3 scripts/reuse-watch-verification.py \
+            --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
+            --sha "$SOURCE_SHA" --output "$RUNNER_TEMP/reused-verification" \
+            --timeout-seconds 2400
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          receipt = json.loads((Path(os.environ['RUNNER_TEMP']) / 'reused-verification/receipt.json').read_text())
+          fields = {'run_id': 'runID', 'run_attempt': 'runAttempt',
+                    'artifact_id': 'artifactID', 'artifact_digest': 'artifactDigest'}
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              for key, field in fields.items():
+                  output.write(key + '=' + str(receipt[field]) + '\n')
+          PY
+      - name: Record verification origin
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/reused-verification/summary.md"; then
+            cat "$RUNNER_TEMP/reused-verification/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Retain verification receipt
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: reused-watch-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/reused-verification/receipt.json
+            ${{ runner.temp }}/reused-verification/verification.json
+            ${{ runner.temp }}/reused-verification/summary.md
+
+  verify:
+    name: Verify reviewed source manually
+    needs: [changes, source]
+    # Manual dispatch remains a fresh full check, including PR candidates and
+    # recovery when the main-push evidence has expired or cannot be reused.
+    if: github.event_name == 'workflow_dispatch' && needs.changes.outputs.release_verify == 'true'
+    runs-on: xcode-27
+    timeout-minutes: 40
+    steps:
+      - name: Check out release tools
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: automation
+          persist-credentials: false
+      - name: Check out reviewed application
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ needs.source.outputs.source_sha }}
+          path: source
+          persist-credentials: false
+      - name: Record selected toolchain
+        run: |
           xcodebuild -version
       - name: Test release tooling
         run: sh automation/scripts/check-tools.sh
@@ -162,16 +238,19 @@ jobs:
 
   release:
     name: Prepare and release
-    needs: [changes, verify, tooling-checks, workflow-lint]
+    needs: [changes, source, verify-reused, verify, tooling-checks, workflow-lint]
     if: >-
-      always() &&
+      always() && !cancelled() &&
       needs.changes.result == 'success' &&
+      needs.source.result == 'success' &&
       (
         (github.event_name == 'push' &&
          needs.changes.outputs.publish == 'true' &&
-         needs.verify.result == 'success') ||
+         needs.verify-reused.result == 'success' &&
+         needs.verify.result == 'skipped') ||
         (github.event_name == 'workflow_dispatch' &&
-         needs.verify.result == 'success')
+         needs.verify.result == 'success' &&
+         needs.verify-reused.result == 'skipped')
       ) &&
       (needs.tooling-checks.result == 'success' || needs.tooling-checks.result == 'skipped') &&
       (needs.workflow-lint.result == 'success' || needs.workflow-lint.result == 'skipped')
@@ -189,13 +268,17 @@ jobs:
       - name: Check out verified immutable application revision
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ needs.verify.outputs.source_sha }}
+          ref: ${{ needs.source.outputs.source_sha }}
           path: source
           persist-credentials: false
       - name: Record workflow timings and prepare notes
         env:
           GH_TOKEN: ${{ github.token }}
           TESTING_NOTES: ${{ inputs.testing_notes }}
+          WATCH_VERIFY_RUN: ${{ needs.verify-reused.outputs.run_id }}
+          WATCH_VERIFY_ATTEMPT: ${{ needs.verify-reused.outputs.run_attempt }}
+          WATCH_VERIFY_ARTIFACT: ${{ needs.verify-reused.outputs.artifact_id }}
+          WATCH_VERIFY_DIGEST: ${{ needs.verify-reused.outputs.artifact_digest }}
         run: |
           python3 - <<'PY'
           import json, os, subprocess
@@ -208,6 +291,15 @@ jobs:
           record = dict(workflowCreatedAt=info['created_at'], workflowStartedAt=info['run_started_at'],
               runURL=info['html_url'], xcode=subprocess.check_output(['xcodebuild', '-version'], text=True).strip(),
               jobs=[dict(name=j['name'], startedAt=j['started_at'], completedAt=j['completed_at']) for j in jobs['jobs']])
+          record['verification'] = dict(mode='manual-full', source=os.environ['GITHUB_SHA'])
+          if os.environ['GITHUB_EVENT_NAME'] == 'push':
+              if not all(os.environ[key] for key in ('WATCH_VERIFY_RUN', 'WATCH_VERIFY_ATTEMPT',
+                                                     'WATCH_VERIFY_ARTIFACT', 'WATCH_VERIFY_DIGEST')):
+                  raise SystemExit('Missing exact-source verification identity; refusing signing')
+              record['verification'].update(mode='watch-checks',
+                  runID=int(os.environ['WATCH_VERIFY_RUN']), runAttempt=int(os.environ['WATCH_VERIFY_ATTEMPT']),
+                  artifactID=int(os.environ['WATCH_VERIFY_ARTIFACT']), artifactDigest=os.environ['WATCH_VERIFY_DIGEST'],
+                  runURL='https://github.com/' + repo + '/actions/runs/' + os.environ['WATCH_VERIFY_RUN'])
           (root / 'ci-timing.json').write_text(json.dumps(record, indent=2))
           PY
       - name: Install temporary signing credentials
@@ -227,7 +319,7 @@ jobs:
       - name: Rehearse without credentials or publishing API calls
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'rehearsal'
         env:
-          BUILD_NUMBER: ${{ needs.verify.outputs.build_number }}
+          BUILD_NUMBER: ${{ needs.source.outputs.build_number }}
         run: |
           python3 automation/scripts/testflight-release.py --rehearsal \
             --source "$GITHUB_WORKSPACE/source" --build-number "$BUILD_NUMBER" \
@@ -238,7 +330,7 @@ jobs:
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          BUILD_NUMBER: ${{ needs.verify.outputs.build_number }}
+          BUILD_NUMBER: ${{ needs.source.outputs.build_number }}
           TESTING_NOTES: ${{ inputs.testing_notes || 'Automatic main-branch build. Check the clock, class timing, count controls, media page, and Crown volume; report any regressions.' }}
         run: |
           export ASC_KEY_PATH="$RUNNER_TEMP/testflight-signing/AuthKey.p8"

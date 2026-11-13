@@ -1,5 +1,9 @@
 # SPDX-License-Identifier: MPL-2.0
 import importlib.util
+from contextlib import redirect_stdout
+import io
+import json
+import os
 from pathlib import Path
 import plistlib
 import shutil
@@ -14,6 +18,113 @@ build = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(build)
 
 class BuildEvidenceChecks(unittest.TestCase):
+    def run_verification(self, before=None, after=None, environment=None, failed_stage=None):
+        before = before or ('a' * 40, False)
+        after = after or before
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'verification'
+
+            def run_step(name, command, output):
+                failed = name == failed_stage
+                return dict(name=name, command=command, status='failed' if failed else 'passed',
+                            exitCode=7 if failed else 0, elapsedSeconds=0.01)
+
+            with patch.object(sys, 'argv', ['verify-build.py', str(output), '--simulator-smoke', '--prepare-ci-runtime']), \
+                    patch.dict(os.environ, environment or {}, clear=True), \
+                    patch.object(build, 'source_state', side_effect=[before, after]) as source_state, \
+                    patch.object(build, 'run_step', side_effect=run_step) as step, \
+                    redirect_stdout(io.StringIO()):
+                error = None
+                try:
+                    build.main()
+                except SystemExit as stopped:
+                    error = str(stopped)
+            report = json.loads((output / 'verification.json').read_text())
+            self.assertEqual(source_state.call_count, 2)
+            return report, error, step.call_count
+
+    def test_clean_source_before_and_after_produces_complete_v2_report(self):
+        report, error, count = self.run_verification()
+        self.assertIsNone(error)
+        self.assertEqual(report['schemaVersion'], 2)
+        self.assertEqual(report['revision'], 'a' * 40)
+        self.assertEqual(report['sourceRevisionAfter'], report['revision'])
+        self.assertIs(report['sourceDirty'], False)
+        self.assertIs(report['sourceDirtyAfter'], False)
+        self.assertIs(report['complete'], True)
+        self.assertEqual(count, 17)
+        self.assertNotIn('ci', report)
+
+    def test_dirty_start_cannot_produce_success_even_if_final_source_is_clean(self):
+        report, error, count = self.run_verification(before=('a' * 40, True), after=('a' * 40, False))
+        self.assertIn('clean source checkout', error)
+        self.assertEqual(count, 0)
+        self.assertIs(report['sourceDirty'], True)
+        self.assertIs(report['sourceDirtyAfter'], False)
+        self.assertIs(report['complete'], False)
+
+    def test_dirty_end_rejects_all_otherwise_successful_steps(self):
+        report, error, count = self.run_verification(after=('a' * 40, True))
+        self.assertIn('clean and unchanged', error)
+        self.assertEqual(count, 17)
+        self.assertTrue(all(step['status'] == 'passed' for step in report['steps']))
+        self.assertIs(report['sourceDirtyAfter'], True)
+        self.assertIs(report['complete'], False)
+
+    def test_changed_head_rejects_a_clean_checkout_at_the_wrong_revision(self):
+        report, error, count = self.run_verification(after=('b' * 40, False))
+        self.assertIn('clean and unchanged', error)
+        self.assertEqual(count, 17)
+        self.assertEqual(report['sourceRevisionAfter'], 'b' * 40)
+        self.assertIs(report['sourceDirtyAfter'], False)
+        self.assertIs(report['complete'], False)
+
+    def test_final_git_failure_is_not_success(self):
+        report, error, count = self.run_verification(after=OSError('Git unavailable'))
+        self.assertIn('clean and unchanged', error)
+        self.assertEqual(count, 17)
+        self.assertIsNone(report['sourceRevisionAfter'])
+        self.assertIsNone(report['sourceDirtyAfter'])
+        self.assertEqual(report['sourceVerificationError'], 'OSError')
+        self.assertIs(report['complete'], False)
+
+    def test_failed_stage_keeps_its_diagnostic_when_final_git_also_fails(self):
+        report, error, count = self.run_verification(after=OSError('Git unavailable'), failed_stage='xcode')
+        self.assertIn('Failed xcode', error)
+        self.assertEqual(count, 1)
+        self.assertEqual(report['steps'][0]['exitCode'], 7)
+        self.assertEqual(report['steps'][0]['status'], 'failed')
+        self.assertEqual(report['sourceVerificationError'], 'OSError')
+        self.assertIs(report['complete'], False)
+
+    def test_ci_metadata_uses_exact_github_environment_identity(self):
+        environment = {
+            'GITHUB_ACTIONS': 'true', 'GITHUB_REPOSITORY': 'qayshp/TeachingTimer',
+            'GITHUB_REPOSITORY_ID': '1234',
+            'GITHUB_WORKFLOW_REF': 'qayshp/TeachingTimer/.github/workflows/check.yml@refs/heads/main',
+            'GITHUB_WORKFLOW_SHA': 'c' * 40,
+            'GITHUB_RUN_ID': '5678', 'GITHUB_RUN_ATTEMPT': '2',
+            'GITHUB_EVENT_NAME': 'push', 'GITHUB_REF': 'refs/heads/main',
+            'GITHUB_SHA': 'd' * 40,
+        }
+        report, error, _ = self.run_verification(environment=environment)
+        self.assertIsNone(error)
+        self.assertEqual(report['ci'], {
+            'repository': 'qayshp/TeachingTimer', 'repositoryID': '1234',
+            'workflowRef': environment['GITHUB_WORKFLOW_REF'], 'workflowSHA': 'c' * 40,
+            'runID': '5678', 'runAttempt': '2', 'event': 'push', 'ref': 'refs/heads/main',
+        })
+        self.assertEqual(report['revision'], 'a' * 40)
+
+    def test_local_runs_do_not_claim_github_identity(self):
+        for value in ('', 'false', 'True'):
+            with self.subTest(github_actions=value):
+                report, error, _ = self.run_verification(environment={
+                    'GITHUB_ACTIONS': value, 'GITHUB_RUN_ID': '1234',
+                })
+                self.assertIsNone(error)
+                self.assertNotIn('ci', report)
+
     def test_outline_regression_runs_before_slow_simulator_checks(self):
         output = Path('/synthetic/evidence')
         steps = build.verification_steps(output)

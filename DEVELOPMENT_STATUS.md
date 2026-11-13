@@ -1,6 +1,6 @@
 # Teaching Timer — current status
 
-Source/CI status updated November 12, 2026. Physical companion delivery was verified
+Source/CI status updated November 13, 2026. Physical companion delivery was verified
 November 11; public-invitation status was last checked November 5. External
 App Store Connect review/build membership was last checked November 2. This page
 owns current build and validation status.
@@ -106,6 +106,14 @@ same 27 baseline security-rule IDs. A docs-only follow-up passed with Swift
 skipped while the earlier full scan continued. The efficiency review records
 the exact runs, source comparison and event-test limits. No app source or
 distribution changed.
+
+The November 13 tooling pass replaces automatic releases' duplicate Mac pass
+with exact-source reuse of a completed trusted main-push Watch verification.
+Manual rehearsal/publish retains fresh full verification. Schema-2 reports check
+source cleanliness/revision before and after tests; the consumer binds run,
+attempt, artifact digest and all required stages. Local and hosted validation
+are recorded separately in the efficiency review. App behavior, signing and
+distribution groups are unchanged.
 
 ## Optional companion — November 12
 

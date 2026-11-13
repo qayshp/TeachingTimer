@@ -13,6 +13,28 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def source_state():
+    revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    dirty = bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True).strip())
+    return revision, dirty
+
+
+def ci_identity():
+    if os.environ.get('GITHUB_ACTIONS') != 'true':
+        return None
+    fields = {
+        'repository': 'GITHUB_REPOSITORY',
+        'repositoryID': 'GITHUB_REPOSITORY_ID',
+        'workflowRef': 'GITHUB_WORKFLOW_REF',
+        'workflowSHA': 'GITHUB_WORKFLOW_SHA',
+        'runID': 'GITHUB_RUN_ID',
+        'runAttempt': 'GITHUB_RUN_ATTEMPT',
+        'event': 'GITHUB_EVENT_NAME',
+        'ref': 'GITHUB_REF',
+    }
+    return {key: os.environ.get(variable, '') for key, variable in fields.items()}
+
+
 def run_step(name, command, output, timeout=1200):
     started = time.monotonic()
     record = {'name': name, 'command': command, 'startedAt': datetime.now(timezone.utc).isoformat()}
@@ -76,10 +98,12 @@ def main():
         parser.error('--prepare-ci-runtime requires --simulator-smoke')
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
-    revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-    dirty = bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True).strip())
-    report = {'revision': revision, 'sourceDirty': dirty, 'distributionSigned': False, 'simulatorSigning': 'ad-hoc', 'uploaded': False, 'installed': False,
+    revision, dirty = source_state()
+    report = {'schemaVersion': 2, 'revision': revision, 'sourceDirty': dirty, 'distributionSigned': False, 'simulatorSigning': 'ad-hoc', 'uploaded': False, 'installed': False,
               'scope': 'Unsigned structural/build checks, not distribution approval or device validation', 'steps': []}
+    identity = ci_identity()
+    if identity is not None:
+        report['ci'] = identity
     steps = verification_steps(output)
     if args.simulator_smoke:
         index = next(i for i, (name, _) in enumerate(steps) if name == 'simulator') + 1
@@ -96,6 +120,8 @@ def main():
     report['bootedSimulatorRequested'] = args.simulator_smoke
     report['hostedRuntimePreparationRequested'] = args.prepare_ci_runtime
     try:
+        if dirty:
+            raise SystemExit('Verification requires a clean source checkout; see ' + str(output / 'verification.json'))
         for name, command in steps:
             print('Running ' + name, flush=True)
             result = run_step(name, command, output)
@@ -104,8 +130,23 @@ def main():
             if result['status'] != 'passed':
                 raise SystemExit('Failed ' + name + '; see ' + str(output / (name + '.log')))
     finally:
-        report['complete'] = len(report['steps']) == len(steps) and all(s['status'] == 'passed' for s in report['steps'])
+        # A successful stage list alone cannot attest the exact source that ran.
+        # Preserve failed-stage diagnostics even if final Git inspection fails.
+        report['sourceRevisionAfter'] = None
+        report['sourceDirtyAfter'] = None
+        try:
+            report['sourceRevisionAfter'], report['sourceDirtyAfter'] = source_state()
+        except (OSError, subprocess.SubprocessError) as error:
+            report['sourceVerificationError'] = type(error).__name__
+        report['complete'] = (len(report['steps']) == len(steps)
+                              and all(s['status'] == 'passed' for s in report['steps'])
+                              and not dirty
+                              and report['sourceRevisionAfter'] == revision
+                              and report['sourceDirtyAfter'] is False)
         (output / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
+    if not report['complete']:
+        raise SystemExit('Source must remain clean and unchanged throughout verification; see '
+                         + str(output / 'verification.json'))
     print('All build and unsigned archive checks passed. Artifacts: ' + str(output))
 
 if __name__ == '__main__':

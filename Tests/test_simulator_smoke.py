@@ -122,7 +122,7 @@ class SmokeVerificationChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / 'verify'
             with patch.object(sys, 'argv', ['verify-build.py', str(output), '--simulator-smoke', '--prepare-ci-runtime']), \
-                    patch.object(verify.subprocess, 'check_output', side_effect=['a' * 40, '']), \
+                    patch.object(verify.subprocess, 'check_output', side_effect=['a' * 40, '', 'a' * 40, '']), \
                     patch.object(verify, 'run_step', side_effect=lambda name, *args: dict(name=name, status='passed')):
                 verify.main()
             report = json.loads((output / 'verification.json').read_text())
@@ -137,7 +137,7 @@ class SmokeVerificationChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / 'verify'
             with patch.object(sys, 'argv', ['verify-build.py', str(output), '--simulator-smoke']), \
-                    patch.object(verify.subprocess, 'check_output', side_effect=['a' * 40, '']), \
+                    patch.object(verify.subprocess, 'check_output', side_effect=['a' * 40, '', 'a' * 40, '']), \
                     patch.object(verify, 'run_step', side_effect=lambda name, *args: dict(name=name, status='passed')):
                 verify.main()
             report = json.loads((output / 'verification.json').read_text())
@@ -154,7 +154,7 @@ class SmokeVerificationChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / 'verify'
             with patch.object(sys, 'argv', ['verify-build.py', str(output), '--simulator-smoke']), \
-                    patch.object(verify.subprocess, 'check_output', side_effect=['a' * 40, '']), \
+                    patch.object(verify.subprocess, 'check_output', side_effect=['a' * 40, '', 'a' * 40, '']), \
                     patch.object(verify, 'run_step', side_effect=lambda name, *args: dict(name=name, status='failed' if name == 'simulator-smoke' else 'passed')):
                 with self.assertRaisesRegex(SystemExit, 'Failed simulator-smoke'):
                     verify.main()

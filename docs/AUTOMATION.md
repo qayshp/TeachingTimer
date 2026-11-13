@@ -54,8 +54,9 @@ Setext headings, custom HTML anchors or richer heading markup in a linked target
 Private ignored evidence is outside repository validation.
 
 GitHub Actions runs the noninteractive verification with its recorded toolchain.
-The Watch-check and release verification jobs compile and run the booted Watch
-smoke check described below. They also compile the four diagnostic fixtures and
+Watch checks and manual release verification compile and run the booted Watch
+smoke check described below. Automatic releases reuse the completed, exact-source
+Watch result rather than repeat that entire pass. Verification also compiles the four diagnostic fixtures and
 four UI-inspection helpers, then run the `screen-text-smoke` stage. Both workflows
 retain its synthetic images, expected labels, raw OCR output, stderr and result
 report for 14 days, including failures. The Swift model/controller suites are separate host
@@ -65,8 +66,9 @@ local Device Hub workflow below. See [build evidence](BUILD_VERIFICATION.md) for
 retained artifacts. CI does not touch physical devices.
 
 Native-tooling changes request full Mac verification in Watch checks without
-duplicating that complete run in the release workflow. App candidates and
-manual TestFlight rehearsals still receive release verification. See the
+publishing. Automatic app releases require the completed Watch verification for
+their exact commit; manual TestFlight rehearsals/publishes run fresh full checks.
+See the
 [measured timing review](CI_EFFICIENCY.md) for the gate, savings and next options;
 the change does not remove native fixtures, real runtime observations or security
 analysis.
@@ -321,9 +323,17 @@ passes. Unknown paths take the full verification and publishing path.
 Main-branch Watch checks use a concurrency group per commit, so a later docs-only
 push cannot cancel unfinished verification of an earlier app change. Pull-request
 runs still replace older runs of the same PR because their comparison includes
-the entire proposed diff. This does not deduplicate the release workflow or
-serialize TestFlight publishers; [#24](https://github.com/qayshp/TeachingTimer/issues/24)
-tracks those separate concerns.
+the entire proposed diff. Automatic releases now reuse only successful main-push
+Watch verification for the exact source SHA. They require the successful Mac and
+Required result jobs, one current-attempt artifact, a matching GitHub digest,
+clean source before/after, CI identity and every required stage. PR evidence,
+green docs-only runs and failed/incomplete/expired evidence cannot authorize
+publishing. The read-only wait is bounded; missing evidence fails instead of
+silently publishing or rebuilding after a failed check. Manual dispatch retains
+fresh full verification as the recovery path. The
+[reuse contract](CI_EFFICIENCY.md#implemented-exact-source-verification-reuse)
+records the detailed safeguards. Publisher serialization and ordering remain
+separate work in [#24](https://github.com/qayshp/TeachingTimer/issues/24).
 
 The release workflow still separates credential-free verification/rehearsal
 from internal publishing. It supports an immutable dispatch revision and unused
