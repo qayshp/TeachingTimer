@@ -16,4 +16,5 @@ done
 for helper in HubInput ScreenText MediaPixels ControlOutline; do
     xcrun --sdk macosx swiftc -warnings-as-errors "tools/simulator-regression/$helper.swift" -o "$tool_output/$helper"
 done
-printf 'All four Simulator fixtures and four inspection helpers compiled. Nothing launched.\n'
+xcrun --sdk macosx swiftc -warnings-as-errors scripts/check-screen-text.swift -o "$tool_output/check-screen-text"
+printf 'All four Simulator fixtures, four inspection helpers and the OCR smoke fixture compiled. Nothing launched.\n'

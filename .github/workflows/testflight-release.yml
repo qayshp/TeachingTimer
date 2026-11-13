@@ -152,6 +152,7 @@ jobs:
             ${{ runner.temp }}/application-verification/*.log
             ${{ runner.temp }}/application-verification/simulator-smoke/
             ${{ runner.temp }}/application-verification/runtime-preparation/
+            ${{ runner.temp }}/application-verification/screen-text-smoke/
           retention-days: 14
           if-no-files-found: ignore
 

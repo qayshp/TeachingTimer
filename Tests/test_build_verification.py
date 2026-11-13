@@ -14,6 +14,15 @@ build = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(build)
 
 class BuildEvidenceChecks(unittest.TestCase):
+    def test_real_ocr_check_runs_after_helper_compilation(self):
+        output = Path('/synthetic/evidence')
+        steps = build.verification_steps(output)
+        names = [name for name, _ in steps]
+        self.assertEqual(names.index('screen-text-smoke'), names.index('simulator-tools') + 1)
+        self.assertEqual(dict(steps)['screen-text-smoke'], [
+            str(output / 'simulator-tools/check-screen-text'),
+            str(output / 'simulator-tools/ScreenText'), str(output / 'screen-text-smoke')])
+
     def test_companion_simulator_build_uses_per_target_sdk_selection(self):
         steps = dict(build.verification_steps(Path('/synthetic/evidence')))
         command = steps['companion-simulator']

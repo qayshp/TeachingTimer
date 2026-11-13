@@ -14,6 +14,7 @@ from pathlib import Path
 import plistlib
 import time
 from actions import choose_text
+from ocr import recognize_text
 from run import checked, events_after
 from suite import artifact_identity, simulator_lock
 
@@ -118,7 +119,7 @@ def main():
             for journal in ('RuntimeDiagnostics', 'InterfaceDiagnostics', 'LandmarkDiagnostics'):
                 (output / (label + '-' + journal + '.json')).write_text(json.dumps(events(journal), indent=2))
             (output / (label + '-preferences.plist')).write_bytes(plistlib.dumps(preferences()))
-            return json.loads(checked(output / 'screen-text', path))
+            return recognize_text(output / 'screen-text', path)
         def wait_for(predicate, timeout=20):
             deadline = time.monotonic() + timeout
             while not predicate():

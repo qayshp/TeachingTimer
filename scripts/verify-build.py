@@ -55,6 +55,8 @@ def verification_steps(output):
                                  '-configuration', 'TestFlight', '-destination', 'generic/platform=iOS Simulator',
                                  '-derivedDataPath', str(output / 'CompanionDerivedData'), 'CODE_SIGNING_ALLOWED=NO', 'build']),
         ('simulator-tools', ['sh', 'scripts/check-simulator-tools.sh', str(output / 'simulator-tools')]),
+        ('screen-text-smoke', [str(output / 'simulator-tools/check-screen-text'),
+                               str(output / 'simulator-tools/ScreenText'), str(output / 'screen-text-smoke')]),
         ('archive', ['sh', 'scripts/check-archive.sh', str(output / 'development-archive')]),
         ('distribution-rehearsal', ['sh', 'scripts/prepare-testflight.sh', str(output / 'distribution-archive')]),
     ]

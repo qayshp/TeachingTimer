@@ -9,6 +9,13 @@ Simulator build, isolated phone audio-fixture build, development archive and
 future distribution-identity archive. The fixture build generates audio locally
 and never launches playback.
 
+After compiling the Simulator tools, the `screen-text-smoke` stage runs the real
+OCR helper on two harmless 324×394 synthetic images containing nine labels.
+It checks exact text, corroborated fast recognition, raw confidence and normalized
+centers, with a 20-second deadline per image plus bounded termination. This is
+an OCR execution check; interactive Simulator action tests remain a separate
+local workflow and are not established by this stage.
+
 Every step has its own log and status in `verification.json`. Failed commands
 and timeouts remain failures; their partial output is retained. Simulator build
 results also have an `.xcresult` bundle. Local archive directories retain the
@@ -18,7 +25,9 @@ marked and should not be presented as an exact clean-commit release.
 GitHub Actions uses the same command on its available macOS 26 runner. It records
 its actual toolchain rather than assuming it matches the development Mac.
 It retains verification logs, metadata and Simulator results for 14 days, even
-on failure. It does not upload application archives, signing profiles, private
+on failure. Both Watch-check and TestFlight verification workflows also retain
+`screen-text-smoke/`: synthetic images, expected labels, raw OCR responses,
+stderr and the result report. It does not upload application archives, signing profiles, private
 journals or device captures. Workflow actions are pinned to commit hashes.
 
 ## Inspect a candidate artifact

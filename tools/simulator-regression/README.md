@@ -155,6 +155,33 @@ sequences concurrently or interact with Device Hub during a run. A screenshot
 still needs human review; state assertions do not prove visible controls, native
 media pixels, Crown ownership, phone playback or tactile delivery.
 
+### OCR deadlines and recognition policy
+
+The November 12 investigation of [#30](https://github.com/qayshp/TeachingTimer/issues/30)
+reproduced the old 30-second timeout on a saved screenshot. A process sample
+showed accurate-mode Vision waiting for an ANE model-compilation reply. Selecting
+the CPU, changing supported revisions and disabling language correction did not
+make that recognition path finish within the bounded probes. This was a Mac
+inspection-tool failure, independent of the app's rendering and input handling.
+
+`ScreenText` now uses CPU-backed fast recognition at the original and doubled
+image sizes. Fast scores are retained unchanged: an actionable row needs raw
+confidence at least 0.5 and identical text at nearby normalized centers in both
+passes. An icon-inset region is checked at both sizes to recover otherwise
+missing lines such as Help; its coordinates are converted to the full screenshot.
+It never replaces an uncertain original line or assembles guessed labels.
+The two scales are a consistency check, not independent proof of accuracy.
+Exact permitted labels, known icon/label pairs, duplicate rejection, clipped-row
+exclusion and post-action persisted-state assertions remain necessary. Legacy
+accurate-mode evidence retains its 0.7 threshold.
+
+All OCR consumers share a 30-second subprocess deadline and strict JSON/coordinate
+validation. Each recognized screenshot gets an `.ocr.json` sidecar with monotonic
+duration, exit/failure status and bounded raw-output/structured-stage diagnostics.
+A timeout, failed helper or malformed result raises an error; it is never treated
+as an empty match list followed by speculative scrolling. CI's separate synthetic
+OCR smoke test exercises recognition and coordinate conversion without Device Hub.
+
 ### Retirement while a class menu is open
 
 The optional retirement scenario uses the same disposable-Simulator, signed-app,

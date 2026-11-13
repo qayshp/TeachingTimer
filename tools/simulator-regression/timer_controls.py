@@ -15,6 +15,7 @@ import plistlib
 import subprocess
 import time
 from actions import choose_text
+from ocr import readable_text, recognize_text
 from count_evidence import locked_count_evidence
 from run import checked, events_after, reset_test_app
 
@@ -103,7 +104,7 @@ def ensure_luminance(reduced, read_journals, toggle, launch_id, *, timeout=8,
 
 
 def missing_labels(rows, counting):
-    readable = [r for r in rows if r['confidence'] >= .7]
+    readable = [r for r in rows if readable_text(r)]
     missing = []
     # The upper-left control is icon-only. Its visibility needs human frame
     # review; opening it is exercised separately by the action suite.
@@ -163,7 +164,7 @@ def main():
     def screenshot(name):
         file = out / (name + '.png')
         checked('xcrun', 'simctl', 'io', args.simulator, 'screenshot', file)
-        return json.loads(checked(out / 'screen-text', file))
+        return recognize_text(out / 'screen-text', file)
     ui('tap', .5, .76)
     rows = screenshot('setup')
     if not any('Custom' in r['text'] for r in rows):

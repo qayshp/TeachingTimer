@@ -14,6 +14,7 @@ import plistlib
 import subprocess
 import time
 from run import checked, reset_test_app
+from ocr import readable_text, recognize_text
 
 BUNDLE = 'com.qayshp.TeachingTimer'
 KEY = 'teachingClassContext.v1'
@@ -56,12 +57,16 @@ def suggested_start(timestamp):
 
 def choose_text(rows, alternatives, minimum_y=0.2):
     def normalized(text):
+        # Fast OCR can read the gear/info symbol as O on the SE 3.
+        # Accept only these observed, exact pairs, not arbitrary prefixes.
+        if text in {'O Settings', 'O About'}:
+            return text[2:].casefold()
         parts = text.split(' ', 1)
         if len(parts) == 2 and parts[0] in {'Il', 'II', 'Ⅱ', '+', '▶', '✓', '×', '•'}:
             text = parts[1]
         return text.casefold()
     matches = [r for r in rows if normalized(r['text']) in {normalized(s) for s in alternatives}
-               and minimum_y < r['y'] < 0.92 and r['confidence'] >= 0.7]
+               and minimum_y < r['y'] < 0.92 and readable_text(r)]
     if len(matches) > 1:
         raise ValueError('Ambiguous text target; inspect screenshot')
     return matches[0] if matches else None
@@ -110,7 +115,7 @@ def main():
     def capture(label, recognize=False):
         path = output / (label + '.png')
         checked('xcrun', 'simctl', 'io', args.simulator, 'screenshot', path)
-        rows = json.loads(checked(output / 'screen-text', path)) if recognize else []
+        rows = recognize_text(output / 'screen-text', path) if recognize else []
         (output / (label + '-text.json')).write_text(json.dumps(rows, indent=2))
         for name in ('RuntimeDiagnostics', 'InterfaceDiagnostics', 'LandmarkDiagnostics'):
             source = container / 'Documents' / (name + '.json')
