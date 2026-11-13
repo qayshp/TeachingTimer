@@ -102,10 +102,29 @@ repository checks and workflow lint pass. The implementation commit `2ebf2cc`
 also passed hosted [Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/43376780859)
 and [release tooling/lint checks](https://github.com/qayshp/TeachingTimer/actions/runs/43376780882),
 with the app build and publishing correctly skipped for this workflow/tooling
-change. First hosted full-scan
-source inclusion and docs-only skipping must be checked separately; local
-routing tests alone do not establish uploaded analysis or extracted-source
-coverage. The baseline above remains the pre-migration measurement.
+change.
+
+Hosted migration validation passed:
+
+| Case | CodeQL outcome | Wall time |
+| --- | --- | ---: |
+| [Security-workflow/router change, `2ebf2cc`](https://github.com/qayshp/TeachingTimer/actions/runs/43376780823) | Full Swift, Python and Actions analysis; final result passed. | 19m 12s |
+| [Documentation-only follow-up, `36dda9b`](https://github.com/qayshp/TeachingTimer/actions/runs/43376973876) | Swift skipped; Python, Actions and final result passed. Earlier full scan continued. | 1m 15s |
+
+The full scan retained Xcode 26.6 and the `TeachingTimerDistribution` build with
+its Watch dependency. Its extracted database `629703228` contains all 29
+production Swift files, byte-for-byte matching `2ebf2cc`; analysis `2158837602`
+contains the same 27 security-rule IDs as the baseline, zero unresolved AST
+nodes and no configured-query findings. This verifies source and rule inclusion,
+not absence of every possible defect. Full-scan Autobuild took 17m 19s and
+analysis/upload 1m 02s; variable worker performance is separate from routing.
+
+Both follow-up Watch/release workflows passed, with no app build, signing or
+publishing requested. Manual and scheduled force-full routing was exercised by
+the actual workflow-shell tests; these two hosted runs were pushes, not calendar
+or manual events. The baseline above remains the pre-migration measurement.
+Database metadata, original source hashes, SARIF/rule comparisons and run/job
+records are retained privately alongside the baseline evidence.
 
 ## Next optimizations, in order
 

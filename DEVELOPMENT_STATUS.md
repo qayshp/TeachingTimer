@@ -99,9 +99,13 @@ removes the duplicate release-side Mac pass for non-publishing tooling changes,
 while preserving full release verification for app candidates/manual rehearsals.
 The next tooling pass adds selective Swift CodeQL scheduling: production,
 dependency, project and security-routing changes still request full analysis;
-weekly/manual scans remain full. Python and Actions scan every change. Local
-routing and workflow-shell tests pass; hosted migration validation is recorded
-separately in the efficiency review. No app source or distribution changed.
+weekly/manual scans remain full. Python and Actions scan every change. All 315
+Python tests, repository checks and workflow lint pass. The first full hosted
+scan passed with all 29 production Swift files byte-matching its commit and the
+same 27 baseline security-rule IDs. A docs-only follow-up passed with Swift
+skipped while the earlier full scan continued. The efficiency review records
+the exact runs, source comparison and event-test limits. No app source or
+distribution changed.
 
 ## Optional companion — November 12
 

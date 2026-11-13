@@ -46,8 +46,9 @@ app releases and publication ordering remain in #24; no deadline or security
 guard was removed.
 Selective Swift CodeQL routing now keeps full scans for production, dependency,
 project and security-configuration changes, plus weekly/manual runs. Python and
-Actions still scan every change. The timing review distinguishes local routing
-tests from hosted source-coverage and skip verification.
+Actions still scan every change. Hosted full-scan source/rule comparison and a
+docs-only skip both passed; the timing review records the evidence and the
+separate local manual/scheduled routing tests.
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
 is complete: a concise status page, user-facing changelog and separate historical
