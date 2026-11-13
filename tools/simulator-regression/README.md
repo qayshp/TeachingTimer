@@ -109,6 +109,20 @@ this is observation, not an automatic retry or a visual success assertion.
 
 ## Essential teaching actions
 
+The default-text-size outline helper accepts full screenshots of exactly
+324×394 (SE 3 40 mm) or 422×514 (Ultra 4 49 mm). Its horizontal sample columns
+follow the control's scale: 56/268 pixels on SE and 70/352 on Ultra. The vertical
+samples, 20 samples per side, ±2-pixel search, brightness threshold and 70%
+coverage threshold are unchanged. JSON also records dimensions and sample columns.
+Unsupported/cropped dimensions fail instead of returning misleading measurements.
+Low coverage remains a review flag, not proof of disappearance or touchability.
+
+Run `sh scripts/check-control-outline.sh NEW_OUTPUT_DIRECTORY` for the synthetic
+regression check also used by CI. Fixture bounds are independent constants;
+missing sides, blank/text-only frames, short crossings and outlines at the old
+Ultra inset must still request review. Existing capture manifests are historical
+evidence; remeasurement writes separate results rather than replacing them.
+
 For bounded count/Lock/wake captures, use `timer_controls.py` with the same
 `--simulator`, `--app`, `--output` and explicit `--reset-test-app` arguments.
 It supports default-size SE 3 40 mm and Ultra 4 49 mm captures. Dim/wake stages

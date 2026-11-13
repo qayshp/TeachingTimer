@@ -63,6 +63,19 @@ import Foundation
                 assert(point.y - 3 >= 36 * layout.scale, "Count enters system clock area")
             }
         }
-        print("PASS: 8 full-screen dials, all 480 ticks retain full length, time-overlay regions, 44pt targets, 5760 count dots clear of controls")
+        // Independent pixel bounds shared by the outline-regression fixtures.
+        // A layout change must prompt recalibration instead of leaving the
+        // measurement helper silently sampling outside the real button.
+        let calibrated: [(CGSize, CGRect)] = [
+            (CGSize(width: 162, height: 197), CGRect(x: 56, y: 256, width: 212, height: 88)),
+            (CGSize(width: 211, height: 257), CGRect(x: 70, y: 341.5, width: 282, height: 110))
+        ]
+        for (size, expected) in calibrated {
+            let frame = TimerFaceLayout(size: size).actionFrame
+            let pixels = CGRect(x: frame.minX * 2, y: frame.minY * 2,
+                                width: frame.width * 2, height: frame.height * 2)
+            assert(pixels == expected, "Recalibrate ControlOutline and its fixtures after count-frame changes")
+        }
+        print("PASS: 8 full-screen dials, all 480 ticks retain full length, time-overlay regions, 44pt targets, 5760 count dots clear of controls, SE/Ultra outline calibration bounds")
     }
 }

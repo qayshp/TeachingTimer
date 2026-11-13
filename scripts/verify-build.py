@@ -45,6 +45,7 @@ def verification_steps(output):
         ('sdks', ['xcodebuild', '-showsdks']),
         ('swift', ['xcrun', 'swift', '--version']),
         ('repository', ['python3', 'scripts/check-repository.py']),
+        ('control-outline-smoke', ['sh', 'scripts/check-control-outline.sh', str(output / 'control-outline-smoke')]),
         ('models', ['sh', 'scripts/check.sh']),
         ('tools', ['sh', 'scripts/check-tools.sh']),
         ('information-qr', ['swift', 'scripts/information-qr.swift', '--check', 'TeachingTimer/Information']),

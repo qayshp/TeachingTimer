@@ -76,6 +76,14 @@ class ChangeImpactChecks(unittest.TestCase):
                 self.assertTrue(result["mac_verify"])
                 self.assertFalse(result["publish"])
 
+    def test_outline_helper_fixture_and_wrapper_require_mac_without_release(self):
+        for path in ('tools/simulator-regression/ControlOutline.swift',
+                     'scripts/check-control-outline.swift', 'scripts/check-control-outline.sh'):
+            with self.subTest(path=path):
+                result = change_impact.classify_paths([path])
+                self.assertTrue(result['mac_verify'])
+                self.assertFalse(result['publish'])
+
     def test_probe_readme_still_skips_mac_build(self):
         result = change_impact.classify_paths(["tools/native-volume-probe/README.md"])
         self.assertTrue(result["docs_changed"])

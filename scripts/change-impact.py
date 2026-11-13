@@ -29,6 +29,7 @@ MAC_TOOL_FILES = {
     "scripts/prepare-ci-watch-runtime.py", "scripts/simulator-smoke.py", "scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
     "scripts/prepare-testflight.sh", "scripts/prepare-testflight.py",
     "scripts/inspect-artifact.py",
+    "scripts/check-control-outline.sh",
 }
 MAC_PROBE_PREFIXES = (
     "tools/phone-audio-probe/", "tools/native-volume-probe/",

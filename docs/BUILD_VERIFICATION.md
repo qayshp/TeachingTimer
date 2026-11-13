@@ -9,6 +9,14 @@ Simulator build, isolated phone audio-fixture build, development archive and
 future distribution-identity archive. The fixture build generates audio locally
 and never launches playback.
 
+The early `control-outline-smoke` stage compiles the actual outline helper and
+runs 18 independent synthetic cases before the slower Simulator checks. It
+verifies both calibrated screen sizes, separate missing-side/blank/text/crossing
+negatives, the obsolete Ultra sampling position and invalid dimensions. Each
+helper invocation has a five-second deadline plus bounded termination. Both
+workflows retain `control-outline-smoke/fixtures/` with PNGs, raw measurements
+and results; no Simulator or physical device is used by this stage.
+
 After compiling the Simulator tools, the `screen-text-smoke` stage runs the real
 OCR helper on two harmless 324×394 synthetic images containing nine labels.
 It checks exact text, corroborated fast recognition, raw confidence and normalized

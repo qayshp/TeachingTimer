@@ -101,6 +101,7 @@ jobs:
             ${{ runner.temp }}/TeachingTimerVerification/simulator-smoke/
             ${{ runner.temp }}/TeachingTimerVerification/runtime-preparation/
             ${{ runner.temp }}/TeachingTimerVerification/screen-text-smoke/
+            ${{ runner.temp }}/TeachingTimerVerification/control-outline-smoke/fixtures/
             ${{ runner.temp }}/TeachingTimerVerification/*-archive/build.log
             ${{ runner.temp }}/TeachingTimerVerification/*-archive/readiness.json
             ${{ runner.temp }}/TeachingTimerVerification/*-archive/artifact-inspection.json

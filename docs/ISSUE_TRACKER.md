@@ -31,7 +31,9 @@ The November 12 full SE/Ultra runs passed their action assertions and completed
 counts while reported locked. Original-image review attributes the text warnings
 to foreground hands; Ultra's outline flags expose fixed horizontal sampling
 insets in the measurement helper. That calibration limitation is recorded in #17
-separately from app disappearance. [Follow-up evidence](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
+separately from app disappearance. It is now corrected with 18 synthetic
+regression cases covering both sizes and invalid dimensions; the older startup
+rendering question remains open. [Calibration evidence](REVIEW_2026-11-12.md#outline-checker-calibration-follow-up).
 
 The [roadmap](ROADMAP.md) orders these review follow-ups; each issue has its own
 completion checklist:

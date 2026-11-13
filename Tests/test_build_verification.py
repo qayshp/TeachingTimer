@@ -14,6 +14,14 @@ build = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(build)
 
 class BuildEvidenceChecks(unittest.TestCase):
+    def test_outline_regression_runs_before_slow_simulator_checks(self):
+        output = Path('/synthetic/evidence')
+        steps = build.verification_steps(output)
+        names = [name for name, _ in steps]
+        self.assertLess(names.index('control-outline-smoke'), names.index('simulator'))
+        self.assertEqual(dict(steps)['control-outline-smoke'], [
+            'sh', 'scripts/check-control-outline.sh', str(output / 'control-outline-smoke')])
+
     def test_real_ocr_check_runs_after_helper_compilation(self):
         output = Path('/synthetic/evidence')
         steps = build.verification_steps(output)

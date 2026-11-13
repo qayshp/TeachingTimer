@@ -85,8 +85,10 @@ restores the complete interactive check: all 21 actions pass on both SE 3 40 mm
 and Ultra 4 49 mm. SE lifecycle/relaunch, three retirement scenarios and locked
 full-count captures on both sizes also pass. All 16 Swift suites and 298 Python
 tests pass. Changes through `5d9bd66` are test tooling and documentation only;
-the TestFlight app and physical installation are unchanged. The separate Ultra
-outline-measurement calibration limitation remains recorded in #17.
+the TestFlight app and physical installation are unchanged. The subsequent
+[outline calibration follow-up](docs/REVIEW_2026-11-12.md#outline-checker-calibration-follow-up)
+corrects the Ultra measurement issue and adds 18 independent regression cases.
+The broader early-rendering investigation in #17 remains open.
 
 ## Optional companion — November 12
 
