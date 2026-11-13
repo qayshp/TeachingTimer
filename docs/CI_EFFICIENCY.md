@@ -97,7 +97,12 @@ GitHub otherwise blocks advanced-workflow uploads. The
 explains that prerequisite.
 
 Local regression tests exercise the classifier, the actual workflow shell for
-push/PR/manual/scheduled events, and the result gate. First hosted full-scan
+push/PR/manual/scheduled events, and the result gate. All 315 Python tests,
+repository checks and workflow lint pass. The implementation commit `2ebf2cc`
+also passed hosted [Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/43376780859)
+and [release tooling/lint checks](https://github.com/qayshp/TeachingTimer/actions/runs/43376780882),
+with the app build and publishing correctly skipped for this workflow/tooling
+change. First hosted full-scan
 source inclusion and docs-only skipping must be checked separately; local
 routing tests alone do not establish uploaded analysis or extracted-source
 coverage. The baseline above remains the pre-migration measurement.
