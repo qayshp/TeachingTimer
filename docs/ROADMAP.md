@@ -44,6 +44,10 @@ The [CI timing review](CI_EFFICIENCY.md) removes duplicate release-side Mac
 verification for non-publishing tooling pushes. Exact-source reuse for actual
 app releases and publication ordering remain in #24; no deadline or security
 guard was removed.
+Selective Swift CodeQL routing now keeps full scans for production, dependency,
+project and security-configuration changes, plus weekly/manual runs. Python and
+Actions still scan every change. The timing review distinguishes local routing
+tests from hosted source-coverage and skip verification.
 
 Documentation simplification [#12](https://github.com/qayshp/TeachingTimer/issues/12)
 is complete: a concise status page, user-facing changelog and separate historical

@@ -1,0 +1,123 @@
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+name: CodeQL
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '23 9 * * 2'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  # Never cancel an earlier app scan with a later docs-only main push.
+  # Each PR comparison includes its complete proposed diff.
+  group: codeql-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: true
+jobs:
+  changes:
+    name: Select Swift scan
+    runs-on: ubuntu-latest
+    outputs:
+      swift_changed: ${{ steps.impact.outputs.swift_changed }}
+      reason: ${{ steps.impact.outputs.reason }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+      - name: Classify complete change range
+        id: impact
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENT_NAME" = pull_request ]; then
+            python3 scripts/codeql-impact.py --base "$PR_BASE" --head "$PR_HEAD" --output "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = push ]; then
+            python3 scripts/codeql-impact.py --base "$PUSH_BEFORE" --head "$GITHUB_SHA" --output "$GITHUB_OUTPUT"
+          else
+            # Weekly, manual and unfamiliar events always scan the whole app.
+            python3 scripts/codeql-impact.py --all --output "$GITHUB_OUTPUT"
+          fi
+
+  interpreted:
+    name: Analyze ${{ matrix.language }}
+    # Independent of routing: a broken classifier cannot suppress these scans.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [actions, python]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+      - name: Analyze and upload
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4
+        with:
+          category: /language:${{ matrix.language }}
+
+  swift:
+    name: Analyze swift
+    needs: changes
+    # Only an explicit, successful false may skip Swift. Errors scan in full.
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.swift_changed != 'false') }}
+    runs-on: macos-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4
+        with:
+          languages: swift
+          build-mode: autobuild
+      # Preserve the successful default setup's full-target Autobuild and queries.
+      # No source filters, restored build outputs or architecture changes.
+      - name: Build all production targets
+        uses: github/codeql-action/autobuild@33d7b85da1a04171e211befe2c739303b9a4c066 # v4
+      - name: Analyze and upload
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4
+        with:
+          category: /language:swift
+
+  required-result:
+    name: CodeQL result
+    if: always()
+    needs: [changes, interpreted, swift]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all applicable analyses
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          INTERPRETED_RESULT: ${{ needs.interpreted.result }}
+          SWIFT_RESULT: ${{ needs.swift.result }}
+          SWIFT_CHANGED: ${{ needs.changes.outputs.swift_changed }}
+          ROUTING_REASON: ${{ needs.changes.outputs.reason }}
+        run: |
+          printf 'Swift routing: %s (%s)\n' "$SWIFT_CHANGED" "$ROUTING_REASON"
+          test "$CHANGES_RESULT" = success
+          test "$INTERPRETED_RESULT" = success
+          if [ "$SWIFT_CHANGED" = false ]; then
+            test "$SWIFT_RESULT" = skipped
+          else
+            test "$SWIFT_CHANGED" = true
+            test "$SWIFT_RESULT" = success
+          fi

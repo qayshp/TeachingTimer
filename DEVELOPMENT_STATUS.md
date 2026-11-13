@@ -97,6 +97,11 @@ contains all 29 production Swift files across Watch and phone. The
 [CI efficiency review](docs/CI_EFFICIENCY.md) records the measured timings and
 removes the duplicate release-side Mac pass for non-publishing tooling changes,
 while preserving full release verification for app candidates/manual rehearsals.
+The next tooling pass adds selective Swift CodeQL scheduling: production,
+dependency, project and security-routing changes still request full analysis;
+weekly/manual scans remain full. Python and Actions scan every change. Local
+routing and workflow-shell tests pass; hosted migration validation is recorded
+separately in the efficiency review. No app source or distribution changed.
 
 ## Optional companion — November 12
 

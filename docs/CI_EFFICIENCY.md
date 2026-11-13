@@ -73,36 +73,57 @@ build on that push. The live run validates the workflow bindings and lightweight
 fallback; it is not a post-change native-tooling timing benchmark. App/native
 paths and manual force-full behavior are covered by the routing regression cases.
 
+## Implemented: selective Swift CodeQL execution
+
+The tracked `.github/workflows/codeql.yml` replaces GitHub's repository default
+setup. Python and Actions analysis still run on every main push and pull request.
+Swift scans run for production Watch/phone sources and resources, dependency
+manifests, Xcode project/configuration, bundled documents and build metadata,
+CodeQL configuration and routing edits, and unknown inputs. Known non-bundled
+documentation, tests and standalone diagnostic helpers skip that Mac job.
+
+Weekly Tuesday 09:23 UTC and manual runs force a full scan. Unavailable Git
+history selects full analysis; a failed classifier or missing output also runs
+Swift and fails the final workflow result. The complete push/PR range retains
+deleted and renamed app paths. A later docs-only main push cannot cancel an
+earlier app scan.
+
+This selects job execution, not Swift source files or queries. Full-target
+Autobuild, default security queries, the default remote threat model and the
+three language categories remain. No build cache, source exclusion or
+architecture reduction was added. Repository default setup must stay disabled:
+GitHub otherwise blocks advanced-workflow uploads. The
+[migration guide](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/configure-code-scanning/configuring-advanced-setup-for-code-scanning)
+explains that prerequisite.
+
+Local regression tests exercise the classifier, the actual workflow shell for
+push/PR/manual/scheduled events, and the result gate. First hosted full-scan
+source inclusion and docs-only skipping must be checked separately; local
+routing tests alone do not establish uploaded analysis or extracted-source
+coverage. The baseline above remains the pre-migration measurement.
+
 ## Next optimizations, in order
 
-1. **Scope expensive Swift CodeQL runs to relevant changes.** The current
-   repository default setup rebuilds production Swift even for documentation
-   and native test-helper changes. An explicit workflow could retain
-   relevant Python/Actions analysis and full Swift scans for app, dependency,
-   project and security-workflow changes, plus scheduled/manual full scans.
-   Scope job execution, not the production files included in a Swift scan.
-   Compare extracted-source coverage, queries and required-check behavior before switching. Current
-   companion coverage is complete; there is no need to repair a coverage gap.
-2. **Reuse exact-source verification for actual app releases.** The two full
+1. **Reuse exact-source verification for actual app releases.** The two full
    passes still exist for publishing app pushes. One verified main-branch result
    could serve both, but it must bind the repository, trusted workflow, source
    SHA, successful applicable checks and evidence provenance. PR and post-merge
    verification remain distinct. Publication currently waits for its own full
    verification/lint, not the separate Watch Required result or CodeQL; decide
    the desired publication gates explicitly. Ordering remains [#24](https://github.com/qayshp/TeachingTimer/issues/24).
-3. **Parallelize small/large smoke on isolated workers.** All cases have useful
+2. **Parallelize small/large smoke on isolated workers.** All cases have useful
    purposes; keep them and their timing assertions. Two workers could overlap
    the per-size runs, but require the same app/runtime, both complete reports,
    failure propagation and owned-device cleanup. This is a measured experiment,
    not a claimed speedup. Direct threads are unsuitable because the runner
    installs process signal handlers; shared-host concurrency also needs a load
    check against the known awake-recovery issue #27.
-4. **Use narrower native-tool verification where dependencies are known.**
+3. **Use narrower native-tool verification where dependencies are known.**
    Helper-only edits could compile/run the native guards without rebuilding
    unchanged app archives and the full matrix. Unknown dependencies must select
    full checks, and pipeline/app changes plus manual full checks must retain
    appropriate coverage. This needs a tested dependency map, not blanket skips.
-5. **Improve failure order before adding build concurrency.** Running native
+4. **Improve failure order before adding build concurrency.** Running native
    helpers/archives before the long booted matrix would report those failures
    sooner, without reducing successful-run duration. Later, measure bounded
    parallel host checks or independent builds with isolated outputs; avoid

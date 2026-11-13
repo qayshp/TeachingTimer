@@ -210,6 +210,33 @@ That job used Xcode 26.6 and the watchOS 26.5 SDK with a 26.0 deployment target.
 This adds 26.x SDK compilation evidence; it does not establish execution on
 watchOS 26. No workflow was changed or rerun for this inspection.
 
+### Selective Swift CodeQL scheduling
+
+`.github/workflows/codeql.yml` owns advanced setup; repository default setup is
+disabled to allow its uploads. Python and Actions retain analysis on every main
+push and pull request. `scripts/codeql-impact.py` selects the expensive Swift job
+for app/resource, dependency, project/configuration, bundled-input and security
+configuration changes. Unknown paths and missing/unusable history scan in full.
+CodeQL workflow/configuration and either routing-script changes also force Swift.
+Ordinary docs, tests and standalone diagnostic helpers alone may skip Swift;
+their existing app/tool verification gates are independent.
+
+Tuesday 09:23 UTC schedules and **Run workflow** always scan all three languages.
+When Swift runs it keeps full-target Autobuild, default queries and the remote
+threat model, without source filters or cached build products. Analysis jobs have
+read access plus `security-events: write`; they do not receive release credentials.
+The stable **CodeQL result** requires both interpreted analyses and the applicable
+Swift result, and rejects routing failures. Swift also runs if routing fails or
+does not explicitly return false. Complete PR ranges and per-commit main
+concurrency prevent a docs-only follow-up from suppressing an earlier app scan.
+
+Tests execute the actual routing shell and final result gate, including unknown
+events, manual/scheduled runs, missing history, moves/deletions, and an app PR
+followed by a docs commit. Source inclusion must still be verified against the
+hosted database after changing build/toolchain behavior. See the
+[CI timing review](CI_EFFICIENCY.md#implemented-selective-swift-codeql-execution)
+for baseline evidence and migration validation.
+
 ## Interactive Simulator checks
 
 Use the [combined regression suite](../tools/simulator-regression/README.md#run-the-combined-suite)
