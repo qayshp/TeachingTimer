@@ -21,11 +21,18 @@ decides which slots are available. The complication is a static launcher rather
 than a live class timer, so it does not need access to saved class data or regular
 timeline refreshes.
 
-![Teaching Timer launcher at the top left of an Infograph watch face](images/complication-2026-11-13/se3-infograph-launcher.png)
+The next source candidate replaces the generic timer symbol from build 55 with a
+monochrome rolled mat and clock. The artwork follows the app icon, with broad
+hands/rim and an open mat curl rather than gradients or small ticks.
 
-November 13, 2026: SE 3 40 mm Simulator, watchOS 27.2. The corner launcher
-appeared in the picker and opened Teaching Timer when tapped. Other families
-are supported by the extension; this image documents the corner layout.
+![Monochrome mat-and-clock launcher in corner and circular slots](images/complication-2026-11-13/se3-mat-clock-awake.png)
+
+![The same launcher in Simulator Lock / reduced luminance](images/complication-2026-11-13/se3-mat-clock-dim.png)
+
+November 13, 2026: SE 3 40 mm Simulator, watchOS 27.2. The new corner and circular
+glyphs render in awake and dimmed states. Tap-to-open keeps class timing intact.
+Simulator inspection does not establish physical-Watch readability. See
+[artwork and reproduction notes](design/complication-glyph/README.md).
 
 ## Dial and controls
 

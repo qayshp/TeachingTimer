@@ -4,6 +4,16 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## November 13, 2026 — recognizable complication artwork candidate
+
+- Replace the generic timer symbol with a monochrome rolled mat and clock,
+  matching the app icon. The main app icons and teaching controls are unchanged.
+- Use template PNGs with transparent cutouts and a smaller inline rendition.
+  Automated checks protect image dimensions, scale/alpha metadata and bundling.
+- Reviewed small corner/circular slots on SE 3 Simulator while awake and in Lock
+  mode. Physical readability and the next TestFlight release remain separate
+  checks; see [current status](DEVELOPMENT_STATUS.md).
+
 ## November 13, 2026 — watch-face launcher
 
 - Add a **Teaching Timer** complication for circular, corner, inline and

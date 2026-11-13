@@ -43,6 +43,7 @@ class ComplicationArtifactChecks(unittest.TestCase):
         self.extension.mkdir(parents=True, exist_ok=True)
         (self.extension / 'Info.plist').write_bytes(plistlib.dumps(self.info if info is None else info))
         (self.extension / 'TeachingTimerComplications').write_bytes(b'fixture')
+        (self.extension / 'Assets.car').write_bytes(b'compiled-asset-fixture')
 
     def inspect(self, required=False):
         with patch.object(artifact, 'command', return_value=subprocess.CompletedProcess([], 1, b'', b'')):
@@ -67,6 +68,14 @@ class ComplicationArtifactChecks(unittest.TestCase):
     def test_existing_extension_is_checked_even_without_required_flag(self):
         self.write_extension(dict(self.info, CFBundleIdentifier='wrong.example'))
         self.assertFalse(self.inspect()['checks']['complicationIdentifier'])
+
+    def test_historical_symbol_launcher_does_not_require_asset_catalog_by_default(self):
+        self.write_extension()
+        (self.extension / 'Assets.car').unlink()
+        checks = self.inspect()['checks']
+        self.assertNotIn('complicationAssetCatalogPresent', checks)
+        self.assertTrue(all(checks.values()))
+        self.assertFalse(self.inspect(required=True)['checks']['complicationAssetCatalogPresent'])
 
     def test_malformed_or_missing_extension_metadata_is_a_failed_check(self):
         self.write_extension()
@@ -105,6 +114,30 @@ class ComplicationArtifactChecks(unittest.TestCase):
         self.assertFalse(self.inspect()['checks']['complicationBinaryPresent'])
         (self.app / 'PlugIns/Unexpected.appex').mkdir()
         self.assertFalse(self.inspect()['checks']['complicationOnlyExpectedExtension'])
+
+    def test_missing_empty_or_directory_asset_catalog_fails(self):
+        self.write_extension()
+        catalog = self.extension / 'Assets.car'
+        catalog.unlink()
+        self.assertFalse(self.inspect(required=True)['checks']['complicationAssetCatalogPresent'])
+        catalog.touch()
+        self.assertFalse(self.inspect()['checks']['complicationAssetCatalogPresent'])
+        catalog.unlink()
+        catalog.mkdir()
+        self.assertFalse(self.inspect()['checks']['complicationAssetCatalogPresent'])
+
+    def test_symlink_asset_catalog_fails_even_when_destination_is_valid(self):
+        self.write_extension()
+        catalog = self.extension / 'Assets.car'
+        contents = catalog.read_bytes()
+        catalog.unlink()
+        for destination in (self.extension / 'actual-assets.car',
+                            Path(self.folder.name) / 'outside-assets.car'):
+            with self.subTest(destination=destination.name):
+                destination.write_bytes(contents)
+                catalog.symlink_to(destination)
+                self.assertFalse(self.inspect()['checks']['complicationAssetCatalogPresent'])
+                catalog.unlink()
 
     def test_symlink_outside_app_is_not_accepted_as_embedded_extension(self):
         outside = Path(self.folder.name) / 'Outside.appex'

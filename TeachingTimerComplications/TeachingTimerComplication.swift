@@ -33,11 +33,14 @@ private struct LauncherView: View {
         Group {
             switch family {
             case .accessoryInline:
-                Label("Teaching Timer", systemImage: "timer")
+                Label("Teaching Timer", image: "MatClockInlineGlyph")
             case .accessoryRectangular:
                 HStack(spacing: 8) {
-                    Image(systemName: "timer")
-                        .font(.title2)
+                    Image("MatClockGlyph")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Teaching Timer")
                             .font(.headline)
@@ -46,10 +49,11 @@ private struct LauncherView: View {
                     }
                 }
             default:
-                Image(systemName: "timer")
+                Image("MatClockGlyph")
+                    .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
-                    .padding(5)
+                    .padding(2)
             }
         }
         .accessibilityElement(children: .ignore)

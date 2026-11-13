@@ -61,6 +61,26 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 - Mindfulness runtime suitability for guided yoga teaching and automatic renewal
   still needs explicit Apple guidance. Beta review does not settle intended use.
 
+## Monochrome complication artwork candidate — November 13
+
+The next source candidate uses the rolled mat and clock for the watch-face
+launcher, matching the app identity rather than the generic SF timer symbol.
+This artwork is not part of published build **261113.0211.55**. App icons,
+class/runtime/count state and Crown/media code are unchanged.
+
+SE 3 40 mm / watchOS 27.2 Simulator shows the new corner and circular icons while
+awake and under Device Hub Lock. Opening through the launcher preserves saved
+class timing; physical-Watch readability remains unverified. The image assets
+use template rendering and transparent interiors. Ordinary size-bounded PNGs,
+including a smaller inline asset, avoid the reproduced high-resolution PDF
+snapshot failure. Tests guard image dimensions/scales/alpha metadata and require
+the extension's compiled asset catalog in current archive checks. Historical
+SF-symbol launcher archives remain inspectable.
+
+Tracked in [issue #32](https://github.com/qayshp/TeachingTimer/issues/32).
+See [screenshots and setup](docs/TEACHING_FACE_GUIDE.md#quick-launch-from-a-watch-face)
+and [artwork notes](docs/design/complication-glyph/README.md).
+
 ## Watch-face launcher — November 13
 
 Build **261113.0211.55** adds a static **Teaching Timer** complication in all

@@ -121,6 +121,19 @@ def complication_checks(app, watch_info, required=False):
         return parts + (0,) * (3 - len(parts))
 
     minimum = os_version(version)
+    catalog = expected / 'Assets.car'
+    try:
+        catalog_exists = catalog.exists() or catalog.is_symlink()
+        catalog_present = (not catalog.is_symlink() and catalog.is_file()
+            and catalog.resolve().is_relative_to(expected.resolve())
+            and catalog.stat().st_size > 0)
+    except OSError:
+        catalog_exists = True
+        catalog_present = False
+    # The first launcher used an SF Symbol and legitimately had no catalog.
+    # Current builds explicitly require it; a present catalog is always checked.
+    if required or catalog_exists:
+        checks['complicationAssetCatalogPresent'] = catalog_present
     checks.update(
         complicationIdentifier=(watch_info.get('CFBundleIdentifier') in identifiers
             and info.get('CFBundleIdentifier') == identifiers[watch_info['CFBundleIdentifier']]),

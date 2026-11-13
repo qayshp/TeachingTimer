@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        B00000000000000000000013 /* Complication assets in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000012; };
         B00000000000000000000006 /* TeachingTimerComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000003; };
         B00000000000000000000007 /* Complications in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B00000000000000000000002; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
         A10000000000000000000006 = {isa = PBXBuildFile; fileRef = A20000000000000000000004; };
@@ -53,6 +54,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+        B00000000000000000000012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
         B00000000000000000000002 /* TeachingTimerComplications.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TeachingTimerComplications.appex; sourceTree = BUILT_PRODUCTS_DIR; };
         B00000000000000000000003 /* TeachingTimerComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeachingTimerComplication.swift; sourceTree = "<group>"; };
         B00000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -173,7 +175,7 @@
 		};
         B00000000000000000000005 /* TeachingTimerComplications */ = {
             isa = PBXGroup;
-            children = (B00000000000000000000003, B00000000000000000000004, );
+            children = (B00000000000000000000003, B00000000000000000000004, B00000000000000000000012, );
             path = TeachingTimerComplications;
             sourceTree = "<group>";
         };
@@ -289,7 +291,7 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-        B0000000000000000000000A /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+        B0000000000000000000000A /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B00000000000000000000013, ); runOnlyForDeploymentPostprocessing = 0; };
 		700000000000000000000002 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;

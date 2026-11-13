@@ -215,7 +215,7 @@ def main(argv=None):
         if args.build_number:
             command += ['CURRENT_PROJECT_VERSION=' + args.build_number]
         run('build', command + ['archive'])
-        inspection = artifact.inspect(archive)
+        inspection = artifact.inspect(archive, require_complication=True)
         (output / 'artifact-inspection.json').write_text(json.dumps(inspection, indent=2) + '\n')
         watch, container = artifact.application_paths(archive)
         if container is None:
