@@ -56,12 +56,22 @@ App/unknown-input pushes and manual rehearsals keep their previous verification.
 The publication job still requires successful release verification; the
 credential-bearing environment and group assignment are unchanged.
 
-For this tooling-only example, the avoided release stage took 13m 34s, or about
-14 minutes including runner setup. This saves runner work and may reduce queues;
+Replaying the actual `b731197`→`b573bcd` native-tooling diff through the new
+classifier gives `mac_verify=true`, `publish=false`, `release_verify=false`.
+Under this gate that push would avoid the 13m 34s release verification stage,
+or about 14 minutes including runner setup. This saves runner work and may reduce queues;
 it does not promise the same reduction in feedback time because the original
 jobs overlapped and CodeQL was slower. Regression cases cover native tools,
 model tests, app/phone/embedded inputs, unknown paths, manual force-full behavior
 and the actual workflow gate bindings.
+
+The optimization commit `a0d1f48` passed its [Watch checks](https://github.com/qayshp/TeachingTimer/actions/runs/43372976535)
+and [release checks](https://github.com/qayshp/TeachingTimer/actions/runs/43372976380),
+including 303 Python tests and workflow lint. It changes only workflow/Python
+tooling and documentation, so the existing classifier already calls for no Mac
+build on that push. The live run validates the workflow bindings and lightweight
+fallback; it is not a post-change native-tooling timing benchmark. App/native
+paths and manual force-full behavior are covered by the routing regression cases.
 
 ## Next optimizations, in order
 
