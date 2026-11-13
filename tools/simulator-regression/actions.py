@@ -57,10 +57,13 @@ def suggested_start(timestamp):
 
 def choose_text(rows, alternatives, minimum_y=0.2):
     def normalized(text):
-        # Fast OCR can read the gear/info symbol as O on the SE 3.
-        # Accept only these observed, exact pairs, not arbitrary prefixes.
-        if text in {'O Settings', 'O About'}:
-            return text[2:].casefold()
+        # Exact observed SF Symbol/label readings on SE 3 and Ultra. Do not
+        # strip arbitrary letters/numbers or fuzzy-match a destructive action.
+        aliases = {'O Settings': 'Settings', 'O About': 'About',
+                   '11 Stop session': 'Stop session', 'D Edit schedule': 'Edit schedule',
+                   'O End class': 'End class'}
+        if text in aliases:
+            return aliases[text].casefold()
         parts = text.split(' ', 1)
         if len(parts) == 2 and parts[0] in {'Il', 'II', 'Ⅱ', '+', '▶', '✓', '×', '•'}:
             text = parts[1]

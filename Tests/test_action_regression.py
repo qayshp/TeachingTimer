@@ -30,14 +30,16 @@ class ActionTargetChecks(unittest.TestCase):
         self.assertIsNone(actions.choose_text([self.row('Do not Stop session')], ['Stop session']))
 
     def test_observed_icon_aliases_are_exact_and_still_reject_ambiguity(self):
-        for name in ('Settings', 'About'):
-            target = dict(self.row('O ' + name, confidence=.5), recognitionLevel='fast', corroborated=True)
+        for text, name in (('O Settings', 'Settings'), ('O About', 'About'),
+                           ('11 Stop session', 'Stop session'), ('D Edit schedule', 'Edit schedule'),
+                           ('O End class', 'End class')):
+            target = dict(self.row(text, confidence=.5), recognitionLevel='fast', corroborated=True)
             self.assertEqual(actions.choose_text([target], [name]), target)
             self.assertIsNone(actions.choose_text([dict(target, corroborated=False)], [name]))
             with self.assertRaises(ValueError):
                 actions.choose_text([target, self.row(name)], [name])
-        for text in ('O End class', 'O Other Settings', 'Do not Settings'):
-            self.assertIsNone(actions.choose_text([self.row(text)], ['End class', 'Settings']))
+        for text in ('O Start class', '11 Start class', 'O Other Settings', 'Do not Settings'):
+            self.assertIsNone(actions.choose_text([self.row(text)], ['Start class', 'Settings']))
 
     def test_fast_targets_require_exact_corroborated_unambiguous_labels(self):
         target = dict(self.row('Start class', confidence=.5), recognitionLevel='fast', corroborated=True)
