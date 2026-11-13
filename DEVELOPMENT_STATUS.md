@@ -69,8 +69,10 @@ This artwork is not part of published build **261113.0211.55**. App icons,
 class/runtime/count state and Crown/media code are unchanged.
 
 SE 3 40 mm / watchOS 27.2 Simulator shows the new corner and circular icons while
-awake and under Device Hub Lock. Opening through the launcher preserves saved
-class timing; physical-Watch readability remains unverified. The image assets
+awake and under Device Hub Lock. Rectangular rendering and the smaller inline
+glyph also pass; the inline mark remains a compact brand cue beside the app name
+in awake/Lock states. Opening through the launcher preserves saved class timing;
+physical-Watch readability remains unverified. The image assets
 use template rendering and transparent interiors. Ordinary size-bounded PNGs,
 including a smaller inline asset, avoid the reproduced high-resolution PDF
 snapshot failure. Tests guard image dimensions/scales/alpha metadata and require

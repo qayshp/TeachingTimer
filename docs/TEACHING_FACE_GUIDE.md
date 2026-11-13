@@ -30,8 +30,12 @@ hands/rim and an open mat curl rather than gradients or small ticks.
 ![The same launcher in Simulator Lock / reduced luminance](images/complication-2026-11-13/se3-mat-clock-dim.png)
 
 November 13, 2026: SE 3 40 mm Simulator, watchOS 27.2. The new corner and circular
-glyphs render in awake and dimmed states. Tap-to-open keeps class timing intact.
-Simulator inspection does not establish physical-Watch readability. See
+glyphs render in awake and dimmed states. The [rectangular slot](images/complication-2026-11-13/se3-mat-clock-rectangular.png)
+also renders correctly. The smaller [inline glyph](images/complication-2026-11-13/se3-mat-clock-inline.png)
+is a compact brand cue beside the app name, including [under Lock](images/complication-2026-11-13/se3-mat-clock-inline-dim.png);
+the mat curl and hands are clearer in corner/circular slots. Tap-to-open keeps
+class timing intact. Simulator inspection does not establish physical-Watch
+readability. See
 [artwork and reproduction notes](design/complication-glyph/README.md).
 
 ## Dial and controls
