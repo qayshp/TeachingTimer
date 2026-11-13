@@ -24,6 +24,17 @@ Deletion requires confirmation and refuses to delete a newer report that arrived
 while the confirmation was open. On Watch, Report details holds the full summary
 and event previews; Connection details is a separate page.
 
+## Later physical delivery — November 12
+
+The owner prepared a report on the Watch, sent it to the phone and emailed it
+to support. Receipt and parsing were independently verified on November 13:
+1,225,763 bytes, 1,628 retained events, Watch build `261112.0232.39`, source
+`16a38f1d9067`. Fresh raw copies corroborate those events. This adds a successful
+Watch-initiated flow on a later build to the earlier phone-requested build-32
+delivery. It does not establish every startup, first-composer, interruption or
+upgrade case, or independently identify the phone's installed build.
+See the [incident record](VOLUME_INCIDENT_2026-11-12.md).
+
 ## Validation gates
 
 - Verify Watch installation and teaching without the iPhone app.

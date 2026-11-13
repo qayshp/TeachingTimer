@@ -10,6 +10,55 @@ fully awake, and on the laptop, followed by success on retry. See
 [Apple feedback status](APPLE_FEEDBACK.md). This does not establish the cause
 of the separate direct-collector error below.
 
+## November 13: device services and retention
+
+The current TestFlight Watch's three journals copied and validated through the
+bounded helper, using bundle `net.qays.TeachingTimer.watchkitapp`. The separately
+emailed November 12 report was also received and parsed. Neither copy required
+an app launch or installation. Both devices were available through Device Hub;
+the owner had entered the Watch passcode and observed active screen sharing
+before the failed diagnostic action. It dimmed afterward.
+
+Direct `devicectl device sysdiagnose` returned `DiagnoseError 0` for both devices.
+The administrator-authorized phone `log collect` returned ENXIO 6. The Watch GUI
+action then reported `12040 → 12044 → 12018`, ending with
+`AMDeviceRemoteCopyMountedDevicesList returned no mount information`
+(`-402653180`). The nested error identifies a mounted-image metadata query;
+the broad heading does not establish that a compatible image was absent.
+
+Host evidence shows successful metadata/usage assertions for the same Watch
+before and shortly after the failure, including an up-to-date enabled image.
+The selected Xcode and running embedded Device Hub belong to Xcode 27.2 product
+build 27B52; local developer images are 27B52 and marked usable/compatible.
+First-launch setup is complete, and the explicit device-support component query
+reports **No updates**. Xcode Settings lists installed iOS/watchOS 27.2 runtimes.
+These checks do not establish the cause of the transient metadata/session fault.
+No image reinstall, re-pairing, device restart or update was performed.
+
+The owner reports that working screen-sharing connections usually establish in
+about ten seconds or less; stopping and starting sharing can recover a stalled
+connection, sometimes after several tries. This is a practical local observation,
+not a universal timeout or proof that an awake screen alone is sufficient.
+
+The phone GUI route accepted a sysdiagnose. A completed 416,991,331-byte archive
+appeared on the phone before a Mac download was confirmed. The same archive was
+copied with `devicectl device copy from`, then passed byte-count, gzip and tar
+validation. It contains no child Watch sysdiagnose. No further capture was started
+merely because a client still displayed Collecting or a transfer was incomplete.
+
+The archive's broad 24-hour bounds include both classes, but detailed media
+records for those intervals have rolled out. Only sparse unrelated records
+remain. Absence of old volume commands cannot establish that none were sent.
+The [volume incident](VOLUME_INCIDENT_2026-11-12.md) records the findings.
+
+For future incidents, note the time, provider and output route, and capture as
+soon as practical after the fault. Capturing before leaving the studio can
+reduce delay; the location itself is not the retention criterion. Transfer and
+analysis can happen later. Consult Apple's current
+[Watch capture/profile instructions](https://developer.apple.com/feedback-assistant/profiles-and-logs/?name=Sysdiagnose+for+watchOS&platform=watchos)
+before practising an on-device capture; do not guess button sequences or
+install logging profiles as an automatic response to a transfer failure.
+
 ## Meaning of the direct collection error
 
 The administrator-authorized `/usr/bin/log collect --device-udid …` attempt

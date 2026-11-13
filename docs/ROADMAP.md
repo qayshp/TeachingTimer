@@ -1,6 +1,6 @@
 # Active roadmap
 
-Updated November 12, 2026 after the companion and CI consistency review. GitHub issues own the task
+Updated November 13, 2026 after the CI reuse verification and new physical volume report. GitHub issues own the task
 checklists; this page owns their order. [Current status](../DEVELOPMENT_STATUS.md)
 owns build, installation and distribution facts.
 
@@ -8,12 +8,13 @@ owns build, installation and distribution facts.
 
 | Priority | Work | Completion gate |
 | --- | --- | --- |
+| P0 — [#2](https://github.com/qayshp/TeachingTimer/issues/2) | Recurrent timer-volume unresponsiveness | Build-39 Apple Music/USB class needed phone buttons; refresh/media return did not recover. Capture a short matched reproduction promptly; late phone logs lack the relevant detail. Preserve normal Crown responsiveness. [Evidence](VOLUME_INCIDENT_2026-11-12.md). |
 | P0 — [#8](https://github.com/qayshp/TeachingTimer/issues/8) | Diagnose frozen native song progress | The merged isolation experiment did not fix TestFlight `1.0 (261104.1939.6)`. Add the supervised standalone/embedded comparison to Apple feedback, then obtain matched physical evidence; preserve playback, Crown and class state. |
 | P0 — [#9](https://github.com/qayshp/TeachingTimer/issues/9) | Establish supported runtime policy | Documented Apple guidance on actual yoga teaching and renewal, or a supported alternative. Beta review approval alone does not complete this. |
 | P1 — [#27](https://github.com/qayshp/TeachingTimer/issues/27) | Awake-relaunch runtime rejection | Compare cold/running-process relaunch timing against the captured hosted failure; verify a bounded correction without weakening the runtime assertion. |
 | P1 — [#10](https://github.com/qayshp/TeachingTimer/issues/10) | Release-critical hardware validation | Supervised media/route/count checks, teaching-length renewal and battery results, readable controls and accessibility. Requires coordinated physical use. |
 | P1 — [#11](https://github.com/qayshp/TeachingTimer/issues/11) | External beta installation | The public invitation now offers joining instructions. Verify exact eligible build and one new tester's install/update/support experience; internal-owner success is separate. |
-| P1 — [#26](https://github.com/qayshp/TeachingTimer/issues/26) | Private tester journal sharing | Optional companion and filtered report export implemented; one physical email delivery verified. Retest startup, request retries, first Mail composition and upgrade preservation. [Validation](OPTIONAL_COMPANION.md). |
+| P1 — [#26](https://github.com/qayshp/TeachingTimer/issues/26) | Private tester journal sharing | Optional companion and filtered export implemented; two deliveries verified, including later-build Watch-initiated export. Retest startup, retries, first Mail composition and upgrade preservation. [Validation](OPTIONAL_COMPANION.md). |
 | P1 — [#14](https://github.com/qayshp/TeachingTimer/issues/14) | Contribution and release safeguards | Main still has no required-check enforcement. Define a practical recovery/bypass policy; retain durable source tags/notes after workflow artifacts expire. |
 | P2 — [#24](https://github.com/qayshp/TeachingTimer/issues/24) | Release ordering | Exact-source Watch verification reuse is implemented. Serialize publishers and handle decreasing Pacific-local numbers at daylight-saving fall-back. Synthetic numbering failure is confirmed; no rejected upload is claimed. |
 | P2 — [#17](https://github.com/qayshp/TeachingTimer/issues/17) | Transient missing Simulator controls | Keep original early/delayed captures and separate capture timing, dim state and actual missing pixels. The Ultra outline checker is calibrated with regression coverage; older early-rendering observations still merit follow-up. |

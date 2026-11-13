@@ -8,7 +8,7 @@ Simulator results, physical observations and unverified mitigations.
 | GitHub issue | Apple feedback | Current boundary |
 | --- | --- | --- |
 | [#1 Blank native media](https://github.com/qayshp/TeachingTimer/issues/1) | FB25305069 | **Resolved November 6** by preventive view recreation, supported by no recent physical recurrence and a passing service-loss recovery capture. Current originals contain Not Playing; an initial preview misreading was corrected. Apple's root cause/status is separate; reopen on recurrence. |
-| [#2 Crown volume response](https://github.com/qayshp/TeachingTimer/issues/2) | FB25329167 | **Fixed November 6** for the retained-control/refocus regression. Controlled comparison, four physical Beta 35 checks and six fresh lifecycle assertions pass. Other routes belong in #10; silencing remains #3. Reopen on recurrence. |
+| [#2 Crown volume response](https://github.com/qayshp/TeachingTimer/issues/2) | FB25329167 | **Reopened November 13** after build-39 physical timer-volume failure on Apple Music/USB despite recovery attempts. The former refocus regression's correction remains historical evidence; a shared cause is unproven. [Current incident and limits](VOLUME_INCIDENT_2026-11-12.md). Silencing remains #3. |
 | [#3 Unexpected audio silencing](https://github.com/qayshp/TeachingTimer/issues/3) | Draft only | A captured zero-volume request does not establish the initiating fault. On November 5 the maintainer corrected a transcription: no zero-volume event during timer adjustment has recurred since recent changes. Apparent mitigation only. |
 | [#4 Always-On seconds-hand backstep](https://github.com/qayshp/TeachingTimer/issues/4) | FB25329087 | **Closed as fixed, November 6.** Builds 33–34 correct the reproduced precision and moving-anchor mechanisms. Follow-up recordings show no backward ticks; the owner reports no recent physical recurrence. [Evidence and resolution](ALWAYS_ON_HAND_TRANSITION.md#resolution--november-6). Reopen on recurrence. Apple status is separate; follow-up not sent. |
 | [#5 Watch developer connection failures](https://github.com/qayshp/TeachingTimer/issues/5) | FB25329139 | Apple could not diagnose with current information; coordinated failure/recovery evidence remains needed. |
@@ -44,11 +44,11 @@ new automated coverage, the hosted failure and a next action for every open issu
 - [#9 Runtime intended use](https://github.com/qayshp/TeachingTimer/issues/9)
 - [#10 Physical reliability/battery/accessibility](https://github.com/qayshp/TeachingTimer/issues/10)
 - [#11 First external beta and release readiness](https://github.com/qayshp/TeachingTimer/issues/11)
-- [#26 Private tester journal sharing](https://github.com/qayshp/TeachingTimer/issues/26): [proposed export and delivery gates](DIAGNOSTIC_EXPORT_PLAN.md); no feature or upload service is shipped.
+- [#26 Private tester journal sharing](https://github.com/qayshp/TeachingTimer/issues/26): optional companion implemented; two support-email deliveries verified, including a later-build Watch-prepared report. [Flow and remaining gates](OPTIONAL_COMPANION.md). No upload service is added.
 - [#14 Release traceability and contribution safeguards](https://github.com/qayshp/TeachingTimer/issues/14)
 - [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15): invariant table and seeded tests implemented; performance measurement remains.
 - [#30 Screenshot OCR stability](https://github.com/qayshp/TeachingTimer/issues/30): fixed by bounded CPU-backed fast recognition, exact multi-scale corroboration and observed icon/label pairs. Full SE/Ultra actions pass; CI executes real recognition on nine synthetic labels. [Evidence](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
-- [#24 Release ordering and verification reuse](https://github.com/qayshp/TeachingTimer/issues/24): overlapping publishers, duplicated checks and a confirmed synthetic Pacific daylight-saving build-number reversal. Main Watch-check cancellation by later docs pushes is fixed with per-commit groups.
+- [#24 Release ordering](https://github.com/qayshp/TeachingTimer/issues/24): exact-source verification reuse and selective Swift CodeQL are implemented. Publisher serialization and a confirmed synthetic Pacific daylight-saving build-number reversal remain; main checks retain per-commit cancellation groups.
 
 Completed: [#12 documentation and changelog](https://github.com/qayshp/TeachingTimer/issues/12),
 [#13 teaching-face visual key](https://github.com/qayshp/TeachingTimer/issues/13),

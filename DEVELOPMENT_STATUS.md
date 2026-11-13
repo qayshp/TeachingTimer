@@ -1,7 +1,7 @@
 # Teaching Timer — current status
 
-Source/CI status updated November 13, 2026. Physical companion delivery was verified
-November 11; public-invitation status was last checked November 5. External
+Source/CI status updated November 13, 2026. A November 12 physical companion
+delivery was received and verified November 13; public-invitation status was last checked November 5. External
 App Store Connect review/build membership was last checked November 2. This page
 owns current build and validation status.
 See the [changelog](CHANGELOG.md) for user-visible changes and the
@@ -14,7 +14,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | Latest verified internal TestFlight release | **1.0 (261112.0232.39)**, source `16a38f1d9067`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43201277099) passed verification, signing/export, upload, Apple `VALID`, notes/group readback and Maintainer `IN_BETA_TESTING`, available November 12 at 02:56:32 PST. Adds the shorter Help/support flows, dedicated scan pages and clearer phone report actions. Availability does not establish installation. |
 | First hosted internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). Subsequent app-affecting main pushes publish through the same gated workflow. |
 | Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. TestFlight `1.0 (261104.1939.6)` includes the change; the owner reports song progress still freezes. Isolation alone did not fix the issue. |
-| Physical Watch / companion | The owner matched both devices to **261108.1359.32** after reinstalling the Watch app. After force closing both apps, a phone-requested report reached support: 58,129 bytes / 85 events, matching that build. Initial linking and a gray Mail sheet required recovery. Latest follow-up build installation remains unconfirmed. |
+| Physical Watch / companion | The November 12 Watch-prepared report reached support and parsed: **261112.0232.39**, source `16a38f1d9067`, 1,225,763 bytes / 1,628 events. Fresh Watch journals corroborate it. The phone's installed build was not independently read. The earlier build-32 phone-requested delivery remains a separate successful flow; first linking/Mail recovery remains historical. [Current observations](docs/VOLUME_INCIDENT_2026-11-12.md). |
 | Owner pilot | The November 2 build-35 install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Its seven-build group inventory through 36 is historical. The later build-42 update is separately owner-confirmed. |
 | Rollback | Build 16 remains a preserved local checkpoint with its known media/volume issues. |
 | November 6 journal-sharing owner pilot | [PR #28](https://github.com/qayshp/TeachingTimer/pull/28) was merged and released as **1.0 (261106.1118.29)**. Settings → About adds report preparation and native sharing. Simulator staging/hash checks and the final PR/release verification passed, including 15 Swift suites / 275 Python tests. The separate main check reproduced known awake-runtime rejection #27 on watchOS 26.5; the release's watchOS 27.2 SE 3 / Ultra matrix passed. At that checkpoint, installation and physical receipt were unverified. A later native-share email and the November 11 companion receipt were subsequently verified; see the current companion row above. [Validation evidence and limits](docs/DIAGNOSTIC_SHARING_VALIDATION.md); #26 remains open. |
@@ -29,8 +29,13 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
   are wall-clock hands; class schedule, runtime and count state are independent.
 - Settings includes Count vibrations, Minutes left, and offline Help/Privacy/About.
   Class context and intentional runtime Stop survive process relaunch.
-- **Latest class feedback, October 31 (development 25):** volume and Settings
+- **Earlier class feedback, October 31 (development 25):** volume and Settings
   worked; song progress stalled and page switching recovered a useful position.
+- **November 12 physical feedback (Beta 261112.0232.39):** morning Amazon
+  Music/AirPlay worked; afternoon Apple Music/USB timer volume did not recover
+  after refresh/media return and needed phone buttons. Journals confirm focus
+  requests on the retained native object, not command delivery or actual focus.
+  The later phone capture lacks detailed media records for those class windows.
 - **Latest supervised test, November 2 (Beta 35):** initial timer volume,
   media-return volume, Home/reopen and tap-refresh all worked audibly on the
   paired iPhone speaker. Embedded progress updated on entry then stalled;
@@ -38,10 +43,10 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
   indicator with an apparent, unmeasured offset.
 - The user confirms eligible inactivity refresh updates song position. Neither
   that nor page reentry establishes continuously accurate progress.
-- **Blank media (#1) and the Crown-focus regression (#2) are resolved:** retained
-  native controls/refocus and view recreation have targeted verification plus
-  subsequent positive owner evidence. Reopen on recurrence. Unexpected silencing
-  (#3) has not recurred recently but needs one bounded affected-route check;
+- **Blank media (#1) remains resolved. Crown volume (#2) is reopened** for the
+  later physical unresponsiveness; whether it shares the earlier corrected
+  refocus mechanism is unknown. Unexpected silencing (#3) has not recurred
+  recently but needs one bounded affected-route check;
   frozen progress (#8) and developer connections (#5) remain open.
 - **Dimmed runtime recovery fixed in builds 31–32:** readiness gating prevents
   the reproduced premature Start. The matched Simulator recovery and eight

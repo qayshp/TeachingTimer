@@ -42,6 +42,8 @@ installation or a physical-device test.
 
 ## Current additions
 
+- [November 12 volume incident](VOLUME_INCIDENT_2026-11-12.md): later-build physical delivery, recurrent timer-volume failure and the system-log retention limit.
+
 - [Diagnostic sharing validation](DIAGNOSTIC_SHARING_VALIDATION.md): completed Simulator checks and planned owner TestFlight validation; file staging and delivery are distinct gates.
 
 - [November 6 issue review](ISSUE_REVIEW_2026-11-06.md): resolved bugs, remaining priorities, stronger media evidence checks and a new hosted runtime rejection.
