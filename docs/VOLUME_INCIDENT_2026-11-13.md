@@ -38,10 +38,11 @@ last-write failure was reported. Earlier events excluded by the requested
 | 19:50:07 | Runtime invalidates with `resigned_frontmost`, raw value 3. |
 | 20:00:27 | Automatic runtime recovery succeeds on return. |
 
-The **18:55–19:05** interval is a candidate for system-log correlation, not an
-established mute-onset or recovery timestamp. The app journal does not record
-the audible incident itself. The first evening foreground-loss invalidation
-is after the scheduled class end; it does not explain the reported early mute.
+At the initial journal-only review, **18:55–19:05** was a candidate interval for
+system-log correlation. The later captures below identify the zero-volume and
+recovery commands within it. The app journal itself does not record the audible
+incident. The first evening foreground-loss invalidation is after the scheduled
+class end; it does not explain the reported early mute.
 
 The same native volume object was retained from before the noon class. The
 report contains no accepted volume-refresh event that day and no evening app
@@ -53,33 +54,64 @@ numeric volume, Crown direction, playback route or zero-volume command. A stale
 native-control/backend association is a hypothesis, not a finding. The retained
 control also served earlier classes, so its age alone does not establish cause.
 
-## Capture status and next evidence
+## Initial capture report and later retrieval
 
 The owner triggered an iPhone system capture and saw its completion toast.
-That establishes reported capture completion on the phone, not retrieval or
-archive validation. No system capture for this incident has yet been retrieved
-and validated. Direct device collection is deferred until the owner is home.
+At the initial review, that established reported completion on the phone;
+retrieval and archive validation were still pending until the owner was home.
 
 The owner also held the unlocked Watch's Crown and side button for about one
 second, released them, and felt a Watch vibration. This is consistent with the
 historically documented manual sysdiagnose acknowledgement, not proof that a
 Watch archive has finished. A possible brief iPhone vibration does not establish
 another capture. The trigger time is not established by the saved app logs.
-Neither manual trigger needs repeating before checking the existing captures.
+The later retrieval checked the existing captures without starting another one.
+Direct Watch file inventory timed out. Inventory and file copying through the
+paired iPhone nevertheless retrieved its **20:02** capture and a **20:17 combined
+capture** containing separate Watch and phone archives. Byte counts, hashes,
+full gzip integrity and tar parsing validated the phone capture and both
+combined-capture children. Only the system-log subtrees needed for analysis were
+extracted; raw files, identifiers and detailed manifests remain private.
 
-1. Find and retrieve the existing iPhone capture first; verify its integrity,
-   device, timestamp and retained log bounds before starting another capture.
-2. Check for an existing Watch capture before requesting one. Retrieve it if
-   available; avoid duplicate collection simply because a transfer failed.
-3. Correlate retained volume, media-route and command records with the candidate
-   interval and page switches. Seek the destination and requested value; do not
-   equate a missing record with no command, or a focus return with success.
-4. Confirm the approximate mute/recovery times if the owner remembers them.
-   Compare playback continuing silently with actual route/volume evidence.
-5. If useful detail has rolled out, preserve that limitation and arrange a short
-   supervised reproduction with immediate capture. Repeated later captures
-   cannot recover expired class-time records.
+The 20:02 phone archive retains logs from November 12 **20:03:32** through
+November 13 **20:03:31 PST**. The Watch archive retains November 12 **20:18:26**
+through November 13 **20:18:25 PST**. Both contain useful media records for the
+candidate interval. Overall archive bounds alone would not establish that
+detail survived; the bounded queries verified the records below.
 
-The successful Watch-side media recovery is worth testing separately from
-timer refocus. Preserve the normal Crown sequence until evidence supports a
-change; native-control replacement previously regressed focus.
+## Correlated Watch and phone system logs
+
+All timestamps in this table are **November 13, 2026 PST (UTC−08:00)**. The
+page transitions come from the app journal; volume commands and output changes
+come from the separately retrieved system captures.
+
+| Time | Recorded evidence |
+| --- | --- |
+| 19:04:05.052 | TeachingTimer returns from media to timer. |
+| 19:04:27.047899–19:04:27.048316 | The Watch's **TeachingTimer process** logs `setVolume` to **0**, then requests endpoint volume **0** for the iPhone. Watch `mediaremoted` explicitly identifies TeachingTimer's installed bundle as the client for the corresponding output-volume request. |
+| 19:04:27.140004–19:04:27.140918 | Phone `mediaremoted` receives `MRSetVolumeMessage` over an IDS companion MediaRemote transport, then requests local endpoint volume **0**. |
+| 19:04:27.173797–19:04:27.193456 | Phone audio logs record hardware mute **1** on **AB13X USB Audio** and an observed iPhone volume change **0.625 → 0**. Amazon Music's process also receives an explicit volume-change notification to zero. |
+| 19:04:31.210 | TeachingTimer enters its media page. |
+| 19:04:32.431095–19:04:34.443965 | Watch **NanoNowPlayingViewService** issues 28 increasing endpoint-volume requests, from **0.016406** through **0.784375**. The phone receives the corresponding increases over the same companion transport used for the zero request. |
+| 19:04:34.524192 | The phone observes volume reaching **0.784375**; the Watch also records the updated USB output volume. |
+| 19:04:35.587 | TeachingTimer returns from media to timer. |
+
+This establishes the originating process, companion transport and affected
+phone USB output: the zero request came from TeachingTimer while its timer page
+was selected, and the recovery requests came from NanoNowPlayingViewService
+while the media page was selected. The logs independently support the reported
+silencing and subsequent Watch-side media recovery. They do not measure audible
+output at the external equipment.
+
+The unresolved question is **why TeachingTimer's native volume control requested
+zero**. These captures do not establish the initiating gesture, Crown direction
+or delta, actual Crown focus, source-code path, stale association or framework
+cause. The emailed journal's limitations still apply to that report separately;
+system-log evidence supplies the command values and destination it did not
+contain. Process attribution does not identify which app or system-framework
+behavior calculated the value.
+
+A short supervised reproduction should record the gesture and requested value
+on timer and media pages separately, with immediate capture. Preserve the normal
+Crown sequence until evidence supports a change; native-control replacement
+previously regressed focus.

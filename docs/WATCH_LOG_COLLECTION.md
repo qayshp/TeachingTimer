@@ -59,6 +59,32 @@ analysis can happen later. Consult Apple's current
 before practising an on-device capture; do not guess button sequences or
 install logging profiles as an automatic response to a transfer failure.
 
+## November 13 evening: retrieval and bounded GUI retry
+
+After the phone became locally connected in Device Hub, its completed 20:02 PST
+sysdiagnose copied successfully. A 20:17 combined archive also copied from the
+phone and contained separate Watch and phone captures. Exact byte counts,
+SHA-256 hashes, full gzip integrity and tar parsing passed for all three device
+archives. Only the selected system-log subtrees were extracted for analysis.
+The earlier direct Watch inventory timed out after 35 seconds; retrieving its
+forwarded archive through the phone succeeded. This does not require another
+capture or establish that every phone sysdiagnose includes Watch data.
+
+The owner subsequently requested one reproduction of the earlier DDI failure.
+With Watch screen sharing active, the same Device Hub **More Actions → Collect
+sysdiagnose…** route passed metadata queries, the privacy notice and destination
+selection. At 22:16:26 PST, host logs record successful diagnostic-service
+assertions and invocation; Device Hub showed **Collecting sysdiagnose…**.
+None of the saved host records reproduced the earlier
+`12040 → 12044 → 12018 → -402653180` error chain. No image reinstall, pairing
+reset or service restart was performed. A successful retry does not explain or
+close the intermittent earlier failure; the CLI collector was not retested.
+
+The GUI exposed no Cancel collection action, so this single reproduction capture
+was left running. Its completion/download was not needed for the earlier volume
+incident, whose captures were already validated. The saved request is distinct
+from the manually triggered 20:17 Watch capture.
+
 ## Meaning of the direct collection error
 
 The administrator-authorized `/usr/bin/log collect --device-udid …` attempt

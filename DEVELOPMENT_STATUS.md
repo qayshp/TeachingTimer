@@ -12,7 +12,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
 | Public invitation, checked November 5 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae) now offers **View in TestFlight** and joining instructions. Initial configured limit: 100. The public page does not expose the eligible build/version; a new external tester's installation remains unverified. |
 | Latest verified internal TestFlight release | **1.0 (261113.1613.59)**, source `5ef55b902ea9`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43532670947) passed exact-source Watch verification, three-payload signing/export, upload, Apple `VALID`, notes/group readback and Maintainer `IN_BETA_TESTING`, available November 13 at 16:32:24 PST. Clarifies session Help and diagnostic privacy; teaching, runtime, count and media/Crown behavior is unchanged. Server availability is distinct from installation; no physical-device contact was performed by this release. |
-| Latest owner report | The November 13 evening class had unexpected silencing on Amazon Music/USB-C while playback continued. Teaching Timer's media page restored volume from the Watch without the phone. The emailed report identifies Watch build **261113.1031.57**; its runtime remained active through the reported early incident. The owner reports iPhone system-capture completion and a manual Watch capture acknowledgement; neither system archive has been retrieved or validated for this incident. [Evidence and next steps](docs/VOLUME_INCIDENT_2026-11-13.md). |
+| Latest owner report | The November 13 evening class had unexpected silencing on Amazon Music/USB-C while playback continued. The emailed report identifies Watch build **261113.1031.57**. The 20:02 phone and 20:17 combined captures are now retrieved and validated, including Watch logs: TeachingTimer issues volume zero at 19:04:27 PST; native Now Playing restores volume at 19:04:32–34. The initiating gesture/framework cause remains unknown. A separate 22:16 GUI Watch diagnostic request passed the earlier DDI-failure stage; that does not resolve the intermittent collection bug. [Evidence and next steps](docs/VOLUME_INCIDENT_2026-11-13.md). |
 | First hosted internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). Subsequent app-affecting main pushes publish through the same gated workflow. |
 | Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. TestFlight `1.0 (261104.1939.6)` includes the change; the owner reports song progress still freezes. Isolation alone did not fix the issue. |
 | Latest parsed physical report / companion | The November 13 emailed report reached support and parsed: **261113.1031.57**, source `b28e499319fb`, 1,301,586 bytes / 1,741 filtered events covering all three classes. No raw device copies were attempted for this report; the phone's installed build was not independently read. The November 12 build-39 report and fresh raw copies remain separate corroborated evidence. [Latest observations](docs/VOLUME_INCIDENT_2026-11-13.md). |
@@ -47,11 +47,13 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 - **November 13 physical feedback (Beta 261113.1031.57):** Amazon Music/USB-C
   continued silently after timer-volume adjustment early in the evening class.
   The media page restored Watch-side volume. No early runtime loss appears in
-  the emailed report. System-capture retrieval remains pending.
+  the emailed report. Validated system captures identify the zero request from
+  TeachingTimer and recovery requests from native Now Playing; they do not
+  establish the initiating gesture or framework cause.
 - **Blank media (#1) remains resolved. Crown volume (#2) is reopened** for the
   later physical unresponsiveness; whether it shares the earlier corrected
   refocus mechanism is unknown. Unexpected silencing (#3) recurred November 13;
-  inspect the existing incident captures before changing the native control;
+  preserve the correlated captures before changing the native control;
   frozen progress (#8) and developer connections (#5) remain open.
 - **Dimmed runtime recovery fixed in builds 31–32:** readiness gating prevents
   the reproduced premature Start. The matched Simulator recovery and eight
