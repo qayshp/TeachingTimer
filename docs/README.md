@@ -48,7 +48,9 @@ installation or a physical-device test.
   and verification evidence.
 
 - [November 12 volume incident](VOLUME_INCIDENT_2026-11-12.md): later-build physical delivery, recurrent timer-volume failure and the system-log retention limit.
-- [November 13 silencing incident](VOLUME_INCIDENT_2026-11-13.md): Amazon Music/USB-C recurrence, Watch-side media recovery and pending manual system captures.
+- [November 13 silencing incident](VOLUME_INCIDENT_2026-11-13.md): Amazon Music/USB-C recurrence, paired system evidence and native Watch-side recovery.
+- [November 13 opening/playback timeline](VOLUME_TIMELINE_2026-11-13.md): phone launch, USB route and starting volume, Watch return, class/focus, zero and recovery.
+- [Volume-host isolation experiment](VOLUME_HOST_ISOLATION.md): stable native hosting, reconstructed component state and bounded fault-injection plans.
 
 - [Diagnostic sharing validation](DIAGNOSTIC_SHARING_VALIDATION.md): historical November 6 native-share Simulator checks; current delivery evidence is in the [companion guide](OPTIONAL_COMPANION.md).
 

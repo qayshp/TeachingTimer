@@ -85,6 +85,15 @@ was left running. Its completion/download was not needed for the earlier volume
 incident, whose captures were already validated. The saved request is distinct
 from the manually triggered 20:17 Watch capture.
 
+The later reproduction download did not complete. Its saved Device Hub alert
+reported **CoreDevice 13003**, underlying **NSError 60 / Operation timed out**;
+this is a transfer/collection failure after the successful metadata stage, not a
+recurrence of the earlier DDI error chain. The alert subsequently blocked
+Simulator input until inspected and dismissed. Both the unchanged app baseline
+and candidate ignored taps while it covered the window; Simulator-only
+screenshots could not show that Mac dialog. The regression input helper now
+fails closed on a Device Hub sheet, with a live blocked/unblocked check.
+
 ## Meaning of the direct collection error
 
 The administrator-authorized `/usr/bin/log collect --device-udid …` attempt

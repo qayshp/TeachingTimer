@@ -24,6 +24,14 @@ func find(_ e: AXUIElement, depth: Int = 0, where predicate: (AXUIElement) -> Bo
     return nil
 }
 guard let window = (attr(app,kAXWindowsAttribute) as? [AXUIElement])?.first else { fail("Device Hub window unavailable") }
+// A physical-device diagnostic alert can cover an otherwise valid Simulator
+// display. Fail before sending input; app screenshots cannot reveal this sheet.
+func requireNoModal() {
+    guard find(window, where: { text($0,kAXRoleAttribute) == "AXSheet" }) == nil else {
+        fail("Device Hub has a modal dialog; dismiss it before Simulator input")
+    }
+}
+requireNoModal()
 let targetID = "TableRow.Device." + args[2]
 guard let row = find(window, where: { text($0,kAXRoleAttribute) == "AXRow" && find($0, where: { text($0,kAXIdentifierAttribute) == targetID }) != nil }) else { fail("Simulator row not found") }
 guard AXUIElementSetAttributeValue(row,kAXSelectedAttribute as CFString,kCFBooleanTrue) == .success else { fail("Cannot select simulator") }
@@ -31,6 +39,7 @@ AXUIElementSetAttributeValue(app,kAXFrontmostAttribute as CFString,kCFBooleanTru
 AXUIElementPerformAction(window,kAXRaiseAction as CFString)
 // Let Device Hub finish selecting/rendering the device before sending input.
 Thread.sleep(forTimeInterval: 1.0)
+requireNoModal()
 func press(_ e: AXUIElement) { guard AXUIElementPerformAction(e,kAXPressAction as CFString) == .success else { fail("AX press failed") } }
 let action = args[3]
 if action == "home" {
