@@ -69,6 +69,22 @@ enum DiagnosticRequest {
     }
 }
 
+/// Local connection activity is shown in arrival order, newest first. Text
+/// includes wall time for reading, but clock changes must not reorder records.
+struct DiagnosticConnectionHistory {
+    static let capacity = 20
+    struct Entry: Identifiable, Equatable {
+        let id = UUID()
+        let text: String
+    }
+    private(set) var entries: [Entry] = []
+
+    mutating func record(_ text: String) {
+        entries.insert(Entry(text: text), at: 0)
+        if entries.count > Self.capacity { entries.removeLast(entries.count - Self.capacity) }
+    }
+}
+
 /// Validate received and restored files before offering them for email.
 enum DiagnosticInbox {
     static let maximumBytes = 2 * 1024 * 1024

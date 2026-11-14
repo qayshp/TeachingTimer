@@ -4,6 +4,15 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## November 13, 2026 — clearer report and connection status
+
+- Received-report status points to **Saved report** by name. Connection details
+  shows the latest activity first, with stable rows and the latest 20 entries
+  retained on both phone and Watch.
+- Record a physical recurrence of volume silencing, separate from an unavailable
+  control. Visiting media restored volume on the Watch; the app report does not
+  establish the initiating volume command. No media/Crown behavior changed.
+
 ## November 13, 2026 — consistent Help and support guidance
 
 - Session Help names both **Start session** and **Resume session**, matching

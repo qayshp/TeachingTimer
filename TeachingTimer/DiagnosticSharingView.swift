@@ -83,8 +83,8 @@ struct DiagnosticSharingView: View {
                         Text(companion.status).font(.caption)
                         Text("Version \(DiagnosticCompanion.build)").font(.caption)
                         Text(companion.connection).font(.caption)
-                        ForEach(Array(companion.events.enumerated()), id: \.offset) { _, event in
-                            Text(event).font(.caption)
+                        ForEach(companion.events) { event in
+                            Text(event.text).font(.caption)
                         }
                     }.navigationTitle("Connection")
                 }

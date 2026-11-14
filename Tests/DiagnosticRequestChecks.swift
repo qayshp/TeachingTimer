@@ -15,6 +15,32 @@ import Foundation
                      "Phone requests and Watch reports must support the same time windows")
         precondition(DiagnosticInbox.maximumBytes == DiagnosticReport.maximumBytes,
                      "The phone must accept every report size the Watch can prepare")
+        // New activity must appear next to Check connection even if the wall
+        // clock moves backward. Rows retain their identity as newer ones arrive.
+        var history = DiagnosticConnectionHistory()
+        precondition(history.entries.isEmpty)
+        history.record("20:01 · First event")
+        let firstEntry = history.entries[0]
+        history.record("20:00 · Second event")
+        let secondEntry = history.entries[0]
+        precondition(history.entries.map(\.text) == ["20:00 · Second event", "20:01 · First event"])
+        precondition(history.entries[1] == firstEntry)
+        history.record("20:00 · Second event")
+        precondition(history.entries[0].id != secondEntry.id,
+                     "Identical event text must still have distinct row identities")
+        precondition(history.entries[1] == secondEntry && history.entries[2] == firstEntry)
+        var bounded = DiagnosticConnectionHistory()
+        for number in 1...25 {
+            bounded.record("Event \(number)")
+            let oldest = max(1, number - DiagnosticConnectionHistory.capacity + 1)
+            precondition(bounded.entries.map(\.text) == stride(from: number, through: oldest, by: -1).map { "Event \($0)" })
+            precondition(bounded.entries.count == min(number, DiagnosticConnectionHistory.capacity))
+        }
+        let retained = bounded.entries
+        bounded.record("Event 26")
+        precondition(bounded.entries[0].text == "Event 26")
+        precondition(Array(bounded.entries.dropFirst()) == Array(retained.dropLast()),
+                     "Prepending must preserve retained row identities and evict only the oldest event")
         for reason in ["unknown", "update-required", "invalid-request", "invalid-window"] {
             precondition(DiagnosticRequest.failureMessage(reason: reason).contains("both devices"),
                          "A protocol mismatch needs an update, not a retry loop")
@@ -92,6 +118,6 @@ import Foundation
         try! Data("broken".utf8).write(to: temporary)
         do { _ = try DiagnosticInbox.read(temporary); preconditionFailure("Accepted corrupt restored report") } catch {}
         try! FileManager.default.removeItem(at: temporary)
-        print("Diagnostic request, retry isolation and inbox validation checks passed")
+        print("Diagnostic request, newest-first bounded history, retry isolation and inbox validation checks passed")
     }
 }

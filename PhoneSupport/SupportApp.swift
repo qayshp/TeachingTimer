@@ -77,8 +77,8 @@ struct SupportView: View {
                         Button("Check connection") { companion.checkConnection() }
                         Text(companion.connection).font(.caption).textSelection(.enabled)
                         if let build = companion.peerBuild { Text("Watch version \(build)").font(.caption) }
-                        ForEach(Array(companion.events.enumerated()), id: \.offset) { _, event in
-                            Text(event).font(.caption).textSelection(.enabled)
+                        ForEach(companion.events) { event in
+                            Text(event.text).font(.caption).textSelection(.enabled)
                         }
                     }
                 }

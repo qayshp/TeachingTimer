@@ -19,7 +19,8 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
         return "\(info["CFBundleShortVersionString"] as? String ?? "?") (\(info["CFBundleVersion"] as? String ?? "?"))"
     }
     @Published private(set) var connection = "Activating…"
-    @Published private(set) var events: [String] = []
+    @Published private var connectionHistory = DiagnosticConnectionHistory()
+    var events: [DiagnosticConnectionHistory.Entry] { connectionHistory.entries }
     @Published private var request = DiagnosticRequest.Pending()
     var requesting: Bool { request.id != nil }
     @Published private(set) var peerBuild: String?
@@ -28,8 +29,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
 
     private func record(_ event: String) {
         logger.notice("\(event, privacy: .public)")
-        events.append("\(Date().formatted(date: .omitted, time: .standard)) · \(event)")
-        if events.count > 20 { events.removeFirst(events.count - 20) }
+        connectionHistory.record("\(Date().formatted(date: .omitted, time: .standard)) · \(event)")
         guard let transport else { return }
         connection = "Activation \(transport.activationState.rawValue) · installed \(installed.map(String.init) ?? "unknown") · reachable \(transport.isReachable) · queued \(transport.outstandingFileTransfers.count)"
     }
@@ -214,7 +214,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
                 self.receivedSummary = summary
                 let matched = self.request.finish(requestID)
                 self.record("Report saved; matches pending request: \(matched)")
-                if !self.requesting { self.status = "Report received. Review it before emailing support." }
+                if !self.requesting { self.status = "Report received. Review it in Saved report before emailing support." }
             }
         } catch {
             Task { @MainActor in

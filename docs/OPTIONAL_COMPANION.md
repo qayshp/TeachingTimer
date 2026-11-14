@@ -23,6 +23,9 @@ support can open an email without a report; About & privacy is a secondary page.
 Deletion requires confirmation and refuses to delete a newer report that arrived
 while the confirmation was open. On Watch, Report details holds the full summary
 and event previews; Connection details is a separate page.
+The receipt message names **Saved report** rather than relying on above/below.
+Connection activity is shown newest first on both devices, retaining the latest
+20 entries in arrival order even if the wall clock changes.
 
 ## Later physical delivery — November 12
 
@@ -34,6 +37,12 @@ Watch-initiated flow on a later build to the earlier phone-requested build-32
 delivery. It does not establish every startup, first-composer, interruption or
 upgrade case, or independently identify the phone's installed build.
 See the [incident record](VOLUME_INCIDENT_2026-11-12.md).
+
+A further November 13 support email contains a valid 1,741-event last-day report
+from Watch build `261113.1031.57`, covering all three reported classes. Receipt
+and JSON parsing are verified; no fresh raw journal copies were attempted.
+See the [evening incident](VOLUME_INCIDENT_2026-11-13.md). The phone's installed
+build and the precise preparation path were not independently read.
 
 ## Validation gates
 
