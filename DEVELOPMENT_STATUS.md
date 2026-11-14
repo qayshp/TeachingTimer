@@ -11,7 +11,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | --- | --- |
 | External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
 | Public invitation, checked November 5 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae) now offers **View in TestFlight** and joining instructions. Initial configured limit: 100. The public page does not expose the eligible build/version; a new external tester's installation remains unverified. |
-| Latest verified internal TestFlight release | **1.0 (261113.1031.57)**, source `b28e499319fb`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43483472260) passed exact-source Watch verification, three-payload signing/export, upload, Apple `VALID`, notes/group readback and Maintainer `IN_BETA_TESTING`, available November 13 at 10:55:49 PST. Adds the monochrome mat-and-clock complication artwork. Server availability is distinct from installation. |
+| Latest verified internal TestFlight release | **1.0 (261113.1613.59)**, source `5ef55b902ea9`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43532670947) passed exact-source Watch verification, three-payload signing/export, upload, Apple `VALID`, notes/group readback and Maintainer `IN_BETA_TESTING`, available November 13 at 16:32:24 PST. Clarifies session Help and diagnostic privacy; teaching, runtime, count and media/Crown behavior is unchanged. Server availability is distinct from installation; no physical-device contact was performed by this release. |
 | Latest owner report | The owner reports updating Watch and phone through TestFlight, successfully using the Utility face with Teaching Timer and native Now Playing launchers, and a class where everything used worked. Song progress was not specifically compared between the two apps. No exact installed version was independently read for this report; the latest parsed physical report remains the build-39 record below. |
 | First hosted internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). Subsequent app-affecting main pushes publish through the same gated workflow. |
 | Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. TestFlight `1.0 (261104.1939.6)` includes the change; the owner reports song progress still freezes. Isolation alone did not fix the issue. |
@@ -118,12 +118,15 @@ Maintainer availability passed; that does not establish installation. Tracked in
 
 ## November 13 consistency review
 
-Source now aligns Help with both Start/Resume session actions, describes omitted
-preference files precisely, and reconciles current optional-companion reporting
-with historical Watch-sharing experiments. Report-window and size-contract
-checks protect phone/Watch agreement. Class/runtime/count scheduling and the
-working media/Crown implementation are unchanged. This source update does not
-by itself establish a new TestFlight release or physical installation.
+Maintainer build **261113.1613.59** aligns Help with both Start/Resume session
+actions, describes omitted preference files precisely, and reconciles current
+optional-companion reporting with historical Watch-sharing experiments.
+Report-window and size-contract checks protect phone/Watch agreement.
+Class/runtime/count scheduling and the working media/Crown implementation are
+unchanged. All 16 Swift suites, 375 Python checks, 42 local Simulator action
+assertions and clean-source build/archive verification pass. Hosted Watch
+verification passed all 17 stages. The release is available; no new physical
+installation or media/volume validation is established by this review.
 See the [review and verification record](docs/CONSISTENCY_REVIEW_2026-11-13.md).
 
 ## November 12 review verification

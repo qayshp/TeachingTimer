@@ -75,12 +75,47 @@ inside the existing Swift suite and are included in CI.
 - **Bundled documents:** privacy policy, license and web-link definitions match
   current repository bytes in the Simulator app and both archives (nine resource
   comparisons). QR decoding is also part of the clean verification.
+- **Additional setting/schedule checks:** SE 3's native duration picker saved a
+  75-minute class, which survived relaunch unchanged. Count vibrations off and
+  Minutes left on persisted without changing that class; the label displayed
+  the expected minutes left. A silent count completed naturally with no
+  acknowledgement or timing-haptic submissions in its run's journal. Its status
+  temporarily replaced the minutes label with Visual count, as now documented.
+  The next New class draft still offered 60 minutes and did not replace the
+  saved 75-minute class. End class subsequently cleared class/runtime intent.
 - **Hosted checks:** [Watch verification](https://github.com/qayshp/TeachingTimer/actions/runs/43532671048),
   [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/43532671062) and the
   [automatic release](https://github.com/qayshp/TeachingTimer/actions/runs/43532670947)
-  were started for the same immutable source. Their completion is still pending.
+  use the same immutable source. Watch verification passed all 17 stages,
+  including booted SE 3 and Ultra runtime/recovery/retirement smoke checks. The
+  retained report records clean unchanged source before/after and both smoke
+  results complete. CodeQL passed Actions, Python, the full Swift production
+  build/analysis and its final result gate.
+- **Signed release:** the automatic release completed exact-source verification
+  reuse, signing/export, upload, Apple VALID, test-note/group readback and
+  Maintainer IN_BETA_TESTING for **1.0 (261113.1613.59)**, source `5ef55b902ea9`.
+  Availability was confirmed November 13 at 16:32:24 PST, 93.544 seconds after
+  the upload command succeeded. Its report explicitly records no installation
+  or physical-device contact. Subsequent documentation-only updates skip a
+  second publication.
 
 A build or state assertion alone does not establish native playback, actual
 Crown ownership, haptic sensation or physical Always-On cadence. This review does
 not close those separate reliability issues. No physical device was used,
 installed or launched by this review.
+
+
+## Completion audit
+
+The requirements in the behavior table have current source, model/controller,
+rendered-menu or artifact evidence as appropriate. Help names the actual actions;
+privacy and delivery instructions describe the implemented report boundaries;
+current guides follow current menus; historical documents identify their older
+scope; issue and release claims agree with their authoritative records. The
+source and runtime assertions were verified independently of screenshot review.
+
+The review required no scheduling, state-machine, media, Crown or geometry change.
+Known native-media/volume reliability, hardware accessibility/battery testing,
+external-beta installation and Apple guidance remain explicit separate work;
+they are not represented as completed by this consistency pass. The final
+publication/install claims remain bounded to the verified records above.

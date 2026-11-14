@@ -718,3 +718,20 @@ Teaching Timer/Now Playing launchers, followed by a class where everything used
 worked. The exact installed build was not independently read, and live song
 progress was not compared. [Current status](../DEVELOPMENT_STATUS.md) preserves
 that distinction from the latest parsed build-39 physical report.
+
+
+## November 13, 2026 — consistency release
+
+[Release run43532670947](https://github.com/qayshp/TeachingTimer/actions/runs/43532670947)
+completed automatic exact-source verification reuse, signed three-payload
+archive/export, upload, Apple `VALID`, notes/group readback and Maintainer
+`IN_BETA_TESTING` for **1.0 (261113.1613.59)** at source `5ef55b902ea9`.
+Availability was confirmed at **16:32:24 PST**, 93.544 seconds after the upload
+command succeeded. The report records `installed=false` and
+`physicalDeviceContact=false`.
+
+The payload clarifies session Help and diagnostic-report privacy; it changes no
+class/runtime/count/media/Crown behavior. The [consistency review](CONSISTENCY_REVIEW_2026-11-13.md)
+records local and hosted tests separately from physical use. The owner’s earlier
+TestFlight-update/class report predates this release; it is not installation
+evidence for this new build.

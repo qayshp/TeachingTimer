@@ -13,8 +13,9 @@ build was installed or passed hardware validation.
   issue status and historical experiment descriptions across the documentation.
 - Add contract checks for phone/Watch report windows and size limits. Class,
   runtime, count and media/Crown behavior are unchanged.
-- See the [consistency review](docs/CONSISTENCY_REVIEW_2026-11-13.md) for checks
-  and evidence boundaries; [current status](DEVELOPMENT_STATUS.md) owns availability.
+- Maintainer TestFlight **261113.1613.59** is available. See the
+  [consistency review](docs/CONSISTENCY_REVIEW_2026-11-13.md) for checks and
+  evidence boundaries; [current status](DEVELOPMENT_STATUS.md) owns installation status.
 
 ## November 13, 2026 — recognizable complication artwork
 

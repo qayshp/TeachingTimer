@@ -87,6 +87,11 @@ evidence; the externally available beta may be an earlier build.
 | **Start session** or **Resume session**, when shown beside Count | Requests the session that supports wrist-down updates. Class timing and the count stay independent. |
 | Two dots, bottom | Two swipe pages: the teaching face and Apple's native media controls. |
 
+Enable **Minutes left** in Settings for the remaining-minutes label. Before the
+scheduled start it shows the start time instead. A visual-only count temporarily
+uses that line for **Visual count**; session startup or renewal can also take
+priority. The preference stays enabled.
+
 ## Three independent things
 
 **Class schedule** is the saved start, duration and finish. Default Start uses a
