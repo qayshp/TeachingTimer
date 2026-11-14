@@ -53,8 +53,34 @@ Local source builds pass for Watch Simulator and iPhone Simulator. All 16 Swift
 suites and 375 Python checks pass. The two added request-contract assertions run
 inside the existing Swift suite and are included in CI.
 
-Interactive small/large action checks, original-image review, clean-source build
-verification and hosted results are being completed for this review. Their exact
-results will be recorded here; a build or state assertion alone does not establish
-native playback, actual Crown ownership, haptic sensation or physical Always-On
-cadence. No physical device is used or installed by this review.
+- **Clean-source verification:** all 15 stages passed at source `5ef55b902ea9`,
+  with unchanged clean source before/after. This includes model/tool checks, QR
+  decoding, synthetic control-outline/OCR checks, both Simulator apps, inspection
+  helpers and unsigned development/distribution archives.
+- **Interactive actions:** all 21 assertions passed on SE 3 40 mm and all 21 on
+  Ultra 4 49 mm, both watchOS 27.2 (24S118), using the same candidate source with
+  local Simulator version 58. Original Help/Privacy/About, session recovery and
+  replacement/end confirmation images were inspected separately from OCR/state
+  assertions. The tests reset only each named disposable Simulator's app data.
+- **Direct copy inspection:** the clean-source SE 3 build displays both session
+  action names in Help and the clarified preference-file exclusion in Report
+  privacy. Navigation paths and scrolling work. This separate build retains the
+  project's local default version 41; neither local number is a TestFlight
+  publication claim.
+- **Phone inspection:** the iOS 27.2 (24B8117) Simulator displays the optional
+  support interface, saved synthetic report, all three time-window choices and
+  About & privacy. The unconfigured-Mail path presents the expected alternative
+  rather than an unusable composer. No email, new report request or device
+  transfer was attempted. The existing synthetic report is UI evidence only.
+- **Bundled documents:** privacy policy, license and web-link definitions match
+  current repository bytes in the Simulator app and both archives (nine resource
+  comparisons). QR decoding is also part of the clean verification.
+- **Hosted checks:** [Watch verification](https://github.com/qayshp/TeachingTimer/actions/runs/43532671048),
+  [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/43532671062) and the
+  [automatic release](https://github.com/qayshp/TeachingTimer/actions/runs/43532670947)
+  were started for the same immutable source. Their completion is still pending.
+
+A build or state assertion alone does not establish native playback, actual
+Crown ownership, haptic sensation or physical Always-On cadence. This review does
+not close those separate reliability issues. No physical device was used,
+installed or launched by this review.
