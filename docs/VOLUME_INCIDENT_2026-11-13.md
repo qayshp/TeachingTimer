@@ -17,6 +17,13 @@ The evening used **Amazon Music through USB-C audio**. This differs from the
 unavailable despite recovery attempts. Neither the provider nor the route alone
 is established as the cause.
 
+The owner confirms that starting the evening class in the app late correctly
+selected the **18:45** scheduled start. The existing prior-quarter anchoring is
+working as intended and is independent of volume handling. The owner does not
+remember whether volume was adjusted earlier in that class, the direction or
+amount of Crown rotation during the mute, or the volume ring's appearance.
+Those observations cannot be reconstructed from the app journal.
+
 ## What the emailed journal establishes
 
 All times below are **PST (UTC−08:00)**. The Watch report identifies version 1.0,
@@ -111,7 +118,75 @@ system-log evidence supplies the command values and destination it did not
 contain. Process attribution does not identify which app or system-framework
 behavior calculated the value.
 
-A short supervised reproduction should record the gesture and requested value
-on timer and media pages separately, with immediate capture. Preserve the normal
-Crown sequence until evidence supports a change; native-control replacement
-previously regressed focus.
+## Deeper input and native-state analysis
+
+The Watch's MediaPlayer controller fetched **0.625 at 18:55:14**, so the process
+did obtain a correct nonzero volume before the fault. Native Now Playing also
+read 0.625 at 19:04:04. This weakens the simple theory that the timer process
+never initialized its companion volume and kept only a startup zero.
+
+At **19:04:26.635585**, Crown-associated Scroll input begins reaching the
+TeachingTimer window. At 19:04:27.047201, UIKit dispatches a native control action;
+the zero-volume call and endpoint request share its thread and activity. This
+links the write to input handling, rather than a spontaneous write on session
+start or page appearance. The preceding focus call returned about 22 seconds
+earlier. The app journal records no replacement or accepted refresh at the zero.
+
+Only one TeachingTimer volume write, zero, appears during this input burst,
+without intermediate nonzero values. Direction, movement magnitude, the native
+control's internal interaction baseline and the ring display remain unknown.
+The event counts do not establish how far the Crown moved or exclude a large,
+coalesced or accelerated downward adjustment reaching the minimum.
+
+After native media recovery, the same TeachingTimer process sends gradual
+nonzero changes at **19:05:52**. A broader retained query contains 246
+TeachingTimer MediaPlayer volume writes that day, including normal midday
+adjustments; only the incident is zero. This is a count of retained records,
+not complete measurement of all user actions or proof of earlier-evening use.
+
+On the phone, all 29 commands use the same absolute-volume operation and USB
+route configuration. No preceding route switch or independent mute appears in
+the bounded incident context. Hardware mute follows the zero request. Routine
+volume-compensation resets also occur during every recovery update; they do not
+explain a preceding reset to zero.
+
+The leading engineering hypothesis is a temporary mismatch in the native
+control's interaction baseline or state after focus/display-host transitions.
+It is unproven: the correct earlier model value and the missing signed Crown
+movement leave alternative input interpretations open. The captured chain
+does establish delivery to the intended phone output for this occurrence.
+
+## Proposed experiment and regression gates
+
+The incident build and reviewed current source have identical volume/lifecycle
+implementation. There is no app-owned volume scalar, setter or custom Crown
+binding. Apple's [native control](https://developer.apple.com/documentation/watchkit/wkinterfacevolumecontrol)
+handles the volume and exposes no public value/readiness callback. Its
+[SwiftUI initializer](https://developer.apple.com/documentation/watchkit/wkinterfacevolumecontrol/init(origin:))
+supports the representable construction used here.
+
+First record a short baseline with known phone volume, the visible ring, an
+explicitly small upward Crown movement, requested values and audio response.
+Compare timer and media under the same provider/route, including media return,
+Home/reopen and dim/wake. This is useful discriminating evidence, not a
+requirement to withhold the existing intermittent report from Apple.
+
+The first implementation experiment should **move the stable native volume
+host outside the clock's TimelineView**, while keeping the same control object,
+focus state machine and timings: one-second startup/background staging, 250 ms
+explicit refocus, and immediate media-to-timer focus. Keep Class-sheet eligibility,
+clock cadence and foreground hands unchanged. The current guards already avoid
+repeated focus calls on ordinary ticks; there is no evidence that the timeline
+caused zero. This is a hierarchy-isolation experiment, not a confirmed fix.
+
+Validate one control identity, no per-tick focus requests, obsolete-request
+cancellation, Class-sheet focus, tap refresh, Home/reopen, paging and hand/control
+layer order in Simulator. Then compare actual phone values and audible response
+physically. Simulator input feedback alone cannot validate paired media behavior.
+
+Fresh-object replacement ranks lower because it already reproduced dead Crown
+feedback in the [controlled focus comparison](SIMULATOR_VOLUME_FOCUS.md).
+Do not add a blanket Crown delay, discard the first movement, impose a minimum
+volume or automatically restore a remembered level: the current evidence does
+not justify changing intentional volume control. No production behavior changed
+during this analysis.

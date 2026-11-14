@@ -5,6 +5,27 @@ is not an Apple diagnosis or a verified fix. Raw device logs, identifiers and
 private evidence packages stay outside Git. Earlier attachment/submission
 results are recorded in the dated history below.
 
+## November 13: silencing evidence is ready for submission
+
+The [new physical incident](VOLUME_INCIDENT_2026-11-13.md) now has matched,
+validated Watch and phone sysdiagnoses. Crown-associated input and a native
+control action in TeachingTimer issue zero at 19:04:27 PST; the phone applies it
+to its USB output. Native Now Playing supplies the recovery increases at
+19:04:32–34. The native model had previously read 0.625, and the same retained
+timer control later sends normal nonzero changes.
+
+This is sufficient to report an **intermittent suspected native-control value
+jump**, with exact times, build/source and capture provenance. It is not proof
+of a particular framework defect. Crown direction/delta, ring appearance and a
+deterministic trigger remain missing and must be explicit. Apple specifically
+recommends [diagnostic logs for bugs without reliable reproduction](https://developer.apple.com/news/?id=vvrgkboh).
+
+A concise new draft and focused source/log package are prepared privately beside
+the original captures. **No new silencing report has been submitted and no FB ID
+is assigned.** FB25329167 remains the separate focus-regression report; shared
+causation is not established. This readiness assessment does not constitute a
+new inspection of Apple's inbox or replies.
+
 **November 6 project resolution:** GitHub [issue #4](https://github.com/qayshp/TeachingTimer/issues/4)
 is closed as fixed by builds 33–34, supported by the reproduced mechanisms,
 passing follow-up recordings and no recent owner-observed physical recurrence.
