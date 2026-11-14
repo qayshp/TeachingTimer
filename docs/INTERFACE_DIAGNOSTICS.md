@@ -1,10 +1,12 @@
 # Page and volume diagnostics
 
-These diagnostics investigate two unresolved symptoms: an intermittently blank
-teaching page, reported in Simulator and on a physical Watch, and timer-page
-Crown adjustment silencing playback while native Now Playing can still adjust
-volume. Diagnostics record observations; bounded media refresh, staged volume setup,
-and explicit volume refresh are separate actions, not evidence that a fault occurred.
+These diagnostics distinguish blank native media, frozen song progress, timer
+Crown nonresponse and unexpected silencing. The blank-media issue is resolved
+with reopen criteria; timer-volume response and song progress remain open.
+Transient missing teaching controls are a separate Simulator observation without
+a physical reproduction. See the [current issue map](ISSUE_TRACKER.md).
+Diagnostics record observations; bounded media refresh, staged volume setup and
+explicit volume refresh are separate actions, not evidence that a fault occurred.
 
 ## Journal and correlation
 

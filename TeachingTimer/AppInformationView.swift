@@ -184,10 +184,10 @@ private struct HelpTopicView: View {
                 }
             case .session:
                 Section("Wrist-down updates") {
-                    Text("A session helps keep the app active for wrist-down teaching. Stop session keeps your class schedule; Resume session requests wrist-down support again.")
+                    Text("A session helps keep the app active for wrist-down teaching. Stop session keeps your class schedule. Start session or Resume session requests wrist-down support.")
                 }
                 Section("Reopen the app") {
-                    Text("Saved class timing restores. A running session recovers when possible; an intentional Stop stays stopped. Use Resume session if recovery fails.")
+                    Text("Saved class timing restores. A running session recovers when possible; an intentional Stop stays stopped. Use Start session or Resume session if needed.")
                     Text("Force-closing ends an active count. End class clears timing and stops the session and count.")
                 }
             }

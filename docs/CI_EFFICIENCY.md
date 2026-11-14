@@ -204,6 +204,13 @@ shell and consumer regression tests; those tests are separate from this live
 successful read. Manual fresh-verification routing is likewise covered by tests,
 not a new hosted manual event in this validation.
 
+Subsequent app releases completed the automatic route end to end. In particular,
+[build 261113.1031.57](TESTFLIGHT_PREPARATION.md#november-13-2026--mat-and-clock-complication-release)
+reused the exact-source Watch report before signed archive/export, upload, Apple
+processing and Maintainer assignment. This later positive case supplements the
+original tooling-only validation; it does not replace failure-case regression
+coverage or establish physical installation.
+
 ## Next optimizations, in order
 
 1. **Parallelize small/large smoke on isolated workers.** All cases have useful

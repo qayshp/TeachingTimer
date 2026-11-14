@@ -51,9 +51,11 @@ do not constitute lost journal history.
 The copied files came from the **TestFlight Beta container**, not the development
 app. This establishes developer-tool retrieval in the specific setup above. It
 does not show that an ordinary tester without a developer-enabled Watch and
-trusted Mac can obtain those files. There is still no in-app journal export or
-upload, and a support email/QR code does not attach diagnostics. Native Watch
-file sharing and attachment delivery remain separate, unverified paths.
+trusted Mac can obtain those files. At this build-35 checkpoint there was no
+in-app journal export or upload, and a support email/QR code did not attach
+diagnostics. Native Watch file sharing and attachment delivery were still
+unverified. The later [optional companion](OPTIONAL_COMPANION.md) supplies the
+current report-transfer and email route.
 
 The installed build's Privacy copy says TestFlight access was not yet verified;
 that was its pre-pilot state. This record provides the narrower subsequent result

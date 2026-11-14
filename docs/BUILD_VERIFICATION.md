@@ -7,7 +7,9 @@ unignored directory in the checkout would itself make the source dirty. Dirty
 input is rejected before checks begin. Commit or set aside pending changes
 before starting, and leave the source unchanged while verification runs.
 
-This command never installs or uploads an app. The Watch Simulator build uses
+This command does not install to physical devices or upload an app. The optional
+Simulator smoke check installs and launches only in its disposable Simulators.
+The Watch Simulator build uses
 local ad-hoc signing; both device archives remain unsigned. Verification records
 the exact commit, selected Xcode path, Xcode/Swift versions and installed SDKs.
 It runs repository and model/tool checks, decodes the website QR assets, builds
@@ -78,7 +80,10 @@ creates and checks its own archive from the immutable source.
 The November 13 read-only consumer check accepted real hosted evidence, while
 the corresponding tooling-only release workflow correctly skipped app work.
 An automatic app-candidate publish through reuse was not exercised by that
-validation. See [timing evidence, provenance and event limits](CI_EFFICIENCY.md#november-13-validation).
+validation. Later [launcher releases](TESTFLIGHT_PREPARATION.md#november-13-2026--mat-and-clock-complication-release)
+completed automatic exact-source reuse, signed upload and Maintainer assignment;
+this does not extend the earlier validation to failed publishing attempts. See
+[timing evidence, provenance and event limits](CI_EFFICIENCY.md#november-13-validation).
 
 ## Inspect a candidate artifact
 

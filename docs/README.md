@@ -14,6 +14,7 @@ installation or a physical-device test.
 | [Tester guide](TESTER_GUIDE.md) | Before-class checks, everyday controls and recovery choices. |
 | [Teaching-face visual key](TEACHING_FACE_GUIDE.md) | Current screenshot annotated by location; hands, schedule, session, count and audio meanings. |
 | [Support](../SUPPORT.md) | Private email for a short report; public issues are optional and journals are not attached automatically. |
+| [Optional iPhone support companion](OPTIONAL_COMPANION.md) | Watch/phone report requests, private transfer and email; teaching stays independent on Watch. |
 | [Privacy](PRIVACY.md) | Local storage, retention and diagnostic sharing boundaries. |
 | [Contributor guide](../CONTRIBUTING.md) | Repository layout, behavior boundaries and maintenance rules. |
 | [Teaching checkpoint](TEACHING_CHECKPOINT.md) | Preserved build 16 provenance and private recovery artifacts. |
@@ -37,14 +38,20 @@ installation or a physical-device test.
 | [Phone audio fixture](../tools/phone-audio-probe/README.md) | Bounded native playback and remote-command evidence, independent of TeachingTimer. |
 | [Native volume probe](../tools/native-volume-probe/README.md) | Isolated companion-volume experiment. |
 | [Timeline probe](../tools/timeline-clock-probe/README.md) | Isolated Always-On clock experiment. |
-| [Diagnostic sharing probe](../tools/diagnostic-share-probe/README.md) | Synthetic native file sharing; delivery remains unverified. |
-| [Diagnostic sharing plan](DIAGNOSTIC_EXPORT_PLAN.md) | Implemented report/preview/native sharing, approved owner-pilot validation and outstanding delivery gates. |
+| [Diagnostic sharing probe](../tools/diagnostic-share-probe/README.md) | Historical native Watch sharing experiment; Simulator attachment staging, not receipt. |
+| [Diagnostic sharing plan](DIAGNOSTIC_EXPORT_PLAN.md) | Current companion route plus the superseded native Watch share-sheet design. |
 
 ## Current additions
 
+- [November 13 consistency review](CONSISTENCY_REVIEW_2026-11-13.md): menu and
+  support wording, current versus historical documentation, report contracts,
+  and verification evidence.
+
 - [November 12 volume incident](VOLUME_INCIDENT_2026-11-12.md): later-build physical delivery, recurrent timer-volume failure and the system-log retention limit.
 
-- [Diagnostic sharing validation](DIAGNOSTIC_SHARING_VALIDATION.md): completed Simulator checks and planned owner TestFlight validation; file staging and delivery are distinct gates.
+- [Diagnostic sharing validation](DIAGNOSTIC_SHARING_VALIDATION.md): historical November 6 native-share Simulator checks; current delivery evidence is in the [companion guide](OPTIONAL_COMPANION.md).
+
+- [November 12 companion and CI review](REVIEW_2026-11-12.md): consistency fixes and regression coverage.
 
 - [November 6 issue review](ISSUE_REVIEW_2026-11-06.md): resolved bugs, remaining priorities, stronger media evidence checks and a new hosted runtime rejection.
 
@@ -139,6 +146,3 @@ behavior:
 Other dated investigations retain their existing paths so issue/report links
 remain stable. Raw journals, private device captures, generated builds and signed
 checkpoints belong in ignored local storage; they are not public documentation.
-
-- [Optional iPhone support companion](OPTIONAL_COMPANION.md): transfer flow and remaining physical validation.
-- [November 12 companion and CI review](REVIEW_2026-11-12.md) — consistency fixes and regression coverage.

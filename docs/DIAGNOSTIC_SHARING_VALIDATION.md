@@ -1,5 +1,10 @@
 # Diagnostic sharing: validation record
 
+This is the historical November 6 native Watch share-sheet experiment. Current
+builds replace that recipient-entry flow with the optional iPhone companion in
+**Settings → Help → Send diagnostics to iPhone**. Later physical report receipts
+and remaining gates are recorded in [companion validation](OPTIONAL_COMPANION.md).
+
 November 6, 2026 · [Issue #26](https://github.com/qayshp/TeachingTimer/issues/26).
 The tests below were completed under the owner's initial Simulator-only scope.
 No physical device, account, recipient, backend or TestFlight distribution was

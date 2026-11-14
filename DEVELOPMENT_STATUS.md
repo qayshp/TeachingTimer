@@ -11,10 +11,11 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | --- | --- |
 | External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
 | Public invitation, checked November 5 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae) now offers **View in TestFlight** and joining instructions. Initial configured limit: 100. The public page does not expose the eligible build/version; a new external tester's installation remains unverified. |
-| Latest verified internal TestFlight release | **1.0 (261113.0211.55)**, source `425767d7340f`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43407153075) passed exact-source Watch verification, three-payload signing/export, upload, Apple `VALID`, notes/group readback and Maintainer `IN_BETA_TESTING`, available November 13 at 02:33:56 PST. Adds the watch-face launcher. Physical installation/complication use is unverified; the prior physical journal still identifies build 39. |
+| Latest verified internal TestFlight release | **1.0 (261113.1031.57)**, source `b28e499319fb`. [Release run](https://github.com/qayshp/TeachingTimer/actions/runs/43483472260) passed exact-source Watch verification, three-payload signing/export, upload, Apple `VALID`, notes/group readback and Maintainer `IN_BETA_TESTING`, available November 13 at 10:55:49 PST. Adds the monochrome mat-and-clock complication artwork. Server availability is distinct from installation. |
+| Latest owner report | The owner reports updating Watch and phone through TestFlight, successfully using the Utility face with Teaching Timer and native Now Playing launchers, and a class where everything used worked. Song progress was not specifically compared between the two apps. No exact installed version was independently read for this report; the latest parsed physical report remains the build-39 record below. |
 | First hosted internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). Subsequent app-affecting main pushes publish through the same gated workflow. |
 | Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. TestFlight `1.0 (261104.1939.6)` includes the change; the owner reports song progress still freezes. Isolation alone did not fix the issue. |
-| Physical Watch / companion | The November 12 Watch-prepared report reached support and parsed: **261112.0232.39**, source `16a38f1d9067`, 1,225,763 bytes / 1,628 events. Fresh Watch journals corroborate it. The phone's installed build was not independently read. The earlier build-32 phone-requested delivery remains a separate successful flow; first linking/Mail recovery remains historical. [Current observations](docs/VOLUME_INCIDENT_2026-11-12.md). |
+| Latest parsed physical report / companion | The November 12 Watch-prepared report reached support and parsed: **261112.0232.39**, source `16a38f1d9067`, 1,225,763 bytes / 1,628 events. Fresh Watch journals corroborate it. The phone's installed build was not independently read. The earlier build-32 phone-requested delivery remains a separate successful flow; first linking/Mail recovery remains historical. [Current observations](docs/VOLUME_INCIDENT_2026-11-12.md). |
 | Owner pilot | The November 2 build-35 install/update/relaunch, saved state, intentional Stop and all three journal copies passed within the [recorded limits](docs/TESTFLIGHT_PILOT_RESULTS.md). Its seven-build group inventory through 36 is historical. The later build-42 update is separately owner-confirmed. |
 | Rollback | Build 16 remains a preserved local checkpoint with its known media/volume issues. |
 | November 6 journal-sharing owner pilot | [PR #28](https://github.com/qayshp/TeachingTimer/pull/28) was merged and released as **1.0 (261106.1118.29)**. Settings → About adds report preparation and native sharing. Simulator staging/hash checks and the final PR/release verification passed, including 15 Swift suites / 275 Python tests. The separate main check reproduced known awake-runtime rejection #27 on watchOS 26.5; the release's watchOS 27.2 SE 3 / Ultra matrix passed. At that checkpoint, installation and physical receipt were unverified. A later native-share email and the November 11 companion receipt were subsequently verified; see the current companion row above. [Validation evidence and limits](docs/DIAGNOSTIC_SHARING_VALIDATION.md); #26 remains open. |
@@ -61,29 +62,33 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 - Mindfulness runtime suitability for guided yoga teaching and automatic renewal
   still needs explicit Apple guidance. Beta review does not settle intended use.
 
-## Monochrome complication artwork candidate — November 13
+## Monochrome complication artwork — November 13
 
-The next source candidate uses the rolled mat and clock for the watch-face
-launcher, matching the app identity rather than the generic SF timer symbol.
-This artwork is not part of published build **261113.0211.55**. App icons,
-class/runtime/count state and Crown/media code are unchanged.
+Maintainer TestFlight **261113.1031.57** uses the rolled mat and clock for the
+watch-face launcher, matching the app identity rather than the generic SF timer
+symbol in build **261113.0211.55**. App icons, class/runtime/count state and
+Crown/media code are unchanged.
 
 SE 3 40 mm / watchOS 27.2 Simulator shows the new corner and circular icons while
 awake and under Device Hub Lock. Rectangular rendering and the smaller inline
 glyph also pass; the inline mark remains a compact brand cue beside the app name
 in awake/Lock states. Opening through the launcher preserves saved class timing;
-physical-Watch readability remains unverified. The image assets
+the owner subsequently confirmed the Utility launcher setup works. Small-slot
+readability has not been independently inspected on the physical Watch. The image assets
 use template rendering and transparent interiors. Ordinary size-bounded PNGs,
 including a smaller inline asset, avoid the reproduced high-resolution PDF
 snapshot failure. Tests guard image dimensions/scales/alpha metadata and require
 the extension's compiled asset catalog in current archive checks. Historical
 SF-symbol launcher archives remain inspectable.
 
-Tracked in [issue #32](https://github.com/qayshp/TeachingTimer/issues/32).
+All 16 Swift suites and 375 Python tests passed locally. The exact-source
+[Watch verification](https://github.com/qayshp/TeachingTimer/actions/runs/43483472291),
+[CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/43483472179) and signed
+release passed. [Issue #32](https://github.com/qayshp/TeachingTimer/issues/32) is closed.
 See [screenshots and setup](docs/TEACHING_FACE_GUIDE.md#quick-launch-from-a-watch-face)
 and [artwork notes](docs/design/complication-glyph/README.md).
 
-## Watch-face launcher — November 13
+## Initial watch-face launcher — November 13
 
 Build **261113.0211.55** adds a static **Teaching Timer** complication in all
 four accessory families: circular, corner, inline and rectangular. Available
@@ -98,8 +103,8 @@ suites and 368 Python checks pass, including extension packaging and three-paylo
 release safeguards. On SE 3 40 mm / watchOS 27.2 Simulator, corner and circular
 launchers appeared in Infograph, and the rectangular launcher appeared in Modular.
 All three opened the app when tapped and preserved saved class bytes. Opening
-with no class did not create one. Inline rendering and physical-Watch interaction
-remain separate checks. [Watch CI](https://github.com/qayshp/TeachingTimer/actions/runs/43407153076)
+with no class did not create one. At this initial build-55 checkpoint, inline rendering and physical-Watch
+interaction remained separate checks; later artwork/launcher results are above. [Watch CI](https://github.com/qayshp/TeachingTimer/actions/runs/43407153076)
 passed all 17 verification stages on clean source. The independent
 [CodeQL run](https://github.com/qayshp/TeachingTimer/actions/runs/43407152903)
 also passed Actions, Python and the full Swift build/analysis.
@@ -110,6 +115,16 @@ certificate and expires November 4, 2027. Signed export checked all three profil
 identities, signatures, entitlements and matching versions. Apple processing and
 Maintainer availability passed; that does not establish installation. Tracked in
 [issue #31](https://github.com/qayshp/TeachingTimer/issues/31).
+
+## November 13 consistency review
+
+Source now aligns Help with both Start/Resume session actions, describes omitted
+preference files precisely, and reconciles current optional-companion reporting
+with historical Watch-sharing experiments. Report-window and size-contract
+checks protect phone/Watch agreement. Class/runtime/count scheduling and the
+working media/Crown implementation are unchanged. This source update does not
+by itself establish a new TestFlight release or physical installation.
+See the [review and verification record](docs/CONSISTENCY_REVIEW_2026-11-13.md).
 
 ## November 12 review verification
 
@@ -180,8 +195,8 @@ The companion adds an optional iPhone support app and moves Watch export to
 Settings → Help → Send diagnostics to iPhone. Phone requests select 2 hours,
 24 hours or all retained events while the Watch app is open. The Watch share
 sheet is removed. Distribution IDs are preserved; teaching stays independent.
-One physical email delivery is verified. Startup, first composer and upgrade
-reliability remain validation gates; new source does not imply installation.
+Phone-requested and Watch-initiated physical email deliveries are verified.
+Startup, first composer and upgrade reliability remain validation gates; new source does not imply installation.
 See [companion validation](docs/OPTIONAL_COMPANION.md) and the
 [November 12 review](docs/REVIEW_2026-11-12.md).
 

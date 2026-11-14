@@ -1,6 +1,6 @@
 # Privacy and diagnostics
 
-Policy updated November 12, 2026 for the optional iPhone support companion.
+Policy updated November 13, 2026 for the optional iPhone support companion.
 
 Teaching Timer has no developer-operated account service, advertising or analytics
 SDK. The app does not automatically upload its journals to the developer. It does
@@ -55,8 +55,10 @@ The report includes app/build/OS versions, exact event timestamps, class/session
 and interface state, count timing and selected error codes. Generated run IDs
 are replaced with report-local labels. Unknown events and fields, free-form
 errors, raw system uptime, saved preference files and unreadable recovery copies
-are omitted. Reports can still reveal usage and teaching times; they are not
-anonymous. Missing or unreadable history and omitted fields are disclosed.
+are omitted. Allowed event fields can include configuration summaries such as
+class duration and whether count vibrations were enabled. Reports can still
+reveal usage and teaching times; they are not anonymous. Missing or unreadable
+history and omitted fields are disclosed.
 The report is limited to 2 MiB; an oversized selection is rejected rather than
 silently shortened. No system logs, audio or other apps' data are collected.
 
@@ -78,7 +80,7 @@ maintainer for larger captures. Sending diagnostics to Apple through Feedback
 Assistant is a separate action, not an automatic app feature. Copies already
 sent to Apple or a recipient follow that recipient's handling policies.
 
-Tap the upper-left gear, then **Settings → Privacy → Full privacy policy**,
+Tap the upper-left gear, then **Settings → Privacy → Full policy on Watch**,
 to read this complete policy offline. Help, About and the complete MPL license
 are also readable on the Watch.
 Website destinations show an address and a QR code for a phone camera. Visiting

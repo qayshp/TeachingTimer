@@ -1,9 +1,12 @@
 # TestFlight pilot
 
 Current build/install status lives in [current verification](../DEVELOPMENT_STATUS.md).
-The owner most recently reports **1.0 (261104.1939.6)** on the Watch; frozen song
-progress persists. The earlier [build-42 update](#november-4-2026--hosted-release-validation)
-succeeded through TestFlight without a developer connection. Unattended-update
+The owner reports a later TestFlight update and a class where everything used
+worked; live song progress was not specifically compared. The latest independently
+parsed Watch report identifies build **261112.0232.39**. Earlier frozen progress
+on **261104.1939.6** remains relevant evidence, not the current installation
+inventory. The [build-42 update](#november-4-2026--hosted-release-validation)
+established TestFlight delivery without a developer connection; unattended-update
 timing remains unverified.
 
 The [public invitation](https://testflight.apple.com/join/YA2WSmae) now offers
@@ -696,3 +699,22 @@ The owner reports updates do not appear on a regular cadence unless triggered
 in the iPhone TestFlight app; unattended automatic-update timing remains
 unestablished. The CI timing above ends at server-side availability and does not
 include this later installation.
+
+## November 13, 2026 — mat-and-clock complication release
+
+Maintainer **1.0 (261113.1031.57)** from clean source
+`b28e499319fbf1b48e42970d1cc65915771496b3` replaces the generic timer glyph
+with transparent monochrome mat-and-clock artwork.
+[Release run 43483472260](https://github.com/qayshp/TeachingTimer/actions/runs/43483472260)
+passed exact-source Watch verification, signed three-payload archive/export,
+upload, Apple `VALID`, testing-note readback and Maintainer `IN_BETA_TESTING`.
+Availability was confirmed November 13 at **10:55:49 PST**, 95.496 seconds after
+the upload command succeeded. The Watch verification and independent full
+CodeQL runs also passed. Local checks covered all 16 Swift suites and 375 Python
+tests. Those source/processing results do not establish physical installation.
+
+The owner later reported updating through TestFlight and successful Utility
+Teaching Timer/Now Playing launchers, followed by a class where everything used
+worked. The exact installed build was not independently read, and live song
+progress was not compared. [Current status](../DEVELOPMENT_STATUS.md) preserves
+that distinction from the latest parsed build-39 physical report.

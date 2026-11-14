@@ -7,8 +7,9 @@ teaching works independently on the Watch. No workout tracking, heart-rate
 collection, account, advertising, or analytics.
 
 Built around real teaching on Apple Watch SE 3. This is still an experimental
-app with known media, volume and Always-On issues. Test it before relying on it
-in class and keep another timing method available.
+app with known media-progress and volume issues. Wrist-down updates and session
+recovery depend on watchOS. Test it before relying on it in class and keep another
+timing method available.
 
 <img src="docs/images/polish-2026-11-05/se3-count.png" alt="SE 3 Simulator teaching face with a gear button, foreground clock hands and an active count" width="240">
 
@@ -33,7 +34,7 @@ An installation by a new external tester has not yet been verified.
 
 Open the link on your paired iPhone with Apple's TestFlight app,
 then install **Teaching Timer Beta** on your Watch. The app targets watchOS 26
-or later; the latest physical pilot used watchOS 27.2. Teaching Timer requires
+or later; the latest parsed physical report identifies watchOS 27.2.1. Teaching Timer requires
 no app account; the optional iPhone interface is only for diagnostics. Read the
 [first-class guide](docs/TESTER_GUIDE.md) and [privacy notes](docs/PRIVACY.md).
 Initial feedback can be a description or cropped screenshot; journal attachments
@@ -42,8 +43,8 @@ are optional. To build from source, use the instructions below.
 **Optional diagnostic support:** builds with the iPhone companion can request a
 report on the phone or send one from Watch **Settings → Help → Send diagnostics
 to iPhone**. The phone's **Email support** prefills the recipient and attachment.
-One physical delivery to support is verified; startup, update and first-composer
-reliability remain under validation in [#26](https://github.com/qayshp/TeachingTimer/issues/26).
+Phone-requested and Watch-initiated deliveries to support are verified; startup,
+update and first-composer reliability remain under validation in [#26](https://github.com/qayshp/TeachingTimer/issues/26).
 Check [current build status](DEVELOPMENT_STATUS.md) for availability; a description
 or screenshot is enough for ordinary support. [Companion guide](docs/OPTIONAL_COMPANION.md).
 
@@ -81,6 +82,9 @@ choose **Complications**, and select **Teaching Timer** for a supported slot.
 Circular, corner, inline and rectangular layouts are supported; available slots
 depend on the watch face. Tap the complication to open the app without starting
 or resetting a class. It is a launcher, not a live class-progress display.
+For a direct native Now Playing launcher too, use **Utility** with Teaching Timer
+at **Top Left** and Now Playing at **Bottom**; see the
+[verified setup](docs/TEACHING_FACE_GUIDE.md#teaching-timer-and-native-now-playing-together).
 
 ## When something goes wrong
 
@@ -175,6 +179,6 @@ Teaching remains independent on the Watch. The optional iPhone app can request a
 report while the Watch app is open, or the Watch can send one from
 **Settings → Help → Send diagnostics to iPhone**. On iPhone, **Email support** prefills the support address and attaches
 the received report. The Watch share sheet has been replaced by this phone route.
-One physical Watch-to-phone-to-support-email delivery is verified. Startup,
-mail presentation, and upgrade reliability remain under validation.
+Physical phone-requested and Watch-initiated support-email deliveries are verified.
+Startup, mail presentation, and upgrade reliability remain under validation.
 See [companion validation](docs/OPTIONAL_COMPANION.md).

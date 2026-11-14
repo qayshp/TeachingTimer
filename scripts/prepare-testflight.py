@@ -219,7 +219,7 @@ def main(argv=None):
         (output / 'artifact-inspection.json').write_text(json.dumps(inspection, indent=2) + '\n')
         watch, container = artifact.application_paths(archive)
         if container is None:
-            raise ValueError('TestFlight requires the watch-only distribution container')
+            raise ValueError('TestFlight requires the iPhone distribution app with its embedded Watch app')
         container_info = plistlib.loads((container / 'Info.plist').read_bytes())
         watch_info = plistlib.loads((watch / 'Info.plist').read_bytes())
         complication_info = plistlib.loads((complication_path(watch) / 'Info.plist').read_bytes())

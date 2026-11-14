@@ -7,6 +7,14 @@ import Foundation
 
 @main struct DiagnosticRequestChecks {
     @MainActor static func main() async {
+        // The phone's request values must describe exactly the Watch builder's
+        // windows. Otherwise a new selection could silently fall back to two
+        // hours in the transport adapter rather than honor the user's choice.
+        precondition(Set(DiagnosticRequest.Window.allCases.map(\.rawValue)) ==
+                     Set(DiagnosticReport.Window.allCases.map(\.rawValue)),
+                     "Phone requests and Watch reports must support the same time windows")
+        precondition(DiagnosticInbox.maximumBytes == DiagnosticReport.maximumBytes,
+                     "The phone must accept every report size the Watch can prepare")
         for reason in ["unknown", "update-required", "invalid-request", "invalid-window"] {
             precondition(DiagnosticRequest.failureMessage(reason: reason).contains("both devices"),
                          "A protocol mismatch needs an update, not a retry loop")

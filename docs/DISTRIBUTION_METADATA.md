@@ -1,6 +1,7 @@
 # Distribution metadata draft
 
-Reviewed November 5, 2026. The
+Source wording reviewed November 13, 2026; public invitation last checked
+November 5. The
 [public invitation](https://testflight.apple.com/join/YA2WSmae) now offers
 **View in TestFlight**. Exact eligible-build membership and a new external
 tester's installation remain unverified. The first external submission was
@@ -23,12 +24,13 @@ for the dated review evidence. This is not an App Store release.
 | Privacy information | https://github.com/qayshp/TeachingTimer/blob/main/docs/PRIVACY.md |
 | License | MPL-2.0 |
 
-**November 6 owner-pilot addition:** [native diagnostic sharing](DIAGNOSTIC_EXPORT_PLAN.md)
-is approved for merge after review/CI and subsequent internal TestFlight testing.
-Merge and release completion remain tracked in [current status](../DEVELOPMENT_STATUS.md).
-Test notes should ask the owner to verify sharing after class and state that
-successful Simulator staging does not establish recipient delivery. General
-journal access remains unverified. No upload service or iPhone companion was added.
+**Diagnostic support:** current distribution builds include an optional iPhone
+companion for filtered reports and pre-addressed support email. Phone-requested
+and Watch-initiated reports have reached support; startup, retries and upgrade
+reliability remain under validation. The [November 6 native Watch share-sheet
+design](DIAGNOSTIC_EXPORT_PLAN.md) is historical and has been replaced. No upload
+service is added. See [current status](../DEVELOPMENT_STATUS.md) and
+[companion validation](OPTIONAL_COMPANION.md).
 
 ## Description
 
@@ -38,10 +40,11 @@ and access to Apple's native media controls on your Watch.
 
 Start a suggested 60-minute class or adjust its start and duration. Class timing
 is preserved when you stop the mindfulness runtime or reopen the app. Timer-page
-Crown volume targets the paired iPhone. The app runs on Watch without an iPhone
-companion app; phone playback control still needs the paired phone.
+Crown volume targets the paired iPhone. Teaching works independently on Watch;
+the optional iPhone companion is only for diagnostic support. Phone playback
+control still needs the paired phone.
 
-This beta has known media, volume and Always-On transition issues. System runtime
+This beta has known media-progress and volume issues. System runtime
 and vibration delivery are not guaranteed. Test it outside class before relying
 on it while teaching.
 
@@ -118,8 +121,8 @@ media/volume defects and recovery limits are listed in the [issue map](ISSUE_TRA
 
 ### Bounded source-to-declaration inventory
 
-Manual review on November 2 follows the listed source paths and current
-[privacy manifest](../TeachingTimer/PrivacyInfo.xcprivacy). It is not a binary or
+The initial November 2 review, updated for the current companion flow November
+13, follows the listed source paths and [privacy manifest](../TeachingTimer/PrivacyInfo.xcprivacy). It is not a binary or
 framework-wide API audit, a guarantee that no API was missed, or a final App Store
 privacy/legal declaration. Artifact checks separately verify that the reviewed
 manifest is present in the archive and IPA.
@@ -129,8 +132,8 @@ manifest is present in the archive and IPA.
 | App-owned preferences and recovery values | [ClassContext](../TeachingTimer/ClassContext.swift), [RuntimeIntentStore](../TeachingTimer/RuntimeRenewalRules.swift), [LandmarkController](../TeachingTimer/LandmarkController.swift), [Settings](../TeachingTimer/ClassControlsView.swift) and [persistence recovery](../TeachingTimer/PersistenceDiagnostics.swift) read/write class timing, runtime intent, count result and settings through UserDefaults/@AppStorage. | The manifest declares UserDefaults reason `CA92.1`. The inspected uses are app-owned storage, consistent with [Apple's reason for app-only defaults](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype). This does not authorize reading another app's preferences. |
 | Monotonic media-refresh intervals | [MediaReloadPolicy](../TeachingTimer/MediaReloadPolicy.swift) compares `ProcessInfo.systemUptime` samples for dim duration and refresh cooldown. Those absolute samples remain private policy state. | The manifest declares system-boot-time reason `35F9.1`, covering elapsed intervals/timers. [Apple's rule](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype) distinguishes shareable in-app elapsed intervals from raw uptime and other derived data. Related [count](../TeachingTimer/LandmarkController.swift), [runtime](../TeachingTimer/ExtendedRuntimeController.swift) and [focus](../TeachingTimer/VolumeControlDiagnostics.swift) diagnostics use elapsed `ContinuousClock` durations; do not treat this declaration as permission to export raw boot-time values. |
 | Local operational journals and recovery files | [RuntimeDiagnostics](../TeachingTimer/RuntimeDiagnostics.swift) and [LandmarkDiagnostics](../TeachingTimer/LandmarkDiagnostics.swift) store timestamps, lifecycle/errors and count submissions on the Watch. Valid journals trim on writes at seven days and caps of 10,000/10,000/20,000 events. | There is no automatic developer upload. Corrupt-journal copies are separate files and can accumulate without a count/time cap; they are not covered by the valid journals' rolling limits. Preference recovery is separately one value per store. Exported copies need their own handling/retention assessment. |
-| Native diagnostic export — November 6 owner pilot | [Report builder](../TeachingTimer/DiagnosticReport.swift), [sharing UI](../TeachingTimer/DiagnosticSharingView.swift) and [prepared-file cache](../TeachingTimer/DiagnosticReportFile.swift) add an explicit filtered JSON share, with no automatic upload. | Report timestamps still disclose use times. Files are capped at 2 MiB, eight cached files, and cleanup after 24 hours on a later preparation; current sharing files are preserved. Cache age uses filename creation epochs, not filesystem timestamp APIs. Native receipt, off-device handling and the final distribution declarations remain unverified; this row updates the source inventory without changing the November 2 review history. |
-| Optional support intake | [Support](../SUPPORT.md) asks for a description first. Email received outside the app includes the sender, message and any chosen attachments; [the intake procedure](PRIVATE_SUPPORT_PLAN.md) separates private reports from public issues. | The owner chose descriptions and optional cropped screenshots for the public pilot, without requiring journals. This still involves contact/message data; final App Store privacy answers remain incomplete. One physical companion attachment was verified November 11; general tester reliability remains unverified. |
+| Filtered diagnostics and optional companion | [Report builder](../TeachingTimer/DiagnosticReport.swift), [Watch report UI](../TeachingTimer/DiagnosticSharingView.swift), [prepared-file cache](../TeachingTimer/DiagnosticReportFile.swift), [Watch Connectivity](../TeachingTimer/DiagnosticCompanion.swift) and [phone support](../PhoneSupport/SupportApp.swift) prepare and explicitly transfer filtered JSON, then offer user-reviewed email or export. | Reports can disclose usage times and approved configuration summaries, but omit raw preference files. They are capped at 2 MiB; Watch cache keeps at most eight files with later-preparation cleanup after 24 hours while protecting current/outstanding files. The phone retains only the latest received report until replaced/deleted. Physical receipt is verified; general reliability and final distribution declarations remain open. |
+| Optional support intake | [Support](../SUPPORT.md) asks for a description first. Email received outside the app includes the sender, message and any chosen attachments; [the intake procedure](PRIVATE_SUPPORT_PLAN.md) separates private reports from public issues. | The owner chose descriptions and optional cropped screenshots for the public pilot, without requiring journals. This still involves contact/message data; final App Store privacy answers remain incomplete. Companion attachments were verified for November 11 and November 12 reports; general tester reliability remains unverified. |
 
 Apple excludes data processed solely on-device from its collection answers, but
 off-device support intake needs separate assessment. Optional disclosure requires
@@ -141,7 +144,7 @@ all applicable criteria; voluntary email alone does not establish an exemption.
 
 - **Known:** class state, preferences and journals stay on the Watch unless copied
   separately. The optional companion receives explicitly requested filtered
-  reports and offers a prefilled support email; one physical delivery is verified.
+  reports and offers a prefilled support email; phone-requested and Watch-initiated deliveries are verified.
   There is no automatic upload service. Support email
   retains the sender, message and chosen attachments as described in
   [the policy](PRIVACY.md).

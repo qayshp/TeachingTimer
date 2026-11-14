@@ -43,9 +43,10 @@ About**. **Connection details** helps distinguish installation, reachability,
 queueing and receipt. Keep the Watch app open for a phone request. A delayed
 report can still arrive after the wait expires; check its preparation time.
 
-One complete physical delivery to support was verified November 11. Initial
-linking and first Mail presentation needed recovery in that test; follow-up
-fixes still need physical validation. See [build availability](DEVELOPMENT_STATUS.md)
+Physical support-email deliveries were verified for a phone-requested report
+on November 11 and a later Watch-prepared report received November 13. Initial
+linking and first Mail presentation needed recovery in the earlier test; repeated
+startup, Mail presentation and upgrade reliability remain under validation. See [build availability](DEVELOPMENT_STATUS.md)
 and [companion validation](docs/OPTIONAL_COMPANION.md). Older public builds may
 lack these controls; ordinary support never requires a journal attachment.
 

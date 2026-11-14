@@ -21,8 +21,8 @@ decides which slots are available. The complication is a static launcher rather
 than a live class timer, so it does not need access to saved class data or regular
 timeline refreshes.
 
-The next source candidate replaces the generic timer symbol from build 55 with a
-monochrome rolled mat and clock. The artwork follows the app icon, with broad
+Maintainer TestFlight **261113.1031.57** replaces the generic timer symbol from
+build 55 with a monochrome rolled mat and clock. The artwork follows the app icon, with broad
 hands/rim and an open mat curl rather than gradients or small ticks.
 
 ![Monochrome mat-and-clock launcher in corner and circular slots](images/complication-2026-11-13/se3-mat-clock-awake.png)
@@ -37,6 +37,25 @@ the mat curl and hands are clearer in corner/circular slots. Tap-to-open keeps
 class timing intact. Simulator inspection does not establish physical-Watch
 readability. See
 [artwork and reproduction notes](design/complication-glyph/README.md).
+### Teaching Timer and native Now Playing together
+
+For direct launchers to both apps, use the **Utility** watch face:
+
+- **Top Left → Teaching Timer** (the mat-and-clock icon).
+- **Bottom → Now Playing** (the long curved slot).
+
+![Utility with Teaching Timer at top left and native Now Playing at bottom](images/complication-2026-11-13/se3-utility-launchers.png)
+
+Both taps were verified on SE 3 40 mm / watchOS 27.2 Simulator: the top-left
+launcher opened Teaching Timer, and the bottom launcher opened Apple's standalone
+Now Playing app, not Music. The owner subsequently confirmed this setup works on
+the Watch. Native Now Playing showed **Not Playing** in the Simulator without an
+active media source; this test establishes launch behavior, not paired playback.
+
+The slot matters: Now Playing was offered in Utility's bottom picker, not its
+upper picker. Infograph does not offer the same native launcher. Keep Infograph
+and add Utility as a separate teaching face if preferred; no app update is needed
+for the layout once the Teaching Timer complication is installed.
 
 ## Dial and controls
 

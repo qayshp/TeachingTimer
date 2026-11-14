@@ -55,8 +55,9 @@ and launch passed; phone installation detection reported the paired Watch app
 present. A manually seeded synthetic report exercised phone inbox restoration
 UI only, not delivery. Unsigned distribution archive and structural checks passed,
 including independent execution and unchanged parent/Watch bundle IDs. All 15
-Swift suites and 276 Python checks passed. Physical transfer, mail composition
-with a configured account, receipt and upgrade preservation remain pending.
+Swift suites and 276 Python checks passed. At that checkpoint, physical transfer, configured-Mail composition, receipt and
+upgrade preservation were pending. Later physical deliveries are recorded above
+and in the November 11 follow-up; general reliability gates remain open.
 
 ## Distribution commitment
 
@@ -121,7 +122,9 @@ Maintainer group membership and IN_BETA_TESTING were read back. Availability was
 confirmed at 19:14:05 PST, approximately 97 seconds after upload completed.
 The temporary branch release allowance was removed; only main remains allowed.
 No physical installation or new-build delivery test was performed by the agent.
-PR #29 remains unmerged. Recheck both installed version labels after updating.
+At that November 11 checkpoint, PR #29 was unmerged; it subsequently merged on
+November 12. Recheck both installed version labels after updating. Use
+[current status](../DEVELOPMENT_STATUS.md) for later releases and installation evidence.
 
 ## PR verification environment correction — November 12
 

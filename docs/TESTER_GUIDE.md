@@ -1,6 +1,6 @@
 # First class with Teaching Timer
 
-This is a watchOS-only teaching clock, not a pose guide or workout tracker.
+Teaching Timer is a Watch-first teaching clock, not a pose guide or workout tracker.
 It needs watchOS 26 or later. The core clock works without phone music; iPhone
 volume requires a paired iPhone and an available media connection. Always-On
 needs a Watch that supports it. Screen-size simulations are not hardware certification.
@@ -15,7 +15,7 @@ eligible build; a first external tester's install/update is still to be verified
 Open the invitation on your paired iPhone with
 Apple's TestFlight app, accept the invitation, and install **Teaching Timer Beta**
 on your Watch through TestFlight. The target is watchOS 26 or later; the latest
-physical owner test used watchOS 27.2. This is a beta, not an App Store release.
+parsed physical report identifies watchOS 27.2.1. This is a beta, not an App Store release.
 You can also [build from source](../README.md#build-and-contribute).
 
 Open **Teaching Timer Beta** on the Watch. If you already have
@@ -23,9 +23,10 @@ Open **Teaching Timer Beta** on the Watch. If you already have
 settings and journals, and Beta does not import the other app's data. Check the
 name and build in **Gear → Settings → About** before reporting a problem.
 The gear at the upper left opens both class controls and Settings.
-Teaching Timer has no app account or iPhone companion interface to configure;
-phone music still requires the paired iPhone. Known media-progress, blank-page,
-volume and Always-On issues remain; try the checks below outside class first.
+Teaching Timer has no app account. Its optional iPhone interface helps send
+diagnostics; it is not needed for teaching. Phone music still requires the paired
+iPhone. Song progress and timer volume have open reliability issues, and session
+recovery depends on watchOS. Try the checks below outside class first.
 
 ## Try it before teaching
 
@@ -53,6 +54,11 @@ finish marker, class-progress perimeter, count arc and audio controls.
 4. With phone music already playing, try the Crown and both pages before class.
    The timer control targets the iPhone. Native Now Playing may instead show
    Watch playback, so the two pages are not guaranteed to control the same source.
+
+For quick access to both Teaching Timer and the standalone Now Playing app,
+[Utility supports two direct launchers](TEACHING_FACE_GUIDE.md#teaching-timer-and-native-now-playing-together).
+This is optional; the native app provides a useful comparison if embedded media
+misbehaves.
 
 ## During a class
 

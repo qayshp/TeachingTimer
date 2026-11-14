@@ -2,8 +2,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
-// Watch target only. The TestFlight scheme embeds it in Apple's empty
-// watch-only distribution container (net.qays.TeachingTimer).
+// Watch target only. The TestFlight scheme embeds it in the optional iPhone
+// support app (net.qays.TeachingTimer); teaching remains independent on Watch.
 // Normal Debug/Release retain the existing teaching installation.
 PRODUCT_BUNDLE_IDENTIFIER = net.qays.TeachingTimer.watchkitapp
 SKIP_INSTALL = YES

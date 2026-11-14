@@ -62,7 +62,11 @@ def information_resources_present(app):
 
 
 def application_paths(path):
-    """Return the Watch payload and optional Apple watch-only distribution stub."""
+    """Return the Watch payload and its enclosing iPhone app, when present.
+
+    Current distribution builds use the optional support companion. Historical
+    watch-only distribution stubs share the same nested Watch payload layout.
+    """
     if path.suffix != '.xcarchive':
         return path, None
     metadata_path = path / 'Info.plist'

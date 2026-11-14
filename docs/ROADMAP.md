@@ -81,8 +81,11 @@ cover both readiness orders and bounded failure. Broader physical recovery
 remains in #10; reopen #7 if the corrected symptom returns. Newly observed #27
 has both readiness gates satisfied and is tracked independently.
 
-**#1 blank media** and **#2 Crown focus** are also resolved using the targeted
-corrections, passing follow-ups and owner evidence. Retain their reopen criteria.
+**#1 blank media** remains resolved after the targeted correction, passing
+follow-ups and owner evidence. Retain its reopen criteria. **#2 Crown volume**
+is reopened for the November 12 timer-control failure despite refresh, page
+return and force-close recovery attempts. The earlier refocus correction remains
+valid historical evidence; the recurrent symptom has no established shared cause.
 **#3 silencing** remains for one bounded volume exercise on the previously
 affected available routes; passing that alongside normal use can justify
 closure without a universal route guarantee. **#6 paired Simulator media** awaits

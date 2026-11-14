@@ -4,15 +4,28 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
-## November 13, 2026 — recognizable complication artwork candidate
+## November 13, 2026 — consistent Help and support guidance
+
+- Session Help names both **Start session** and **Resume session**, matching
+  the available action after reopening or stopping a session.
+- Clarify that diagnostic reports omit saved preference files while retaining
+  permitted event summaries. Align current menus, optional-phone reporting,
+  issue status and historical experiment descriptions across the documentation.
+- Add contract checks for phone/Watch report windows and size limits. Class,
+  runtime, count and media/Crown behavior are unchanged.
+- See the [consistency review](docs/CONSISTENCY_REVIEW_2026-11-13.md) for checks
+  and evidence boundaries; [current status](DEVELOPMENT_STATUS.md) owns availability.
+
+## November 13, 2026 — recognizable complication artwork
 
 - Replace the generic timer symbol with a monochrome rolled mat and clock,
   matching the app icon. The main app icons and teaching controls are unchanged.
 - Use template PNGs with transparent cutouts and a smaller inline rendition.
   Automated checks protect image dimensions, scale/alpha metadata and bundling.
-- Reviewed small corner/circular slots on SE 3 Simulator while awake and in Lock
-  mode. Physical readability and the next TestFlight release remain separate
-  checks; see [current status](DEVELOPMENT_STATUS.md).
+- Reviewed corner/circular and inline slots on SE 3 Simulator while awake and
+  in Lock, plus the rectangular layout. Maintainer TestFlight **261113.1031.57**
+  is available. The owner confirmed Utility can launch both Teaching Timer and
+  native Now Playing; see [setup and limits](docs/TEACHING_FACE_GUIDE.md#teaching-timer-and-native-now-playing-together).
 
 ## November 13, 2026 — watch-face launcher
 
@@ -23,7 +36,7 @@ build was installed or passed hardware validation.
   The launcher does not read class data or request repeating timeline updates.
 - Maintainer TestFlight **261113.0211.55** is available after signed export and
   Apple processing. SE 3 Simulator corner, circular and rectangular taps pass;
-  inline rendering and physical-Watch use remain unverified. See
+  inline rendering and physical-Watch use were unverified at that initial checkpoint. See
   [current status](DEVELOPMENT_STATUS.md).
 
 ## November 12, 2026 — shorter Help and support pages

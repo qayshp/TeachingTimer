@@ -1,9 +1,10 @@
 # Private support and diagnostic intake
 
-Updated November 12, 2026. The approved support address is
+Updated November 13, 2026. The approved support address is
 [teachingtimer@qays.net](mailto:teachingtimer@qays.net) in the existing iCloud
-mailbox. Incoming and outgoing plain email were verified November 2; one
-Watch-to-iPhone-to-support diagnostic attachment was verified November 11.
+mailbox. Incoming and outgoing plain email were verified November 2. Companion
+diagnostic attachments were verified for the November 11 phone-requested report
+and the November 12 Watch-prepared report received November 13.
 No mail routing or MX records were changed. Nothing is uploaded automatically.
 
 ## Support route
@@ -36,6 +37,9 @@ independent of the phone app.
 - The November 11 companion report reached support as valid schema-1 JSON with
   85 events. Initial linking and the first Mail sheet needed recovery. One
   success does not establish startup, update or interruption reliability.
+- The November 12 Watch-prepared report reached support and was independently
+  parsed November 13: 1,628 events from Watch build `261112.0232.39`. This verifies
+  the later Watch-initiated route, not all retry, first-Mail or upgrade cases.
 - [Current build status](../DEVELOPMENT_STATUS.md) and the
   [companion validation record](OPTIONAL_COMPANION.md) separate availability,
   installation, transfer and email receipt. Follow-up fixes need device testing.
@@ -86,8 +90,9 @@ actual intake practice; optional support sharing is not automatically exempt.
   the tested developer-enabled Watch/trusted-Mac setup; general tester access
   remains unverified.
 - [x] Public pilot explicitly accepts descriptions and optional cropped
-  screenshots without requiring journal attachments. Optional companion export has one verified physical delivery; repeated and
-  general tester delivery remain under validation.
+  screenshots without requiring journal attachments. Phone-requested and
+  Watch-initiated companion deliveries have been verified; repeated and general
+  tester delivery remain under validation.
 
 The companion route does not require developer tools. If it is unavailable or
 fails, accept a description and screenshot; do not require testers to extract

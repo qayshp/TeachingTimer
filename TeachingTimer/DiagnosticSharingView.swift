@@ -91,7 +91,7 @@ struct DiagnosticSharingView: View {
                 NavigationLink("What is included?") {
                     Form {
                         Text("Includes app and watchOS versions, timestamps, session and interface events, count timing, and error codes. Times can reveal when you taught or used the app.")
-                        Text("Excludes song titles, audio, actual volume, saved preferences and system logs. Unapproved fields and free-form errors are left out.")
+                        Text("Excludes song titles, audio, actual volume, saved preference files and system logs. Unapproved fields and free-form errors are left out.")
                         Text("Do not post this file publicly. The recipient can keep a copy.")
                     }.navigationTitle("Report privacy")
                 }

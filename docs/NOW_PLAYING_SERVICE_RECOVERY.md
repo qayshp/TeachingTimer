@@ -5,13 +5,15 @@ and two view-reload black frames are confirmed by zero content-area pixel signal
 and direct inspection. Their recovery images contain native controls. Later
 October 26 delayed captures were misclassified and contain Not Playing; that
 comparison cannot rank recovery variants. [Audit and limits](MEDIA_IMAGE_AUDIT.md).
-Physical black-media reports remain unresolved.
+Physical black-media reports remained unresolved at that checkpoint. The later
+preventive-recovery fix and closure of #1 are recorded in the
+[current issue map](ISSUE_TRACKER.md); this file preserves the earlier experiments.
 
 October 26 follow-ups added view-only recovery trials, automatic refresh,
 physical observations, and the zero-volume event ordering. All attachment
 uploads completed. See [Apple feedback status](APPLE_FEEDBACK.md).
 
-Current UI, build 16: the redundant Class-menu Reload media action has been
+At build 16, the redundant Class-menu Reload media action was
 removed. Swipe to the timer and back to request a fresh native media view;
 automatic page-entry/background-return recovery is unchanged. References to
 manual reload below document the earlier experiments and builds.

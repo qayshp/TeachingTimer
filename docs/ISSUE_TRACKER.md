@@ -81,8 +81,8 @@ historical occurrence had an identical cause or change Apple's report status.
 
 Issues #1 and #5 were updated on October 28 to match the image audit and Apple
 connection-report status. On November 5, #1 and #3 were annotated as apparently
-mitigated after the maintainer corrected a transcription error; neither is
-closed because the intermittent reports lack a defined validation period.
+mitigated after the maintainer corrected a transcription error; neither was
+closed at that checkpoint. The table above records the later closure of #1.
 
 On November 2, issue bodies #4, #7 and #8 were synchronized with the clock
 precision/anchor comparisons, bounded runtime-recovery results, and October
