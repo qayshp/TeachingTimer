@@ -156,6 +156,11 @@ It is unproven: the correct earlier model value and the missing signed Crown
 movement leave alternative input interpretations open. The captured chain
 does establish delivery to the intended phone output for this occurrence.
 
+The [extended opening/playback timeline](VOLUME_TIMELINE_2026-11-13.md) adds the
+fresh Amazon launch at 18:48:12, audio start at 18:48:23, initial phone volume
+adjustments and the Watch's later foreground return. This confirms the owner's
+music-before-class recollection without establishing that the order caused zero.
+
 ## Proposed experiment and regression gates
 
 The incident build and reviewed current source have identical volume/lifecycle

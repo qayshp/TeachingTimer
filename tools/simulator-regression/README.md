@@ -46,6 +46,11 @@ Device Hub open, and an already booted **disposable SE 3 40 mm** simulator named
 visible and do not interact with Device Hub during the short run. UI coordinates
 are specific to the default SE 3 layout; this is not an all-size UI test.
 
+Dismiss any Device Hub modal before starting. A failed physical-device capture
+can leave an alert over the Simulator while `simctl` screenshots still show the
+app normally. The input helper now fails before sending any input when a sheet
+blocks the window; it does not dismiss alerts or treat blocked taps as app bugs.
+
 Build TeachingTimer for Watch Simulator, then run:
 
 ```sh

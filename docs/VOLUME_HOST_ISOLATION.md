@@ -25,9 +25,9 @@ Class, runtime and landmark state retain their existing owners.
 `ClockAdditions` moves above volume in compositing order. Its painted landmark
 dots, class-progress stroke and end markers remain geometrically clear of both
 the native frame and the visible backing circle across all eight tested sizes.
-New checks protect that premise. Both hands remain above controls. Native hit
-handling and visible Crown feedback still require Simulator interaction; paired
-phone commands and audibility require physical testing.
+New checks protect that premise. Both hands remain above controls. Simulator
+interaction checks cover the controls and app-side focus lifecycle; paired-phone
+commands and audibility still require physical testing.
 
 ## Reconstructed state at 19:04:27 PST, November 13
 
@@ -44,10 +44,18 @@ remain private.
 | Now Playing | Recovery rebuilds its view, generation 18 to 19, within the same service process. | View recreation is not a process restart or a proven pixel repair. |
 | Runtime / class | Mindfulness runtime running, no expiry/renewal at the outage. Scheduled class anchor remained 18:45 despite late app Start. | Runtime start and scheduled class start are distinct. |
 | Landmarks | A six-landmark run was active; two local haptic pulses preceded Crown input. Haptic policy says route/volume cannot be set. | Submission/policy does not measure physical vibration; no causal bridge to companion zero was found. |
-| iPhone | Historical state records show locked/blanked since roughly 18:55:08 with no later transition through 19:05. Incident samples show 63% battery, external power and charging, no critical-battery flag. | Exact zero-time thermal state and complete renderer health are unknown. |
+| iPhone | Unified logs show display off and locking at 18:48:34–35, with no later transition through 19:05 in the calibrated historical records. Correctly aligned incident samples show approximately 66% battery, external power and charging, no critical-battery flag. | Powerlog uses a stored time offset; its raw timestamps are not directly comparable with unified logs. Exact zero-time thermal state and complete renderer health are unknown. |
 | Playback | Amazon Music remained active in the background and was the locally playing volume client. Now-playing item updates preceded zero. | No PCM recording, sample-rate proof or continuous decoder measurement. |
 | Route / transport | Same wired USB absolute-volume route handles zero and recovery. All 62 retained MediaRemote IDS send outcomes report success. | Retained outcomes are not an inventory of every network packet or all app connectivity. |
 | Nearby errors | Recurring Now Playing app-info lookup errors also precede successful recovery. Amazon's own Watch-app-not-installed errors follow zero. A phone UI helper suspends after zero; core media/audio daemons remain stable. | These are surrounding records, not demonstrated causes or TeachingTimer companion-install failures. |
+
+The [opening/playback timeline](VOLUME_TIMELINE_2026-11-13.md) confirms that
+Amazon launched at 18:48:12 and began playback at 18:48:23, before TeachingTimer
+returned at 18:55:14 and started its runtime at 18:55:17. The correct 0.625 model
+update precedes runtime start; the brief readiness zero is not the later outgoing
+zero. Phone powerlog timing was calibrated using its explicit stored system
+offset and 39 matching volume transitions. This corrects an earlier draft
+interpretation of lock time and battery percentage.
 
 This supports investigating a retained native interaction state across connection,
 view and display transitions. It does not prove the timeline caused zero, or
@@ -62,7 +70,7 @@ absolute values. Record the native ring and audible result for physical runs.
 | Test | How to force the condition | Useful result / boundary |
 | --- | --- | --- |
 | Native baseline versus isolation | Repeat cold start, Home/reopen, Class sheet, refresh, media return and dim/wake with otherwise identical builds. Begin with a small explicitly upward Crown movement. | Compare the first outgoing value with the starting level; visible ring response alone is insufficient. |
-| Endpoint replacement | In a supervised native-probe run, start the app before playback, then start phone playback or disconnect/reconnect the USB route while retaining the Watch control. | Stress the observed connection-generation transition; no private framework cache mutation is needed. |
+| Endpoint replacement and music-before-class | Retain the Watch control while the app is suspended, attach phone USB audio, freshly launch Amazon, start playback and change phone volume, then return to TeachingTimer and start the class. Separately test route reconnection while the app is foreground. | Stress the observed connection-generation transition; no private framework cache mutation is needed. |
 | Delayed baseline and stale interaction model | In a separate fake-control harness, deliver unavailable/zero then 0.625 late; deliberately leave a distinct interaction baseline at zero. | Prove the test oracle detects an unintended zero for a known positive delta. This does not reproduce the private native control. |
 | Late/out-of-order callbacks | Deliver an obsolete focus or endpoint-generation callback after media selection, replacement or a newer request. | Assert stale work cannot reclaim focus or overwrite newer intent. Existing model checks cover stale focus/removal; endpoint emulation belongs in a probe. |
 | Wake/input boundary | Replay dim/full transitions and vary known Crown input timing: before wake, on activation and shortly afterward. | Measure callback order and first value without adding a production gesture delay. |
@@ -81,6 +89,34 @@ and test harness; only observed native behavior can establish a native fix.
 The candidate compiles for Watch Simulator and generic watchOS. All 16 Swift
 suites and 375 Python tooling checks pass. The expanded layout suite covers
 5,760 landmark positions, eight full progress strokes and 960 end-marker
-triangles against the native frame and backing circle. Interactive Simulator
-results and screenshot review will be recorded before the PR is marked ready
-for review. No physical audio or Crown response is claimed by these checks.
+triangles against the native frame and backing circle.
+
+Interactive Simulator checks and representative awake/dimmed screenshots were
+reviewed on SE 3 40 mm and Ultra 4 49 mm, using watchOS 27.2 (24S118):
+
+- SE 3: all 21 essential actions, all six focus-lifecycle assertions, and the
+  33-frame count/Lock sequence passed. This includes refresh, media return,
+  Home/reopen and unchanged native-control identity.
+- Ultra: all 21 essential actions and the 33-frame count/Lock sequence passed on
+  the retry. The initial run missed one native Help-to-Settings Back tap; the same
+  tap then worked and the unchanged suite passed. The SE-only focus scenario was
+  not run on Ultra.
+- Both sizes completed all six landmark groups while locked, ending at about
+  64.8 seconds. Sampled button outlines had no missing-edge warnings. OCR needed
+  visual review where the deliberately foreground hands crossed labels; the
+  reviewed frames retained their control outlines and expected states.
+- An unrelated physical-Watch download-error dialog initially blocked Device Hub
+  input in both the unchanged app baseline and candidate. The helper now rejects
+  an existing modal before input and checks again after device selection. Its
+  negative live check rejected the real dialog; compilation and the unobstructed
+  bounds check passed. The dialog was not an app-layout regression.
+
+The local app is build 61, compiled from the experiment's app source before
+commit, with revision metadata `4de5168e56cb-dirty`. Its executable hash is recorded
+in both suite manifests; the app source matches committed `bb0ae03`. Hosted Watch
+checks and CodeQL also passed for that immutable commit. All 375 Python tests were rerun after the helper guard change; the guard also
+has its separate compile/live checks.
+
+[Draft PR #33](https://github.com/qayshp/TeachingTimer/pull/33) remains unmerged.
+No physical audio or Crown response is claimed by these checks, and no physical
+Watch install or TestFlight publication was performed for this experiment.
