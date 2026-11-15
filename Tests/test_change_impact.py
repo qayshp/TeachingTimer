@@ -107,6 +107,8 @@ class ChangeImpactChecks(unittest.TestCase):
                      "tools/watch-media-lab/CrownHIDBridge.m", "tools/watch-media-lab/NativeBaselineHook.m",
                      "tools/watch-media-lab/build.sh", "tools/watch-media-lab/native-state.py",
                      "tools/watch-media-lab/calibrate.py", "tools/watch-media-lab/analyze-calibration.py",
+                     "tools/physical-media/HubControl.swift", "tools/physical-media/build.sh",
+                     "tools/physical-media/self-test.py",
                      "tools/simulator-regression/ScreenText.swift", "scripts/information-qr.swift"]:
             with self.subTest(path=path):
                 result = change_impact.classify_paths([path])

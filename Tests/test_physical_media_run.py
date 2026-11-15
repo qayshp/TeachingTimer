@@ -81,7 +81,11 @@ class PhysicalMediaRunTests(unittest.TestCase):
         self.assertTrue(commands["requiresSeparateSupervisedExecution"])
         self.assertEqual(len(commands["placeholders"]), 2)
         journals = [c for c in commands["commands"] if "journals" in c["stage"]]
-        self.assertEqual(len(journals), 2)
+        self.assertEqual({item["stage"] for item in journals},
+                         {"watch-journals-before", "watch-journals-failure", "watch-journals-after"})
+        failure = next(item["argv"] for item in journals if item["stage"] == "watch-journals-failure")
+        self.assertEqual(failure[failure.index("--timeout") + 1], "8")
+        self.assertEqual(failure[failure.index("--budget") + 1], "30")
         for command in journals:
             argv = command["argv"]
             self.assertIn("journals", argv)
@@ -91,6 +95,162 @@ class PhysicalMediaRunTests(unittest.TestCase):
             self.assertFalse(output.exists(), "watch_device.py requires a NEW capture directory")
         self.assertIn("no device operation has run", (self.run / "NEXT.md").read_text())
         self.assertEqual(len(self.calls), 6)
+
+    def test_catalog_covers_named_mechanisms_and_specific_counterevidence_without_device_queries(self):
+        code, out, error = self.invoke("catalog", "--json")
+        self.assertEqual(code, 0, error)
+        catalog = json.loads(out)
+        mechanisms = {item["hypothesisID"] for item in catalog["scenarios"]}
+        self.assertEqual(mechanisms, {"H1", "H2", "H3", "H4", "H5", "H6", "H7"})
+        scenarios = {item["id"]: item for item in catalog["scenarios"]}
+        self.assertTrue({"phone-volume-change", "source-handoff", "startup-order", "focus-home",
+                         "focus-refresh", "wake-timing", "crown-conversion", "host-isolation",
+                         "route-feedback", "media-progress"}.issubset(scenarios))
+        self.assertIn("first", scenarios["crown-conversion"]["hypothesis"])
+        self.assertIn("standalone", " ".join(scenarios["media-progress"]["supports"]))
+        self.assertIn("retained", scenarios["phone-volume-change"]["hypothesis"])
+        for scenario in scenarios.values():
+            for key in ("supports", "weakens", "requiredEvidence", "steps"):
+                self.assertTrue(scenario[key], (scenario["id"], key))
+            self.assertNotEqual(scenario["supports"], scenario["weakens"])
+        self.assertFalse(self.calls)
+        self.assertFalse(self.run.exists())
+
+    def test_each_named_protocol_is_embedded_and_rendered_with_unverified_readiness(self):
+        for scenario in pmr.scenario_catalog()["scenarios"]:
+            with self.subTest(scenario=scenario["id"]):
+                run = self.repo / "work" / scenario["id"]
+                code, _, error = self.invoke("prepare", "--scenario", scenario["id"], "--output", run)
+                self.assertEqual(code, 0, error)
+                manifest = json.loads((run / "run.json").read_text())
+                rendered = (run / "NEXT.md").read_text()
+                experiment = manifest["experiment"]
+                self.assertEqual(experiment["scenario"], scenario)
+                self.assertFalse(manifest["deviceOperationsExecuted"])
+                for key in ("supports", "weakens", "requiredEvidence", "steps"):
+                    for expected in scenario[key]:
+                        self.assertIn(expected, rendered)
+                self.assertIn("all unverified until the supervised session", rendered)
+                self.assertIn("not a physical input driver", rendered)
+                self.assertNotIn("test passed", rendered.lower())
+
+    def test_scenario_defaults_and_overrides_do_not_invent_observed_device_state(self):
+        code, _, error = self.invoke("prepare", "--scenario", "phone-volume-change", "--output", self.run,
+                                     "--source", "available Amazon Music", "--route", "verified later",
+                                     "--minutes", "2", "--build", "operator will read")
+        self.assertEqual(code, 0, error)
+        manifest = json.loads((self.run / "run.json").read_text())
+        self.assertEqual(manifest["plan"]["source"], "available Amazon Music")
+        self.assertEqual(manifest["plan"]["route"], "verified later")
+        self.assertEqual(manifest["plan"]["durationMinutes"], 2)
+        self.assertEqual(manifest["plan"]["bundle"], "net.qays.TeachingTimer.watchkitapp")
+        self.assertFalse(manifest["deviceOperationsExecuted"])
+        events = [json.loads(line) for line in (self.run / "events.ndjson").read_text().splitlines()]
+        self.assertEqual([row["event"] for row in events], ["prepared"])
+
+    def test_unknown_or_incomplete_hypothesis_fails_before_metadata_or_output(self):
+        code, _, error = self.invoke("prepare", "--scenario", "not-a-protocol", "--output", self.run)
+        self.assertEqual(code, 2)
+        self.assertIn("Unknown scenario", error)
+        self.assertFalse(self.calls)
+        self.assertFalse(self.run.exists())
+        broken = pmr.scenario_catalog()
+        broken["scenarios"][0]["weakens"] = []
+        path = Path(self.temp.name) / "broken.json"
+        path.write_text(json.dumps(broken))
+        with patch.object(pmr, "CATALOG", path):
+            code, _, error = self.invoke("prepare", "--scenario", "retained-idle", "--output", self.run)
+        self.assertEqual(code, 2)
+        self.assertIn("counterevidence", error)
+        self.assertFalse(self.calls)
+        self.assertFalse(self.run.exists())
+
+    def test_duplicate_scenario_ids_fail_instead_of_selecting_an_ambiguous_protocol(self):
+        catalog = pmr.scenario_catalog()
+        catalog["scenarios"].append(catalog["scenarios"][0])
+        path = Path(self.temp.name) / "duplicate.json"
+        path.write_text(json.dumps(catalog))
+        with patch.object(pmr, "CATALOG", path):
+            code, _, error = self.invoke("catalog")
+        self.assertEqual(code, 2)
+        self.assertIn("Duplicate", error)
+        self.assertFalse(self.calls)
+
+    def test_future_app_open_commands_are_separate_argv_and_do_not_start_playback(self):
+        self.invoke("prepare", "--scenario", "source-handoff", "--output", self.run)
+        commands = json.loads((self.run / "next-commands.json").read_text())
+        named = {item["stage"]: item for item in commands["commands"]}
+        self.assertIn("apps", named["phone-app-inventory"]["argv"])
+        self.assertEqual(named["open-phone-apple-music"]["argv"][-1], "com.apple.Music")
+        self.assertEqual(named["open-watch-timer"]["argv"][-1], "net.qays.TeachingTimer.watchkitapp")
+        self.assertNotIn("--terminate-existing", named["open-watch-timer"]["argv"])
+        self.assertIn("does not prove playback", named["open-phone-apple-music"]["condition"])
+        self.assertFalse(commands["executed"])
+        self.assertFalse(any("device" in call or "simctl" in call for call in self.calls))
+
+    def test_incident_captures_have_separate_targets_and_uncertainty_instructions(self):
+        self.prepare("--watch", "chosen-watch", "--phone", "chosen-phone")
+        commands = json.loads((self.run / "next-commands.json").read_text())
+        for kind in ("watch", "phone"):
+            item = next(c for c in commands["commands"] if c["stage"] == kind + "-sysdiagnose-on-incident")
+            argv = item["argv"]
+            self.assertEqual(argv[argv.index("--device") + 1], "chosen-" + kind)
+            self.assertEqual(Path(argv[argv.index("--destination") + 1]), (self.run / "captures" / (kind + "-sysdiagnose")).resolve())
+            self.assertIn("timeout may leave capture running", item["condition"])
+            self.assertNotIn("sudo", argv)
+        self.assertFalse(commands["executed"])
+        self.assertFalse(any("device" in call or "simctl" in call for call in self.calls))
+
+    def test_exploratory_runs_cannot_be_assessed_as_specified_hypothesis_tests(self):
+        self.prepare()
+        self.assertIn("exploratory notebook", (self.run / "NEXT.md").read_text())
+        before = (self.run / "events.ndjson").read_bytes()
+        code, _, error = self.invoke("assess", "--run", self.run, "--result", "supports",
+                                     "--note", "unsupported interpretation", "--evidence", "pending.mov")
+        self.assertEqual(code, 2)
+        self.assertIn("no selected hypothesis", error)
+        self.assertEqual(before, (self.run / "events.ndjson").read_bytes())
+
+    def test_assessment_retains_inconclusive_and_does_not_infer_a_pass_from_clean_marks(self):
+        self.invoke("prepare", "--scenario", "focus-home", "--output", self.run)
+        calls = list(self.calls)
+        for event in ("run_started", "crown_input", "audio_stopped", "run_stopped"):
+            extra = ("--intent", "increase", "--magnitude", "one small turn") if event == "crown_input" else ()
+            self.assertEqual(self.invoke("mark", "--run", self.run, "--event", event, *extra)[0], 0)
+        code, output, error = self.invoke("summary", "--run", self.run, "--json")
+        self.assertEqual(code, 0, error)
+        summary = json.loads(output)
+        self.assertEqual(summary["operatorAssessments"], [])
+        self.assertIn("not automatically established", summary["testOutcome"])
+        code, output, error = self.invoke("assess", "--run", self.run, "--result", "inconclusive",
+            "--note", "Native request records missing", "--deviation", "Control identity unknown")
+        self.assertEqual(code, 0, error)
+        fields = json.loads(output)["fields"]
+        self.assertEqual(fields["result"], "inconclusive")
+        self.assertIn("not independently validated", fields["source"])
+        self.assertEqual(fields["hypothesisID"], "H3")
+        self.assertEqual(fields["deviations"], ["Control identity unknown"])
+        self.assertEqual(self.calls, calls)
+
+    def test_interpreted_results_require_rationale_and_references_but_never_validate_them(self):
+        self.invoke("prepare", "--scenario", "crown-conversion", "--output", self.run)
+        original = (self.run / "events.ndjson").read_bytes()
+        for result, note in (("supports", "Native value observed"), ("weakens", "Normal turn"), ("mixed", "Mixed results"),
+                             ("inconclusive", " ")):
+            code, _, _ = self.invoke("assess", "--run", self.run, "--result", result, "--note", note)
+            self.assertEqual(code, 2)
+            self.assertEqual(original, (self.run / "events.ndjson").read_bytes())
+        code, _, error = self.invoke("assess", "--run", self.run, "--result", "supports",
+            "--note", "A claim with no named evidence", "--evidence", " ")
+        self.assertEqual(code, 2)
+        self.assertIn("blank", error)
+        self.assertEqual(original, (self.run / "events.ndjson").read_bytes())
+        code, output, error = self.invoke("assess", "--run", self.run, "--result", "supports",
+            "--note", "Recorded known up turn versus first request", "--evidence", "snapshots/recording.mov")
+        self.assertEqual(code, 0, error)
+        fields = json.loads(output)["fields"]
+        self.assertEqual(fields["result"], "supports")
+        self.assertIn("not copied or validated", fields["evidenceReferences"][0]["validation"])
 
     def test_supplied_identifiers_are_arguments_not_shell_code(self):
         identifier = "Operator's Watch; $(this-is-not-executed)"

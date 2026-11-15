@@ -7,17 +7,106 @@ keep the [November 13/14 comparison](VOLUME_COMPARISON_2026-11-14.md) available.
 
 ## Purpose and time budget
 
-Use **3–5 minutes of active operation**, separated by **10–15 minutes of passive
-staleness**, to compare **class/runtime before music** with **music before runtime
-Start/resume** using the retained timer control after Home. Start with Apple Music and the iPhone speaker at a quiet,
-known nonzero level. Keep native Now Playing as a separate comparison. This is a
-small supervised attempt, not a guaranteed reproduction or a test of every route.
+Start with **3–5 minutes of active operation** for a working reference and the
+phone-volume-change arm. The retained-idle arm adds **10–15 minutes of passive
+time**. Class-before-music versus music-before-runtime is a separate paired
+comparison, not the default explanation for every result. Start with Apple Music
+and the iPhone speaker at a quiet, known nonzero level. Keep native Now Playing
+as a separate comparison. The full catalog requires several sessions and any
+needed comparison builds/routes; one short session is not every test.
 
 The missing evidence is the ring before input, a known input direction, the first
 native scalar and the phone result. The public Crown calibrator establishes its
 own binding sign; Simulator subtype mapping alone cannot recover physical intent.
 Do not add a custom/quantized volume counter, a recovery floor, an ignored first
 movement or a gesture delay to the teaching app for this test.
+
+## Hypothesis protocols and ready-to-run notebooks
+
+The [scenario catalog](../scripts/physical-media-scenarios.json) is the canonical
+source for each hypothesis, changed factor, supporting/counter observations,
+required evidence, controlled conditions and ordered actions. A condition such
+as music-first, Home, USB or wrist-down is not itself a diagnosed cause.
+
+| Hypothesis | Named scenarios | Main discriminator |
+| --- | --- | --- |
+| H1: stale baseline or initialization | `retained-idle`, `phone-volume-change`, `startup-order`, `wake-timing` | Does the first timer request follow the current quiet phone level after retention/external change, and does timing/order change that result? |
+| H2: stale playback association | `same-player-restart`, `source-handoff` | Does a verified phone playback change alter the retained control's destination/readiness? Pause/resume alone does not establish a new OS session. |
+| H3: Crown ownership | `focus-home`, `focus-refresh` | Does input produce no native volume action until page return, versus an actual wrong scalar? A zero request means input was processed at that moment. |
+| H4: native conversion/accumulation | `crown-conversion` | Does a recorded small upward physical gesture from a known nonzero baseline produce an inappropriate first value? |
+| H5: scheduled host interference | `host-isolation` | Does the reference fail repeatably while a matched PR #33 build does not, with source, output and history held fixed? |
+| H6: route feedback/interpretation | `route-feedback` | Does a single route transition predict failure or a state mismatch with the phone? A Watch-side zero cannot be explained by phone-only mapping. |
+| H7: embedded media presentation | `media-progress` | Does embedded progress stall between source updates while phone/standalone progress advances, and do seek/reentry produce only discrete catch-up? |
+
+Prepare a notebook for one named arm rather than improvising a broad run:
+
+```sh
+python3 scripts/physical-media-run.py catalog
+python3 scripts/physical-media-run.py catalog --scenario phone-volume-change --json
+python3 scripts/physical-media-run.py prepare --scenario phone-volume-change \
+  --output work/support/NEW-STALE-BASELINE-RUN --build 'VERIFY INSTALLED BUILD'
+```
+
+Defaults choose Apple Music/iPhone speaker and the prepared track; these are
+plans, not observed device state. Override `--source`, `--route`, `--minutes`,
+`--order`, `--order-note` or `--arm` only for an explicitly recorded variant.
+The default Watch bundle is the TestFlight identity,
+`net.qays.TeachingTimer.watchkitapp`; use `--bundle com.qayshp.TeachingTimer` only
+when the selected installation is the separate Xcode development app.
+
+`run.json` embeds the exact selected catalog protocol so future catalog edits do
+not silently change an existing run. `NEXT.md` renders its readiness checklist,
+predictions, ordered actions, evidence requirements and stop/restoration steps.
+It includes future device-specific inventory/app-open argv and bounded
+before/failure/after journal commands, plus one per-device incident sysdiagnose
+command with separate new destinations. No generated command is executed by this
+helper. Sysdiagnose is conditional on an incident and authorization, not a routine
+step on every clean run; a timeout requires capture inventory before any retry.
+App opening is not playback: select the planned track and verify actual
+phone progress/source/output through the rehearsed UI. Resolve Amazon/YouTube
+bundle identifiers from the live app inventory rather than guessing them.
+
+Before a physical session, obtain authorization and confirm live identifiers,
+installed build, class/runtime intent, music availability and quiet output. One
+operator owns input. Rehearse both screen-sharing views and a reversible touch,
+then establish actual physical Crown input or use a human Crown operator.
+Simulator input/injection helpers are not physical drivers. Readiness is still
+unverified until that rehearsal; this preparation neither starts music nor
+contacts devices. Lost/ambiguous UI, connection or output stops further input.
+
+The separate [physical Device Hub helper](../tools/physical-media/README.md)
+prepares bounded one-action requests, not a blind macro. Build/plan checks do not
+send input. After authorization it must use a fresh successful physical-device
+details receipt, exact Hub target and reviewed current display geometry; input
+must not switch the selected device implicitly. Rehearse touch and Crown delivery
+before using it for hypothesis evidence, and stop on an unsupported hierarchy
+instead of reusing old coordinates. Its receipt proves submission only; verify
+native actions and phone/audible output separately. A human Crown operator is a
+valid fallback if remote Crown delivery cannot be established quickly.
+
+Start with the working reference and phone-volume-change protocol, then separate
+Home/refresh ownership and known slow Crown-conversion checks. Use matched-build
+A/B, source and route arms afterward; do not change them together. A
+3–5-minute fast session is a selected subset, not a promise to complete the full
+catalog in that time. If a dependency or artifact is unavailable, defer that arm
+and preserve its outcome as inconclusive rather than inventing a passing result.
+
+Record a reasoned interpretation only after inspecting the evidence:
+
+```sh
+python3 scripts/physical-media-run.py assess \
+  --run work/support/NEW-STALE-BASELINE-RUN --result inconclusive \
+  --note 'The phone level changed, but first native request records are missing' \
+  --deviation 'Control identity was not retained in the available journal'
+```
+
+`supports`, `weakens` and `mixed` additionally require saved evidence references;
+those references are not copied or validated by the notebook. Assessments are
+operator interpretations, never automatic native/physical pass results. The
+summary retains missing assessments, deviations and inconclusive outcomes.
+Free-form `prepare --arm ...` remains available for exploratory observations,
+but cannot be assessed as a specified hypothesis test. System logs may not
+retain native scalars or identifiers; missing records remain missing evidence.
 
 ## Stale volume-state hypothesis and separate test arms
 

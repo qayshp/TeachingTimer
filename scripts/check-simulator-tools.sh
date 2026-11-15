@@ -16,6 +16,8 @@ done
 # Reuse the two apps built above; the lab still compiles its host transport and
 # Simulator hook, verifies signatures and exercises both local wire profiles.
 sh tools/watch-media-lab/build.sh "$tool_output/watch-media-lab" "$tool_output"
+sh tools/physical-media/build.sh "$tool_output/physical-media"
+python3 tools/physical-media/self-test.py "$tool_output/physical-media/HubControl"
 for helper in HubInput ScreenText MediaPixels ControlOutline; do
     xcrun --sdk macosx swiftc -warnings-as-errors "tools/simulator-regression/$helper.swift" -o "$tool_output/$helper"
 done

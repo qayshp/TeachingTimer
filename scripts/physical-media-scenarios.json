@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 1,
+  "license": "MPL-2.0",
+  "readiness": [
+    "Receive explicit permission for this physical run and confirm both devices are available; preparation is not permission to operate them.",
+    "Confirm live Watch/phone identifiers, installed matched build/source and OS, wrist/Crown orientation, current class schedule and running/intentional-Stop state.",
+    "Use one input owner. Rehearse phone and Watch screen capture and one reversible touch action in their current screen-sharing views; stop if a view or target is ambiguous.",
+    "Rehearse a small physical Crown turn or obtain an operator for it. Simulator Crown transport is not a physical input driver; do not mark automated Crown delivery established without device evidence.",
+    "Open an already available music app on the phone, select the planned track, verify the intended output, start quietly, and independently confirm playback advancement. No purchase, sign-in or new destination is assumed.",
+    "Prepare the before/failure/after journal destinations and the established Watch/phone sysdiagnose path. Copy small journals before long downloads; a capture request is not a completed archive.",
+    "Record pre-run class/settings/runtime intent and prepare restoration. Defer any arm requiring a reset, uninstalled comparison build or unavailable route rather than changing real teaching context."
+  ],
+  "commonControls": [
+    "Keep the installed build, music app, track, output, quiet nonzero baseline, Watch orientation, runtime intent and transition history fixed except for the arm's named factor.",
+    "Record process/native-control identity where logs expose it; a retained-state arm is inconclusive if process/control retention is unknown or changed unexpectedly.",
+    "Save pre-input timer ring and phone state before any Watch refresh, page switch or Crown movement. A visible ring is not proof of an internal baseline or command destination."
+  ],
+  "stopConditions": [
+    "Stop input immediately on an unexpected zero, silent output, no response, lost connection, passcode lock, ambiguous source/UI or unexpected output.",
+    "Preserve pre-recovery screenshots/recording and mark incident; attempt failure journals within 30 seconds, then prioritize one prompt Watch and phone sysdiagnose request over retries or large transfers.",
+    "Only after preservation, perform one marked recovery: same-source embedded media page/return or phone volume control. Record which action works; do not treat recovery as proof of cause.",
+    "Pause test music at the planned end; mark audio_stopped and run_stopped, restore class/runtime intent without clearing class context, then copy after journals."
+  ],
+  "evidenceLimits": [
+    "Operator marks and file references are not independently validated device evidence. No finite set of clean runs proves an intermittent issue fixed.",
+    "The public app exposes no native volume scalar/readiness callback. First outgoing scalars and endpoint/session identifiers require retained system records; missing/redacted records are missing evidence, not zero or no command.",
+    "Phone volume indicators are not exact acoustic measurements. Known Crown direction requires a physical recording/operator statement; Simulator private event subtypes do not decode it.",
+    "Home/standalone Now Playing can change runtime and native state. Capture the failure first, and record automatic recovery or process replacement as a deviation."
+  ],
+  "defaults": {
+    "source": "Apple Music: Brian Eno, Thursday Afternoon (catalog 714821163); confirm already playable",
+    "route": "iPhone speaker; confirm quiet nonzero volume",
+    "order": "other",
+    "orderNote": "Keep and record existing class/runtime intent; this arm does not vary startup order",
+    "minutes": 3
+  },
+  "scenarios": [
+    {
+      "id": "retained-idle",
+      "hypothesisID": "H1",
+      "title": "Retained-control idle reference",
+      "hypothesis": "Retained native volume state may become stale over idle time even without a phone state change.",
+      "changedFactor": "Elapsed idle interval only; no provider, route or phone volume change",
+      "supports": [
+        "The same retained control fails its first return adjustment after a known working reference."
+      ],
+      "weakens": [
+        "Matched repeated retained runs remain responsive with expected first values."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery"
+      ],
+      "steps": [
+        "Open TeachingTimer, confirm/reuse the planned class/runtime intent, and establish quiet working phone playback and timer Crown response.",
+        "Save a reference ring/phone level. Leave the timer selected and permit wrist-down for 10–15 minutes without input or polling gestures.",
+        "Wake, save the pre-input ring/phone level, make one known small up turn, and record the first request/result before changing pages.",
+        "If normal, make one small opposite turn while staying nonzero; otherwise follow the common stop/capture procedure."
+      ],
+      "defaults": {
+        "minutes": 15
+      }
+    },
+    {
+      "id": "phone-volume-change",
+      "hypothesisID": "H1",
+      "title": "External volume change while control is retained",
+      "hypothesis": "The retained native control may use an old interaction baseline after the phone volume changes.",
+      "changedFactor": "Phone volume A to distinct quiet nonzero B; same source/output/runtime intent",
+      "supports": [
+        "After phone A→B, the retained timer ring/first request follows A or zero instead of the current B."
+      ],
+      "weakens": [
+        "The same retained control follows B and the first known small adjustment behaves normally."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery"
+      ],
+      "steps": [
+        "Establish timer Crown response and quiet level A; capture both devices and keep the timer selected with the same runtime intent.",
+        "Allow wrist-down. Use only phone controls to set another quiet nonzero level B; record before/after phone state and exact mark times.",
+        "Wake the timer without refresh or page changes; capture the ring and current phone level before the first small known up turn.",
+        "Record the first outgoing request and audible result. Test Home/return only in a separate repeat, noting any runtime recovery or control replacement."
+      ]
+    },
+    {
+      "id": "source-handoff",
+      "hypothesisID": "H2",
+      "title": "Retained control across phone-player handoff",
+      "hypothesis": "The native control may keep a stale playback-source/endpoint association when the phone player changes.",
+      "changedFactor": "Phone playback provider only; output and quiet baseline held fixed",
+      "supports": [
+        "First timer request after a verified handoff is unavailable/misdirected or differs from the current endpoint; media or phone recovery restores the intended output."
+      ],
+      "weakens": [
+        "Matched handoff runs follow the current source/output with normal first timer requests."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery",
+        "Phone source/session/endpoint identifiers where system logs retain them"
+      ],
+      "steps": [
+        "Establish a working Apple Music/phone-speaker reference; save state and retain the Watch control without force-quitting.",
+        "Pause Apple Music on the phone, open an already available Amazon Music or YouTube Music source, and play quietly on the same output; verify the first player is paused.",
+        "Confirm source/output independently on the phone. Return directly to timer without refresh/media; capture before one known small up turn.",
+        "Preserve any failure before visiting TeachingTimer media or standalone Now Playing. Record a provider change as such, not proof of a new OS audio session."
+      ],
+      "limits": [
+        "A provider handoff changes source behavior as well as potential session association. Do not conclude the command destination from a source label alone."
+      ]
+    },
+    {
+      "id": "same-player-restart",
+      "hypothesisID": "H2",
+      "title": "Same-player pause/resume comparison",
+      "hypothesis": "A retained control may mishandle playback stop/resume without a provider or route change.",
+      "changedFactor": "Pause/resume the same phone source only",
+      "supports": [
+        "Timer behavior changes after the same-source restart while retained identities and all other controls match."
+      ],
+      "weakens": [
+        "The first timer adjustment stays normal across repeated same-source restarts."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery"
+      ],
+      "steps": [
+        "Establish working timer volume with the chosen phone player and same quiet output.",
+        "Retain the timer control, pause and resume the same track on the phone, and record both actions.",
+        "Capture timer ring/phone level before the first known small up turn, without refreshing or visiting media.",
+        "Seek system session identifiers during later analysis; call this pause/resume unless a new OS audio session is actually established."
+      ]
+    },
+    {
+      "id": "startup-order",
+      "hypothesisID": "H1",
+      "title": "Class-first versus music-first initialization",
+      "hypothesis": "Playback/class startup order may trigger stale initialization or reconnection state.",
+      "changedFactor": "Order of phone playback and Watch class/runtime start; use paired runs",
+      "supports": [
+        "A matched music-first arm repeatedly fails while class-first remains responsive, with corresponding initialization/first-request evidence."
+      ],
+      "weakens": [
+        "Both orders have normal initial state and first requests under matched conditions."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery",
+        "Actual playback-start and class/runtime-start times for both arms"
+      ],
+      "steps": [
+        "In a safe reusable test context, pause music and establish class/runtime first; then start the same phone track and record both times.",
+        "Capture and make the first small known up turn; preserve the reference and restore the starting conditions.",
+        "In a new paired notebook, start phone playback before Watch runtime Start/resume, preserving schedule and recording any necessary runtime Stop.",
+        "Capture the first return adjustment before media/refresh; keep build, provider, output, baseline and input otherwise matched."
+      ],
+      "defaults": {
+        "minutes": 5
+      },
+      "limits": [
+        "Startup order is a trigger condition, not an identified mechanism. Different control lifetime or runtime history makes the pairing confounded; label it instead of assuming equivalence."
+      ]
+    },
+    {
+      "id": "focus-home",
+      "hypothesisID": "H3",
+      "title": "Crown ownership after Home/return",
+      "hypothesis": "A visible native control may not actually own Crown input after a lifecycle transition.",
+      "changedFactor": "Home/return only; no phone state change",
+      "supports": [
+        "No native volume action/result before a page switch, then working native requests after media→timer."
+      ],
+      "weakens": [
+        "An input-linked native scalar, including zero, is emitted before the recovery; input was processed at that moment."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery"
+      ],
+      "steps": [
+        "Establish a working first timer adjustment and keep the same phone track/output/volume.",
+        "Go to Watch Home without force-quitting and reopen TeachingTimer. Capture preparation/focus events and the pre-input ring.",
+        "After the documented normal setup, make one small known up turn; capture ring, first native action and phone result.",
+        "If nonresponsive, preserve evidence before one media→timer recovery. A returned focus() call alone is not ownership."
+      ]
+    },
+    {
+      "id": "focus-refresh",
+      "hypothesisID": "H3",
+      "title": "Crown ownership after volume refresh",
+      "hypothesis": "An explicit timer-volume refresh may leave Crown input with another control or no native volume handler.",
+      "changedFactor": "Refresh tap only; no Home, source or output change",
+      "supports": [
+        "A previously working control stops emitting/responding after refresh and a page return restores it."
+      ],
+      "weakens": [
+        "The first small post-refresh turn emits the expected native value and changes phone output."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery"
+      ],
+      "steps": [
+        "Establish working timer Crown volume and save current source/output/level.",
+        "Tap the native volume refresh once; record tap/setup/refocus times and wait the existing documented setup interval.",
+        "Without page switching, capture the ring and make one small known up turn.",
+        "Preserve any missing action/response before comparing media→timer. Do not add a competing custom Crown binding."
+      ]
+    },
+    {
+      "id": "wake-timing",
+      "hypothesisID": "H1",
+      "title": "First-input timing after wake/reconnection",
+      "hypothesis": "Native inner volume state may not be synchronized at the first eligible input after wake/reconnection.",
+      "changedFactor": "Timing of one known small turn after the same wake; immediate versus 3-second settled repeat",
+      "supports": [
+        "Matched early-input trials fail while settled trials follow the correct current level, with state/notification timing evidence."
+      ],
+      "weakens": [
+        "Both timings behave equivalently under matched state, or failure occurs long after synchronization."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery",
+        "Wake/full-luminance and input timestamps; model/availability notifications if retained"
+      ],
+      "steps": [
+        "Establish a working quiet baseline; dim/wake with the same selected timer, source/output and runtime intent.",
+        "Capture pre-input state and make one small known up turn at the first usable wake; record the actual timing rather than claiming precise synchronization.",
+        "Restore the baseline and prepare a separate new notebook with the same wake sequence; wait about 3 seconds before the matched turn.",
+        "Compare actual timing and first requests. This is a diagnostic comparison, not a production startup delay."
+      ]
+    },
+    {
+      "id": "crown-conversion",
+      "hypothesisID": "H4",
+      "title": "Known physical Crown direction versus first value",
+      "hypothesis": "Native input conversion/accumulation may produce an inappropriate first requested value despite a correct apparent baseline.",
+      "changedFactor": "Known slow small up versus down movement; no lifecycle or endpoint change",
+      "supports": [
+        "A recorded small upward gesture from a known healthy nonzero baseline immediately emits zero or another discontinuity."
+      ],
+      "weakens": [
+        "A verified downward gesture legitimately reaches minimum, zero precedes input, or both signed references behave normally."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery"
+      ],
+      "steps": [
+        "Hold source/output/runtime/build fixed at a quiet nonzero level away from the minimum; save timer ring and phone state.",
+        "Record one slow small physical up movement and its first native request/result. Do not infer direction from private subtype200/201.",
+        "Only if normal, restore the reference and record a separate small down movement without approaching zero.",
+        "Defer faster/larger bursts until slow reference behavior is understood; preserve an unexpected first value before any further input."
+      ]
+    },
+    {
+      "id": "host-isolation",
+      "hypothesisID": "H5",
+      "title": "Matched reference versus isolated native host",
+      "hypothesis": "Scheduled SwiftUI hosting updates may disturb the native control's interaction state.",
+      "changedFactor": "Only reference versus PR33 host-isolation build; same protocol/history otherwise",
+      "supports": [
+        "The reference failure repeats under a fixed protocol and does not recur in the isolated build, with matched interaction/lifecycle evidence."
+      ],
+      "weakens": [
+        "Comparable failures occur in both builds; one clean run alone is weak evidence."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery",
+        "Exact source/build and deployment verification for both arms",
+        "Matched control-age/page/wake/setup history, not just app-process age"
+      ],
+      "steps": [
+        "Use a separately reviewed and available reference/candidate build pair; defer if either artifact or preservation path is not ready.",
+        "Run the same successful reference and named stress scenario in a fresh notebook for each build, keeping provider/output/input and retained history matched.",
+        "Record actual native host/control identities and lifecycle callbacks rather than assuming the wrapper identity proves all inner state stable.",
+        "Repeat/alternate the pair if a failure is reproducible. Do not install or reset as part of notebook preparation; physical deployment needs separate explicit authorization."
+      ],
+      "defaults": {
+        "minutes": 5
+      },
+      "limits": [
+        "The unmerged PR33 has not been established as a physical fix. Build order and uncontrolled history can confound A/B results."
+      ]
+    },
+    {
+      "id": "route-feedback",
+      "hypothesisID": "H6",
+      "title": "Output route volume feedback/interpretation",
+      "hypothesis": "The current output route's volume state or feedback may disagree with the retained native control.",
+      "changedFactor": "One output route/transition only; hold player fixed",
+      "supports": [
+        "A failure follows one route/transition repeatedly with corresponding native model/route discrepancies."
+      ],
+      "weakens": [
+        "The same fault occurs on unchanged phone-speaker output; existing USB and AirPlay incidents already weaken a single-route explanation."
+      ],
+      "requiredEvidence": [
+        "Pre-input timer ring and phone current source/output/level",
+        "Known small Crown intent/direction and first native outgoing scalar if retained",
+        "Process/control identity and page/scene/luminance/runtime journal events",
+        "Phone volume/play state and audible result before recovery",
+        "Before/after route endpoint, capabilities and phone volume state where logs retain them"
+      ],
+      "steps": [
+        "Establish a working phone-speaker reference with one fixed player and quiet baseline.",
+        "In a new notebook select only one already available USB or AirPlay output; independently verify destination and quiet playback before Watch input.",
+        "Record route transition and initialization; capture timer ring/current phone level before one known small up turn.",
+        "Keep provider/build/wake timing fixed and preserve failure before recovery. A Watch-side zero request cannot be explained by phone-only interpretation alone."
+      ]
+    },
+    {
+      "id": "media-progress",
+      "hypothesisID": "H7",
+      "title": "Embedded progress extrapolation versus source updates",
+      "hypothesis": "TeachingTimer's embedded native media presentation may fail to advance between valid source position updates.",
+      "changedFactor": "Embedded versus standalone native view; deliberate phone seek only as a later separate step",
+      "supports": [
+        "Embedded position catches up after reentry/seek then freezes while independent playback and standalone progress advance."
+      ],
+      "weakens": [
+        "Both native views stale together, or the actual source stops advancing; source/transport remains a candidate."
+      ],
+      "requiredEvidence": [
+        "Two timed embedded ring frames with independent actual phone song positions and play state",
+        "Exact page/wake/dim/seek times and embedded view-generation journal",
+        "Separate standalone Now Playing comparison with same phone source",
+        "Recovery command continuity and runtime/class state before/after"
+      ],
+      "steps": [
+        "Use an already playable short finite track such as Brian Eno An Ending (Ascent), catalog714861225; keep source/output fixed and verify phone progress.",
+        "Open TeachingTimer's embedded media page and capture two positions at least 20 seconds apart while the display remains awake; record phone positions independently.",
+        "If stale, capture it before leaving. Only then open Apple's standalone Now Playing app for the same-source comparison; record any runtime/foreground change.",
+        "Return to TeachingTimer and, as a separately marked step, seek once on the phone to test discrete position updates versus ongoing extrapolation. Do not conflate black content, wrong source, stalled progress or failed transport controls."
+      ],
+      "defaults": {
+        "source": "Apple Music: Brian Eno, An Ending (Ascent), catalog714861225; confirm already playable",
+        "minutes": 3
+      },
+      "limits": [
+        "The Watch-local Simulator source has not established a dependable native-progress baseline and cannot currently prove this physical hypothesis."
+      ]
+    }
+  ]
+}
