@@ -10,11 +10,11 @@ if [ -e "$tool_output" ]; then
 fi
 mkdir -p "$tool_output"
 tool_output=$(CDPATH= cd -- "$tool_output" && pwd)
-for probe in phone-audio-probe native-volume-probe timeline-clock-probe diagnostic-share-probe; do
+for probe in phone-audio-probe native-volume-probe crown-event-probe timeline-clock-probe diagnostic-share-probe; do
     sh "tools/$probe/build.sh" "$tool_output/$probe"
 done
 for helper in HubInput ScreenText MediaPixels ControlOutline; do
     xcrun --sdk macosx swiftc -warnings-as-errors "tools/simulator-regression/$helper.swift" -o "$tool_output/$helper"
 done
 xcrun --sdk macosx swiftc -warnings-as-errors scripts/check-screen-text.swift -o "$tool_output/check-screen-text"
-printf 'All four Simulator fixtures, four inspection helpers and the OCR smoke fixture compiled. Nothing launched.\n'
+printf 'All five Simulator fixtures, four inspection helpers and the OCR smoke fixture compiled. Nothing launched.\n'

@@ -37,6 +37,7 @@ installation or a physical-device test.
 | [Form-factor validation](FORM_FACTOR_VALIDATION.md) | Dated multi-size visual checks, not hardware certification. |
 | [Phone audio fixture](../tools/phone-audio-probe/README.md) | Bounded native playback and remote-command evidence, independent of TeachingTimer. |
 | [Native volume probe](../tools/native-volume-probe/README.md) | Isolated companion-volume experiment. |
+| [Crown event calibrator](../tools/crown-event-probe/README.md) | Public signed test-value reference, independent of media and volume. |
 | [Timeline probe](../tools/timeline-clock-probe/README.md) | Isolated Always-On clock experiment. |
 | [Diagnostic sharing probe](../tools/diagnostic-share-probe/README.md) | Historical native Watch sharing experiment; Simulator attachment staging, not receipt. |
 | [Diagnostic sharing plan](DIAGNOSTIC_EXPORT_PLAN.md) | Current companion route plus the superseded native Watch share-sheet design. |

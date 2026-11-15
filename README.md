@@ -159,6 +159,7 @@ terms and [Mozilla's FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) for guidan
 
 - [Bounded Simulator lifecycle and media-failure captures](tools/simulator-regression/README.md)
 - [Isolated native companion-volume probe](tools/native-volume-probe/README.md)
+- [Isolated Crown event calibrator](tools/crown-event-probe/README.md)
 - [Persistence failure diagnostics](docs/PERSISTENCE_DIAGNOSTICS.md)
 - [TestFlight identity preparation and diagnostic-access gates](docs/TESTFLIGHT_PREPARATION.md)
 

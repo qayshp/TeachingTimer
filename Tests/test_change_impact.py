@@ -96,6 +96,8 @@ class ChangeImpactChecks(unittest.TestCase):
         for path in ["scripts/prepare-ci-watch-runtime.py", "scripts/simulator-smoke.py", "scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
                      "scripts/prepare-testflight.py", "scripts/prepare-testflight.sh",
                      "scripts/inspect-artifact.py", "tools/native-volume-probe/build.sh",
+                     "tools/crown-event-probe/CrownEventProbe.swift", "tools/crown-event-probe/build.sh",
+                     "tools/crown-event-probe/Info.plist",
                      "tools/phone-audio-probe/Info.plist", "tools/timeline-clock-probe/TimelineClockProbe.swift",
                      "tools/diagnostic-share-probe/DiagnosticShareProbe.swift",
                      "tools/simulator-regression/ScreenText.swift", "scripts/information-qr.swift"]:
@@ -114,10 +116,12 @@ class ChangeImpactChecks(unittest.TestCase):
                 self.assertFalse(result['publish'])
 
     def test_probe_readme_still_skips_mac_build(self):
-        result = change_impact.classify_paths(["tools/native-volume-probe/README.md"])
-        self.assertTrue(result["docs_changed"])
-        self.assertFalse(result["mac_verify"])
-        self.assertFalse(result["publish"])
+        for path in ["tools/native-volume-probe/README.md", "tools/crown-event-probe/README.md"]:
+            with self.subTest(path=path):
+                result = change_impact.classify_paths([path])
+                self.assertTrue(result["docs_changed"])
+                self.assertFalse(result["mac_verify"])
+                self.assertFalse(result["publish"])
 
     def test_unknown_path_fails_safe(self):
         result = change_impact.classify_paths(["new-build-input/settings.json"])
