@@ -63,6 +63,20 @@ and Apple's [public subtype enumeration](https://developer.apple.com/documentati
 do not supply the needed Watch-specific 200/201 mapping. These private numeric
 events must not be interpreted using generic UIKit scroll constants.
 
+### Owner recollection added November 15
+
+After reviewing this comparison, the owner reports thinking they were trying
+to **increase** volume when the November 13 mute occurred. This is retrospective
+recollection with stated uncertainty, rather than a captured signed Crown delta.
+It strengthens the working interpretation of an attempted increase unexpectedly
+producing zero, alongside the subtype-201 pattern above.
+
+The owner's observation that the recovered level was higher is also consistent
+with the phone records: **0.625 before mute → 0 → 0.784375 after media-page
+recovery**. That final increase alone does not establish the original input
+direction, because it followed separate recovery adjustments. Rotation amount,
+the ring's appearance and the native interaction baseline remain unknown.
+
 ## What this narrows
 
 - **An initial zero/unavailable model is insufficient by itself.** It occurs in
