@@ -130,6 +130,13 @@ external volume change, provider handoff and route change in the same trial.
 | External volume change: stale-baseline test | First establish working timer Crown volume at quiet level A. Leave TeachingTimer via Home without force-quitting, retaining the class and recorded runtime intent. Using only the phone's volume controls, change to a distinct but still quiet nonzero level B; keep player/track/output fixed. Record both times/levels. | Reopen the timer and capture ring versus phone level **before touching the Crown, refreshing or visiting media**. Make one small known up turn. Save the first outgoing native scalar, if logs expose it, and phone/audible result. A matching ring is useful but does not prove every inner value is current. |
 | Playback-source handoff: stale-association test | After a working reference, retain the timer control via Home. Pause the current phone player and start an already available second player, keeping the output and quiet baseline as stable as possible. Ensure the first player is paused. Use Apple Music → Amazon Music only if both are usable. Label the provider change explicitly; it may also change audio-session behavior. | Confirm the phone's actual playing source/output independently, then return directly to the timer for pre-input evidence and one small known up turn. Only after preservation compare TeachingTimer's embedded media page and, separately, Apple's Now Playing app. A native source label alone does not identify the volume command's destination. |
 
+Distinguish a **background-return handoff** from a **foreground-preserved
+handoff**. The Home protocol above tests the former, including any automatic
+recovery. To isolate the source change without return setup, use a separate
+trial that keeps the timer foreground and verifies no intervening refocus in
+the journal. An automatically opened Watch media app changes that condition;
+record the actual transition rather than treating reopening as neutral.
+
 Keep the handoff arm separate from the initial fast run if time or account access
 is limited; it is part of the prepared follow-up, not a prerequisite to testing
 the retained baseline. A pause/resume of the same player can be a smaller
@@ -375,5 +382,35 @@ This arm is **inconclusive for H2**: audible new-source playback was not
 established, so no first Crown request or Watch-caused zero/recovery can be
 evaluated. Retained control identity alone does not establish its internal
 playback-session association. The separate same-player pause/resume arm was
-deferred after pausing near the track's end; it was not completed. A later
-direct-iPhone-speaker comparison was proposed, but no result is recorded here.
+deferred after pausing near the track's end; it was not completed. The subsequent
+direct-iPhone-speaker comparison is recorded below as a separate arm.
+
+### H2 direct iPhone speaker: successful response with lifecycle changes
+
+The subsequent direct-speaker arm established audible Apple Music and a working
+physical timer Crown reference after closing iPhone Mirroring. The operator then
+paused Apple Music, started Amazon Music audibly through the same iPhone speaker,
+and made one small physical increase. Sound and the timer ring increased normally,
+with a reported brief initial lag in the phone's response. No refresh or page
+switch was requested. The track was not supplied, and neither the first native
+scalar/destination nor response latency was measured.
+
+The operator subsequently confirmed that a Watch media app had automatically
+taken foreground and that TeachingTimer had to be reopened for the adjustment.
+The operator could not distinguish Apple Music from Apple's separate Now Playing
+app; neither the report nor the app journals establish which one took foreground.
+
+The saved journals retain the same app launch, native control and class, with no
+page change, media reload, explicit refresh or control replacement. **Runtime and
+focus were not uninterrupted**, however: TeachingTimer entered the background,
+its original runtime ended with `resigned_frontmost`, and foreground return
+automatically replaced the runtime and completed staged resign/focus calls on
+the retained control. This recovery is recorded before the success report; the
+exact physical Crown time is unknown, so its precise ordering cannot be proved.
+
+Preserve the functional success, but classify the isolated H2 association test as
+**inconclusive**. Automatic recovery/refocus materially changed the tested
+state and could have repaired readiness or association. This is not a pristine
+negative H2 result or a general rule-out. A cleaner repeat should verify timer
+foreground continuity across the audible source handoff and preserve pre-input
+ring evidence; the shared pre-Crown snapshot in this arm was black.
