@@ -36,6 +36,7 @@ MAC_TOOL_FILES = {
 MAC_PROBE_PREFIXES = (
     "tools/phone-audio-probe/", "tools/native-volume-probe/", "tools/crown-event-probe/",
     "tools/timeline-clock-probe/", "tools/diagnostic-share-probe/",
+    "tools/watch-audio-probe/", "tools/watch-local-volume-probe/", "tools/watch-media-lab/",
 )
 
 

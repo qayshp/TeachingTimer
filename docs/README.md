@@ -27,6 +27,7 @@ installation or a physical-device test.
 | --- | --- |
 | [Repository review](REPOSITORY_REVIEW_2026-10-29.md) | October 29 organization, test additions and verification boundaries. |
 | [Automation map](AUTOMATION.md) | Offline/CI, interactive Simulator and physical evidence boundaries. |
+| [Diagnostic tooling catalog](DIAGNOSTIC_TOOLING.md) | Reusable fixtures, historical workflow/source coverage and precise evidence limits. |
 | [Build verification](BUILD_VERIFICATION.md) | Reproducible build/archive checks and artifact inspection. |
 | [CI timing and safeguards](CI_EFFICIENCY.md) | Measured bottlenecks, duplicate-verification reduction and ranked improvements that preserve useful checks. |
 | [Simulator regression runner](../tools/simulator-regression/README.md) | Interactive lifecycle, action, focus and rendering checks with bounded evidence capture. |
@@ -36,8 +37,12 @@ installation or a physical-device test.
 | [Essential-action run](ESSENTIAL_ACTION_CHECKS.md) | Build 18 action sequence and historical results; use current status for later runs. |
 | [Form-factor validation](FORM_FACTOR_VALIDATION.md) | Dated multi-size visual checks, not hardware certification. |
 | [Phone audio fixture](../tools/phone-audio-probe/README.md) | Bounded native playback and remote-command evidence, independent of TeachingTimer. |
+| [Silent Watch audio fixture](../tools/watch-audio-probe/README.md) | Actual finite player time versus native progress with sparse metadata. |
+| [Watch-local volume fixture](../tools/watch-local-volume-probe/README.md) | Native local ring versus KVO/direct session-volume reads during bounded playback. |
+| [Retired Safari source](../tools/safari-media-probe/README.md) | Loopback HTML Media Session source comparison, silent and paused by default. |
 | [Native volume probe](../tools/native-volume-probe/README.md) | Isolated companion-volume experiment. |
 | [Crown event calibrator](../tools/crown-event-probe/README.md) | Public signed test-value reference, independent of media and volume. |
+| [Native Watch media lab](../tools/watch-media-lab/README.md) | Gated private Simulator Crown transport and artificial native-state experiments. |
 | [Timeline probe](../tools/timeline-clock-probe/README.md) | Isolated Always-On clock experiment. |
 | [Diagnostic sharing probe](../tools/diagnostic-share-probe/README.md) | Historical native Watch sharing experiment; Simulator attachment staging, not receipt. |
 | [Diagnostic sharing plan](DIAGNOSTIC_EXPORT_PLAN.md) | Current companion route plus the superseded native Watch share-sheet design. |
@@ -53,6 +58,7 @@ installation or a physical-device test.
 - [November 13 opening/playback timeline](VOLUME_TIMELINE_2026-11-13.md): phone launch, USB route and starting volume, Watch return, class/focus, zero and recovery.
 - [November 14 successful-run comparison](VOLUME_COMPARISON_2026-11-14.md): startup order, native initialization, first adjustments and remaining confounds.
 - [November 15 Crown calibration](CROWN_CALIBRATION_2026-11-15.md): binding/native-volume sign limits, gesture boundaries and controlled native baseline propagation.
+- [November 15 Watch-local media](WATCH_LOCAL_MEDIA_2026-11-15.md): actual player advancement, native source/progress limits and the reusable timed observer.
 - [Volume-host isolation experiment](VOLUME_HOST_ISOLATION.md): stable native hosting, reconstructed component state and bounded fault-injection plans.
 
 - [Diagnostic sharing validation](DIAGNOSTIC_SHARING_VALIDATION.md): historical November 6 native-share Simulator checks; current delivery evidence is in the [companion guide](OPTIONAL_COMPANION.md).

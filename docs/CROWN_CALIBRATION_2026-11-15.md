@@ -133,7 +133,44 @@ eight result snapshots independently reconcile with that journal.
 
 The injected process was terminated and the ordinary native probe artifact
 restored. The public calibrator and existing simulators remain available.
-Private libraries, host helpers and raw records stay in ignored `work/`;
+At the end of that original experiment, libraries, host helpers and raw records
+were still in ignored `work/`;
 TeachingTimer's production behavior, physical installation and Apple feedback
 were unchanged. CI now compiles the public calibrator and tests its change
 routing; it does not run this interactive calibration or private fault injection.
+
+## Reusable tooling and replay later on November 15
+
+Source and workflows are now promoted to the [Watch media lab](../tools/watch-media-lab/README.md),
+with pinned upstream transport provenance and its MIT notice. The public Crown
+probe and `--single-page` native probe are maintained fixture apps; the injected
+library is Simulator-only and gated to the native probe identity. Neither host
+transport nor hook is a TeachingTimer dependency. Raw records and generated
+binaries remain private. The [instrument catalog](DIAGNOSTIC_TOOLING.md) maps
+older workflows to their maintained source.
+
+The promoted calibrator completed **12 fresh-process trials** on the same
+SE 3 / watchOS 27.2 Simulator: the original six signed turns and their reverse
+order. All eight responsive +/-1 references preserved opposite binding signs:
++1 increased the generic binding with sample subtype200; -1 decreased it with
+subtype201. Four fractional +/-0.25 trials remained nonresponsive. All twelve
+ended-zero events associated with subtype200. This repeats the fixture-specific
+observation; it still does not decode the physical native-volume direction.
+
+The promoted native-state runner also passed all eight measured notification
+arms, retaining one native view/controller. Final raw/current-process journals
+were preserved and rechecked, the injected process terminated, and ordinary
+fixture restoration acknowledged. No outgoing native volume setter occurred.
+
+The first replay exposed a runner audit-order defect: reinstalling the fixture
+could invalidate its prior container path before the final journal was read.
+All eight intermediate states matched, but the final audit correctly prevented
+a passing result. The runner now terminates, preserves/audits evidence, then
+reinstalls; regression tests cover container remapping and a late unexpected
+setter. That first failed receipt is retained alongside the clean replay.
+
+CI now compiles all seven synthetic apps plus the native lab, runs host-only
+wire self-tests and offline evidence/failure tests. The private interactive
+calibration and native-state injection remain explicit local tests. They do not
+establish responsive native Crown arithmetic, actual phone output, or a
+reproduction/fix of the physical volume silencing.

@@ -22,8 +22,11 @@ small and large Watches serially and exercises real app launches, runtime recove
 and class retirement. Omit that flag for build-only
 verification. Run smaller commands when iterating; use complete verification
 for a candidate. The output directory must be new.
-The separate Simulator-tools check compiles all five diagnostic fixtures,
-four UI-inspection helpers and the OCR smoke fixture. It does not launch them or produce audio. The
+The separate Simulator-tools check compiles all seven diagnostic app fixtures,
+the native media lab, four UI-inspection helpers and the OCR smoke fixture. It
+also runs both host Crown wire-dictionary self-tests without loading CoreSimulator.
+The lab reuses the freshly built native-volume and Crown-event apps to avoid
+duplicate compilation. No app or Simulator is launched and no audio is produced. The
 screen-text smoke check then runs the compiled OCR helper against two synthetic
 images; it does not launch an app or Simulator.
 The independent `control-outline-smoke` runs early in full verification, before
@@ -37,7 +40,8 @@ SE/Ultra outline fixtures and invalid-image guards without opening Device Hub.
 | Python tooling | Device command failures/retries, journal summaries, build inspection, action/evidence classification and suite result handling. | Device/process boundaries are faked. Test success is not a successful transfer or deployment. |
 | Build/archive | Simulator compilation, website QR decoding, bundled policy/license/website resources, exact reviewed privacy-manifest declarations, and structural inspection of development/distribution archives. Signed export checks inspect the Watch manifest again in the IPA. | Manifest comparison is not an API-usage audit or Apple privacy approval. Unsigned success is not signed distribution, installation or App Store validation. QR decoding is not a physical camera test. |
 | Booted Watch smoke | Runs serially on disposable small/large Watches using the same newest available compatible runtime. Checks saved class/Stop persistence, real running-intent recovery after process replacement, live retirement on timer and media pages, and overdue-class retirement on launch. Fresh journals and persisted values must agree. | Screenshots require human review. No swipe/menu interaction, pixel assertion, Crown ownership, phone audio, physical haptics or full-duration WatchKit expiry/renewal is tested. No existing Simulator or physical device is targeted. |
-| Diagnostic tools | Compiles the phone-audio, native-volume, Crown-event, timeline-clock and diagnostic-share Simulator fixtures, plus HubInput, ScreenText, MediaPixels and ControlOutline helpers. | Compilation catches SDK and syntax regressions; no simulator boots, UI interactions, audio, sharing or device behavior is tested. |
+| Diagnostic tools | Compiles phone-audio, native-volume, Crown-event, timeline-clock, diagnostic-share, silent Watch-audio and Watch-local-volume Simulator apps; compiles the host Crown bridge/Simulator hook and runs both local wire profiles; compiles HubInput, ScreenText, MediaPixels and ControlOutline. | Compilation and dictionary self-tests catch SDK/syntax/wire-shape regressions; no CoreSimulator connection, Simulator boot, UI interaction, audio, sharing or device behavior is tested. |
+| Retired Safari source | Lightweight Python tests invoke real Node syntax/CLI and loopback HTTP checks: silent finite WAV, byte ranges, event receipts and invalid requests. Node must be available. | No browser or player is opened. Browser media discovery and system/Watch volume remain untested. Safari-only source/tests need no Mac verification or release. |
 | Screen-text smoke | Runs real text recognition on two harmless 324×394 synthetic images containing nine action/navigation labels. Requires exact labels, corroborated fast recognition, raw confidence and expected centers. | Each image has a 20-second deadline plus bounded termination. This checks OCR execution and its output contract, not app rendering, live UI interaction or device state. |
 | Control-outline smoke | Runs the real pixel-measurement helper on 15 independent SE/Ultra fixtures, plus three invalid resolutions. Covers thin/thick outlines, each missing side, black/text-only images, short crossings and the obsolete Ultra inset. | Five-second per-image deadline plus bounded termination. This checks calibrated straight-side coverage, not complete control visibility or touchability. |
 
@@ -56,8 +60,9 @@ Private ignored evidence is outside repository validation.
 GitHub Actions runs the noninteractive verification with its recorded toolchain.
 Watch checks and manual release verification compile and run the booted Watch
 smoke check described below. Automatic releases reuse the completed, exact-source
-Watch result rather than repeat that entire pass. Verification also compiles the five diagnostic fixtures and
-four UI-inspection helpers, then run the `screen-text-smoke` stage. Both workflows
+Watch result rather than repeat that entire pass. Verification also compiles the seven diagnostic app fixtures,
+native lab and four UI-inspection helpers, runs host wire self-tests, then runs
+the `screen-text-smoke` stage. Both workflows
 retain its synthetic images, expected labels, raw OCR output, stderr and result
 report for 14 days, including failures. The Swift model/controller suites are separate host
 executables that use
