@@ -23,6 +23,9 @@ installation or a physical-device test.
 
 ## Building and testing
 
+[Native TestFlight notes](../TestFlight/README.md): reviewed recent changes, manual
+overrides, exact-source handoff and preview commands.
+
 | Document | Purpose |
 | --- | --- |
 | [Repository review](REPOSITORY_REVIEW_2026-10-29.md) | October 29 organization, test additions and verification boundaries. |

@@ -25,7 +25,8 @@ APP_SUFFIXES = {".xcconfig", ".entitlements", ".xcprivacy"}
 DOC_PREFIXES = ("docs/", ".github/ISSUE_TEMPLATE/")
 DOC_FILES = {"README", "README.md", "CHANGELOG.md", "SUPPORT.md", "LICENSE", "LICENSE.txt"}
 TOOL_PREFIXES = (".github/", "scripts/", "Tests/", "tools/")
-TOOL_FILES = {"AGENTS.md", "SECURITY.md", ".gitignore", ".gitattributes", ".editorconfig"}
+TOOL_FILES = {"AGENTS.md", "SECURITY.md", ".gitignore", ".gitattributes", ".editorconfig",
+              "TestFlight/WhatToTest.en-US.txt"}
 MAC_TOOL_FILES = {
     "scripts/prepare-ci-watch-runtime.py", "scripts/simulator-smoke.py", "scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
     "scripts/prepare-testflight.sh", "scripts/prepare-testflight.py",

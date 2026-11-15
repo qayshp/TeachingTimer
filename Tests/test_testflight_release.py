@@ -76,6 +76,16 @@ class ReleaseChecks(unittest.TestCase):
                 self.assertEqual(apple.writes, 0)
                 self.assertEqual(journal.data['stages'][0]['status'], 'failed')
 
+    def test_stale_notes_readback_blocks_assignment(self):
+        with tempfile.TemporaryDirectory() as folder:
+            journal = self.journal(folder); apple = FakeApple(); clock = FakeClock()
+            apple.notes = lambda _: dict(attributes=dict(whatsNew='Old generic prompt'))
+            with self.assertRaisesRegex(release.ReleaseError, 'notes_verified timed out'):
+                release.publish_metadata(apple, journal, 'Reviewed recent changes', 30, 15, clock.sleep, clock)
+            self.assertFalse(apple.assigned)
+            self.assertEqual(apple.text, 'Reviewed recent changes')
+            self.assertNotEqual(journal.data['status'], 'available')
+
     def test_timeout_is_bounded_and_saved_for_resume(self):
         with tempfile.TemporaryDirectory() as folder:
             apple = FakeApple(['PROCESSING']); journal = self.journal(folder); clock = FakeClock()

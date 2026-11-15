@@ -349,6 +349,9 @@ class VerificationReuseReceiptChecks(unittest.TestCase):
                         env[missing] = ''
                     if event == 'workflow_dispatch':
                         env.update({key: '' for key in identity})
+                    notes_dir = Path(directory) / 'testflight-notes'
+                    notes_dir.mkdir()
+                    (notes_dir / 'notes.json').write_text(json.dumps(dict(sourceSHA='b' * 40, notesSHA256='c' * 64, origin='repository')))
                     target = Path(directory) / 'ci-timing.json'
                     with patch.dict(os.environ, env, clear=True), patch('subprocess.check_output', side_effect=command):
                         if missing:

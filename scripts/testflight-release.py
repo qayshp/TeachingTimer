@@ -209,7 +209,8 @@ class Journal:
             lines.append('| {name} | {startedAt} | {elapsedSeconds} | {status} |'.format(
                 **dict(stage, elapsedSeconds=stage.get('elapsedSeconds', 'unknown'))))
         lines += ['', 'Build: ' + self.data['identity']['build'],
-                  'Source: ' + self.data['identity']['source'], '',
+                  'Source: ' + self.data['identity']['source'],
+                  'Testing notes SHA-256: ' + self.data['identity'].get('notesSHA256', 'not recorded'), '',
                   'Readiness is first observed server-side availability, not device download or installation.',
                   'Interrupted/resumed runs retain separate attempts; durations do not invent time for interrupted steps.']
         ci = self.data.get('github', {})

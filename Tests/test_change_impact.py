@@ -43,6 +43,15 @@ class ChangeImpactChecks(unittest.TestCase):
         for key in ('mac_verify', 'release_verify', 'publish'):
             self.assertEqual(values[key], 'true')
 
+    def test_testflight_notes_run_lightweight_checks_without_app_release(self):
+        result = change_impact.classify_paths(['TestFlight/WhatToTest.en-US.txt'])
+        self.assertTrue(result['tooling_changed'])
+        for key in ('app_changed', 'unknown_changed', 'mac_verify', 'release_verify', 'publish'):
+            self.assertFalse(result[key])
+        unknown = change_impact.classify_paths(['TestFlight/new-build-input.json'])
+        self.assertTrue(unknown['unknown_changed'])
+        self.assertTrue(unknown['publish'])
+
     def test_documentation_only_skips_build_and_release(self):
         result = change_impact.classify_paths([
             "docs/ISSUE_TRACKER.md", "README.md", ".github/ISSUE_TEMPLATE/bug_report.yml"

@@ -1,0 +1,11 @@
+Recent changes
+• Launch Teaching Timer directly from a compatible Watch-face complication, using the recognizable rolled-mat and clock icon.
+• Find shorter Help topics for music, class timing, counts and sessions in Settings.
+• Send diagnostics to the optional iPhone app, choose a report window on either device, then email support with the report attached.
+• See clearer saved-report status and newest-first connection details on iPhone and Watch.
+
+Please test
+Check class persistence after reopening, counts with vibrations on or off, and Crown volume after Home, volume refresh and returning from media. Try the optional phone report/email flow after class.
+
+Known issues
+The media page’s song-progress ring can freeze; swipe to the timer and back to update it. Timer volume can occasionally fail or silence playback. Use the native media page or the phone’s volume controls to recover, and report the time, music app and audio output. These issues remain under investigation.

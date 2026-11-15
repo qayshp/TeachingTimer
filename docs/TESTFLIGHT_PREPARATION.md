@@ -462,6 +462,11 @@ Later release-documentation commits do not change the signed source above.
 
 ## Automatic and manual GitHub release
 
+Native TestFlight notes come from the reviewed [recent-changes file](../TestFlight/WhatToTest.en-US.txt).
+See the [notes update/preview and exact-source contract](../TestFlight/README.md).
+Apple controls the post-update presentation; API readback verifies saved text,
+not a physical first-launch screen. No app modal is added.
+
 The **TestFlight maintainer release** workflow builds on a GitHub-hosted Mac.
 Every push to `main` runs the change classifier and lightweight repository/Python
 checks. Only app inputs (or an unrecognized path, treated conservatively as an
@@ -495,8 +500,10 @@ App Store Connect's duplicate-build check remains an additional safeguard.
 There is no concurrency policy that silently replaces queued `main` builds.
 
 The workflow also retains a manual `workflow_dispatch` trigger. Choose **Use
-workflow from: main**, then provide an unused integer build number, testing notes,
-and either `rehearsal` or `publish`. Rehearsal remains the default and never
+workflow from: main**, then provide an unused build number, optional testing notes,
+and either `rehearsal` or `publish`. Empty notes use the reviewed recent-changes
+file from the selected application commit; an explicit override is validated.
+Rehearsal remains the default and never
 uploads. The tools and application come from the exact selected workflow commit;
 there is no free-form application-ref input. The release job checks out the same
 SHA selected by the source job and accepted by the applicable verification gate.
