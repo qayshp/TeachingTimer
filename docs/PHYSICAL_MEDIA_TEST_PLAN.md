@@ -306,3 +306,56 @@ Its actual player clock and metadata/native extrapolation are different signals.
 Retain the [October 30 evidence](MEDIA_PROGRESS_INCIDENT_2026-10-30.md), and keep
 blank media, focus loss, unexpected zero and stale progress as distinct outcomes.
 No unattended/overnight run is scheduled by this plan.
+
+## November 15 supervised physical result
+
+The physical SE 3 and paired iPhone used Beta **1.0 (261113.2020.62)**. The
+volume-host-isolation experiment in PR #33 was **not installed** for this test.
+These are bounded observations, not a fix or a repeatable silencing reproduction.
+
+The initial reference was inconclusive: the operator reported a moving timer
+volume ring with no useful audible result, but audible source playback had not
+been independently established. The operator subsequently found that iPhone
+screen sharing through Device Hub suppressed Apple Music audio and blacked out
+music video on this setup. Do not classify that silence as Watch-caused muting,
+or assume DRM is its established cause. This does not explain the separate
+studio incident, where no Device Hub sharing was reported.
+
+A usable reference was then established with **iPhone Mirroring** for the phone
+and Device Hub sharing **only the Watch**. The iPhone's Device Hub view remained
+unshared. Apple Music identified the output as iPhone to the Mac; this was not a
+direct iPhone-speaker, USB or studio AirPlay test. The operator confirmed that
+Crown input changed the Watch ring, phone volume and sound heard through the Mac.
+No audio recording was introduced during the comparison.
+
+| Retained-control H1 step | Observed result |
+| --- | --- |
+| Establish the current level A | Phone player slider approximately 55%; usable Crown/audio reference confirmed by the operator. |
+| Change only the phone slider to B | Approximately 23%; the Watch ring followed without a timer refresh or page switch. |
+| Drop wrist, wake and make the first small physical increase | Operator reported a normal increase from the quieter level. The captured phone slider was approximately 39%, with the same song and Mirroring route. No zero or jump to the former A was observed. |
+| Check saved app journals | The same launch/native-control identities were retained. No control replacement, timer/media page change or media reload occurred during A to B and the physical increase. The runtime remained running. |
+
+Percentages are estimates from screenshots, not public native-volume readings.
+Operator reports identify physical intent and audible behavior; marker timestamps
+are report times, not exact native Crown dispatch times. The first outgoing
+native scalar and command destination were not captured in system records.
+
+This **weakens H1 for an ordinary phone-volume change on this route**. It does
+not rule out a stale internal sequencer under other conditions, H2's obsolete
+session/endpoint association, or an intermittent USB/AirPlay failure. Preserve
+those as separate hypotheses. The earlier `focus()` returns do not themselves
+prove ownership; the later functional reference supplies a stronger observation.
+
+Manual trackpad scrolling over the Device Hub replica Crown was confirmed by
+the operator. The helper's single synthetic line-scroll request produced no
+independently verified volume change, so it was not used as the known physical
+input for the H1 result. Future automation must establish its actual delivery
+and direction before interpreting a no-response result as an app failure.
+
+All three small journals were copied and validated after the comparison. Earlier
+Watch/phone sysdiagnose requests timed out without a retrieved archive; a phone
+inventory showed no new capture from those requests, and the Watch inventory
+also timed out. Those attempts supply no first-setter evidence. Raw screenshots,
+identifiers, notebooks and journal files remain private under ignored `work/`.
+The test playback was paused, its pretrial volume restored, and the temporary
+class was ended after evidence collection.

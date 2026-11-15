@@ -141,6 +141,13 @@ DRM as its cause. Apple's separate
 and premium-video restrictions for that product; do not transfer those behaviors
 to Device Hub without evidence.
 
+A later, separate reference used **iPhone Mirroring**, with phone Device Hub
+sharing stopped and the user confirming audible Apple Music output through the
+Mac before input. That was a newly validated route, not a continuation of the
+earlier iPhone-speaker condition. Record Mirroring/Mac volume as a separate
+factor; it does not reproduce the classroom USB adapter. User confirmation of
+sound is required even when Mirroring is expected to route audio to the Mac.
+
 ## Initial November 15 physical rehearsal
 
 The first bounded attempt established phone-side Device Hub touch/navigation:
@@ -198,6 +205,75 @@ still not a live device result. Window IDs, PIDs, titles and geometry are
 ephemeral: re-list/review after closing, reopening, moving or changing windows,
 and never store real IDs or captures in the public repository. Successful
 capture does not establish that a later input reached the device.
+
+## One reviewed action in a detached window
+
+`ReviewedWindowInput` preserves the small host-input procedure used for the
+supervised phone-slider comparison. It is separate from `HubControl`, whose
+single-Device-Hub-window guard remains unchanged. It accepts only an exact
+**iPhone Mirroring** window or an exact detached **Device Hub Watch** window.
+Its `windowID` is an **AX identifier**, not the numeric CG ID from `WindowList`.
+Current titles/identifiers are matched exactly; a localized or changed title
+fails instead of selecting another window.
+
+**Host window identity is not physical-device attestation.** Before using this
+helper, the user/operator must confirm which physical phone/Watch is currently
+shared, review its live pixels and intended target, and establish the scenario,
+audible source, route and stop procedure. The helper cannot establish those
+facts, distinguish a frozen screenshot from live content, or prove delivery.
+No valid current review means no input. Device Hub phone sharing and iPhone
+Mirroring are different capture/route conditions; record which is in use.
+
+Write the request privately under `work/`, using the current host app PID and
+reviewed AX window title, identifier, screen frame and Unix timestamp:
+
+```json
+{
+  "pid": 123,
+  "bundle": "com.apple.ScreenContinuity",
+  "windowID": "iphone-mirroring-main",
+  "title": "iPhone Mirroring",
+  "frame": [100, 200, 400, 800],
+  "reviewedAt": 0,
+  "action": "drag",
+  "points": [0.6, 0.5, 0.3, 0.5]
+}
+```
+
+All numbers above are placeholders; these points are not a known slider target.
+Points are normalized to the **whole reviewed window**, strictly inside 0–1,
+not a device-display crop. `tap` uses two numbers; `drag` uses four. A Watch
+request uses `com.apple.dt.Devices`, its exact `deviceWindow-…` AX identifier
+and full reviewed title containing ` – watchOS `. Watch-only `crown` additionally
+requires `scroll` of -3…-1 or 1…3. Host scroll delivery/direction remains
+**unverified**; the successful A→B trial used the user's physical Crown.
+
+The default command performs local request validation only:
+
+```sh
+work/physical-control-NEW/ReviewedWindowInput work/PRIVATE-RUN/request.json
+```
+
+Only adding `--execute` performs one action, after explicit authorization and
+fresh review. It requires a locally unlocked Mac, existing Accessibility access,
+the exact running PID/bundle, one unique matching window, no app modal/sheet,
+and foreground/focused ownership. Review age must be **0–180 seconds** and each
+frame component must differ by **less than 0.5 points**. It activates/raises only
+that matched host window, rechecks before input, bounds drags to 12 steps and
+attempts mouse release if a submitted drag fails. It never opens a permission
+prompt, selects a device, uses developer services, installs or launches an app.
+Failure after a host event may report `inputMayHaveBeenSent=true`; preserve the
+current state rather than retrying blindly. A success is still only an
+**unverified host submission**.
+
+`build.sh` compiles/signs all three helpers. The offline suite exercises the
+exact frame/identity functions, including the 0.49/0.5-point and 180-second
+boundaries, duplicates, unrelated windows and negative-origin projection. It
+also checks valid/invalid request schemas, phone/Watch/action separation,
+bounded Crown units, malformed/oversized files and plan-only receipts. These
+tests do not invoke the new helper with `--execute`, inspect a live process,
+query AX/CG windows, or interact with any device. The additional focus guards in
+the maintained helper still need a supervised delivery rehearsal.
 
 ## Notebook clock interpretation
 

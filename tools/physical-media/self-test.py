@@ -26,6 +26,15 @@ def main():
     for arguments in ([], ['0'], ['-1'], ['not-a-pid'], ['2147483648'], ['1', '--execute']):
         result = subprocess.run([str(windows), *arguments], capture_output=True, text=True, timeout=5)
         assert result.returncode == 2 and not result.stdout, result.stdout
+    reviewed = binary.with_name('ReviewedWindowInput')
+    result = subprocess.run([str(reviewed), '--self-test'], capture_output=True, text=True, timeout=5, check=True)
+    reviewed_test = json.loads(result.stdout)
+    assert reviewed_test['reviewedWindowSelfTest'] == 'passed'
+    assert reviewed_test['AXQueries'] == 0 and reviewed_test['hostProcessLookups'] == 0
+    assert reviewed_test['inputSent'] is False and reviewed_test['deviceContact'] is False
+    for arguments in ([], ['one', 'two'], ['one', '--unknown'], ['--self-test', 'extra']):
+        result = subprocess.run([str(reviewed), *arguments], capture_output=True, text=True, timeout=5)
+        assert result.returncode == 2 and not result.stdout, result.stdout
     with tempfile.TemporaryDirectory() as temporary:
         folder = Path(temporary)
         details = folder / 'details.json'
@@ -110,7 +119,51 @@ def main():
         phone['result']['identifier'] = identifier
         details.write_text(json.dumps(phone)); run({**base, 'kind': 'phone'}, True)
         run({**tap, 'kind': 'phone', 'action': 'crown', 'scrollUnits': 1}, False)
-    print('Physical Hub/window offline guards passed; zero CG/AX queries, selections or input')
+
+        # The exact-window helper has no receipt/process/AX lookup in plan mode.
+        # Synthetic positive PIDs are deliberately not resolved to running apps.
+        window_request = {'pid': 7, 'bundle': 'com.apple.ScreenContinuity',
+                          'windowID': 'iphone-mirroring-main', 'title': 'iPhone Mirroring',
+                          'frame': [-400, 200, 400, 800], 'reviewedAt': 1000,
+                          'action': 'tap', 'points': [.5, .4]}
+        def run_reviewed(value, passed):
+            request.write_text(json.dumps(value))
+            result = subprocess.run([str(reviewed), str(request)], capture_output=True, text=True, timeout=5)
+            if passed:
+                assert result.returncode == 0, result.stderr
+                plan = json.loads(result.stdout)
+                assert plan['status'] == 'plan_only' and plan['hostProcessLookups'] == 0
+                assert plan['AXQueries'] == 0 and plan['inputSent'] is False and plan['deviceContact'] is False
+            else:
+                assert result.returncode == 2 and not result.stdout, result.stdout
+                assert 'inputMayHaveBeenSent=false' in result.stderr
+        run_reviewed(window_request, True)
+        run_reviewed({**window_request, 'action': 'drag', 'points': [.6, .5, .3, .5]}, True)
+        watch_request = {**window_request, 'bundle': 'com.apple.dt.Devices',
+                         'windowID': 'deviceWindow-SYNTHETIC', 'title': 'Synthetic – watchOS 27'}
+        run_reviewed(watch_request, True)
+        for units in [-3, -1, 1, 3]:
+            run_reviewed({**watch_request, 'action': 'crown', 'scroll': units}, True)
+        for changed in [dict(pid=0), dict(pid=-1), dict(pid=2147483648), dict(pid=True), dict(pid='7'),
+                        dict(bundle='com.apple.finder'), dict(windowID='wrong'), dict(title='other phone'),
+                        dict(action='home'), dict(action='drag'), dict(scroll=1),
+                        dict(points=[0, .5]), dict(points=[1, .5]), dict(points=[float('nan'), .5]),
+                        dict(points=[.5]), dict(points=[.5, .5, .5, .5]),
+                        dict(frame=[100, 200, 400]), dict(frame=[100, 200, 100, 800]),
+                        dict(frame=[100, 200, 400, float('inf')]), dict(reviewedAt=float('nan'))]:
+            run_reviewed({**window_request, **changed}, False)
+        for changed in [dict(windowID='deviceWindow-'), dict(title='Synthetic iOS 27'),
+                        dict(action='crown', scroll=0), dict(action='crown', scroll=4),
+                        dict(action='crown', scroll=-4), dict(action='crown')]:
+            run_reviewed({**watch_request, **changed}, False)
+        run_reviewed({**window_request, 'action': 'crown', 'scroll': 1}, False)
+        for contents in ['not JSON', ' ' * 65_537]:
+            request.write_text(contents)
+            result = subprocess.run([str(reviewed), str(request)], capture_output=True, text=True, timeout=5)
+            assert result.returncode == 2 and not result.stdout
+        result = subprocess.run([str(reviewed), str(folder)], capture_output=True, text=True, timeout=5)
+        assert result.returncode == 2 and not result.stdout
+    print('Physical Hub/window offline guards passed; zero process lookups, CG/AX queries, selections or input')
 
 
 if __name__ == '__main__':

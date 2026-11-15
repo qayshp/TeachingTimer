@@ -8,7 +8,7 @@ if [ -e "$physical_output" ]; then
     exit 1
 fi
 mkdir -p "$physical_output"
-for physical_helper in HubControl WindowList; do
+for physical_helper in HubControl WindowList ReviewedWindowInput; do
     xcrun --sdk macosx swiftc -warnings-as-errors "$physical_source/$physical_helper.swift" -o "$physical_output/$physical_helper"
     codesign --force --sign - "$physical_output/$physical_helper"
     codesign --verify --strict "$physical_output/$physical_helper"
