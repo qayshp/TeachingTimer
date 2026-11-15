@@ -11,6 +11,11 @@ nonzero requests across a full class with the unchanged production volume code.
 Both sessions encounter temporary zero/unavailable state. Native object age,
 provider, route and playback order differ; neither physical run tests this PR.
 
+The [November 15 baseline experiment](CROWN_CALIBRATION_2026-11-15.md) demonstrates
+model/slider/sequencer divergence only when callbacks are deliberately withheld
+from a fake backend. Normal callback batches repair it. Native Crown scalar
+response remained unavailable, so no mute or physical fix was reproduced.
+
 ## Change and invariants
 
 The timer page is now a stable child of `TabView`. Its static dial, Class/settings

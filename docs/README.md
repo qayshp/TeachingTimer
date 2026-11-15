@@ -52,6 +52,7 @@ installation or a physical-device test.
 - [November 13 silencing incident](VOLUME_INCIDENT_2026-11-13.md): Amazon Music/USB-C recurrence, paired system evidence and native Watch-side recovery.
 - [November 13 opening/playback timeline](VOLUME_TIMELINE_2026-11-13.md): phone launch, USB route and starting volume, Watch return, class/focus, zero and recovery.
 - [November 14 successful-run comparison](VOLUME_COMPARISON_2026-11-14.md): startup order, native initialization, first adjustments and remaining confounds.
+- [November 15 Crown calibration](CROWN_CALIBRATION_2026-11-15.md): binding/native-volume sign limits, gesture boundaries and controlled native baseline propagation.
 - [Volume-host isolation experiment](VOLUME_HOST_ISOLATION.md): stable native hosting, reconstructed component state and bounded fault-injection plans.
 
 - [Diagnostic sharing validation](DIAGNOSTIC_SHARING_VALIDATION.md): historical November 6 native-share Simulator checks; current delivery evidence is in the [companion guide](OPTIONAL_COMPANION.md).

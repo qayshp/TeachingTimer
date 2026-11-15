@@ -96,10 +96,12 @@ the ring's appearance and the native interaction baseline remain unknown.
 
 ## Discriminating next checks
 
-First calibrate the input-subtype pattern against known opposite Crown movements
-in an isolated probe, without adding a competing Crown handler to TeachingTimer.
-Simulator input can help even when its companion endpoint is unavailable; a
-Simulator mapping still needs a physical check before interpreting user intent.
+The [November 15 calibration](CROWN_CALIBRATION_2026-11-15.md) establishes a
+repeatable signed input-to-public-binding relationship, including a zero-motion
+subtype caveat. Its binding changes have the opposite association to the
+physical native-volume records; the native Simulator control did not supply a
+responsive scalar reference. Native volume direction therefore still needs
+calibration, without adding a competing Crown handler to TeachingTimer.
 
 Then hold provider and output fixed while comparing a fresh control with the
 same control after suspension, route/playback setup and media/wake transitions.
