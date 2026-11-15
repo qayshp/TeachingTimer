@@ -414,3 +414,29 @@ state and could have repaired readiness or association. This is not a pristine
 negative H2 result or a general rule-out. A cleaner repeat should verify timer
 foreground continuity across the audible source handoff and preserve pre-input
 ring evidence; the shared pre-Crown snapshot in this arm was black.
+
+### Pause checkpoint: November 15
+
+Physical testing is paused at the operator's request; the phone and Watch are
+no longer available. The saved journals, screenshots and hypothesis assessments
+remain available for a later session. These are observations from this setup,
+not universal compatibility claims:
+
+| Phone playback app | Phone shared through Device Hub | iPhone Mirroring to Mac | Direct iPhone speaker |
+| --- | --- | --- | --- |
+| Apple Music | Operator reported silent audio and black music-video content. | Audible playback and functional timer Crown reference established. | Audible playback and functional timer Crown reference established. |
+| Amazon Music | Not tested. | Silent before any post-handoff Crown input; phone Play retry remained silent. | Audible; timer Crown increase worked after reopening TeachingTimer and automatic runtime/focus recovery. |
+| YouTube Music | Not tested. | Not tested. | Not tested. |
+
+Phone Device Hub sharing is distinct from keeping only the Watch shared. Do not
+classify the phone-capture silence as a TeachingTimer volume command failure or
+assume DRM is its cause. Amazon's Device Hub path and YouTube Music remain
+untested; do not generalize from Apple Music or Amazon's Mirroring result.
+
+On resuming, verify current device availability, installed builds, output and
+capture method. Establish a fresh audible reference if any have changed, and
+record a new trial rather than assuming the prior process/control survived.
+Keep the foreground-preserved and background-return source-handoff variants
+separate. The old evidence does not need to be discarded or recollected simply
+because a fresh trial is needed. The final temporary class/playback cleanup was
+suggested to the operator, but completion was not observed before this pause.
