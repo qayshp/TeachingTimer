@@ -181,3 +181,10 @@ generated outputs and preserve original journals/captures and signed checkpoints
 See [publishing readiness](docs/PUBLISHING_READINESS.md) and the
 [supervised device plan](docs/PHYSICAL_MEDIA_TEST_PLAN.md) before distribution or
 physical automation work.
+
+## TestFlight notes
+
+For tester-visible changes, update [the short TestFlight notes](TestFlight/README.md)
+alongside [the changelog](CHANGELOG.md). Notes describe recent merged changes and
+known limitations, not unverified fixes. Notes-only changes run lightweight
+checks and are used by the next release without creating another app upload.

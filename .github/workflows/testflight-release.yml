@@ -19,10 +19,9 @@ on:
         type: string
         required: true
       testing_notes:
-        description: What to Test (1–4000 characters)
+        description: Optional What to Test override (1–4000 characters); leave empty for reviewed recent changes
         type: string
-        default: Check clock readability, counts, class persistence, and Crown volume after Home, refresh, and media return.
-        required: true
+        required: false
 permissions:
   contents: read
   actions: read
@@ -95,6 +94,7 @@ jobs:
     outputs:
       source_sha: ${{ steps.source.outputs.sha }}
       build_number: ${{ steps.source.outputs.build_number }}
+      notes_payload: ${{ steps.source.outputs.notes_payload }}
     steps:
       - name: Check out release tools
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -114,7 +114,7 @@ jobs:
           BUILD_NUMBER: ${{ inputs.build_number }}
           WORKFLOW_RUN_NUMBER: ${{ github.run_number }}
           EVENT_NAME: ${{ github.event_name }}
-          TESTING_NOTES: ${{ inputs.testing_notes || 'Automatic main-branch build. Check the clock, class timing, count controls, media page, and Crown volume; report any regressions.' }}
+          TESTING_NOTES: ${{ inputs.testing_notes }}
         run: |
           python3 - <<'PY'
           import os, runpy, subprocess, sys
@@ -127,12 +127,13 @@ jobs:
               number = validate_number(os.environ['BUILD_NUMBER'])
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('build_number=' + str(number) + '\n')
-          notes = os.environ['TESTING_NOTES']
-          if not notes.strip() or len(notes) > 4000:
-              raise SystemExit('Testing notes must contain 1–4000 characters')
           sha = subprocess.check_output(['git', '-C', 'source', 'rev-parse', 'HEAD'], text=True).strip()
           if sha != os.environ['GITHUB_SHA']:
               raise SystemExit('Application source differs from the selected workflow commit')
+          subprocess.run([sys.executable, 'automation/scripts/testflight-notes.py',
+              '--source', 'source', '--expected-sha', sha, '--override-env', 'TESTING_NOTES',
+              '--output', os.environ['RUNNER_TEMP'] + '/testflight-notes',
+              '--github-output', os.environ['GITHUB_OUTPUT']], check=True)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('sha=' + sha + '\n')
           PY
@@ -271,10 +272,17 @@ jobs:
           ref: ${{ needs.source.outputs.source_sha }}
           path: source
           persist-credentials: false
+      - name: Materialize reviewed TestFlight notes
+        env:
+          NOTES_PAYLOAD: ${{ needs.source.outputs.notes_payload }}
+          SOURCE_SHA: ${{ needs.source.outputs.source_sha }}
+        run: |
+          python3 automation/scripts/testflight-notes.py \
+            --payload-env NOTES_PAYLOAD --expected-sha "$SOURCE_SHA" \
+            --output "$RUNNER_TEMP/testflight-notes"
       - name: Record workflow timings and prepare notes
         env:
           GH_TOKEN: ${{ github.token }}
-          TESTING_NOTES: ${{ inputs.testing_notes }}
           WATCH_VERIFY_RUN: ${{ needs.verify-reused.outputs.run_id }}
           WATCH_VERIFY_ATTEMPT: ${{ needs.verify-reused.outputs.run_attempt }}
           WATCH_VERIFY_ARTIFACT: ${{ needs.verify-reused.outputs.artifact_id }}
@@ -284,13 +292,13 @@ jobs:
           import json, os, subprocess
           from pathlib import Path
           root = Path(os.environ['RUNNER_TEMP'])
-          (root / 'release-notes.txt').write_text(os.environ['TESTING_NOTES'])
           repo = os.environ['GITHUB_REPOSITORY']; run = os.environ['GITHUB_RUN_ID']
           info = json.loads(subprocess.check_output(['gh', 'api', 'repos/' + repo + '/actions/runs/' + run]))
           jobs = json.loads(subprocess.check_output(['gh', 'api', 'repos/' + repo + '/actions/runs/' + run + '/jobs']))
           record = dict(workflowCreatedAt=info['created_at'], workflowStartedAt=info['run_started_at'],
               runURL=info['html_url'], xcode=subprocess.check_output(['xcodebuild', '-version'], text=True).strip(),
               jobs=[dict(name=j['name'], startedAt=j['started_at'], completedAt=j['completed_at']) for j in jobs['jobs']])
+          record['notes'] = json.loads((root / 'testflight-notes/notes.json').read_text())
           record['verification'] = dict(mode='manual-full', source=os.environ['GITHUB_SHA'])
           if os.environ['GITHUB_EVENT_NAME'] == 'push':
               if not all(os.environ[key] for key in ('WATCH_VERIFY_RUN', 'WATCH_VERIFY_ATTEMPT',
@@ -324,7 +332,7 @@ jobs:
         run: |
           python3 automation/scripts/testflight-release.py --rehearsal \
             --source "$GITHUB_WORKSPACE/source" --build-number "$BUILD_NUMBER" \
-            --notes-file "$RUNNER_TEMP/release-notes.txt" --output "$RUNNER_TEMP/release-report" \
+            --notes-file "$RUNNER_TEMP/testflight-notes/notes.txt" --output "$RUNNER_TEMP/release-report" \
             --ci-timing-file "$RUNNER_TEMP/ci-timing.json"
       - name: Publish, monitor processing, and assign only Maintainer pilot
         if: github.event_name == 'push' || inputs.mode == 'publish'
@@ -332,14 +340,12 @@ jobs:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           BUILD_NUMBER: ${{ needs.source.outputs.build_number }}
-          TESTING_NOTES: ${{ inputs.testing_notes || 'Automatic main-branch build. Check the clock, class timing, count controls, media page, and Crown volume; report any regressions.' }}
         run: |
           export ASC_KEY_PATH="$RUNNER_TEMP/testflight-signing/AuthKey.p8"
           export ASC_TOKEN_HELPER="$RUNNER_TEMP/asc-token"
-          printf '%s' "$TESTING_NOTES" > "$RUNNER_TEMP/release-notes.txt"
           python3 automation/scripts/testflight-release.py \
             --source "$GITHUB_WORKSPACE/source" --build-number "$BUILD_NUMBER" \
-            --notes-file "$RUNNER_TEMP/release-notes.txt" --output "$RUNNER_TEMP/release-report" \
+            --notes-file "$RUNNER_TEMP/testflight-notes/notes.txt" --output "$RUNNER_TEMP/release-report" \
             --signing-config "$RUNNER_TEMP/testflight-signing/signing.json" \
             --ci-timing-file "$RUNNER_TEMP/ci-timing.json"
       - name: Remove temporary signing material and restore keychain search list
@@ -387,4 +393,6 @@ jobs:
             ${{ runner.temp }}/release-report/release.json
             ${{ runner.temp }}/release-report/summary.md
             ${{ runner.temp }}/ci-timing.json
+            ${{ runner.temp }}/testflight-notes/notes.txt
+            ${{ runner.temp }}/testflight-notes/notes.json
             ${{ runner.temp }}/job-timings.json
