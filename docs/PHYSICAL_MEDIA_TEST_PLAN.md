@@ -166,6 +166,16 @@ procedures below for every arm.
   nonzero. Record its visible level; a slider screenshot is not an exact scalar
   or an acoustic measurement. Do not aim for a loud historical 0.625 merely to
   match the incident numerically.
+- Confirm **audible playback before any Crown trial**, not just a Pause button,
+  advancing song time or a nonzero slider. During the November 15 rehearsal, the
+  user reported silent Apple Music playback and black music video with phone
+  Device Hub sharing active, followed by audible playback after sharing stopped.
+  Treat that as capture-related playback interference with an unconfirmed cause,
+  not evidence that TeachingTimer sent zero. Stop phone screen sharing and
+  confirm it is actually stopped; keep the Watch timer/control context unchanged
+  where possible. Ask the operator to confirm quiet sound on the intended output
+  before continuing. Record the sharing transition and audibility confirmation.
+  If silence persists, stop the volume arm as a setup failure/inconclusive result.
 - Prepared content choices: Brian Eno's **Thursday Afternoon** (catalog ID
   `714821163`, 60:50.8) avoids a track transition during the volume-retention arm.
   For a separate progress comparison, **An Ending (Ascent)** (catalog ID
@@ -179,12 +189,19 @@ procedures below for every arm.
   physical devices and must not be repurposed by removing that guard.
 
 Prefer a short clip of the real Watch, Crown movement and phone indicator when
-an existing Mac/external camera can see them. Alternatively save phone screen
-recording and time-marked Watch screenshots; without a motion clip, keep the
+an existing Mac/external camera can see them. Phone screen sharing/recording is
+not a neutral replacement for physical evidence: establish that it does not
+change playback before using it in a later separate arm. During a phone-sharing-off
+reference, use operator phone observations and time-marked Watch screenshots;
+without a motion clip, keep the
 operator's direction report separate from captured evidence. Avoid opening the
 phone Camera app during playback: it can change the audio session. Continuous
 screen sharing can affect wake/focus; establish it before the reference or leave
 it disconnected throughout the passive interval and record any reconnection.
+Apple documents protected-video blackout and app responses to screen capture,
+but not a Device Hub-specific explanation for this observed audio silence.
+See [the capture caveat](../tools/physical-media/README.md#capture-related-playback-interference)
+before choosing another mirroring/recording route; DRM remains a hypothesis.
 
 ## Short reference and retained-state comparison
 

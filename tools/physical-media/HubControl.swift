@@ -7,6 +7,18 @@ enum ControlError: Error { case invalid(String) }
 func require(_ condition: Bool, _ message: String) throws {
     if !condition { throw ControlError.invalid(message) }
 }
+// Device Hub repeats a device identifier on its icon and several text siblings.
+// Resolve the unique owning row, not the number of matching descendants.
+func owningRows(_ nodes: [([Int], String, String)], identifier: String) throws -> Set<[Int]> {
+    var result = Set<[Int]>()
+    for (path, _, id) in nodes where id == identifier {
+        var prefix = path
+        while !nodes.contains(where: { $0.0 == prefix && $0.1 == "AXRow" }) && !prefix.isEmpty { prefix.removeLast() }
+        try require(nodes.contains { $0.0 == prefix && $0.1 == "AXRow" }, "Device identifier has no owning row")
+        result.insert(prefix)
+    }
+    return result
+}
 struct Request: Decodable {
     let hubPID: Int32
     let deviceDetailsFile: String
@@ -16,6 +28,10 @@ struct Request: Decodable {
     let displayPath: [Int]?
     let displayRole: String?
     let displayIdentifier: String?
+    let displayCrop: [Double]?
+    let reviewedAnchorFrame: [Double]?
+    let reviewedAtUnix: Double?
+    let crownPoint: [Double]?
     let coordinates: [Double]?
     let scrollUnits: Int32?
 }
@@ -27,6 +43,13 @@ func validate(_ r: Request) throws {
         try require(r.displayPath != nil && r.displayPath!.count <= 25 && r.displayPath!.allSatisfy { $0 >= 0 }, "Reviewed display path required")
         try require(r.displayRole == "AXGroup" || r.displayRole == "AXImage", "Reviewed display role required")
         try require(r.displayIdentifier != nil, "Reviewed display identifier required, including empty if absent")
+        if let crop = r.displayCrop {
+            try require(crop.count == 4 && crop.allSatisfy { $0.isFinite && (0...1).contains($0) } && crop[2] > 0 && crop[3] > 0 && crop[0] + crop[2] <= 1 && crop[1] + crop[3] <= 1, "Invalid reviewed display crop")
+            try require(r.reviewedAnchorFrame?.count == 4 && r.reviewedAnchorFrame!.allSatisfy { $0.isFinite } && r.reviewedAtUnix?.isFinite == true, "Crop requires its screenshot-reviewed anchor frame and time")
+        }
+        if let point = r.crownPoint {
+            try require(r.action == "crown" && r.displayCrop != nil && point.count == 2 && point.allSatisfy { $0.isFinite && (0...1).contains($0) }, "Crown point requires a reviewed crop")
+        }
     }
     if ["tap", "swipe"].contains(r.action) {
         let values = r.coordinates ?? []
@@ -42,7 +65,15 @@ func physicalIdentity(_ r: Request, fresh: Bool) throws -> String {
     try require(data.count < 2_000_000, "Details receipt too large")
     let root = try JSONSerialization.jsonObject(with: data) as? [String: Any]
     let info = root?["info"] as? [String: Any]
-    let result = root?["result"] as? [String: Any]
+    var result = root?["result"] as? [String: Any]
+    if let devices = result?["devices"] as? [[String: Any]] {
+        let matches = devices.filter { device in
+            let hardware = device["hardwareProperties"] as? [String: Any]
+            return [device["identifier"] as? String, hardware?["udid"] as? String].compactMap { $0 }.contains { r.rowIdentifier == "TableRow.Device." + $0 }
+        }
+        try require(matches.count == 1, "Inventory must identify exactly one requested device")
+        result = matches[0]
+    }
     let hardware = result?["hardwareProperties"] as? [String: Any]
     try require(info?["outcome"] as? String == "success" && hardware?["reality"] as? String == "physical", "A successful physical-device details receipt is required")
     try require(hardware?["platform"] as? String == (r.kind == "watch" ? "watchOS" : "iOS"), "Details platform differs from requested device kind")
@@ -93,6 +124,20 @@ func atPath(_ window: AXUIElement, _ path: [Int]) throws -> AXUIElement {
     }
     return node
 }
+// Pure geometry shared by execution and offline regression checks. Selection,
+// live screen content and native input ownership remain separate observations.
+func reviewedDisplayBounds(_ r: Request, anchor: CGRect, window: CGRect, at now: Double) throws -> CGRect {
+    var bounds = anchor
+    if let crop = r.displayCrop {
+        let expected = r.reviewedAnchorFrame!
+        try require(zip([anchor.minX, anchor.minY, anchor.width, anchor.height], expected).allSatisfy { abs($0 - $1) < 0.5 }, "Reviewed canvas moved or resized; inspect screenshot again")
+        try require((0...180).contains(now - r.reviewedAtUnix!), "Screenshot review is stale")
+        bounds = CGRect(x: anchor.minX + anchor.width * crop[0], y: anchor.minY + anchor.height * crop[1], width: anchor.width * crop[2], height: anchor.height * crop[3])
+    }
+    let aspect = bounds.width / bounds.height
+    try require(bounds.width >= 100 && bounds.height >= 100 && window.contains(bounds) && (r.kind == "watch" ? (0.7...0.95).contains(aspect) : (0.4...0.55).contains(aspect)), "Reviewed display geometry is unsuitable")
+    return bounds
+}
 func execute(_ r: Request, name: String) throws {
     let session = CGSessionCopyCurrentDictionary() as? [String: Any]
     try require(session?[kCGSessionOnConsoleKey as String] as? Bool == true && session?["CGSSessionScreenIsLocked"] as? Bool != true, "Mac must be locally unlocked")
@@ -110,14 +155,9 @@ func execute(_ r: Request, name: String) throws {
         return nodes
     }
     let before = try snapshot()
-    let matches = before.filter { text($0.0, kAXIdentifierAttribute) == r.rowIdentifier }
-    try require(matches.count == 1, "Exact physical-device row not uniquely present")
-    // The identifier may be a row descendant. Select its closest AXRow ancestor.
-    var rowPath = matches[0].1
-    var row = try atPath(window, rowPath)
-    while text(row, kAXRoleAttribute) != "AXRow" && !rowPath.isEmpty {
-        rowPath.removeLast(); row = try atPath(window, rowPath)
-    }
+    let rows = try owningRows(before.map { ($0.1, text($0.0, kAXRoleAttribute), text($0.0, kAXIdentifierAttribute)) }, identifier: r.rowIdentifier)
+    try require(rows.count == 1, "Exact physical-device row not uniquely present")
+    let row = try atPath(window, rows.first!)
     try require(text(row, kAXRoleAttribute) == "AXRow", "Physical-device row unavailable")
     if r.action == "inspect" {
         try require(AXUIElementSetAttributeValue(row, kAXSelectedAttribute as CFString, kCFBooleanTrue) == .success, "Cannot select the exact physical row")
@@ -149,9 +189,8 @@ func execute(_ r: Request, name: String) throws {
     } else {
         let display = try atPath(window, r.displayPath!)
         try require(text(display, kAXRoleAttribute) == r.displayRole! && text(display, kAXIdentifierAttribute) == r.displayIdentifier!, "Display identity changed; inspect again")
-        guard let bounds = frame(display), let windowBounds = frame(window) else { throw ControlError.invalid("Display bounds unavailable") }
-        let aspect = bounds.width / bounds.height
-        try require(bounds.width >= 100 && bounds.height >= 100 && windowBounds.contains(bounds) && (r.kind == "watch" ? (0.7...0.95).contains(aspect) : (0.4...0.55).contains(aspect)), "Reviewed display geometry is unsuitable")
+        guard let anchor = frame(display), let windowBounds = frame(window) else { throw ControlError.invalid("Display bounds unavailable") }
+        let bounds = try reviewedDisplayBounds(r, anchor: anchor, window: windowBounds, at: Date().timeIntervalSince1970)
         func point(_ x: Double, _ y: Double) -> CGPoint { CGPoint(x: bounds.minX + bounds.width * x, y: bounds.minY + bounds.height * y) }
         func mouse(_ kind: CGEventType, _ p: CGPoint) throws {
             guard let event = CGEvent(mouseEventSource: nil, mouseType: kind, mouseCursorPosition: p, mouseButton: .left) else { throw ControlError.invalid("Cannot create input") }
@@ -161,8 +200,8 @@ func execute(_ r: Request, name: String) throws {
             let crowns = nodes.filter { text($0.0, kAXIdentifierAttribute) == "digitalcrown.press" }
             try require(crowns.count == 1, "Crown control unavailable")
             guard let crown = frame(crowns[0].0), let event = CGEvent(scrollWheelEvent2Source: nil, units: .line, wheelCount: 1, wheel1: r.scrollUnits!, wheel2: 0, wheel3: 0) else { throw ControlError.invalid("Crown input unavailable") }
-            try require(windowBounds.contains(crown) && !bounds.contains(CGPoint(x: crown.midX, y: crown.midY)), "Crown geometry is ambiguous")
-            let p = CGPoint(x: crown.midX, y: crown.midY)
+            let p = r.crownPoint.map { CGPoint(x: anchor.minX + anchor.width * $0[0], y: anchor.minY + anchor.height * $0[1]) } ?? CGPoint(x: crown.midX, y: crown.midY)
+            try require(windowBounds.contains(p) && !bounds.contains(p), "Crown geometry is ambiguous")
             try mouse(.mouseMoved, p); event.location = p; event.flags = []; event.post(tap: .cghidEventTap)
         } else {
             let values = r.coordinates!
@@ -189,6 +228,53 @@ func execute(_ r: Request, name: String) throws {
 }
 do {
     let args = Array(CommandLine.arguments.dropFirst())
+    if args == ["--self-test"] {
+        let siblings: [([Int], String, String)] = [([0], "AXRow", ""), ([0, 0], "AXImage", "target"), ([0, 1], "AXStaticText", "target"), ([0, 2], "AXStaticText", "target"), ([0, 3], "AXStaticText", "target")]
+        try require(try owningRows(siblings, identifier: "target") == Set([[0]]), "Sibling row coalescing failed")
+        try require(try owningRows(siblings + [([1], "AXRow", ""), ([1, 0], "AXImage", "target")], identifier: "target").count == 2, "Ambiguous rows were not retained")
+        try require(try owningRows(siblings, identifier: "absent").isEmpty, "Absent identifier matched")
+        var orphanRejected = false
+        do { _ = try owningRows([([0], "AXGroup", ""), ([0, 0], "AXImage", "target")], identifier: "target") }
+        catch { orphanRejected = true }
+        try require(orphanRejected, "Identifier without an owning row was accepted")
+
+        let base: [String: Any] = ["hubPID": 1, "deviceDetailsFile": "unused-offline",
+            "rowIdentifier": "TableRow.Device.synthetic", "kind": "watch", "action": "tap",
+            "displayPath": [0], "displayRole": "AXGroup", "displayIdentifier": "",
+            "displayCrop": [0.1, 0.1, 0.4, 0.67], "reviewedAnchorFrame": [100, 200, 800, 600],
+            "reviewedAtUnix": 900, "coordinates": [0.5, 0.5]]
+        let originalAnchor = CGRect(x: 100, y: 200, width: 800, height: 600)
+        let originalWindow = CGRect(x: 0, y: 0, width: 1400, height: 1100)
+        var geometryCases = 0
+        func checkGeometry(_ label: String, changes: [String: Any] = [:], anchor: CGRect? = nil,
+                           window: CGRect? = nil, now: Double = 1000, shouldPass: Bool) throws {
+            let value = base.merging(changes) { _, new in new }
+            let request = try JSONDecoder().decode(Request.self, from: JSONSerialization.data(withJSONObject: value))
+            try validate(request)
+            let accepted: Bool
+            do { _ = try reviewedDisplayBounds(request, anchor: anchor ?? originalAnchor, window: window ?? originalWindow, at: now); accepted = true }
+            catch { accepted = false }
+            try require(accepted == shouldPass, "Geometry guard mismatch: " + label)
+            geometryCases += 1
+        }
+        try checkGeometry("valid Watch crop", shouldPass: true)
+        try checkGeometry("valid phone crop", changes: ["kind": "phone", "displayCrop": [0.1, 0.1, 0.225, 0.65]], shouldPass: true)
+        try checkGeometry("sub-tolerance move", anchor: originalAnchor.offsetBy(dx: 0.49, dy: 0), shouldPass: true)
+        try checkGeometry("tolerance boundary", anchor: originalAnchor.offsetBy(dx: 0.5, dy: 0), shouldPass: false)
+        try checkGeometry("resized canvas", anchor: CGRect(x: 100, y: 200, width: 801, height: 600), shouldPass: false)
+        try checkGeometry("179-second review", now: 1079, shouldPass: true)
+        try checkGeometry("180-second boundary", now: 1080, shouldPass: true)
+        try checkGeometry("181-second review", now: 1081, shouldPass: false)
+        try checkGeometry("future review", now: 899, shouldPass: false)
+        try checkGeometry("outside window", window: CGRect(x: 0, y: 0, width: 250, height: 250), shouldPass: false)
+        try checkGeometry("invalid Watch aspect", changes: ["displayCrop": [0.1, 0.1, 0.7, 0.3]], shouldPass: false)
+        try checkGeometry("invalid phone aspect", changes: ["kind": "phone"], shouldPass: false)
+        try checkGeometry("undersized display", changes: ["displayCrop": [0.1, 0.1, 0.1, 0.15]], shouldPass: false)
+        let request = try JSONDecoder().decode(Request.self, from: JSONSerialization.data(withJSONObject: base))
+        let bounds = try reviewedDisplayBounds(request, anchor: originalAnchor, window: originalWindow, at: 1000)
+        try require(abs(bounds.minX - 180) < 0.0001 && abs(bounds.minY - 260) < 0.0001 && abs(bounds.width - 320) < 0.0001 && abs(bounds.height - 402) < 0.0001, "Normalized crop projection changed")
+        try emit(["rowIdentitySelfTest": "passed", "geometrySelfTest": "passed", "geometryCases": geometryCases, "AXQueries": 0, "inputSent": false]); exit(0)
+    }
     try require(args.count == 1 || (args.count == 2 && args[1] == "--execute"), "Usage: HubControl request.json [--execute]")
     let data = try Data(contentsOf: URL(fileURLWithPath: args[0]))
     try require(data.count < 100_000, "Request too large")
