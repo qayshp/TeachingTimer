@@ -39,6 +39,9 @@ func reviewedFrame(_ current: [Double], request: Request, now: Double) throws ->
 func point(_ r: Request, _ offset: Int, _ frame: CGRect) -> CGPoint {
     CGPoint(x: frame.minX + r.points[offset] * frame.width, y: frame.minY + r.points[offset + 1] * frame.height)
 }
+func maySkipRaise(frontmostPID: Int32?, targetPID: Int32, exactFocusedWindow: Bool) -> Bool {
+    targetPID > 0 && frontmostPID == targetPID && exactFocusedWindow
+}
 func emit(_ value: [String: Any]) throws {
     let data = try JSONSerialization.data(withJSONObject: value, options: [.prettyPrinted, .sortedKeys])
     FileHandle.standardOutput.write(data); print("")
@@ -80,16 +83,27 @@ func execute(_ r: Request) throws {
     let window = try target()
     try need((attr(window, kAXMinimizedAttribute) as? Bool) != true, "Reviewed window is minimized")
     running.activate()
-    try need(AXUIElementPerformAction(window, kAXRaiseAction as CFString) == .success, "Cannot raise exact window")
     Thread.sleep(forTimeInterval: 0.3)
+    let initialFocus = attr(app, kAXFocusedWindowAttribute)
+    let alreadyFocused = maySkipRaise(frontmostPID: NSWorkspace.shared.frontmostApplication?.processIdentifier,
+        targetPID: r.pid, exactFocusedWindow: initialFocus.map {
+            CFGetTypeID($0) == AXUIElementGetTypeID() && CFEqual($0, window)
+        } ?? false)
+    if !alreadyFocused {
+        let raiseResult = AXUIElementPerformAction(window, kAXRaiseAction as CFString)
+        try need(raiseResult == .success, "Cannot raise exact window; AXError rawValue=\(raiseResult.rawValue)")
+        Thread.sleep(forTimeInterval: 0.3)
+    }
     func recheck() throws -> CGRect {
-        try need(NSWorkspace.shared.frontmostApplication?.processIdentifier == r.pid
-                 && CFEqual(try target(), window), "Foreground/window ownership changed")
+        let currentWindow = try target()
         guard let focused = attr(app, kAXFocusedWindowAttribute), let current = frame(window) else {
             throw InputError.invalid("Focused window/frame unavailable")
         }
-        try need(CFGetTypeID(focused) == AXUIElementGetTypeID() && CFEqual(focused, window), "Different window owns focus")
-        return try reviewedFrame(current, request: r, now: Date().timeIntervalSince1970)
+        let bounds = try reviewedFrame(current, request: r, now: Date().timeIntervalSince1970)
+        let exactFocusedReview = NSWorkspace.shared.frontmostApplication?.processIdentifier == r.pid
+            && CFEqual(currentWindow, window) && CFGetTypeID(focused) == AXUIElementGetTypeID() && CFEqual(focused, window)
+        try need(exactFocusedReview, "Exact reviewed window must own foreground focus")
+        return bounds
     }
     let bounds = try recheck(); let from = point(r, 0, bounds)
     func mouse(_ type: CGEventType, _ location: CGPoint) throws {
@@ -117,7 +131,8 @@ func execute(_ r: Request) throws {
         } else { Thread.sleep(forTimeInterval: 0.08) }
         try mouse(.leftMouseUp, last); released = true
     }
-    try emit(["inputSent": true, "deviceAPICalls": 0, "timestampUnix": Date().timeIntervalSince1970,
+    try emit(["inputSent": true, "deviceAPICalls": 0, "raiseSkippedAlreadyFocused": alreadyFocused,
+              "timestampUnix": Date().timeIntervalSince1970,
               "delivery": "unverified host submission; confirm device, volume and audible result separately"])
 }
 func selfTest() throws {
@@ -143,7 +158,15 @@ func selfTest() throws {
     try rejects { _ = try exactWindow([(r.windowID, "other")], request: r) }
     try rejects { _ = try exactWindow([match, match], request: r) }
     try need(point(r, 0, CGRect(x: -400, y: 200, width: 400, height: 800)) == CGPoint(x: -300, y: 600), "Point projection failed")
-    try emit(["reviewedWindowSelfTest": "passed", "AXQueries": 0, "hostProcessLookups": 0, "inputSent": false, "deviceContact": false])
+    try need(maySkipRaise(frontmostPID: 7, targetPID: 7, exactFocusedWindow: true), "Verified focus did not skip redundant raise")
+    for frontmost: Int32? in [7, 8, nil] {
+        try need(!maySkipRaise(frontmostPID: frontmost, targetPID: 7, exactFocusedWindow: false), "Other/missing focused window skipped raise")
+    }
+    try need(!maySkipRaise(frontmostPID: 8, targetPID: 7, exactFocusedWindow: true), "Foreign frontmost app skipped raise")
+    try need(!maySkipRaise(frontmostPID: nil, targetPID: 7, exactFocusedWindow: true), "Missing frontmost app skipped raise")
+    try need(!maySkipRaise(frontmostPID: 0, targetPID: 0, exactFocusedWindow: true), "Invalid PID skipped raise")
+    try emit(["reviewedWindowSelfTest": "passed", "raiseDecisionSelfTest": "passed",
+              "AXQueries": 0, "hostProcessLookups": 0, "inputSent": false, "deviceContact": false])
 }
 do {
     let args = Array(CommandLine.arguments.dropFirst())

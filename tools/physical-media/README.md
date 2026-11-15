@@ -175,12 +175,18 @@ explicit current Device Hub PID, after verifying its bundle identifier. It does
 not query AX, select/activate a window, move anything, post input or contact a
 device. `WindowList --self-test` uses synthetic metadata only; the build/CI checks
 also reject malformed PID arguments without querying a live process/window.
+The default remains restricted to Device Hub. An explicit `--mirroring PID`
+instead requires the PID to belong to `com.apple.ScreenContinuity`, for a current
+iPhone Mirroring window. It never accepts an arbitrary bundle or app PID.
 
 After current device/window availability is confirmed, an operator can run:
 
 ```sh
 work/physical-control-NEW/WindowList CURRENT_DEVICE_HUB_PID \
   > work/PRIVATE-RUN/current-hub-windows.json
+# Separately, when iPhone Mirroring is the authorized phone route:
+work/physical-control-NEW/WindowList --mirroring CURRENT_MIRRORING_PID \
+  > work/PRIVATE-RUN/current-mirroring-windows.json
 ```
 
 Review the returned `windows` entries' current `kCGWindowNumber`, title, bounds,
@@ -194,13 +200,14 @@ Once an exact current window ID is reviewed, capture it without activating or
 moving it:
 
 ```sh
-screencapture -l CURRENT_REVIEWED_WINDOW_ID work/PRIVATE-RUN/window.png
+screencapture -x -o -l CURRENT_REVIEWED_WINDOW_ID work/PRIVATE-RUN/window.png
 ```
 
 The capture is a separate host operation and may require Screen Recording
-permission. Review its pixels before relying on it. Window shadows/frame margins
-may be included, so image pixel bounds can differ from the AX content rectangle;
-do not recycle old screenshot crop coordinates for input. Grey/old content is
+permission. Review its pixels before relying on it. `-o` omits the window shadow,
+whose changing margins can invalidate coordinates derived from image bounds.
+Check captured dimensions against the current AX frame and backing scale; do
+not recycle old screenshot crop coordinates for input. Grey/old content is
 still not a live device result. Window IDs, PIDs, titles and geometry are
 ephemeral: re-list/review after closing, reopening, moving or changing windows,
 and never store real IDs or captures in the public repository. Successful
@@ -259,7 +266,12 @@ fresh review. It requires a locally unlocked Mac, existing Accessibility access,
 the exact running PID/bundle, one unique matching window, no app modal/sheet,
 and foreground/focused ownership. Review age must be **0–180 seconds** and each
 frame component must differ by **less than 0.5 points**. It activates/raises only
-that matched host window, rechecks before input, bounds drags to 12 steps and
+that matched host window. After activation settles, it skips a redundant AXRaise
+only when the exact target already owns focus and its app is frontmost. All
+identity, freshness, frame and focus checks still run before input. Otherwise it
+requires AXRaise success; every raise error fails and records its raw value.
+This avoids presuming why an earlier raise failed. It rechecks before input,
+bounds drags to 12 steps and
 attempts mouse release if a submitted drag fails. It never opens a permission
 prompt, selects a device, uses developer services, installs or launches an app.
 Failure after a host event may report `inputMayHaveBeenSent=true`; preserve the
@@ -271,9 +283,14 @@ exact frame/identity functions, including the 0.49/0.5-point and 180-second
 boundaries, duplicates, unrelated windows and negative-origin projection. It
 also checks valid/invalid request schemas, phone/Watch/action separation,
 bounded Crown units, malformed/oversized files and plan-only receipts. These
+also cover skipping redundant raises only for the exact focused/frontmost app,
+and reject missing/foreign app or window focus. Window-list mode selection is checked
+with synthetic positive PIDs, without resolving a live process. These
 tests do not invoke the new helper with `--execute`, inspect a live process,
-query AX/CG windows, or interact with any device. The additional focus guards in
-the maintained helper still need a supervised delivery rehearsal.
+query AX/CG windows, or interact with any device. The focused-window shortcut
+was subsequently rehearsed with supervised phone taps through iPhone Mirroring.
+The saved receipts establish host submission and screenshots confirm the phone
+UI actions; they do not establish physical Watch synthetic Crown delivery.
 
 ## Notebook clock interpretation
 

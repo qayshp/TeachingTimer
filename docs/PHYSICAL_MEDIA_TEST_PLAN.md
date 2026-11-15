@@ -359,3 +359,21 @@ also timed out. Those attempts supply no first-setter evidence. Raw screenshots,
 identifiers, notebooks and journal files remain private under ignored `work/`.
 The test playback was paused, its pretrial volume restored, and the temporary
 class was ended after evidence collection.
+
+### H2 provider handoff: source inaudible before Crown input
+
+A later Apple Music → Amazon Music handoff retained the same Watch app/control
+identities. A new temporary class/runtime was started first, and the operator
+confirmed working Apple Music timer Crown volume on the Mirroring-to-Mac route.
+Apple Music was paused before Amazon Music started. Amazon showed progressing
+playback, but the operator reported no audible sound on the same laptop output
+**before any post-handoff Crown input**. One phone-side Play retry remained
+inaudible. No timer refresh, media-page switch or control replacement was recorded
+during the handoff.
+
+This arm is **inconclusive for H2**: audible new-source playback was not
+established, so no first Crown request or Watch-caused zero/recovery can be
+evaluated. Retained control identity alone does not establish its internal
+playback-session association. The separate same-player pause/resume arm was
+deferred after pausing near the track's end; it was not completed. A later
+direct-iPhone-speaker comparison was proposed, but no result is recorded here.

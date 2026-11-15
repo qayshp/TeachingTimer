@@ -19,17 +19,21 @@ def main():
     result = subprocess.run([str(windows), '--self-test'], capture_output=True, text=True, timeout=5, check=True)
     window_test = json.loads(result.stdout)
     assert window_test['windowOwnerSelfTest'] == 'passed'
+    assert window_test['windowTargetSelfTest'] == 'passed'
     assert window_test['CGWindowListQueries'] == 0 and window_test['AXQueries'] == 0
     assert window_test['inputSent'] is False
     # Reject before looking up any running process or querying window metadata.
     # Do not test a real positive/live Device Hub PID in this offline suite.
-    for arguments in ([], ['0'], ['-1'], ['not-a-pid'], ['2147483648'], ['1', '--execute']):
+    for arguments in ([], ['0'], ['-1'], ['not-a-pid'], ['2147483648'], ['1', '--execute'],
+                      ['--mirroring'], ['--mirroring', '0'], ['--mirroring', 'not-a-pid'],
+                      ['--mirroring', '2147483648'], ['--mirroring', '1', 'extra'], ['--bundle', '1']):
         result = subprocess.run([str(windows), *arguments], capture_output=True, text=True, timeout=5)
         assert result.returncode == 2 and not result.stdout, result.stdout
     reviewed = binary.with_name('ReviewedWindowInput')
     result = subprocess.run([str(reviewed), '--self-test'], capture_output=True, text=True, timeout=5, check=True)
     reviewed_test = json.loads(result.stdout)
     assert reviewed_test['reviewedWindowSelfTest'] == 'passed'
+    assert reviewed_test['raiseDecisionSelfTest'] == 'passed'
     assert reviewed_test['AXQueries'] == 0 and reviewed_test['hostProcessLookups'] == 0
     assert reviewed_test['inputSent'] is False and reviewed_test['deviceContact'] is False
     for arguments in ([], ['one', 'two'], ['one', '--unknown'], ['--self-test', 'extra']):

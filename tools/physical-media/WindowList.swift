@@ -1,10 +1,16 @@
 // SPDX-License-Identifier: MPL-2.0
-// Read-only Device Hub window metadata. No AX, activation, input or device API.
+// Read-only Device Hub/iPhone Mirroring metadata. No AX, activation, input or device API.
 import AppKit
 import CoreGraphics
 import Foundation
 
 func fail(_ message: String) -> Never { fputs(message + "\n", stderr); exit(2) }
+func target(_ args: [String]) -> (pid: Int32, bundle: String)? {
+    let mirroring = args.count == 2 && args[0] == "--mirroring"
+    guard args.count == 1 || mirroring, let last = args.last,
+          let pid = Int32(last), pid > 0 else { return nil }
+    return (pid, mirroring ? "com.apple.ScreenContinuity" : "com.apple.dt.Devices")
+}
 func ownedWindows(_ windows: [[String: Any]], pid: Int32) -> [[String: Any]] {
     windows.filter {
         guard let owner = $0[kCGWindowOwnerPID as String] as? NSNumber,
@@ -31,23 +37,32 @@ do {
         guard selected.compactMap({ $0[kCGWindowNumber as String] as? Int }) == [10, 12],
               ownedWindows(rows, pid: 99).isEmpty,
               ownedWindows(rows, pid: 1).isEmpty else { fail("Window owner filtering failed") }
-        try emit(["windowOwnerSelfTest": "passed", "CGWindowListQueries": 0, "AXQueries": 0, "inputSent": false])
+        guard target(["41"])?.bundle == "com.apple.dt.Devices",
+              target(["--mirroring", "41"])?.bundle == "com.apple.ScreenContinuity",
+              target(["--mirroring", "41"])?.pid == 41,
+              target(["--bundle", "41"]) == nil,
+              target(["--mirroring", "0"]) == nil,
+              target(["41", "--mirroring"]) == nil else { fail("Window target routing failed") }
+        try emit(["windowOwnerSelfTest": "passed", "windowTargetSelfTest": "passed",
+                  "CGWindowListQueries": 0, "AXQueries": 0, "inputSent": false])
         exit(0)
     }
-    guard args.count == 1, let pid = Int32(args[0]), pid > 0 else {
-        fail("Usage: WindowList DEVICE_HUB_PID (positive explicit PID required)")
+    guard let requested = target(args) else {
+        fail("Usage: WindowList [--mirroring] HOST_APP_PID (positive explicit PID required)")
     }
-    guard let app = NSRunningApplication(processIdentifier: pid),
-          app.bundleIdentifier == "com.apple.dt.Devices" else {
-        fail("PID is not a running Device Hub; no window query performed")
+    guard let app = NSRunningApplication(processIdentifier: requested.pid),
+          app.bundleIdentifier == requested.bundle else {
+        fail("PID does not match the requested host app; no window query performed")
     }
     guard let rows = CGWindowListCopyWindowInfo([.optionAll, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] else {
         fail("Window metadata unavailable; no window IDs inferred")
     }
-    try emit(["hubPID": pid, "bundleIdentifier": "com.apple.dt.Devices",
-              "windows": ownedWindows(rows, pid: pid), "CGWindowListQueries": 1,
+    var report: [String: Any] = ["hostPID": requested.pid, "bundleIdentifier": requested.bundle,
+              "windows": ownedWindows(rows, pid: requested.pid), "CGWindowListQueries": 1,
               "AXQueries": 0, "inputSent": false, "deviceContact": false,
-              "scope": "Current host window metadata only; manually review identity and visibility before a separate capture"])
+              "scope": "Current host window metadata only; manually review identity and visibility before a separate capture"]
+    if requested.bundle == "com.apple.dt.Devices" { report["hubPID"] = requested.pid }
+    try emit(report)
 } catch {
     fail("Window metadata error: \(error)")
 }
