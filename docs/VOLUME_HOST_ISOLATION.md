@@ -6,6 +6,11 @@ candidate mitigation, not a diagnosed framework fix. It remains separate from
 main until reviewed; no physical installation or TestFlight publication is
 implied by this document.
 
+The later [November 14 comparison](VOLUME_COMPARISON_2026-11-14.md) finds normal
+nonzero requests across a full class with the unchanged production volume code.
+Both sessions encounter temporary zero/unavailable state. Native object age,
+provider, route and playback order differ; neither physical run tests this PR.
+
 ## Change and invariants
 
 The timer page is now a stable child of `TabView`. Its static dial, Class/settings
