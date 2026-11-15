@@ -13,7 +13,9 @@ import os
 from pathlib import Path
 import shlex
 import subprocess
+import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -21,6 +23,54 @@ SCRIPT = Path(__file__).resolve().parents[1] / "scripts/physical-media-run.py"
 SPEC = importlib.util.spec_from_file_location("physical_media_run", SCRIPT)
 pmr = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(pmr)
+
+
+class PhysicalClockStampTests(unittest.TestCase):
+    def test_native_clock_is_used_explicitly_instead_of_process_relative_monotonic(self):
+        with patch.object(pmr.time, "clock_gettime_ns", return_value=390_000_000_000_000, create=True) as native, \
+                patch.object(pmr.time, "CLOCK_MONOTONIC", 123, create=True), \
+                patch.object(pmr.time, "monotonic_ns", side_effect=AssertionError("Process clock must not be used")):
+            stamp = pmr.stamp()
+        native.assert_called_once_with(123)
+        self.assertEqual(stamp["hostMonotonicNanoseconds"], 390_000_000_000_000)
+        metadata = stamp["hostClockMetadata"]
+        self.assertEqual(metadata["source"], "clock_gettime_ns(CLOCK_MONOTONIC)")
+        self.assertIn("same-host-boot", metadata["scope"])
+        self.assertEqual(metadata["processID"], os.getpid())
+        self.assertEqual(metadata["pythonVersion"], sys.version.split()[0])
+        self.assertIsNone(metadata["fallbackReason"])
+
+    def test_missing_or_unavailable_native_clock_is_honestly_process_scoped(self):
+        for native in (None, lambda _: (_ for _ in ()).throw(OSError("Unsupported clock"))):
+            with self.subTest(native=native), \
+                    patch.object(pmr.time, "clock_gettime_ns", native, create=True), \
+                    patch.object(pmr.time, "CLOCK_MONOTONIC", 123, create=True), \
+                    patch.object(pmr.time, "monotonic_ns", return_value=30_000_000):
+                stamp = pmr.stamp()
+            self.assertEqual(stamp["hostMonotonicNanoseconds"], 30_000_000)
+            metadata = stamp["hostClockMetadata"]
+            self.assertEqual(metadata["source"], "time.monotonic_ns()")
+            self.assertIn("same-process only", metadata["scope"])
+            self.assertIn("do not compare separate CLI marks", metadata["scope"])
+            self.assertTrue(metadata["fallbackReason"])
+
+    @unittest.skipUnless(callable(getattr(time, "clock_gettime_ns", None)) and hasattr(time, "CLOCK_MONOTONIC"),
+                         "Native CLOCK_MONOTONIC unavailable on this host")
+    def test_fresh_python_process_stamps_share_native_clock_reference(self):
+        # This real offline boundary catches macOS Python 3.9 resetting its
+        # monotonic() origin for each new CLI, which mocks alone cannot detect.
+        code = 'import runpy,json,sys; print(json.dumps(runpy.run_path(sys.argv[1])["stamp"]()))'
+        before = time.clock_gettime_ns(time.CLOCK_MONOTONIC)
+        stamps = [json.loads(subprocess.check_output([sys.executable, "-c", code, str(SCRIPT)],
+                                                    text=True, timeout=10)) for _ in range(2)]
+        after = time.clock_gettime_ns(time.CLOCK_MONOTONIC)
+        values = [stamp["hostMonotonicNanoseconds"] for stamp in stamps]
+        self.assertLessEqual(before, values[0])
+        self.assertLessEqual(values[0], values[1])
+        self.assertLessEqual(values[1], after)
+        self.assertNotEqual(stamps[0]["hostClockMetadata"]["processID"], stamps[1]["hostClockMetadata"]["processID"])
+        for stamp in stamps:
+            self.assertEqual(stamp["hostClockMetadata"]["source"], "clock_gettime_ns(CLOCK_MONOTONIC)")
 
 
 class PhysicalMediaRunTests(unittest.TestCase):
@@ -348,6 +398,26 @@ class PhysicalMediaRunTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertIn("incomplete tail", error)
         self.assertEqual(path.read_bytes(), damaged)
+
+    def test_legacy_clock_marks_are_preserved_and_never_recast_as_native(self):
+        self.prepare()
+        path = self.run / "events.ndjson"
+        legacy = json.loads(path.read_text())
+        legacy.pop("hostClockMetadata")
+        legacy["hostMonotonicNanoseconds"] = 30_000_000
+        original = (json.dumps(legacy) + "\n").encode()
+        path.write_bytes(original)
+        code, _, error = self.invoke("mark", "--run", self.run, "--event", "note", "--note", "New clock metadata")
+        self.assertEqual(code, 0, error)
+        self.assertTrue(path.read_bytes().startswith(original))
+        rows = [json.loads(line) for line in path.read_text().splitlines()]
+        self.assertNotIn("hostClockMetadata", rows[0])
+        self.assertEqual(rows[0]["hostMonotonicNanoseconds"], 30_000_000)
+        self.assertIn("hostClockMetadata", rows[1])
+        code, output, error = self.invoke("summary", "--run", self.run, "--json")
+        self.assertEqual(code, 0, error)
+        self.assertNotIn("hostClockMetadata", json.loads(output)["events"][0])
+        self.assertIn("Older stamps without clock metadata", (self.run / "NEXT.md").read_text())
 
     def test_simultaneous_marks_do_not_lose_or_duplicate_events(self):
         self.prepare()

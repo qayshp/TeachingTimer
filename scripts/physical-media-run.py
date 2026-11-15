@@ -86,12 +86,33 @@ def catalog_command(args):
 
 def stamp():
     wall_ns = time.time_ns()
-    monotonic_ns = time.monotonic_ns()
+    # Xcode's Python 3.9 on macOS subtracts a per-process origin from
+    # monotonic_ns(). Each CLI mark is a new process, so use the shared native
+    # clock explicitly instead of mislabelling that value as boot-scoped.
+    native_clock = getattr(time, "clock_gettime_ns", None)
+    native_id = getattr(time, "CLOCK_MONOTONIC", None)
+    fallback_reason = None
+    if callable(native_clock) and native_id is not None:
+        try:
+            monotonic_ns = native_clock(native_id)
+            source = "clock_gettime_ns(CLOCK_MONOTONIC)"
+            scope = "same-host-boot; compare only the same clock source"
+        except OSError:
+            fallback_reason = "native CLOCK_MONOTONIC unavailable"
+    else:
+        fallback_reason = "native CLOCK_MONOTONIC API unavailable"
+    if fallback_reason:
+        monotonic_ns = time.monotonic_ns()
+        source = "time.monotonic_ns()"
+        scope = "same-process only; do not compare separate CLI marks"
     wall = datetime.fromtimestamp(wall_ns / 1e9, timezone.utc)
     return {"wallUTC": wall.isoformat(timespec="microseconds"),
             "wallPacific": wall.astimezone(PACIFIC).isoformat(timespec="microseconds"),
             "pacificZone": wall.astimezone(PACIFIC).tzname(),
-            "wallUnixNanoseconds": wall_ns, "hostMonotonicNanoseconds": monotonic_ns}
+            "wallUnixNanoseconds": wall_ns, "hostMonotonicNanoseconds": monotonic_ns,
+            "hostClockMetadata": {"schemaVersion": 1, "source": source, "scope": scope,
+                                  "processID": os.getpid(), "pythonVersion": sys.version.split()[0],
+                                  "fallbackReason": fallback_reason}}
 
 
 def local_query(argv, cwd):
@@ -252,8 +273,12 @@ def instructions(repo, run, commands, experiment=None):
              mark("audio_stopped"), mark("run_stopped"),
              shlex.join(notebook + ["summary", "--run", str(run)]), "```", "",
              "UTC and Pacific wall time plus host monotonic nanoseconds are recorded for every mark. "
-             "These are mark times, not inferred device-event times. Host monotonic intervals apply "
-             "only within the same host boot; keep wall-clock and device-log alignment separate.", "",
+             "These are mark times, not inferred device-event times. Each stamp records its clock "
+             "source, scope, process ID and Python version. Native CLOCK_MONOTONIC supports "
+             "cross-process comparison within the same host boot and clock source; the fallback "
+             "is explicitly process-only. Older stamps without clock metadata from macOS Python 3.9 "
+             "are process-relative and cannot be compared across CLI calls. Preserve them and use "
+             "their wall timestamps; never silently reinterpret them as the new native clock.", "",
              "## Prepared capture and app-open commands — not executed", "",
              "Each journal output must remain NEW. Do not rerun a command against an existing output "
              "or overwrite snapshot JSON. Prepare a new run for another arm. Device-info snapshots "
@@ -330,7 +355,7 @@ def prepare(args):
                 "experiment": experiment,
                 "freeBytesAtPreparation": shutil.disk_usage(run).free,
                 "captureCapability": "Prepared argv only; GUI rehearsal and transfer remain unverified",
-                "monotonicScope": "This Mac boot only; marks are operator records, not device timestamps"}
+                "monotonicScope": "Inspect each stamp's hostClockMetadata: native same-host-boot clock or process-only fallback. Legacy metadata-free macOS Python3.9 values are process-relative; marks are operator records, not device timestamps."}
     commands = prepared_commands(repo, run, args)
     write_json(run / "run.json", manifest)
     write_json(run / "next-commands.json", commands)
