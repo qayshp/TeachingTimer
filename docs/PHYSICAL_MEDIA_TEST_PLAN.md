@@ -19,6 +19,41 @@ own binding sign; Simulator subtype mapping alone cannot recover physical intent
 Do not add a custom/quantized volume counter, a recovery floor, an ignored first
 movement or a gesture delay to the teaching app for this test.
 
+## Stale volume-state hypothesis and separate test arms
+
+Use **stale volume state** as the umbrella term. Two different mechanisms remain
+possible: a **stale volume baseline**, where the retained native control's inner
+value no longer matches the current phone volume, and a **stale playback-session
+association**, where the control has not caught up with the current playback
+source or endpoint. Neither mechanism is established on hardware. A control
+showing a value does not identify its destination, and no response does not prove
+it is controlling an old session. In the artificial Simulator experiment, a
+current getter coexisted with a stale slider/sequencer; no outgoing zero or
+functional native Crown response was reproduced.
+
+The class/music-order comparison below is one test factor, not a substitute for
+these stale-state checks. Prepare each as a separate arm; do not combine an
+external volume change, provider handoff and route change in the same trial.
+
+| Arm | Deliberate change while TeachingTimer's native control is retained | First-return check |
+| --- | --- | --- |
+| Retained/idle reference | Keep the same phone player, track, output and quiet nonzero volume through the passive Home/wrist-down interval. | Record whether the process/control was retained or recreated. Capture the ring and phone level before one small known volume-up turn. |
+| External volume change: stale-baseline test | First establish working timer Crown volume at quiet level A. Leave TeachingTimer via Home without force-quitting, retaining the class and recorded runtime intent. Using only the phone's volume controls, change to a distinct but still quiet nonzero level B; keep player/track/output fixed. Record both times/levels. | Reopen the timer and capture ring versus phone level **before touching the Crown, refreshing or visiting media**. Make one small known up turn. Save the first outgoing native scalar, if logs expose it, and phone/audible result. A matching ring is useful but does not prove every inner value is current. |
+| Playback-source handoff: stale-association test | After a working reference, retain the timer control via Home. Pause the current phone player and start an already available second player, keeping the output and quiet baseline as stable as possible. Ensure the first player is paused. Use Apple Music → Amazon Music only if both are usable. Label the provider change explicitly; it may also change audio-session behavior. | Confirm the phone's actual playing source/output independently, then return directly to the timer for pre-input evidence and one small known up turn. Only after preservation compare TeachingTimer's embedded media page and, separately, Apple's Now Playing app. A native source label alone does not identify the volume command's destination. |
+
+Keep the handoff arm separate from the initial fast run if time or account access
+is limited; it is part of the prepared follow-up, not a prerequisite to testing
+the retained baseline. A pause/resume of the same player can be a smaller
+comparison, but do not call it a new audio session unless system records establish
+that. Keep runtime intent fixed for the baseline and handoff arms; do not manually
+Stop it as an extra factor. Home can itself change runtime/foreground state;
+record any automatic recovery as a lifecycle difference. A separate timer-selected,
+wrist-down comparison can test phone volume A/B without adding Home/return.
+Defer USB/AirPlay route changes to their own arms. An app relaunch, control
+replacement or automatic setup on return must be recorded rather than assumed
+away. Preserve the same class context; use the failure/capture and restoration
+procedures below for every arm.
+
 ## Prepare before the devices are needed
 
 - Create a private run folder, timestamp marker terminal and screenshot/recording
@@ -137,7 +172,9 @@ python3 scripts/physical-media-run.py mark --run work/support/NEW-PHYSICAL-RUN \
 Review generated `NEXT.md` before device availability. Use `playback_started`,
 `class_started`, `watch_foreground`, `ring_before`, `crown_input`, `ring_after`,
 `incident`, `capture_started`, `recovery`, `audio_stopped` and `run_stopped` marks;
-use `note` for runtime Stop, passive start/end and a gesture's end. Mark whether
+use `note` for runtime Stop, passive start/end, phone volume A/B changes, player
+handoff and a gesture's end. Use `source_confirmed` and `route_confirmed` after
+the change; distinguish the planned values from actually observed state. Mark whether
 `class_started` means a new class, resumed runtime, or confirmation of a reused
 running context. Attach saved evidence paths with `capture_saved`. Each mark
 records UTC/Pacific wall time and host monotonic time. Human marks bracket actions;
