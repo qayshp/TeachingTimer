@@ -49,6 +49,8 @@ installation or a physical-device test.
 
 ## Current additions
 
+- [November 16 capture-related audio investigation](MEDIA_CAPTURE_AUDIO_2026-11-16.md): Device Hub versus iPhone Mirroring, protected-video limits, Amazon microphone/format evidence and later controlled comparisons; physical testing remains paused.
+
 - [November 13 consistency review](CONSISTENCY_REVIEW_2026-11-13.md): menu and
   support wording, current versus historical documentation, report contracts,
   and verification evidence.
@@ -75,7 +77,7 @@ installation or a physical-device test.
 
 - [Publishing readiness](PUBLISHING_READINESS.md): onboarding and outstanding release gates.
 - [Private support intake](PRIVATE_SUPPORT_PLAN.md): verified incoming/outgoing email, description-based public support and owner-pilot attachment-delivery checks.
-- [Supervised physical media plan](PHYSICAL_MEDIA_TEST_PLAN.md): preparation only; no run scheduled.
+- [Supervised physical media plan](PHYSICAL_MEDIA_TEST_PLAN.md): hypothesis protocols, November 15 physical findings and the paused-test checkpoint.
 - [Settings and information pages](SETTINGS_PASS_25.md): build 25 preferences and
   build 27 Help/Privacy/About screenshots and limits.
 - [Media wake refresh](MEDIA_WAKE_REFRESH.md): current bounded recovery policy.

@@ -316,6 +316,10 @@ No unattended/overnight run is scheduled by this plan.
 
 ## November 15 supervised physical result
 
+The [November 16 offline investigation](MEDIA_CAPTURE_AUDIO_2026-11-16.md)
+separates capture-related audio silence from Watch volume commands and records
+the microphone/format clues and controlled comparisons for a later session.
+
 The physical SE 3 and paired iPhone used Beta **1.0 (261113.2020.62)**. The
 volume-host-isolation experiment in PR #33 was **not installed** for this test.
 These are bounded observations, not a fix or a repeatable silencing reproduction.
@@ -333,7 +337,9 @@ and Device Hub sharing **only the Watch**. The iPhone's Device Hub view remained
 unshared. Apple Music identified the output as iPhone to the Mac; this was not a
 direct iPhone-speaker, USB or studio AirPlay test. The operator confirmed that
 Crown input changed the Watch ring, phone volume and sound heard through the Mac.
-No audio recording was introduced during the comparison.
+No deliberate audio recording was introduced by the test. This does not
+establish a capture-free host: the later [historical Mac-log review](MEDIA_CAPTURE_AUDIO_2026-11-16.md#additional-historical-mac-evidence)
+found background audio-client negotiation and records that limitation.
 
 | Retained-control H1 step | Observed result |
 | --- | --- |
