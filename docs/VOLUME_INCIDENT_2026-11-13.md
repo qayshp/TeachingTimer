@@ -19,10 +19,17 @@ is established as the cause.
 
 The owner confirms that starting the evening class in the app late correctly
 selected the **18:45** scheduled start. The existing prior-quarter anchoring is
-working as intended and is independent of volume handling. The owner does not
-remember whether volume was adjusted earlier in that class, the direction or
-amount of Crown rotation during the mute, or the volume ring's appearance.
-Those observations cannot be reconstructed from the app journal.
+working as intended and is independent of volume handling. At the initial
+review, the owner did not remember whether volume was adjusted earlier in that
+class, the Crown direction/amount during the mute, or the ring's appearance.
+On November 15, the owner added that they think they were trying to **increase**
+volume. This uncertain retrospective recollection strengthens that interpretation;
+it is not a captured signed input. The phone's recovered level, **0.784375**, is
+higher than its pre-mute **0.625**, but follows separate media-page adjustments
+and therefore cannot independently establish the original direction. See the
+[successful-run comparison and input-pattern evidence](VOLUME_COMPARISON_2026-11-14.md#owner-recollection-added-november-15).
+Rotation amount and ring appearance remain unknown; the app journal cannot
+reconstruct them.
 
 ## What the emailed journal establishes
 
@@ -155,6 +162,11 @@ control's interaction baseline or state after focus/display-host transitions.
 It is unproven: the correct earlier model value and the missing signed Crown
 movement leave alternative input interpretations open. The captured chain
 does establish delivery to the intended phone output for this occurrence.
+
+The [extended opening/playback timeline](VOLUME_TIMELINE_2026-11-13.md) adds the
+fresh Amazon launch at 18:48:12, audio start at 18:48:23, initial phone volume
+adjustments and the Watch's later foreground return. This confirms the owner's
+music-before-class recollection without establishing that the order caused zero.
 
 ## Proposed experiment and regression gates
 

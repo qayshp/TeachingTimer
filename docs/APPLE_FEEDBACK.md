@@ -26,6 +26,14 @@ is assigned.** FB25329167 remains the separate focus-regression report; shared
 causation is not established. This readiness assessment does not constitute a
 new inspection of Apple's inbox or replies.
 
+On November 14, the existing Feedback Assistant draft was revised and saved as
+**Native companion volume control unexpectedly silences iPhone playback during
+Crown adjustment**. Closing and reopening verified the new title and description.
+The revised focused package and original paired captures are staged locally for
+attachment; the draft still lists its older evidence ZIP. No Submit action or
+Apple inbox/reply review occurred. The [experimental PR](https://github.com/qayshp/TeachingTimer/pull/33)
+tests stable volume hosting separately; it is not a claimed fix in the report.
+
 **November 6 project resolution:** GitHub [issue #4](https://github.com/qayshp/TeachingTimer/issues/4)
 is closed as fixed by builds 33–34, supported by the reproduced mechanisms,
 passing follow-up recordings and no recent owner-observed physical recurrence.

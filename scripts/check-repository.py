@@ -25,7 +25,7 @@ PRIVATE_SUFFIXES = ('.p12', '.p8', '.mobileprovision', '.provisionprofile', '.ke
                     '.ipa', '.dSYM.zip', '.tar', '.tar.gz', '.log', '.xcuserstate', '.xccheckout', '.xcscmblueprint')
 GENERATED_DIRECTORIES = {'build', '.build', 'xcuserdata', '__pycache__'}
 GENERATED_BUNDLES = ('.app', '.appex', '.xcarchive', '.logarchive', '.dSYM', '.xcresult')
-SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml', '.xcconfig'}
+SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml', '.xcconfig', '.m', '.cjs'}
 FENCE = re.compile(r'^ {0,3}(`{3,}|~{3,})(.*)$')
 HEADING = re.compile(r'^ {0,3}#{1,6}(?:[ \t]+(.*)|[ \t]*)$')
 

@@ -49,3 +49,31 @@ attachments and manifests were retained. The private inventory, explicit removal
 plan and successful result live under `work/maintenance/2026-11-05-review/` in
 the canonical checkout. This was a local cleanup, not deletion from devices or
 from Git history.
+
+## November 14, 2026 diagnostic consolidation
+
+The successful/failing volume comparison was completed before removing redundant
+local evidence. A non-following inventory and an explicit, hash-bound plan
+preceded a dry run and independent review. The executed plan removed **56
+enumerated targets containing 7,581 files and 6,670,898,206 apparent bytes**
+(about **6.21 GiB**):
+
+| Removed payload | Targets | Preservation proof |
+| --- | --- | --- |
+| Expanded older system-log archives | 11 | Every file matches its retained, fully validated compressed archive. |
+| Incomplete sysdiagnose downloads | 4 | Each is an exact byte prefix of a retained complete capture. Failed-operation receipts remain. |
+| Redundant outer tar containers | 2 | Retained child archives plus private reconstruction recipes reproduce every original byte and SHA-256, including wrapper metadata. |
+| Duplicate compressed capture | 1 | A byte-identical canonical archive remains. |
+| Nested journal-copy payloads | 38 | A byte-identical original remains; stage-specific snapshots and copy-operation receipts are preserved. |
+
+This byte total describes removed file contents, not a guaranteed increase in
+APFS free space. No unique journal or raw capture was selected simply because it
+was old. The November 13 evening failure and November 14 successful comparison,
+other unique open-issue evidence, Apple feedback attachments and signed teaching
+checkpoints remain intact. No device contents or Git history were changed.
+
+The private plan, hashes, file identities, reconstruction helper and before/after
+receipts live under `work/support-2026-11-14-known-good/cleanup/` in the active
+experimental worktree. The deletion helper defaults to dry-run; restoration
+requires a new output directory. Historical records may still name removed
+redundant paths; the preservation mapping identifies their retained source.

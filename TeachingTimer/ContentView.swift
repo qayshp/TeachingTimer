@@ -48,31 +48,19 @@ struct ContentView: View {
     }
 
     var body: some View {
-        // Keep native media outside the clock's scheduled rendering subtree.
+        // Keep native media and volume outside scheduled clock rendering.
         // Shared owners and navigation survive every clock tick and page change.
         TabView(selection: $page) {
-            TimelineView(.periodic(from: Self.clockTimelineAnchor, by: 1)) { context in
-                SharedClockPage(
-                    date: context.date,
-                    session: session,
-                    classStore: classStore,
-                    landmarks: landmarks,
-                    retireOldClass: { retireOldClass() },
-                    crownIsActive: page == .classProgress,
-                    volumeBackgroundRevision: volumeBackgroundRevision,
-                    showsClassProgress: true
-                )
-                .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
-                    // Invalidate pre-rendered clock/count frames after a clock change.
-                    context.invalidateTimelineContent()
-                }
-                .onChange(of: landmarks.isActive) { _, _ in
-                    context.invalidateTimelineContent()
-                }
-                .onChange(of: classStore.context) { _, _ in
-                    context.invalidateTimelineContent()
-                }
-            }
+            SharedClockPage(
+                clockTimelineAnchor: Self.clockTimelineAnchor,
+                session: session,
+                classStore: classStore,
+                landmarks: landmarks,
+                retireOldClass: { retireOldClass() },
+                crownIsActive: page == .classProgress,
+                volumeBackgroundRevision: volumeBackgroundRevision,
+                showsClassProgress: true
+            )
             .onAppear { recordInterfaceEvent("page_appeared", page: .classProgress) }
             .onDisappear { recordInterfaceEvent("page_disappeared", page: .classProgress) }
             .tag(Page.classProgress)

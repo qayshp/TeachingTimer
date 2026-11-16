@@ -85,6 +85,49 @@ was left running. Its completion/download was not needed for the earlier volume
 incident, whose captures were already validated. The saved request is distinct
 from the manually triggered 20:17 Watch capture.
 
+The later reproduction download did not complete. Its saved Device Hub alert
+reported **CoreDevice 13003**, underlying **NSError 60 / Operation timed out**;
+this is a transfer/collection failure after the successful metadata stage, not a
+recurrence of the earlier DDI error chain. The alert subsequently blocked
+Simulator input until inspected and dismissed. Both the unchanged app baseline
+and candidate ignored taps while it covered the window; Simulator-only
+screenshots could not show that Mac dialog. The regression input helper now
+fails closed on a Device Hub sheet, with a live blocked/unblocked check.
+
+## November 14: authorization and a complete comparison capture
+
+All three build-62 TestFlight journals copied and parsed through the normal-user
+developer connection, without launching the app or using companion export.
+The Mac desktop was initially locked: this blocked GUI operation, but did not
+prevent those journal copies. Mac screen lock and Watch passcode lock are
+separate states.
+
+Noninteractive `devicectl device sysdiagnose` again returned generic
+`CoreDeviceCLISupport.DiagnoseError 0`. The same phone operation in a terminal
+exposed a password prompt; cancelling reproduced error 0. After native Mac
+administrator authentication, the elevated phone capture succeeded. This is
+evidence of an authorization obstacle in this invocation, not a retrospective
+explanation of every earlier error 0 or every transport failure.
+
+The elevated command could not resolve the Watch (`CoreDevice 1000`), although
+the normal-user connection could inventory its files. Normal-user Device Hub
+collection succeeded after its privacy notice and destination chooser. Menu
+clicks alone were not treated as capture acknowledgements: a new device-side
+`IN_PROGRESS` entry independently confirmed the Watch operation. No further
+capture was started while it was in progress.
+
+Fresh phone and Watch captures dated **20:33:46 and 20:37:47 PST** downloaded
+completely: **413,272,414** and **155,517,906 bytes**, respectively. Byte counts,
+SHA-256, full gzip CRC/trailer and tar parsing validated both. The Watch's local
+size matches its completed remote file. Only the selected system-log subtrees
+were extracted. Class-window volume records survived in the Watch capture;
+phone command-level detail is less complete. See the
+[successful/failing comparison](VOLUME_COMPARISON_2026-11-14.md).
+
+No pairing, image reinstall, network change, source change or physical app
+installation was needed. The user was released from keeping devices available
+when downloads completed, before the remaining offline validation and analysis.
+
 ## Meaning of the direct collection error
 
 The administrator-authorized `/usr/bin/log collect --device-udid …` attempt
