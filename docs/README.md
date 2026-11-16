@@ -49,7 +49,7 @@ installation or a physical-device test.
 
 ## Current additions
 
-- [November 16 capture-related audio investigation](MEDIA_CAPTURE_AUDIO_2026-11-16.md): Device Hub versus iPhone Mirroring, protected-video limits, Amazon microphone/format evidence and later controlled comparisons; physical testing remains paused.
+- [November 16 capture-related audio investigation](MEDIA_CAPTURE_AUDIO_2026-11-16.md): Device Hub versus iPhone Mirroring, Codex Audio Visualizer inspection, Amazon microphone/format evidence and later controlled comparisons; physical testing remains paused.
 
 - [November 13 consistency review](CONSISTENCY_REVIEW_2026-11-13.md): menu and
   support wording, current versus historical documentation, report contracts,

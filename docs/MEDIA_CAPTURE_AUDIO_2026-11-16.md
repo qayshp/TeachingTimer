@@ -55,6 +55,57 @@ Exact queries, time-zone labels, retained records and hashes remain private.
 These records improve the output/capture context but do not replace the missing
 phone audio-session evidence.
 
+## Codex system-audio client follow-up
+
+Read-only inspection of the installed Codex app identifies
+`system-audio-spectrum` as the helper for **Settings → General → Toys → Audio
+visualizer**, the optional audio-reactive conversation rail. The inspected app
+is version **26.1111.21308 (27194)**. This is today's installed implementation,
+not cryptographic proof of the exact binary running in the historical trial.
+The helper was never executed for this investigation.
+
+The native helper creates a global stereo Core Audio process tap with an empty
+process-exclusion list, feeds a private aggregate device, and computes frequency
+levels with FFT operations. The app receives 24 numeric levels for the visualizer.
+This path is output capture, not a direct microphone selection. Input-device
+negotiations in daemon logs do not prove that those microphones were recorded.
+The parent starts the helper on its first subscriber and stops it when the last
+subscriber leaves; visible enabled rails can subscribe, while hidden documents
+and reduced-motion state gate subscription. That lifecycle can cause starts and
+stops, but it does not prove the timing of historical helper restarts.
+
+Static disassembly shows an explicit **unmuted** tap setting. Apple documents
+that this setting preserves hardware playback while capturing. The helper's
+imported API surface contains property reads, not direct volume or default-device
+setters. This argues against deliberate source muting or a direct volume-zero
+setter in this implementation. It does not rule out a Core Audio interaction,
+format/routing problem or a producer reacting to capture.
+[Apple's tap mute behavior](https://developer.apple.com/documentation/coreaudio/catapmutebehavior),
+[Core Audio tap architecture](https://developer.apple.com/documentation/coreaudio/capturing-system-audio-with-core-audio-taps)
+
+The historical named-client records establish repeated format negotiation.
+Some client-scoped blocks contain unsupported virtual-input voice-processing
+negotiation errors. These are not an identified Amazon output failure. Other
+records show recording clients starting and stopping near the negotiation
+bursts, but their numeric identities cannot be tied conclusively to this helper
+from the saved rows. The original export remains preserved; a later broader
+historical query returned no timestamped rows and cannot fill the lifecycle gap.
+
+Two open reports in OpenAI's repository describe this visualizer interfering
+with dictation or other microphone apps, with users reporting recovery after
+disabling it. These are primary user observations, not an OpenAI confirmation
+of our mirrored-music symptom. They make unintentional tap/Core Audio contention
+a concrete test candidate; they do not establish protected-music suppression.
+[Visualizer blocks dictation, #42229](https://github.com/openai/codex/issues/42229),
+[Dictation startup stalls, #44596](https://github.com/openai/codex/issues/44596)
+
+No inspected Apple contract says that simply starting an unmuted output tap
+must silence protected music through iPhone Mirroring. Capture omission and
+actual speaker silence are different observations. No Codex setting, permission,
+audio service, process or device state was changed for this follow-up. Bundled
+implementation excerpts, hashes and static-analysis receipts remain private;
+no proprietary app source or binary is added to this repository.
+
 ## Apple Music and Device Hub
 
 The black-video observation is **consistent with protected-video capture
@@ -90,7 +141,7 @@ fixed issue. That search result is not proof that the behavior is unsupported.
 
 ## Amazon Music and iPhone Mirroring
 
-The most specific new clue is the saved system notice:
+Another specific clue is the saved system notice:
 
 > iPhone microphone is not available from Mac.
 
@@ -133,20 +184,27 @@ These are plans only; none is executed by this offline investigation.
    Record actual route changes as well as phone and Mac output/mute levels.
    If a transport necessarily changes the output, label the result as a combined
    capture/route comparison rather than a pure capture-state test.
-2. **Test Amazon's voice-mode lead.** Record Hands-Free state and the microphone
+2. **Isolate the Codex visualizer.** For the same Amazon track and Mirroring/Mac
+   output, establish a quiet reference with the visualizer off and verify its
+   helper is absent. Compare with it on, then off again if needed, without Watch
+   input or volume/route changes. Preserve evidence before recovery and record
+   any normal app restart as an additional transition. Do not reset Core Audio
+   or permissions as part of this comparison. This plan does not change the
+   setting during the paused investigation.
+3. **Test Amazon's voice-mode lead.** Record Hands-Free state and the microphone
    notice, then compare with Hands-Free disabled, keeping track, format and
    output fixed. Restore the original preference afterward. A coincident notice
    alone is not a successful diagnosis.
-3. **Distinguish capture policy from general audio delivery.** Use the existing
+4. **Distinguish capture policy from general audio delivery.** Use the existing
    [unprotected phone audio fixture](../tools/phone-audio-probe/README.md) as a
    separate reference. Verify that it is audible on physical hardware first;
    use actual audio rather than an all-zero/silent fixture for this check.
    Fixture success would narrow the failure to the media/provider path, not
    prove DRM was the cause.
-4. **Compare format only if needed.** Use Amazon's quality panel to keep the
+5. **Compare format only if needed.** Use Amazon's quality panel to keep the
    same track and change only stereo/spatial or delivery quality. The existing
    two-track observation is not a controlled codec comparison.
-5. **Preserve a contemporaneous failure capture before recovery.** Record the
+6. **Preserve a contemporaneous failure capture before recovery.** Record the
    first audible/silent transition, active player, route and both endpoint gains.
    A completed phone capture would be needed for its audio-session/route/policy
    evidence; Watch journals alone cannot provide it. Record any background Mac
