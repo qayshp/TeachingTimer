@@ -133,10 +133,10 @@ materials, private archives or raw diagnostics. The
 is the first such milestone.
 
 Every distributed build needs a unique `CURRENT_PROJECT_VERSION`. The automatic
-release workflow supplies `YYMMDD.HHmm.sequence` in Pacific local time (including
-daylight-saving changes); manual release tooling accepts the same format or a
-positive integer. Do not
-change the checked-in project version merely to allocate an automatic release.
+release workflow supplies `YYMMDD.HHmm.sequence` in Pacific Standard Time
+(UTC−08:00 year-round). Manual release tooling accepts the same format or a
+positive integer. Leave the checked-in project version in place when allocating
+an automatic release.
 A build phase
 also records Git revision (including a dirty suffix) and UTC build time in
 `BuildInfo.plist`; launch journals include both. Source exports can supply

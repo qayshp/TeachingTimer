@@ -490,13 +490,13 @@ See the [verification contract](CI_EFFICIENCY.md#implemented-exact-source-verifi
 
 After app verification passes, the workflow automatically signs, uploads, waits
 for Apple processing and assigns that build to the internal Maintainer pilot.
-Failed verification never reaches the publishing job. Each published workflow
-run gets an automatic build string in Pacific local time:
-`YYMMDD.HHmm.sequence` (for example, `261104.1602.17` means November 4, 2026,
-at 4:02 p.m. Pacific, workflow run 17). The final component is the workflow's
-unique increasing run number, so builds created in the same minute remain
-distinct without a race-prone lookup. Daylight-saving time follows Pacific
-local time. Manual releases may still use an explicit positive integer.
+Failed verification never reaches the publishing job. Each automatic build
+gets `YYMMDD.HHmm.sequence` in Pacific Standard Time (UTC−08:00 year-round).
+For example, `261104.1602.17` means November 4, 2026, at 4:02 p.m. PST,
+workflow run 17. The final component is the workflow's increasing run number,
+so builds generated in the same minute remain distinct. The fixed offset keeps
+the timestamp advancing when Pacific local time repeats an hour in November.
+Manual releases may still use an explicit positive integer.
 App Store Connect's duplicate-build check remains an additional safeguard.
 There is no concurrency policy that silently replaces queued `main` builds.
 
