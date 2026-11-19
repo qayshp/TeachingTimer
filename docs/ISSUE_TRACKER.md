@@ -48,7 +48,7 @@ new automated coverage, the hosted failure and a next action for every open issu
 - [#14 Release traceability and contribution safeguards](https://github.com/qayshp/TeachingTimer/issues/14)
 - [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15): invariant table and seeded tests implemented; performance measurement remains.
 - [#30 Screenshot OCR stability](https://github.com/qayshp/TeachingTimer/issues/30): fixed by bounded CPU-backed fast recognition, exact multi-scale corroboration and observed icon/label pairs. Full SE/Ultra actions pass; CI executes real recognition on nine synthetic labels. [Evidence](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
-- [#24 Release ordering](https://github.com/qayshp/TeachingTimer/issues/24): exact-source verification reuse and selective Swift CodeQL are implemented. Publisher serialization and a confirmed synthetic Pacific daylight-saving build-number reversal remain; main checks retain per-commit cancellation groups.
+- [#24 Release ordering](https://github.com/qayshp/TeachingTimer/issues/24): exact-source verification reuse and selective Swift CodeQL are implemented. Automatic build timestamps use fixed PST to avoid the daylight-saving reversal. Publisher serialization and source ordering remain open.
 
 Completed: [#12 documentation and changelog](https://github.com/qayshp/TeachingTimer/issues/12),
 [#13 teaching-face visual key](https://github.com/qayshp/TeachingTimer/issues/13),

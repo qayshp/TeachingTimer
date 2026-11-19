@@ -231,8 +231,9 @@ coverage or establish physical installation.
    parallel host checks or independent builds with isolated outputs; avoid
    competing heavy compilation during timing-sensitive smoke observations.
 
-Publisher serialization, source ordering and daylight-saving build-number policy
-remain in [#24](https://github.com/qayshp/TeachingTimer/issues/24).
+Automatic build numbers now use fixed Pacific Standard Time (UTC−08:00) and
+retain the workflow run number as their suffix. Publisher serialization and
+source ordering remain in [#24](https://github.com/qayshp/TeachingTimer/issues/24).
 
 Keep the real OCR and outline checks: they exercise failure paths compilation
 missed. Keep both packaging archives, cross-OS Python checks, fresh-process
