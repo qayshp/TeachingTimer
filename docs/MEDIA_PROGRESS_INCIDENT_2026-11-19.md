@@ -63,6 +63,27 @@ this pairing and output route. It needs no Teaching Timer source and gives
 FB25379883 a minimal reproduction. Apple's standalone watch app advanced on
 the same source. The captures do not identify the internal cause.
 
+## Apple's published workout sample
+
+Apple's [Build a workout app for Apple Watch](https://developer.apple.com/documentation/healthkit/building-a-workout-app-for-apple-watch?changes=__9_5)
+sample reproduced the same stall on the physical SE 3. The Swift files matched
+the official archive byte for byte. Xcode 27.2 used a separate development
+bundle ID and a watchOS 9.0 deployment target because its SDK no longer accepts
+the sample's watchOS 8.0 setting.
+
+Dismiss the Health Access prompt, select Walk, and swipe from metrics to the
+sample's third page. Start Apple Music on the paired iPhone while the sample's
+native media page is visible. Keep the track and iPhone Mirroring output
+unchanged when switching to Apple's standalone Watch app for the reference.
+
+| Watch view | iPhone elapsed time | Watch ring endpoint |
+| --- | --- | --- |
+| Apple's workout sample, native media page | 0:04 → 0:24 | 0° → 0° |
+| Apple's standalone Now Playing, paired iPhone selected | 0:52 → 1:12 | 79° → 109° |
+
+The sample showed the correct track and Pause button while the ring stood still.
+This reproduces the symptom using Apple's original paged host and media code.
+
 ## Public implementations reviewed
 
 - Apple's workout sample places `NowPlayingView()` in its own paged tab.
