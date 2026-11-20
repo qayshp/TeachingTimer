@@ -40,6 +40,7 @@ overrides, exact-source handoff and preview commands.
 | [Form-factor validation](FORM_FACTOR_VALIDATION.md) | Dated multi-size visual checks, not hardware certification. |
 | [Phone audio fixture](../tools/phone-audio-probe/README.md) | Bounded native playback and remote-command evidence, independent of TeachingTimer. |
 | [Native volume probe](../tools/native-volume-probe/README.md) | Isolated companion-volume experiment. |
+| [Now Playing progress probe](../tools/now-playing-progress-probe/README.md) | Full-screen native media view for a same-track hardware comparison. |
 | [Timeline probe](../tools/timeline-clock-probe/README.md) | Isolated Always-On clock experiment. |
 | [Diagnostic sharing probe](../tools/diagnostic-share-probe/README.md) | Historical native Watch sharing experiment; Simulator attachment staging, not receipt. |
 | [Diagnostic sharing plan](DIAGNOSTIC_EXPORT_PLAN.md) | Current companion route plus the superseded native Watch share-sheet design. |
@@ -105,6 +106,7 @@ Read corrections before relying on earlier screenshot descriptions.
 | Historical page failures | [Sequence reconstruction](BLANK_PAGE_RECONSTRUCTION.md), [exact Lock/reentry test](EXACT_LOCK_REENTRY_TEST.md), [timer-control correction](TIMER_CONTROL_INVESTIGATION.md). |
 | Physical media and volume incident | [October 23 timeline](MEDIA_INCIDENT_2026-10-23.md). |
 | Embedded media progress stalls | [November 2 physical Beta 35 test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md): repeated entry, standalone comparison, seek response and separate Crown passes. |
+| Matched physical song-progress comparison | [November 19 test](MEDIA_PROGRESS_INCIDENT_2026-11-19.md) compares one track in Teaching Timer and standalone Now Playing. |
 | Volume availability and focus | [Availability investigation](VOLUME_AVAILABILITY_INVESTIGATION.md), [retained-control comparison](SIMULATOR_VOLUME_FOCUS.md), [tap-to-refresh behavior](VOLUME_CONTROL_RECOVERY.md). |
 | Paired Simulator media discovery | [Clean-pair tests](PAIRED_SIMULATOR_MEDIA_TEST.md); no validated companion-media baseline. |
 | Seconds-hand transition | [Always-On investigation](ALWAYS_ON_HAND_TRANSITION.md); Simulator and physical evidence stay separate. |
