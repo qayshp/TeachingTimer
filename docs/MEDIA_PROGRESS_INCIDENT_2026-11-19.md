@@ -39,11 +39,43 @@ transition, and the clock timeline being an ancestor of the media view were
 absent in this reproduction. The journal records the app's view lifecycle. The
 screenshots establish the visible behavior.
 
-## Next comparison
+## Bare view on the same hardware
 
-Run the [bare Now Playing probe](../tools/now-playing-progress-probe/README.md)
-on the same physical pair. If the bare view freezes while Apple's standalone app
-advances, the probe is a minimal app-level reproduction for Apple. If the bare
-view advances, compare a paged host with a single full-screen host before changing
-Teaching Timer's refresh policy. Preserve the class, playback and Crown behavior
-when testing any candidate change.
+The development-signed [bare Now Playing probe](../tools/now-playing-progress-probe/README.md)
+ran on the same Watch. It displays only `NowPlayingView()` in a `WindowGroup`.
+It has no paging, clock, class runtime, or media-refresh code. The same Apple
+Music track and iPhone Mirroring output were used in one uninterrupted playback
+run across all three observations.
+
+| Watch view | iPhone elapsed time | Watch ring endpoint |
+| --- | --- | --- |
+| Bare probe already visible when iPhone playback began | 0:04 → 0:24 | 0° → 0° |
+| Apple's standalone Now Playing, paired iPhone selected | 1:07 → 1:27 | 100° → 131° |
+| Bare probe freshly launched mid-track | 1:45 → 2:08 | 157° → 157° |
+
+The probe showed the correct title and a Pause button during both stalled
+intervals. Tapping Pause then paused the iPhone at 2:28 and moved the Watch
+ring to approximately 222°. This separates a working playback command and
+position update at Pause from missing progress updates during steady playback.
+
+The bare probe reproduces the freeze with the app's hosted WatchKit view on
+this pairing and output route. It needs no Teaching Timer source and gives
+FB25379883 a minimal reproduction. Apple's standalone watch app advanced on
+the same source. The captures do not identify the internal cause.
+
+## Public implementations reviewed
+
+- Apple's workout sample places `NowPlayingView()` in its own paged tab.
+  Its WatchKit reference assigns source selection to the system and exposes no
+  progress or refresh API. [Workout sample](https://developer.apple.com/videos/play/wwdc2021/10009/?time=968) · [WatchKit reference](https://developer.apple.com/documentation/watchkit/nowplayingview)
+- openGym 1.4.5 and SparkyFitness use a dedicated native Now Playing page for
+  workouts. openGym returns to the workout page when the wrist goes down.
+  Its original contribution describes a Simulator screenshot without music.
+  [openGym source](https://github.com/DuarteSantos8/openGym/blob/v1.4.5/frontend/ios/App/Watch/SideScreens.swift#L465-L471) · [openGym implementation notes](https://github.com/DuarteSantos8/openGym/pull/899) · [SparkyFitness source](https://github.com/CodeWithCJ/SparkyFitness/blob/a516bbafd0783859cf4d309e2b8b43023501ead4/SparkyFitnessMobile/targets/watch/Presentation/NowPlayingPage.swift)
+- AudioBooth uses the native view in its remote player and adds a companion
+  volume overlay and options toolbar. The code shows no separate song-progress
+  updater. [AudioBooth source](https://github.com/AudioBooth/AudioBooth/blob/cc16b30308a19991563e38008ec5cddc37168103/AudioBooth/AudioBooth%20Watch%20App/Screens/RemotePlayer/RemotePlayerView.swift)
+
+The public trackers and reports reviewed did not independently document the
+same steady-playback stall in the embedded view while Apple's standalone app
+advanced on the same track.
