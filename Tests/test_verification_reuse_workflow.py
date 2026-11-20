@@ -154,7 +154,7 @@ def eligible(workflow, name, context):
     return bool(value) and (expression.status_function or all(s == 'success' for s in statuses))
 
 
-def context(paths=('TeachingTimer/ContentView.swift',), event='push', mode=None):
+def context(paths=('TeachingTimer/ContentView.swift',), event='push', mode=None, ref='refs/heads/main'):
     values = impact.classify_paths(paths)
     if event == 'workflow_dispatch':
         values.update(mac_verify=True, release_verify=True, publish=True)
@@ -167,7 +167,7 @@ def context(paths=('TeachingTimer/ContentView.swift',), event='push', mode=None)
         needed['verify-reused' if event == 'push' else 'verify']['result'] = 'success'
     if mode is None:
         mode = '' if event == 'push' else 'publish'
-    return {'github': {'event_name': event}, 'inputs': {'mode': mode}, 'needs': needed}
+    return {'github': {'event_name': event, 'ref': ref}, 'inputs': {'mode': mode}, 'needs': needed}
 
 
 class VerificationReuseRoutingChecks(unittest.TestCase):
@@ -193,7 +193,7 @@ class VerificationReuseRoutingChecks(unittest.TestCase):
 
     def test_manual_modes_require_a_fresh_full_check_and_skip_reuse(self):
         environment = field(job(RELEASE, 'release'), 'environment')
-        for mode in ('rehearsal', 'publish'):
+        for mode in ('rehearsal', 'publish', 'store-candidate'):
             with self.subTest(mode=mode):
                 data = context(event='workflow_dispatch', mode=mode)
                 self.assertTrue(eligible(RELEASE, 'source', data))
@@ -208,11 +208,11 @@ class VerificationReuseRoutingChecks(unittest.TestCase):
         release = job(RELEASE, 'release')
         credential_steps = ('Install temporary signing credentials', 'Compile API authentication helper',
                             'Publish, monitor processing, and assign only Maintainer pilot')
-        for event, mode in (('push', ''), ('workflow_dispatch', 'publish'),
+        for event, mode in (('push', ''), ('workflow_dispatch', 'publish'), ('workflow_dispatch', 'store-candidate'),
                             ('workflow_dispatch', 'rehearsal')):
             with self.subTest(event=event, mode=mode):
                 data = context(event=event, mode=mode)
-                publishes = event == 'push' or mode == 'publish'
+                publishes = event == 'push' or mode in ('publish', 'store-candidate')
                 for name in credential_steps:
                     condition = re.search(r'^        if: (.+)$', step(release, name), re.M)[1]
                     self.assertEqual(bool(Expression(condition, data).value()), publishes)
@@ -221,6 +221,15 @@ class VerificationReuseRoutingChecks(unittest.TestCase):
                 self.assertEqual(bool(Expression(condition, data).value()), mode == 'rehearsal')
                 self.assertEqual(Expression(field(release, 'environment'), data).value(),
                                  'testflight-maintainer' if publishes else 'testflight-rehearsal')
+
+    def test_store_candidate_credentials_require_verified_main_dispatch(self):
+        for ref in ('refs/heads/codex/feature', 'refs/tags/release'):
+            data = context(event='workflow_dispatch', mode='store-candidate', ref=ref)
+            self.assertFalse(eligible(RELEASE, 'release', data))
+        data = context(event='workflow_dispatch', mode='store-candidate')
+        self.assertTrue(eligible(RELEASE, 'release', data))
+        data['needs']['verify']['result'] = 'failure'
+        self.assertFalse(eligible(RELEASE, 'release', data))
 
     def test_workflow_cancellation_blocks_release_even_after_successful_verification(self):
         for event in ('push', 'workflow_dispatch'):

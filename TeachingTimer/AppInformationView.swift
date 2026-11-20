@@ -155,7 +155,7 @@ private struct HelpTopicView: View {
             switch topic {
             case .music:
                 Section("Media stuck?") {
-                    Text("If media is blank or song progress is stuck, swipe to the timer and back.")
+                    Text("If media is blank or song progress is stuck, swipe to the timer and back. For live song progress, open Apple’s Now Playing app on your Watch.")
                 }
                 Section("Volume not responding?") {
                     Text("Tap the timer’s volume display to refresh, or visit media and return. If playback continues silently, try the iPhone’s volume controls.")

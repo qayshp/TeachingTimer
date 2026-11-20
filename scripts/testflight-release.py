@@ -3,11 +3,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
-"""Explicit, internal-only release; never invites testers or submits review.
+"""Publish only to the maintainer pilot; never invites testers or submits review.
 
 Rehearsal uses a real unsigned archive and never calls the App Store Connect API. Publishing
 requires separate API/signing credentials. Reports exclude tokens and signing
 materials; readiness means server-side eligibility, not a Watch installation.
+The App Store candidate flag uploads an eligible build for the same private
+pilot, and leaves App Review and public release to App Store Connect.
 """
 import argparse
 from contextlib import contextmanager
@@ -264,6 +266,8 @@ def wait_for(journal, kind, sample, ready, failed, timeout, interval, sleep=time
 
 def publish_metadata(apple, journal, notes, timeout, interval, sleep=time.sleep, clock=time.monotonic):
     identity = journal.data['identity']
+    candidate = identity.get('appStoreCandidate', False)
+    expected_audience = 'APP_STORE_ELIGIBLE' if candidate else 'INTERNAL_ONLY'
     journal.data['pollIntervalSeconds'] = interval
     identifier = journal.data.get('appleBuildID')
     def processing():
@@ -274,9 +278,11 @@ def publish_metadata(apple, journal, notes, timeout, interval, sleep=time.sleep,
         if identifier and identifier != item['id']:
             raise ReleaseError('Apple build identity changed while resuming')
         identifier = item['id']
-        if item['attributes'].get('buildAudienceType') != 'INTERNAL_ONLY':
-            raise ReleaseError('Apple build is not marked internal-only; refusing automatic distribution')
+        if item['attributes'].get('buildAudienceType') != expected_audience:
+            audience = 'App Store eligible' if candidate else 'internal-only'
+            raise ReleaseError('Apple build is not marked ' + audience + '; refusing pilot assignment')
         journal.data['appleBuildID'] = identifier
+        journal.data['appleBuildAudience'] = expected_audience
         if item['attributes'].get('uploadedDate'):
             journal.data['appleReportedUploadDate'] = item['attributes']['uploadedDate']
         journal.save()
@@ -353,6 +359,8 @@ def main(argv=None):
     parser.add_argument('--notes-file', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--rehearsal', action='store_true')
+    parser.add_argument('--app-store-candidate', action='store_true',
+                        help='Explicitly prepare an App Store eligible build for private testing')
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--signing-config', type=Path)
     parser.add_argument('--ci-timing-file', type=Path)
@@ -373,6 +381,8 @@ def main(argv=None):
     identity = dict(source=source_identity(source), version=versions.pop(), build=args.build_number,
                     app=APP_ID, group=GROUP_ID, notesSHA256=hashlib.sha256(notes.encode()).hexdigest(),
                     rehearsal=args.rehearsal)
+    if args.app_store_candidate:
+        identity['appStoreCandidate'] = True
     journal = Journal(args.output.resolve(), identity, args.resume)
     if args.ci_timing_file:
         journal.data['github'] = json.loads(args.ci_timing_file.read_text())
@@ -405,6 +415,8 @@ def main(argv=None):
                          '--build-number', args.build_number]
             if not args.rehearsal:
                 arguments += ['--signed', '--signing-config', args.signing_config.resolve()]
+            if args.app_store_candidate:
+                arguments += ['--app-store-candidate']
             command(journal, 'archive_and_export', arguments + [preparation], source)
         report = json.loads((preparation / 'readiness.json').read_text())
         if source_identity(source) != identity['source']:
@@ -417,9 +429,13 @@ def main(argv=None):
             journal.data.update(status='rehearsal_complete', uploaded=False, completedAt=now())
             journal.save()
             return
-        if (report.get('stage') != 'signed_internal_testflight_export_verified'
+        internal_only = not args.app_store_candidate
+        stage = ('signed_internal_testflight_export_verified' if internal_only
+                 else 'signed_app_store_candidate_export_verified')
+        if (report.get('stage') != stage
                 or report.get('sourceRevisionVerified') is not True or report['export']['passed'] is not True):
-            raise ReleaseError('Publishing requires the verified internal-only signed export')
+            audience = 'internal-only' if internal_only else 'App Store eligible'
+            raise ReleaseError('Publishing requires the verified ' + audience + ' signed export')
         fingerprint = report['export']['sha256']
         packages = list((preparation / 'export').glob('*.ipa'))
         if len(packages) != 1 or hashlib.sha256(packages[0].read_bytes()).hexdigest() != fingerprint:
@@ -429,8 +445,8 @@ def main(argv=None):
         journal.data['localExportSHA256'] = fingerprint
         if not journal.data.get('uploadStartedAt'):
             options = plistlib.loads((preparation / 'ExportOptions.plist').read_bytes())
-            if options.get('testFlightInternalTestingOnly') is not True:
-                raise ReleaseError('Refusing a non-internal-only release')
+            if options.get('testFlightInternalTestingOnly') is not internal_only:
+                raise ReleaseError('Export options do not match the explicitly selected audience')
             options['destination'] = 'upload'
             upload_options = journal.folder / 'UploadOptions.plist'
             upload_options.write_bytes(plistlib.dumps(options))
