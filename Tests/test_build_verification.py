@@ -172,6 +172,53 @@ artifact = importlib.util.module_from_spec(inspect_spec)
 inspect_spec.loader.exec_module(artifact)
 
 class ArtifactChecks(unittest.TestCase):
+    def test_distribution_archive_requires_the_companion_policy_when_requested(self):
+        root = Path(__file__).resolve().parents[1]
+        companion_policy = plistlib.loads((root / 'PhoneSupport/PrivacyInfo.xcprivacy').read_bytes())
+        watch_policy = (root / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes()
+        with tempfile.TemporaryDirectory() as folder:
+            archive = Path(folder) / 'TeachingTimer.xcarchive'
+            phone = archive / 'Products/Applications/TeachingTimerDistribution.app'
+            watch = phone / 'Watch/TeachingTimer.app'
+            watch.mkdir(parents=True)
+            (archive / 'Info.plist').write_bytes(plistlib.dumps({
+                'ApplicationProperties': {'ApplicationPath': f'Applications/{phone.name}'},
+            }))
+            phone_info = dict(CFBundleIdentifier='net.qays.TeachingTimer',
+                              CFBundleShortVersionString='1.0', CFBundleVersion='1')
+            watch_info = dict(phone_info, CFBundleIdentifier='net.qays.TeachingTimer.watchkitapp',
+                              CFBundleExecutable='TeachingTimer', WKRunsIndependentlyOfCompanionApp=True,
+                              WKCompanionAppBundleIdentifier=phone_info['CFBundleIdentifier'])
+            (phone / 'Info.plist').write_bytes(plistlib.dumps(phone_info))
+            (watch / 'Info.plist').write_bytes(plistlib.dumps(watch_info))
+            (watch / 'TeachingTimer').touch()
+            (watch / 'BuildInfo.plist').write_bytes(plistlib.dumps({'revision': 'abcdef'}))
+            (watch / 'PrivacyInfo.xcprivacy').write_bytes(watch_policy)
+            types = companion_policy['NSPrivacyCollectedDataTypes']
+            cases = {
+                'missing': None,
+                'old watch-only policy': watch_policy,
+                'missing type': plistlib.dumps(dict(companion_policy, NSPrivacyCollectedDataTypes=types[1:])),
+                'unlinked': plistlib.dumps(dict(companion_policy, NSPrivacyCollectedDataTypes=[
+                    dict(types[0], NSPrivacyCollectedDataTypeLinked=False), *types[1:]])),
+                'numeric tracking flag': plistlib.dumps(dict(companion_policy, NSPrivacyCollectedDataTypes=[
+                    dict(types[0], NSPrivacyCollectedDataTypeTracking=0), *types[1:]])),
+                'current': plistlib.dumps(dict(companion_policy, NSPrivacyCollectedDataTypes=list(reversed(types)))),
+            }
+            for case, contents in cases.items():
+                with self.subTest(case=case):
+                    if contents is not None:
+                        (phone / 'PrivacyInfo.xcprivacy').write_bytes(contents)
+                    with patch.object(artifact, 'command', return_value=subprocess.CompletedProcess(
+                            [], 0, b'UUID: FIXTURE (arm64) fixture\n', b'')):
+                        current = artifact.inspect(archive, require_companion_privacy=True)
+                        historical = artifact.inspect(archive)
+                    self.assertIs(current['checks']['privacyManifestMatchesPolicy'], True)
+                    self.assertIs(current['checks']['companionPrivacyManifestMatchesPolicy'], case == 'current')
+                    self.assertEqual(all(current['checks'].values()), case == 'current')
+                    self.assertNotIn('companionPrivacyManifestMatchesPolicy', historical['checks'])
+                    self.assertTrue(all(historical['checks'].values()))
+
     def test_privacy_manifest_requires_reviewed_policy_and_valid_schema(self):
         root = Path(__file__).resolve().parents[1]
         reviewed = plistlib.loads((root / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes())

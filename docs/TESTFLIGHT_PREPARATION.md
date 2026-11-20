@@ -462,6 +462,23 @@ Later release-documentation commits do not change the signed source above.
 
 ## Automatic and manual GitHub release
 
+### App Store candidate
+
+Dispatch **TestFlight maintainer release** from `main` with mode
+`store-candidate`, an unused build number, and a short private test note.
+The workflow verifies the production archive without signing before using the
+existing protected signing environment. The production scheme keeps the
+distribution bundle IDs and independent Watch app, checks the unbadged icons
+and display names, and requires Apple to report the build as App Store eligible.
+It assigns the candidate only to the Maintainer pilot, where the exact build
+can be tested before it is selected for App Review.
+
+For a local unsigned production archive, run
+`python3 scripts/prepare-testflight.py work/store-rehearsal --app-store-candidate`
+with a new output directory. App Review and manual release take place separately
+in App Store Connect. Main-branch pushes and ordinary manual `publish` retain the
+internal-only beta packaging.
+
 Native TestFlight notes come from the reviewed [recent-changes file](../TestFlight/WhatToTest.en-US.txt).
 See the [notes update/preview and exact-source contract](../TestFlight/README.md).
 Apple controls the post-update presentation; API readback verifies saved text,

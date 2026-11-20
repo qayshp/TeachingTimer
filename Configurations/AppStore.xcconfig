@@ -1,0 +1,8 @@
+// SPDX-License-Identifier: MPL-2.0
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+// Watch target only. App Store and TestFlight share the distribution ID.
+PRODUCT_BUNDLE_IDENTIFIER = net.qays.TeachingTimer.watchkitapp
+SKIP_INSTALL = YES
+TEACHING_TIMER_DISPLAY_NAME = Teaching Timer

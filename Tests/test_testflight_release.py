@@ -25,6 +25,7 @@ def load(name, file):
 
 release = load('release', 'testflight-release.py')
 signing = load('ci_signing', 'ci-signing.py')
+prepare = load('prepare', 'prepare-testflight.py')
 
 
 class FakeClock:
@@ -34,13 +35,14 @@ class FakeClock:
 
 
 class FakeApple:
-    def __init__(self, states=None):
+    def __init__(self, states=None, audience='INTERNAL_ONLY'):
         self.states = list(states or ['VALID'])
+        self.audience = audience
         self.text = None; self.assigned = False; self.writes = 0; self.samples = 0
     def find_build(self, version, number):
         self.samples += 1
         state = self.states.pop(0) if len(self.states) > 1 else self.states[0]
-        return None if state == 'MISSING' else dict(id='build-42', attributes=dict(processingState=state, buildAudienceType='INTERNAL_ONLY'))
+        return None if state == 'MISSING' else dict(id='build-42', attributes=dict(processingState=state, buildAudienceType=self.audience))
     def set_notes(self, identifier, text):
         if self.text != text: self.writes += 1; self.text = text
     def notes(self, identifier): return dict(attributes=dict(whatsNew=self.text))
@@ -194,6 +196,18 @@ class ReleaseChecks(unittest.TestCase):
         self.assertEqual(release.build_number('42'), '42')
         self.assertEqual(release.build_number('261104.1602.1'), '261104.1602.1')
 
+    def test_store_branding_rejects_beta_name_and_icon(self):
+        def info(name, icon=None):
+            return dict(CFBundleDisplayName=name, CFBundleIcons={
+                'CFBundlePrimaryIcon': {'CFBundleIconName': icon}})
+        phone = info('Teaching Timer', 'AppIconStore')
+        watch = info('Teaching Timer', 'AppIcon')
+        complication = info('Teaching Timer')
+        self.assertTrue(all(prepare.store_branding_checks(phone, watch, complication).values()))
+        result = prepare.store_branding_checks(info('Teaching Timer Beta', 'AppIcon'),
+                                                info('Teaching Timer', 'AppIconBeta'), complication)
+        self.assertFalse(any(result.values()))
+
 
 class APIchecks(unittest.TestCase):
     def test_only_matching_marketing_version_and_platform_is_selected(self):
@@ -311,7 +325,8 @@ class TokenChecks(unittest.TestCase):
 
 
 class PublicationChecks(unittest.TestCase):
-    def run_release(self, folder, apple, *, rehearsal=False, resume=False, upload_error=False, exported_stage=None):
+    def run_release(self, folder, apple, *, rehearsal=False, resume=False, upload_error=False,
+                    exported_stage=None, store_candidate=False, export_internal_only=None):
         root=Path(folder);source=root/'source';source.mkdir(exist_ok=True)
         project=source/'TeachingTimer.xcodeproj';project.mkdir(exist_ok=True)
         (project/'project.pbxproj').write_text('MARKETING_VERSION = 1.0;\n')
@@ -321,18 +336,25 @@ class PublicationChecks(unittest.TestCase):
         if rehearsal:arguments+=['--rehearsal']
         else:arguments+=['--signing-config',str(root/'signing.json')]
         if resume:arguments+=['--resume']
+        if store_candidate:arguments+=['--app-store-candidate']
+        if export_internal_only is None:
+            export_internal_only = not store_candidate
         commands=[]
         def command(journal,name,args,cwd):
             commands.append(name)
             with journal.stage(name):
                 if name=='archive_and_export':
+                    self.assertEqual('--app-store-candidate' in args, store_candidate)
                     output=Path(args[-1]);(output/'export').mkdir(parents=True)
                     ipa=output/'export/candidate.ipa';ipa.write_bytes(b'fixture IPA')
+                    stage = ('signed_app_store_candidate_export_verified' if store_candidate
+                             else 'signed_internal_testflight_export_verified')
                     data=dict(build='42',revision='a'*40,sourceRevisionVerified=True,steps=[],
-                        stage=exported_stage or ('unsigned_archive_verified' if rehearsal else 'signed_internal_testflight_export_verified'),
+                        stage=exported_stage or ('unsigned_archive_verified' if rehearsal else stage),
                         export=dict(passed=True,sha256=hashlib.sha256(ipa.read_bytes()).hexdigest()))
                     (output/'readiness.json').write_text(json.dumps(data))
-                    (output/'ExportOptions.plist').write_bytes(plistlib.dumps(dict(testFlightInternalTestingOnly=True)))
+                    (output/'ExportOptions.plist').write_bytes(plistlib.dumps(
+                        dict(testFlightInternalTestingOnly=export_internal_only)))
                 elif upload_error:raise release.ReleaseError('Upload connection interrupted')
         apple.validate_destination=lambda:None
         environment=dict(ASC_TOKEN_HELPER='unused-helper',ASC_KEY_PATH='unused-key',ASC_KEY_ID='fixture',ASC_ISSUER_ID='fixture')
@@ -367,6 +389,28 @@ class PublicationChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             _,error,commands,_=self.run_release(folder,FakeApple(['MISSING']),exported_stage='signed_external_testflight_export_verified')
             self.assertIn('internal-only',error);self.assertEqual(commands,['archive_and_export'])
+
+    def test_explicit_store_candidate_is_assigned_to_the_same_private_pilot(self):
+        with tempfile.TemporaryDirectory() as folder:
+            apple = FakeApple(['MISSING', 'VALID'], 'APP_STORE_ELIGIBLE')
+            data, error, commands, _ = self.run_release(folder, apple, store_candidate=True)
+            self.assertIsNone(error)
+            self.assertEqual(commands, ['archive_and_export', 'upload'])
+            self.assertTrue(apple.assigned)
+            self.assertEqual(data['identity']['group'], release.GROUP_ID)
+            self.assertEqual(data['appleBuildAudience'], 'APP_STORE_ELIGIBLE')
+
+    def test_store_candidate_rejects_wrong_local_or_remote_audience(self):
+        with tempfile.TemporaryDirectory() as folder:
+            _, error, commands, _ = self.run_release(folder, FakeApple(['MISSING']),
+                store_candidate=True, export_internal_only=True)
+            self.assertIn('Export options do not match', error)
+            self.assertEqual(commands, ['archive_and_export'])
+        with tempfile.TemporaryDirectory() as folder:
+            apple = FakeApple(['MISSING', 'VALID'])
+            _, error, _, _ = self.run_release(folder, apple, store_candidate=True)
+            self.assertIn('not marked App Store eligible', error)
+            self.assertEqual(apple.writes, 0)
 
     def test_uncertain_upload_is_never_repeated_or_silently_accepted(self):
         with tempfile.TemporaryDirectory() as folder:

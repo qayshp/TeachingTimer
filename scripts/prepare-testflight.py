@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MPL-2.0
-"""Create an unsigned rehearsal or a signed TestFlight export.
+"""Create an unsigned rehearsal or a signed distribution export.
 
 Never uploads, installs, launches, or invites testers. --signed allows Xcode's
 automatic provisioning and requires unchanged, committed source. Signed exports
 are internal-only unless --external-eligible is explicit; external review and
-distribution remain separate steps. Account agreements must be accepted by the
-account owner.
+distribution remain separate steps. --app-store-candidate uses the production
+configuration and an App Store eligible export. Account agreements must be
+accepted by the account owner.
 """
 import argparse
 from datetime import datetime, timezone
@@ -83,6 +84,15 @@ def package_checks(container, watch, complication):
                 mindfulnessRuntime='mindfulness' in watch.get('WKBackgroundModes', []))
 
 
+def store_branding_checks(container, watch, complication):
+    def icon(info):
+        return info.get('CFBundleIcons', {}).get('CFBundlePrimaryIcon', {}).get('CFBundleIconName')
+    return dict(storeDisplayNames=all(info.get('CFBundleDisplayName') == 'Teaching Timer'
+                                     for info in (container, watch, complication)),
+                storePhoneIcon=icon(container) == 'AppIconStore',
+                storeWatchIcon=icon(watch) == 'AppIcon')
+
+
 def profile_checks(profile, identifier, team):
     entitlements = profile.get('Entitlements', {})
     expires = profile.get('ExpirationDate')
@@ -102,7 +112,7 @@ def entitlement_checks(entitlements, identifier, team):
                 testFlight=entitlements.get('beta-reports-active') is True)
 
 
-def export_checks(ipa, output, team):
+def export_checks(ipa, output, team, store_candidate=False):
     unpacked = output / 'verified-export'
     with zipfile.ZipFile(ipa) as archive:
         for member in archive.infolist():
@@ -118,9 +128,13 @@ def export_checks(ipa, output, team):
         raise ValueError('Expected exactly one exported Watch payload')
     watch = watches[0]
     complication = complication_path(watch)
-    checks = package_checks(plistlib.loads((container / 'Info.plist').read_bytes()),
-                            plistlib.loads((watch / 'Info.plist').read_bytes()),
-                            plistlib.loads((complication / 'Info.plist').read_bytes()))
+    payloads = [plistlib.loads((app / 'Info.plist').read_bytes())
+                for app in (container, watch, complication)]
+    checks = package_checks(*payloads)
+    if store_candidate:
+        checks.update(store_branding_checks(*payloads))
+        checks['companionPrivacyManifestMatchesPolicy'] = artifact.privacy_manifest_matches_policy(
+            container, companion=True)
     checks['watchPrivacyManifestMatchesPolicy'] = artifact.privacy_manifest_matches_policy(watch)
     signatures = {}
     profiles = {}
@@ -148,14 +162,18 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path, help='New output directory; never overwrites')
     parser.add_argument('--signed', action='store_true', help='Permit automatic provisioning and export an IPA (internal-only by default)')
-    parser.add_argument('--external-eligible', action='store_true',
-                        help='With --signed, permit eligibility for external TestFlight review; never uploads or invites')
+    audience = parser.add_mutually_exclusive_group()
+    audience.add_argument('--external-eligible', action='store_true',
+                          help='With --signed, permit eligibility for external TestFlight review')
+    audience.add_argument('--app-store-candidate', action='store_true',
+                          help='Use production branding; signed exports are eligible for App Store review')
     parser.add_argument('--source', type=Path, help='Separate clean application checkout; defaults to this repository')
     parser.add_argument('--build-number', help='Override all payload build numbers without editing committed source')
     parser.add_argument('--signing-config', type=Path, help='Private CI signing configuration; requires --signed')
     args = parser.parse_args(argv)
     if args.external_eligible and not args.signed:
         parser.error('--external-eligible requires --signed')
+    external_eligible = args.external_eligible or args.app_store_candidate
     if args.signing_config and not args.signed:
         parser.error('--signing-config requires --signed')
     if args.build_number and not (re.fullmatch(r'[1-9][0-9]{0,8}', args.build_number)
@@ -181,8 +199,8 @@ def main(argv=None):
     report = dict(stage='starting', signed=False, uploaded=False, installed=False,
                   appStoreValidation='not performed', journalAccess='not verified',
                   physicalPilot='not performed',
-                  requestedAudience=('external_eligible' if args.external_eligible
-                                     else 'internal_only' if args.signed else 'unsigned_rehearsal'),
+                  requestedAudience=('unsigned_rehearsal' if not args.signed
+                                     else 'external_eligible' if external_eligible else 'internal_only'),
                   steps=[])
     def save():
         (output / 'readiness.json').write_text(json.dumps(report, indent=2) + '\n')
@@ -200,8 +218,10 @@ def main(argv=None):
                 raise ValueError('Signed preparation requires a clean committed source tree; '
                                  'commit intended changes first and use an ignored or external output directory')
             save()
-        command = ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimerTestFlight',
-                   '-configuration', 'TestFlight', '-destination', 'generic/platform=iOS',
+        scheme, configuration = ('TeachingTimerAppStore', 'AppStore') if args.app_store_candidate else (
+            'TeachingTimerTestFlight', 'TestFlight')
+        command = ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', scheme,
+                   '-configuration', configuration, '-destination', 'generic/platform=iOS',
                    '-archivePath', str(archive)]
         if args.signed:
             command += ['SOURCE_REVISION=' + report['sourceBeforeBuild']['head']]
@@ -215,7 +235,8 @@ def main(argv=None):
         if args.build_number:
             command += ['CURRENT_PROJECT_VERSION=' + args.build_number]
         run('build', command + ['archive'])
-        inspection = artifact.inspect(archive, require_complication=True)
+        inspection = artifact.inspect(archive, require_complication=True,
+                                      require_companion_privacy=args.app_store_candidate)
         (output / 'artifact-inspection.json').write_text(json.dumps(inspection, indent=2) + '\n')
         watch, container = artifact.application_paths(archive)
         if container is None:
@@ -225,8 +246,11 @@ def main(argv=None):
         complication_info = plistlib.loads((complication_path(watch) / 'Info.plist').read_bytes())
         report.update(checks=package_checks(container_info, watch_info, complication_info), version=inspection['version'],
                       build=inspection['build'], revision=inspection['revision'])
+        if args.app_store_candidate:
+            report['checks'].update(store_branding_checks(container_info, watch_info, complication_info))
+            report['configuration'] = configuration
         if not all(report['checks'].values()) or not all(inspection['checks'].values()):
-            raise ValueError('Archive identity, packaging, resources or symbols failed validation')
+            raise ValueError('Archive identity, branding, packaging, resources or symbols failed validation')
         if args.build_number and (inspection['build'] != args.build_number or any(
                 info.get('CFBundleVersion') != args.build_number
                 for info in (container_info, watch_info, complication_info))):
@@ -239,7 +263,7 @@ def main(argv=None):
             team = plistlib.loads((archive / 'Info.plist').read_bytes())['ApplicationProperties']['Team']
             options = dict(method='app-store-connect', destination='export', signingStyle='automatic',
                            teamID=team, manageAppVersionAndBuildNumber=False,
-                           testFlightInternalTestingOnly=not args.external_eligible, uploadSymbols=True)
+                           testFlightInternalTestingOnly=not external_eligible, uploadSymbols=True)
             if signing:
                 if team != signing['teamID']:
                     raise ValueError('Archive team differs from CI signing configuration')
@@ -259,11 +283,14 @@ def main(argv=None):
             packages = list((output / 'export').glob('*.ipa'))
             if len(packages) != 1:
                 raise ValueError('Expected one signed IPA export')
-            report['export'] = export_checks(packages[0], output, team)
+            report['export'] = export_checks(packages[0], output, team, args.app_store_candidate)
             if not report['export']['passed']:
                 raise ValueError('Export signature, profile or identifier checks failed')
-            report['stage'] = ('signed_external_testflight_export_verified' if args.external_eligible
-                               else 'signed_internal_testflight_export_verified')
+            if args.app_store_candidate:
+                report['stage'] = 'signed_app_store_candidate_export_verified'
+            else:
+                report['stage'] = ('signed_external_testflight_export_verified' if external_eligible
+                                   else 'signed_internal_testflight_export_verified')
         save()
         print(json.dumps(report, indent=2))
     except Exception as error:
