@@ -292,7 +292,8 @@ class VerificationReuseRoutingChecks(unittest.TestCase):
         self.assertIn('ref: ${{ github.sha }}', source)
         self.assertIn("if sha != os.environ['GITHUB_SHA']:", source)
         for name in ('verify', 'release'):
-            self.assertIn('ref: ${{ needs.source.outputs.source_sha }}', job(RELEASE, name))
+            self.assertIn('ref: ${{ github.sha }}', job(RELEASE, name))
+            self.assertNotIn('ref: ${{ needs.source.outputs.source_sha }}', job(RELEASE, name))
         self.assertNotIn('needs.verify.outputs.', RELEASE)
         self.assertIn('--simulator-smoke --prepare-ci-runtime', job(RELEASE, 'verify'))
         self.assertIn('runs-on: xcode-27', job(RELEASE, 'verify'))
