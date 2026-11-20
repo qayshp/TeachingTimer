@@ -202,3 +202,25 @@ freeze timestamps. It requests targeted logging/reproduction guidance, links
 Simulator blocker FB25294079 and distinguishes blank-page FB25305069. No claim
 of deterministic reproduction, root cause or validated build-25 mitigation.
 See [incident assessment](MEDIA_PROGRESS_INCIDENT_2026-10-30.md).
+
+## November 19 — reproduction in Apple's workout sample
+
+Sent an update to open report **FB25379883** through Feedback Assistant. The
+update records the frozen ring in Apple's published MyWorkouts sample and in a
+bare `NowPlayingView` app, with the advancing ring in Apple's standalone Now
+Playing app as the same-track comparison. Apple’s sample Swift files matched
+the download. The local settings changed only signing, bundle identification,
+and the oldest deployment target accepted by the current SDK.
+
+Feedback Assistant displayed the submitted update and confirmed the evidence
+archive upload at 23:48 PST. The archive contains nine timestamped Watch/iPhone
+screen pairs, Apple sample setup and reproduction steps, the bare Swift probe,
+and selected Teaching Timer journal events. It is retained privately.
+See the [physical comparison](MEDIA_PROGRESS_INCIDENT_2026-11-19.md).
+
+An additional update attached the 159 MB Watch sysdiagnose that Device Hub
+started at 23:48:02 PST, about twenty minutes after reproduction. The gzip and
+tar validated, and the Watch log archive includes MediaRemote or NanoMediaUI
+events during both captured intervals. Feedback Assistant confirmed the archive
+upload at 00:01 PST on November 20. The report remained Open. Raw device logs
+are retained privately.
