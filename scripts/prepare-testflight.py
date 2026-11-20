@@ -133,6 +133,8 @@ def export_checks(ipa, output, team, store_candidate=False):
     checks = package_checks(*payloads)
     if store_candidate:
         checks.update(store_branding_checks(*payloads))
+        checks['companionPrivacyManifestMatchesPolicy'] = artifact.privacy_manifest_matches_policy(
+            container, companion=True)
     checks['watchPrivacyManifestMatchesPolicy'] = artifact.privacy_manifest_matches_policy(watch)
     signatures = {}
     profiles = {}
@@ -233,7 +235,8 @@ def main(argv=None):
         if args.build_number:
             command += ['CURRENT_PROJECT_VERSION=' + args.build_number]
         run('build', command + ['archive'])
-        inspection = artifact.inspect(archive, require_complication=True)
+        inspection = artifact.inspect(archive, require_complication=True,
+                                      require_companion_privacy=args.app_store_candidate)
         (output / 'artifact-inspection.json').write_text(json.dumps(inspection, indent=2) + '\n')
         watch, container = artifact.application_paths(archive)
         if container is None:

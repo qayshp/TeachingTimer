@@ -15,12 +15,12 @@ def command(*args):
     return subprocess.run(list(map(str, args)), capture_output=True, timeout=30)
 
 
-def privacy_manifest_matches_policy(app):
+def privacy_manifest_matches_policy(app, *, companion=False):
     """Check the bundled manifest against TeachingTimer's reviewed policy.
 
     This is deliberately narrower than Apple's schema. Revisit this check and
-    TeachingTimer/PrivacyInfo.xcprivacy together if data use or required APIs
-    change; passing it is not an API-usage audit or App Store approval.
+    the corresponding PrivacyInfo.xcprivacy together if data use or required
+    APIs change; passing it is not an API-usage audit or App Store approval.
     """
     try:
         manifest = plistlib.loads((app / 'PrivacyInfo.xcprivacy').read_bytes())
@@ -30,17 +30,31 @@ def privacy_manifest_matches_policy(app):
             'NSPrivacyTracking', 'NSPrivacyTrackingDomains',
             'NSPrivacyCollectedDataTypes', 'NSPrivacyAccessedAPITypes'}:
         return False
-    if (manifest['NSPrivacyTracking'] is not False
-            or manifest['NSPrivacyTrackingDomains'] != []
-            or manifest['NSPrivacyCollectedDataTypes'] != []):
+    if manifest['NSPrivacyTracking'] is not False or manifest['NSPrivacyTrackingDomains'] != []:
         return False
-    expected = [
+    collected = manifest['NSPrivacyCollectedDataTypes']
+    accessed = manifest['NSPrivacyAccessedAPITypes']
+    if companion:
+        types = ('EmailAddress', 'CustomerSupport', 'ProductInteraction', 'OtherDiagnosticData', 'PerformanceData')
+        expected_collected = [{
+            'NSPrivacyCollectedDataType': f'NSPrivacyCollectedDataType{data_type}',
+            'NSPrivacyCollectedDataTypeLinked': True,
+            'NSPrivacyCollectedDataTypeTracking': False,
+            'NSPrivacyCollectedDataTypePurposes': ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+        } for data_type in types]
+        return (accessed == [] and matches_privacy_entries(collected, expected_collected)
+                and all(entry['NSPrivacyCollectedDataTypeLinked'] is True
+                        and entry['NSPrivacyCollectedDataTypeTracking'] is False for entry in collected))
+    expected_accessed = [
         {'NSPrivacyAccessedAPIType': 'NSPrivacyAccessedAPICategoryUserDefaults',
          'NSPrivacyAccessedAPITypeReasons': ['CA92.1']},
         {'NSPrivacyAccessedAPIType': 'NSPrivacyAccessedAPICategorySystemBootTime',
          'NSPrivacyAccessedAPITypeReasons': ['35F9.1']},
     ]
-    entries = manifest['NSPrivacyAccessedAPITypes']
+    return collected == [] and matches_privacy_entries(accessed, expected_accessed)
+
+
+def matches_privacy_entries(entries, expected):
     # Order is immaterial, but omissions, duplicates and additional declarations
     # require review rather than silently changing the shipped privacy policy.
     return (isinstance(entries, list) and len(entries) == len(expected)
@@ -156,7 +170,7 @@ def complication_checks(app, watch_info, required=False):
     return checks
 
 
-def inspect(path, require_complication=False):
+def inspect(path, require_complication=False, *, require_companion_privacy=False):
     archive = path if path.suffix == '.xcarchive' else None
     app, container = application_paths(path)
     info = plistlib.loads((app / 'Info.plist').read_bytes())
@@ -168,6 +182,9 @@ def inspect(path, require_complication=False):
               'privacyManifestMatchesPolicy': privacy_manifest_matches_policy(app)}
     checks.update(complication_checks(app, info, require_complication))
     container_info = plistlib.loads((container / 'Info.plist').read_bytes()) if container else None
+    if require_companion_privacy:
+        checks['companionPrivacyManifestMatchesPolicy'] = (
+            container is not None and privacy_manifest_matches_policy(container, companion=True))
     if container_info:
         checks.update(containerIdentifierIsWatchPrefix=info['CFBundleIdentifier'].startswith(container_info['CFBundleIdentifier'] + '.'),
                       containerVersionMatches=all(info[key] == container_info[key] for key in ('CFBundleVersion', 'CFBundleShortVersionString')),
@@ -207,8 +224,11 @@ def main():
     parser.add_argument('artifact', type=Path)
     parser.add_argument('--require-signed', action='store_true', help='Also reject missing/invalid signatures or expired/missing profiles')
     parser.add_argument('--require-complication', action='store_true', help='Require the current Watch launcher extension; omit for historical checkpoints')
+    parser.add_argument('--require-companion-privacy', action='store_true',
+                        help='Require the current iPhone privacy manifest; omit for historical checkpoints')
     args = parser.parse_args()
-    result = inspect(args.artifact.resolve(), require_complication=args.require_complication)
+    result = inspect(args.artifact.resolve(), require_complication=args.require_complication,
+                     require_companion_privacy=args.require_companion_privacy)
     print(json.dumps(result, indent=2))
     if not all(result['checks'].values()) or (args.require_signed and not (result['signatureValid'] and result['unexpiredEmbeddedProfile'])):
         raise SystemExit(1)

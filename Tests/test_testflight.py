@@ -36,11 +36,19 @@ class TestFlightChecks(unittest.TestCase):
                     Entitlements={'application-identifier': 'TEAM.' + pilot.WATCH_ID,
                                   'get-task-allow': False, 'beta-reports-active': True})
 
-    def exported_package(self, root, manifest=(ROOT / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes()):
+    def exported_package(self, root, manifest=(ROOT / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes(),
+                         *, store_candidate=False, companion_manifest=None):
         ipa = root / 'candidate.ipa'
         container, watch, complication = self.package()
+        if store_candidate:
+            for info in (container, watch, complication):
+                info['CFBundleDisplayName'] = 'Teaching Timer'
+            for info, icon in ((container, 'AppIconStore'), (watch, 'AppIcon')):
+                info['CFBundleIcons'] = {'CFBundlePrimaryIcon': {'CFBundleIconName': icon}}
         with zipfile.ZipFile(ipa, 'w') as archive:
             archive.writestr('Payload/TeachingTimerDistribution.app/Info.plist', plistlib.dumps(container))
+            if companion_manifest is not None:
+                archive.writestr('Payload/TeachingTimerDistribution.app/PrivacyInfo.xcprivacy', companion_manifest)
             archive.writestr('Payload/TeachingTimerDistribution.app/Watch/TeachingTimer.app/Info.plist',
                              plistlib.dumps(watch))
             archive.writestr('Payload/TeachingTimerDistribution.app/Watch/TeachingTimer.app/PlugIns/TeachingTimerComplications.appex/Info.plist',
@@ -223,6 +231,20 @@ class TestFlightChecks(unittest.TestCase):
                 self.assertTrue(all(result['signatures'].values()))
                 self.assertTrue(all(all(values.values()) for values in result['profiles'].values()))
                 self.assertTrue(all(all(values.values()) for values in result['entitlements'].values()))
+
+    def test_store_export_requires_the_companion_support_privacy_manifest(self):
+        valid = (ROOT / 'PhoneSupport/PrivacyInfo.xcprivacy').read_bytes()
+        watch_only = (ROOT / 'TeachingTimer/PrivacyInfo.xcprivacy').read_bytes()
+        for manifest, expected in ((valid, True), (watch_only, False), (None, False)):
+            with self.subTest(expected=expected, missing=manifest is None), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                ipa = self.exported_package(root, store_candidate=True, companion_manifest=manifest)
+                with patch.object(pilot.artifact, 'command', side_effect=self.export_command):
+                    result = pilot.export_checks(ipa, root, 'TEAM', store_candidate=True)
+                self.assertEqual(result['passed'], expected)
+                self.assertEqual(result['checks']['companionPrivacyManifestMatchesPolicy'], expected)
+                self.assertTrue(all(value for key, value in result['checks'].items()
+                                    if key != 'companionPrivacyManifestMatchesPolicy'))
 
     def test_archive_locates_watch_payload_without_changing_legacy_paths(self):
         with tempfile.TemporaryDirectory() as folder:

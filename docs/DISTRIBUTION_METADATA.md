@@ -148,9 +148,17 @@ all applicable criteria; voluntary email alone does not establish an exemption.
   There is no automatic upload service. Support email
   retains the sender, message and chosen attachments as described in
   [the policy](PRIVACY.md).
-- [ ] **Assess the label separately:** an empty manifest collection array is not
-  an App Store answer. Apple excludes solely on-device processing; evaluate actual
-  support intake separately under its [collection definition](https://developer.apple.com/app-store/app-privacy-details/).
+- **1.0 privacy label and bundled manifests:** the Watch manifest covers its
+  local operations. The companion manifest covers voluntary support email and
+  the optional attached report. Report **Email Address** for the sender,
+  **Customer Support** for the message, **Product Interaction** for app events,
+  **Performance Data** for scheduling and runtime latency measurements, and
+  **Other Diagnostic Data** for technical state and error codes. Declare
+  **App Functionality**, linked to the user through the sender address when the
+  message is received, with tracking disabled. The app does not ask for a name
+  or access the sender's other email. Keep the App Store label in sync with this
+  path. Local Watch Connectivity transfer alone does not send a report to the
+  maintainer. [Apple’s collection and disclosure guidance](https://developer.apple.com/app-store/app-privacy-details/).
 - [x] **Initial intake scope chosen:** descriptions and optional cropped
   screenshots, without requiring journal export. This still involves
   email/contact information; it does not establish “no data collected.”
