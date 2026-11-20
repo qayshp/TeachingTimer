@@ -50,6 +50,26 @@ def launch_events(intent='running', launch='new', page='classProgress'):
     return rows
 
 
+def awake_relaunch_rejection():
+    """Synthetic shape of the #27 failure, with separately flushed fallback."""
+    return [
+        event('app_launched'),
+        event('scene_state_changed', .166, sceneState='active', luminanceReduced='false'),
+        event('runtime_intent_restored', .167, savedRuntimeIntent='running'),
+        event('automatic_restart_attempt', .1675),
+        event('start_requested', .168, runtimeID='runtime-new', appState='active'),
+        event('interface_appeared', .169, selectedPage='classProgress',
+              scenePhase='active', luminanceReduced='false'),
+        event('page_appeared', .2, observedPage='classProgress'),
+        event('runtime_invalidated', .344, runtimeID='runtime-new', phase='starting',
+              appState='active', reason='error', reasonCode='1', savedRuntimeIntent='running',
+              errorDomain='WKExtendedRuntimeSessionErrorDomain', errorCode='3',
+              underlyingErrorDomain='CarouselSessionError', underlyingErrorCode='12',
+              errorDescription='private description', classDetails='private class details'),
+        event('automatic_restart_failed', .345, runtimeID='runtime-new', savedRuntimeIntent='manualRecovery'),
+    ]
+
+
 def retirement_events(expected, *, live=False, launch='new'):
     context = json.loads(expected[smoke.CLASS_KEY])
     initial = context['initialStartPressedAt'] + smoke.REFERENCE_DATE_OFFSET
@@ -245,6 +265,76 @@ class StoppedAndEmptyLaunchEvidenceChecks(unittest.TestCase):
                 with self.subTest(intent=intent, name=name), self.assertRaises(AssertionError):
                     smoke.launch_evidence(launch_events(intent) + [event(name, .5)],
                                           set(), 'classProgress', intent=intent)
+
+
+class FailedLaunchReportChecks(unittest.TestCase):
+    def test_first_native_rejection_retains_only_matching_start_and_error_fields(self):
+        rows = awake_relaunch_rejection()
+        rows.insert(5, event('start_requested', .1685, runtimeID='unrelated', appState='inactive'))
+        old = [event('app_launched', launch='old'), event('runtime_invalidated', .15, launch='old')]
+        with self.assertRaises(smoke.RuntimeEvidenceFailure) as failure:
+            smoke.launch_evidence(old + rows, {'old'}, 'classProgress', intent='running')
+        self.assertEqual(failure.exception.evidence, {
+            'event': 'runtime_invalidated', 'launchID': 'new', 'runtimeID': 'runtime-new',
+            'phase': 'starting', 'appState': 'active', 'savedRuntimeIntent': 'running',
+            'reason': 'error', 'reasonCode': '1', 'errorDomain': 'WKExtendedRuntimeSessionErrorDomain',
+            'errorCode': '3', 'underlyingErrorDomain': 'CarouselSessionError', 'underlyingErrorCode': '12',
+            'launchElapsedSeconds': .344,
+            'start': {'appState': 'active', 'sceneState': 'active', 'luminanceReduced': 'false',
+                      'didStartObserved': False, 'launchElapsedSeconds': .168},
+        })
+
+    def test_generic_persistence_error_still_fails_without_a_claimed_runtime_start(self):
+        rows = launch_events('stopped') + [event('persistence_write_failed', .344,
+                                                errorDescription='private path')]
+        with self.assertRaises(smoke.RuntimeEvidenceFailure) as failure:
+            smoke.launch_evidence(rows, set(), 'classProgress', intent='stopped')
+        self.assertEqual(failure.exception.evidence,
+                         {'event': 'persistence_write_failed', 'launchID': 'new', 'launchElapsedSeconds': .344})
+
+    def test_start_scene_takes_precedence_and_unflushed_luminance_stays_unknown(self):
+        rows = [row for row in awake_relaunch_rejection() if row['event'] != 'scene_state_changed']
+        start = next(row for row in rows if row['event'] == 'start_requested')
+        rows.insert(rows.index(start), event('scene_state_changed', .166, sceneState='inactive'))
+        start['details']['sceneState'] = 'active'
+        with self.assertRaises(smoke.RuntimeEvidenceFailure) as failure:
+            smoke.launch_evidence(rows, set(), 'classProgress', intent='running')
+        self.assertEqual(failure.exception.evidence['start'],
+                         dict(appState='active', sceneState='active', didStartObserved=False, launchElapsedSeconds=.168))
+
+    def test_failure_report_keeps_first_stage_and_later_journal_without_retry(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            check = smoke.Smoke(output / 'unused.app', output)
+            check.owned_device = 'disposable-test-id'
+            check.container = output / 'container'
+            journal = check.container / 'Documents' / 'RuntimeDiagnostics.json'
+            journal.parent.mkdir(parents=True)
+            rows = awake_relaunch_rejection()
+            journal.write_text(json.dumps(rows[:-1]))
+
+            def mock_simctl(action, *_arguments, **_options):
+                if action == 'spawn':
+                    journal.write_text(json.dumps(rows))
+
+            def fail_on_recovery():
+                check.launch('running-recovered', 'classProgress', 'running', smoke.fixture(NOW, state='running'))
+
+            with patch.object(check, 'run', side_effect=fail_on_recovery), \
+                    patch.object(check, 'simctl', side_effect=mock_simctl) as simctl, \
+                    patch.object(smoke.signal, 'signal'):
+                result = smoke.run_one(check)
+
+            self.assertFalse(result['complete'])
+            self.assertEqual(result['failureStage'], dict(operation='launch', label='running-recovered',
+                                                          selectedPage='classProgress', expectedIntent='running'))
+            self.assertEqual(result['runtimeFailure']['event'], 'runtime_invalidated')
+            self.assertEqual(result['runtimeFailure']['errorCode'], '3')
+            self.assertEqual(json.loads((output / 'failure-RuntimeDiagnostics.json').read_text()), rows[:-1])
+            self.assertEqual(json.loads((output / 'failure-final-RuntimeDiagnostics.json').read_text()), rows)
+            self.assertEqual(json.loads((output / 'smoke.json').read_text())['runtimeFailure'], result['runtimeFailure'])
+            self.assertEqual([call.args[0] for call in simctl.call_args_list],
+                             ['launch', 'io', 'spawn', 'shutdown', 'delete'])
 
 
 class RetirementEvidenceChecks(unittest.TestCase):
