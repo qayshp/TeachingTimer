@@ -1,6 +1,6 @@
 # Publishing readiness
 
-Updated November 13, 2026; public invitation last checked November 5. The
+Updated November 21, 2026. The public invitation was last checked November 5. The
 [public invitation](https://testflight.apple.com/join/YA2WSmae) now offers
 **View in TestFlight** and joining instructions. The public group was initially
 configured with a 100-tester cap. Exact eligible-build membership and a new
@@ -32,15 +32,15 @@ notes to learn installation or support procedures.
 
 | Gate | Evidence / next action |
 | --- | --- |
-| Names and identifiers | App Store Connect record **Teaching Timer Beta** created for `net.qays.TeachingTimer`; Teaching Timer was unavailable. Its Watch payload is `net.qays.TeachingTimer.watchkitapp`. `com.qayshp.TeachingTimer` remains the separate teaching/development installation. Distribution provisioning succeeded. |
-| Build integrity | Build 37 at clean source `a36f3be587825e27b424cf54355ea13afdfded83` passes signed external-eligible archive/export and 13 Swift suites / 130 Python tests. Watch CI and CodeQL pass. Apple processed the upload completed at 19:56:05 PST. App behavior is unchanged from 36. Earlier build-36 Privacy rendering, build-35 layout/controls and build-34 clock results retain their original scope. Processing is not a physical test. |
-| Paid-team signing / App Store Connect | The public invitation now offers joining instructions. Exact external build membership and first external installation remain unverified. Review-contact fields and actual runtime-use notes were saved with build 37. Automatic internal releases verify processing and Maintainer assignment; server readiness does not prove Watch installation. |
+| Names and identifiers | The public listing name and subtitle are separate release decisions. The distribution app is `net.qays.TeachingTimer` and its Watch payload is `net.qays.TeachingTimer.watchkitapp`. The development app uses `com.qayshp.TeachingTimer`. |
+| Build integrity | **1.0 (261120.0102.67)** is the signed App Store candidate from `f06755f3b2f9ea1c3df8645fa36114b0d87b4dfa`. Exact-source Watch checks, CodeQL, production archive/export and Apple processing passed. See [current verification](../DEVELOPMENT_STATUS.md). |
+| Paid-team signing / App Store Connect | Apple confirmed the candidate available to the private Maintainer pilot on November 20. The exact build was attached to the App Store 1.0 draft with manual release. The public TestFlight group and its build are separate. |
 | Private tester support | [Private email support](../SUPPORT.md) is configured; incoming and outgoing plain email were verified November 2. The public pilot accepts descriptions and optional cropped screenshots without requiring journals. Phone-requested and Watch-initiated companion reports have reached support; startup, retry and upgrade reliability remain under validation. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | All three TestFlight Beta journals copied and parsed in the owner’s developer-enabled SE 3/trusted-Mac setup. A filtered in-app report and optional iPhone email/export route are implemented, with two verified physical deliveries. General tester access and retry, interruption and upgrade reliability remain open; see [companion validation](OPTIONAL_COMPANION.md). |
 | Install/update pilot | TestFlight installation/update, saved class/settings, intentional Stop and running-intent relaunch passed on one physical SE 3. Cleanup and development-app preservation were checked; the original stale class retired normally and pre-install preference bytes were unavailable. See [dated results](TESTFLIGHT_PILOT_RESULTS.md). |
-| Teaching reliability | Build 25 Settings/volume received positive October 31 class feedback. The November 2 [Beta 35 supervised test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md) passes timer Crown checks on iPhone-speaker playback, but media entry updates a position snapshot without reliably restoring live progress. Broader audio routes and a teaching-length candidate run remain unverified. |
+| Teaching reliability | The November 2 [Beta 35 supervised test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md) passed timer Crown checks on iPhone-speaker playback. The embedded progress display can still freeze. The [November 13 incident](VOLUME_INCIDENT_2026-11-13.md) captured unexpected silencing with USB-C output. Complete the exact-candidate checks below. |
 | Accessibility/form factors | Build 35 has a reviewed [five-size static matrix](V1_READINESS_REVIEW.md#build-35-static-layout-matrix), small/large maximum-text Settings and bounded state-confirmed dim/wake controls checks. Physical VoiceOver, touch while teaching and Always-On remain separate gates. |
-| Store materials | Shipping icon/QR technical provenance is verified in the [asset record](DISTRIBUTION_METADATA.md#bundled-asset-provenance). Beta review metadata was submitted; the App Store privacy-label form remains incomplete. Review remaining store/privacy/export/age-rating answers against the final binary and prepare a final screenshot set with capture provenance. |
+| Store materials | On November 20 the 1.0 draft had unbadged production artwork, Watch and iPhone screenshots, a published privacy disclosure, a 4+ age rating, reviewer contact and notes, and free U.S.-only availability. Content Rights, account-level EU trader status and the final public name/subtitle remain pending. |
 
 [Metadata draft](DISTRIBUTION_METADATA.md) and [TestFlight procedure](TESTFLIGHT_PREPARATION.md)
 contain details. Keep the validated teaching installation available during the
@@ -52,6 +52,38 @@ Start with the [supervised media plan](PHYSICAL_MEDIA_TEST_PLAN.md). Seek a smal
 repeatable failure and useful Apple evidence before adding more recovery policy.
 An overnight run is conditional on that rehearsal, a bounded script and available
 devices. None is scheduled by this document.
+
+### Physical acceptance for the 1.0 candidate
+
+Use the private **1.0 (261120.0102.67)** candidate. Apple may display the
+middle component as `102` in the draft. Preserve the development installation
+and read the actual build in **Watch Settings → About** within the app before
+recording results. The iPhone TestFlight listing alone does not establish what
+the Watch installed.
+
+1. **Recover outside class.** Start a test class, note its scheduled end, force
+   close and reopen the app with the Watch awake. Verify that the schedule survives
+   and the runtime resumes. Stop the session intentionally, then reopen again
+   and confirm it stays stopped. Record any need to use the recovery button.
+2. **Check USB-C volume at a comfortable level.** While phone playback is audible,
+   make a small Crown adjustment from the timer. Repeat after returning from media
+   and after Home and reopen. If output drops to zero, stop turning, note the
+   time, playback app, output and Crown direction, then restore it using native
+   media controls or the iPhone. Log whether the ring moved and sound changed.
+3. **Teach one full class with normal wrist use.** Record start/end battery,
+   wrist-down clock readability, the scheduled end and any runtime interruption.
+   Try a count with the preferred vibration setting. Record whether the OS reaches
+   the renewal boundary during the run before judging renewal behavior.
+4. **Verify support and recovery surfaces.** Test one optional companion report
+   handoff, using the smallest useful interval. Check key controls with VoiceOver
+   and confirm standalone Watch Now Playing is easy to reach if the embedded
+   progress ring stalls.
+
+Record the Watch build and OS, playback route, expected and observed results,
+and any recovery used. A crash, lost class schedule, unrecoverable runtime or
+volume control, or reproduced unexpected silencing blocks the candidate. Keep
+the known song-progress limitation and the standalone Now Playing workaround
+visible in the reviewer notes. See [the physical reliability issue](https://github.com/qayshp/TeachingTimer/issues/10).
 
 ## Path to a true v1
 
@@ -81,7 +113,8 @@ fixed or that automatic wake refresh prevented every recurrence.
    plus the running version/build, complete bundled policy/license and website
    addresses/QR codes. Verify camera scanning from the physical display during
    the pilot; image decoding in Simulator is not a physical camera test. The private
-   support inbox now receives reports; final metadata/privacy review remains outstanding.
+   support inbox now receives reports. The Store draft's support disclosure was
+   checked against the iPhone companion privacy manifest.
 4. **Run the release matrix.** Confirm physical fresh launch, Home/return,
    intentional Stop, force-close class recovery, settings persistence and class
    replacement. Exercise normal phone playback and relevant wired/AirPlay routes
@@ -93,17 +126,16 @@ fixed or that automatic wake refresh prevented every recurrence.
 5. **Pilot the real distribution build.** Use `net.qays.TeachingTimer`, preserve
    the development install and install via TestFlight when the Watch is available
    and installation is authorized. The current candidate has passed signed archive/export,
-   upload and processing; the public invitation now offers joining instructions.
+   upload and processing. Use the Maintainer pilot for the exact candidate.
    Check install/update, separate-container state and journal/support access.
    The owner pilot has completed its recorded checks and public-beta invitations
    are authorized. The first external installation remains to be checked. External beta
    review is an opportunity to expose runtime-use questions, not a guarantee of
    final store acceptance.
-6. **Finish release materials and support.** Finalize support handling, the public
-   release name and price, final icon/screenshots, supported-device wording, privacy,
-   export/age-rating answers, review instructions, tag and release notes. Use the
-   actual signed candidate and store-supported toolchain. Do not advertise
-   guaranteed media progress, haptic timing or 1 Hz on every Watch.
+6. **Complete submission and release.** Finalize the public name/subtitle and
+   owner declarations. After physical acceptance, confirm the build and manual
+   release on the 1.0 draft, then submit for App Review. Record the decision and
+   any runtime guidance before publishing release notes and releasing the app.
 
 A successful self-pilot plus several real classes by a few new users is a useful
 release criterion, not an Apple requirement or a substitute for the matrix.

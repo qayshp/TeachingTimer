@@ -10,6 +10,39 @@ fully awake, and on the laptop, followed by success on retry. See
 [Apple feedback status](APPLE_FEEDBACK.md). This does not establish the cause
 of the separate direct-collector error below.
 
+## Capture another developer-tunnel failure for Apple
+
+For a supervised reproduction, install the requested profile in advance using
+[Apple's CoreDevice instructions](https://developer.apple.com/feedback-assistant/profiles-and-logs/).
+Find CoreDevice Framework for the relevant platforms and record which profiles
+were actually installed. A profile only affects subsequent logging.
+
+At the first failure, save the exact operation and full error chain with a
+timestamp and time zone. Record the Xcode, macOS, iOS and watchOS builds and the
+observed connection conditions, including Watch unlock, display and transport.
+Capture before re-pairing, restarting or changing those conditions. On Xcode
+27.2, this command scopes Apple's requested host and device capture to the Watch
+and paired iPhone. Substitute the actual device IDs. The directory is private.
+
+```sh
+capture_dir=$(mktemp -d "${TMPDIR:-/tmp}/watch-connection.XXXXXXXX") || exit 1
+xcrun devicectl diagnose --devices WATCH_ID --devices IPHONE_ID \
+  --include-host-sysdiagnose --archive-destination "$capture_dir/CoreDevice.zip" \
+  --json-output "$capture_dir/result.json" --log-output "$capture_dir/diagnose.log" \
+  --no-finder
+```
+
+Device collection needs a usable developer connection and mounted disk image.
+If the fault prevents device collection, use [Apple's on-device sysdiagnose instructions](https://developer.apple.com/feedback-assistant/profiles-and-logs/?name=Sysdiagnose+for+watchOS&platform=watchos)
+promptly and retrieve the finished archive when the connection returns. Keep
+host output and any partial results. An unchanged retry after capture is useful
+as a comparison. Record its outcome and time even if the retry also fails.
+
+Before attaching anything, test the archive and inventory its host, Watch and
+iPhone members. List missing or separately collected parts and the incident
+times they cover. Send complete private evidence through Feedback Assistant.
+Reference FB25329139 if filing a new report after closure.
+
 ## November 13: device services and retention
 
 The current TestFlight Watch's three journals copied and validated through the
