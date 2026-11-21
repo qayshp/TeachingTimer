@@ -1,9 +1,26 @@
 # Apple feedback status
 
-Last inspected in Feedback Assistant on November 5, 2026, read-only. Submission
-is not an Apple diagnosis or a verified fix. Raw device logs, identifiers and
-private evidence packages stay outside Git. Earlier attachment/submission
-results are recorded in the dated history below.
+The November 21, 2026 read-only inspection covers FB25329139. The November 5
+table is a dated snapshot of the other reports. Raw device logs, identifiers
+and private evidence packages stay outside Git.
+
+## November 21: Watch developer connection follow-up
+
+**FB25329139** displays **Investigation complete - Unable to diagnose with
+current information**. On October 28 Apple requested `xcrun devicectl diagnose`
+immediately after a reproduction, ideally with the CoreDevice logging profile.
+Apple asked for the Mac and relevant-device sysdiagnoses, with any missing
+captures attached separately. Its November 16 follow-up gave two weeks to
+respond and directed reporters to file a new report if the problem persists
+after closure.
+
+The original attachments already show a `CoreDeviceError` 4000 /
+`RemotePairingError` 1001 failure, then success on retry under the same observed
+conditions. The next useful evidence is a fresh failure and timestamp-matched
+host and device captures. Use the [capture procedure](WATCH_LOG_COLLECTION.md#capture-another-developer-tunnel-failure-for-apple)
+and reference FB25329139 in a new report if needed. The November 13 developer
+image metadata error is a separate symptom. The November 21 inspection made no
+submission or device capture. [Project issue](https://github.com/qayshp/TeachingTimer/issues/5)
 
 ## November 13: silencing evidence is ready for submission
 
