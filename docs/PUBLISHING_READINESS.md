@@ -55,6 +55,10 @@ devices. None is scheduled by this document.
 
 ### Physical acceptance for the 1.0 candidate
 
+The owner used **1.0 (261120.0102.67)** in two classes with AirPlay and reported
+that both went well. This records the classroom outcome and playback route.
+The dedicated USB-C and relaunch/intentional Stop checks remain open.
+
 Use the private **1.0 (261120.0102.67)** candidate. Apple may display the
 middle component as `102` in the draft. Preserve the development installation
 and read the actual build in **Watch Settings → About** within the app before
