@@ -15,7 +15,7 @@ Simulator results, physical observations and unverified mitigations.
 | [#6 Paired Simulator media discovery](https://github.com/qayshp/TeachingTimer/issues/6) | FB25294079 | No known-working companion-media baseline; Apple support clarification remains needed. |
 | [#7 Runtime recovery after dimmed relaunch](https://github.com/qayshp/TeachingTimer/issues/7) | Not separately filed | **Closed as fixed, November 6.** Builds 31–32 prevent the reproduced premature Start. Matched Simulator recovery and eight additional persisted-intent regression cases pass, alongside 1,280 seeded events. Broader native callback delivery/physical reliability remain in #10; reopen on recurrence. |
 | [#8 Frozen song progress](https://github.com/qayshp/TeachingTimer/issues/8) | FB25379883 | Timeline isolation merged in `2e02452`. The maintainer reports progress still freezes on TestFlight `1.0 (261104.1939.6)`, which includes the change. Isolation alone did not fix it; matched physical comparison remains open. |
-| [#27 Awake runtime recovery rejection](https://github.com/qayshp/TeachingTimer/issues/27) | Not filed | Hosted watchOS 26.5 smoke catches code 3 after both app and scene report active. This differs from #7's corrected inactive/dimmed submission. Preserve the failed capture and compare startup/relaunch timing; no physical reproduction or fix claimed. |
+| [#27 Awake runtime recovery rejection](https://github.com/qayshp/TeachingTimer/issues/27) | Not filed | Hosted watchOS 26.5 smoke caught code 3 after both app and scene reported active. The [smoke report](AUTOMATION.md#booted-watch-smoke-check) now records the first failure with launch timing, Start readiness, and a follow-up journal snapshot when available. The rejection remains a failing check and needs a matched reproduction. |
 
 ## Release and maintenance work
 
@@ -48,7 +48,7 @@ new automated coverage, the hosted failure and a next action for every open issu
 - [#14 Release traceability and contribution safeguards](https://github.com/qayshp/TeachingTimer/issues/14)
 - [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15): invariant table and seeded tests implemented; performance measurement remains.
 - [#30 Screenshot OCR stability](https://github.com/qayshp/TeachingTimer/issues/30): fixed by bounded CPU-backed fast recognition, exact multi-scale corroboration and observed icon/label pairs. Full SE/Ultra actions pass; CI executes real recognition on nine synthetic labels. [Evidence](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
-- [#24 Release ordering](https://github.com/qayshp/TeachingTimer/issues/24): exact-source verification reuse and selective Swift CodeQL are implemented. Publisher serialization and a confirmed synthetic Pacific daylight-saving build-number reversal remain; main checks retain per-commit cancellation groups.
+- [#24 Release ordering](https://github.com/qayshp/TeachingTimer/issues/24): exact-source verification reuse and selective Swift CodeQL are implemented. Automatic build timestamps use fixed PST to avoid the daylight-saving reversal. Publisher serialization and source ordering remain open.
 
 Completed: [#12 documentation and changelog](https://github.com/qayshp/TeachingTimer/issues/12),
 [#13 teaching-face visual key](https://github.com/qayshp/TeachingTimer/issues/13),

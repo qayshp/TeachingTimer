@@ -77,7 +77,7 @@ FAILURE_EVENTS = {'start_rejected_inactive', 'automatic_restart_failed',
                   'persistence_read_failed', 'persistence_write_failed'}
 
 
-def awake(events):
+def scene_readiness(events):
     scene, luminance = None, None
     for event in events:
         detail = event['details']
@@ -87,7 +87,55 @@ def awake(events):
             scene = detail.get('scenePhase')
         if event['event'] in {'scene_state_changed', 'interface_appeared', 'luminance_changed'}:
             luminance = detail.get('luminanceReduced', luminance)
-    return scene == 'active' and luminance == 'false'
+    return scene, luminance
+
+
+def awake(events):
+    return scene_readiness(events) == ('active', 'false')
+
+
+class RuntimeEvidenceFailure(AssertionError):
+    """Keep the first observed failure and the matching start, if available."""
+
+    def __init__(self, message, event, previous):
+        super().__init__(message)
+        details = event['details']
+        self.evidence = dict(event=event['event'], **{
+            key: details[key] for key in (
+                'launchID', 'runtimeID', 'appState', 'phase', 'savedRuntimeIntent', 'reason',
+                'reasonCode', 'errorDomain', 'errorCode', 'underlyingErrorDomain', 'underlyingErrorCode',
+            ) if key in details
+        })
+        self.add_elapsed(self.evidence, details)
+
+        runtime_id = details.get('runtimeID')
+        if runtime_id not in (None, '', 'none'):
+            for index in reversed(range(len(previous))):
+                start = previous[index]
+                start_details = start['details']
+                if start['event'] != 'start_requested' or start_details.get('runtimeID') != runtime_id:
+                    continue
+                scene, luminance = scene_readiness(previous[:index])
+                readiness = {key: value for key, value in (
+                    ('appState', start_details.get('appState')),
+                    ('sceneState', start_details.get('sceneState', scene)),
+                    ('luminanceReduced', start_details.get('luminanceReduced', luminance)),
+                ) if value is not None}
+                readiness['didStartObserved'] = any(
+                    row['event'] == 'runtime_started' and row['details'].get('runtimeID') == runtime_id
+                    for row in previous[index + 1:])
+                self.add_elapsed(readiness, start_details)
+                self.evidence['start'] = readiness
+                break
+
+    @staticmethod
+    def add_elapsed(evidence, details):
+        try:
+            elapsed = float(details.get('launchElapsedSeconds'))
+        except (TypeError, ValueError):
+            return
+        if math.isfinite(elapsed) and elapsed >= 0:
+            evidence['launchElapsedSeconds'] = elapsed
 
 
 def launch_evidence(events, seen, page, intent='stopped'):
@@ -100,8 +148,11 @@ def launch_evidence(events, seen, page, intent='stopped'):
     current = [e for e in events if e.get('details', {}).get('launchID') == launch_id]
     if not launch_id:
         return None
-    if any(e['event'] in FAILURE_EVENTS for e in current):
-        raise AssertionError('Runtime or persistence failure in fresh launch')
+    for index, event in enumerate(current):
+        if intent == 'running' and event['event'] == 'runtime_invalidated':
+            raise RuntimeEvidenceFailure('Runtime invalidated during recovery observation', event, current[:index])
+        if event['event'] in FAILURE_EVENTS:
+            raise RuntimeEvidenceFailure('Runtime or persistence failure in fresh launch', event, current[:index])
     if intent != 'running' and any(e['event'] in START_EVENTS for e in current):
         raise AssertionError('Intentional Stop or absent class was not preserved: runtime start requested')
     restored = intent == 'none' or any(e['event'] == 'runtime_intent_restored'
@@ -113,8 +164,6 @@ def launch_evidence(events, seen, page, intent='stopped'):
     if not (restored and appeared and page_appeared):
         return None
     if intent == 'running':
-        if any(e['event'] == 'runtime_invalidated' for e in current):
-            raise AssertionError('Recovered runtime invalidated during recovery observation')
         required = ['runtime_intent_restored', 'automatic_restart_attempt', 'start_requested',
                     'runtime_started', 'automatic_restart_succeeded']
         positions = []
@@ -241,6 +290,7 @@ class Smoke:
         self.seen = set()
         self.journals = {}
         self.runtime_ids = set()
+        self.stage = dict(operation='setup')
         self.started = time.monotonic()
         self.deadline = self.started + 480
         self.report = dict(complete=False, startedAt=datetime.now(timezone.utc).isoformat(), scope='Booted Watch recovery, retirement and seeded-state persistence',
@@ -279,13 +329,16 @@ class Smoke:
     def simctl(self, *arguments, **options):
         return self.command('xcrun', 'simctl', *arguments, **options)
 
-    def collect(self, label):
+    def collect_journals(self, label):
         if self.container:
             for source in (self.container / 'Documents').glob('*Diagnostics.json'):
                 shutil.copyfile(source, self.output / f'{label}-{source.name}')
             preferences = self.container / 'Library/Preferences' / (BUNDLE + '.plist')
             if preferences.exists():
                 shutil.copyfile(preferences, self.output / f'{label}-preferences.plist')
+
+    def collect(self, label):
+        self.collect_journals(label)
         if self.owned_device:
             self.simctl('io', self.owned_device, 'screenshot', self.output / f'{label}.png', timeout=20)
 
@@ -308,6 +361,7 @@ class Smoke:
                       float(e['details'].get('launchElapsedSeconds', -1))))
 
     def install_fixture(self, label, state='stopped', retire_after=None):
+        self.stage = dict(operation='install-fixture', label=label, expectedIntent=state)
         if self.running:
             raise AssertionError('Refusing to replace data in a running test app')
         if self.container:
@@ -327,6 +381,7 @@ class Smoke:
         return expected
 
     def terminate(self):
+        self.stage = dict(self.stage, operation='terminate')
         self.simctl('terminate', self.owned_device, BUNDLE)
         self.running = False
 
@@ -342,6 +397,7 @@ class Smoke:
             time.sleep(min(.25, deadline - now))
 
     def launch(self, label, page, intent, expected):
+        self.stage = dict(operation='launch', label=label, selectedPage=page, expectedIntent=intent)
         arguments = ['--show-now-playing'] if page == 'nowPlaying' else []
         self.simctl('launch', self.owned_device, BUNDLE, *arguments)
         self.running = True
@@ -393,6 +449,7 @@ class Smoke:
         return launch_id
 
     def wait_retirement(self, label, launch_id, expected, live=False):
+        self.stage = dict(operation='wait-for-retirement', label=label, launchID=launch_id)
         context = json.loads(expected[CLASS_KEY])
         deadline = context['scheduledStart'] + (context['durationMinutes'] + 30) * 60 + REFERENCE_DATE_OFFSET
         remaining = deadline - time.time()
@@ -477,11 +534,13 @@ class Smoke:
                 raise RuntimeError('Newest Watch runtime does not offer two distinct screen sizes')
         self.report['runtime'] = {key: runtime[key] for key in ('identifier', 'version', 'buildversion')}
         self.report['deviceType'] = device['identifier']
+        self.stage = dict(operation='create-device')
         name = 'TeachingTimer CI Smoke ' + self.size + ' ' + str(uuid.uuid4())[:8]
         created = self.simctl('create', name, device['identifier'], runtime['identifier'])
         self.owned_device = str(uuid.UUID(created))
         self.report['createdDevice'] = self.owned_device
         self.save()
+        self.stage = dict(operation='boot-device')
         self.simctl('boot', self.owned_device, timeout=60)
         self.simctl('bootstatus', self.owned_device, '-b', timeout=180)
         expected = self.install_fixture('stopped')
@@ -522,7 +581,11 @@ def run_one(smoke):
     try:
         smoke.run()
     except (OSError, ValueError, AssertionError, RuntimeError, subprocess.TimeoutExpired) as error:
+        smoke.report['complete'] = False
         smoke.report['error'] = str(error)
+        smoke.report['failureStage'] = smoke.stage.copy()
+        if isinstance(error, RuntimeEvidenceFailure):
+            smoke.report['runtimeFailure'] = error.evidence
         try:
             smoke.collect('failure')
         except (OSError, RuntimeError, subprocess.TimeoutExpired) as capture_error:
@@ -533,6 +596,13 @@ def run_one(smoke):
                              '--predicate', 'process == "TeachingTimer"', timeout=20, cleanup=True)
             except (OSError, RuntimeError, subprocess.TimeoutExpired) as log_error:
                 smoke.report['systemLogError'] = str(log_error)
+        if isinstance(error, RuntimeEvidenceFailure):
+            # The failure event can flush before the later fallback decision.
+            # Keep both snapshots without waiting or changing the verdict.
+            try:
+                smoke.collect_journals('failure-final')
+            except OSError as capture_error:
+                smoke.report['finalJournalCaptureError'] = str(capture_error)
     finally:
         smoke.cleanup()
         smoke.report['finishedAt'] = datetime.now(timezone.utc).isoformat()

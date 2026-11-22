@@ -147,6 +147,17 @@ runner with Xcode 27.2 explicitly selected. The older default-runner failure
 remains recorded under #27; alignment is not a runtime bug fix. Local smoke uses the already
 installed newest compatible runtime and never downloads one.
 
+On a failed run, each Watch's `smoke.json` records `failureStage`, including the
+launch label when applicable. A journal-detected launch failure also records the
+first observed error in `runtimeFailure`. If its runtime ID matches an earlier
+start, the report includes the start's native app state, scene state, luminance,
+and elapsed time since launch when available. It also records whether the
+journal included a start confirmation before the failure. The first capture uses
+the `failure-` prefix. For journal-detected launch failures, the runner also
+copies `failure-final-*` journals and preferences after collecting the existing
+screenshot and log, so a later journal flush can show the fallback decision.
+The first failure still fails the run and prevents archive verification.
+
 Python tests cover runtime selection, missing-runtime failure, stale/wrong-page
 journal rejection, synthetic state preservation and cleanup ownership. The earlier
 three-launch Stop-persistence smoke passed locally on watchOS 27.2 / SE 3 40 mm. The first
