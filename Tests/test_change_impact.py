@@ -105,14 +105,33 @@ class ChangeImpactChecks(unittest.TestCase):
         for path in ["scripts/prepare-ci-watch-runtime.py", "scripts/simulator-smoke.py", "scripts/check.sh", "scripts/check-archive.sh", "scripts/check-simulator-tools.sh", "scripts/verify-build.py",
                      "scripts/prepare-testflight.py", "scripts/prepare-testflight.sh",
                      "scripts/inspect-artifact.py", "tools/native-volume-probe/build.sh",
+                     "tools/crown-event-probe/CrownEventProbe.swift", "tools/crown-event-probe/build.sh",
+                     "tools/crown-event-probe/Info.plist",
                      "tools/phone-audio-probe/Info.plist", "tools/timeline-clock-probe/TimelineClockProbe.swift",
                      "tools/diagnostic-share-probe/DiagnosticShareProbe.swift",
+                     "tools/watch-audio-probe/WatchAudioProbe.swift", "tools/watch-audio-probe/build.sh",
+                     "tools/watch-audio-probe/Info.plist",
+                     "tools/watch-local-volume-probe/WatchLocalVolumeProbe.swift",
+                     "tools/watch-local-volume-probe/build.sh", "tools/watch-local-volume-probe/Info.plist",
+                     "tools/watch-media-lab/CrownHIDBridge.m", "tools/watch-media-lab/NativeBaselineHook.m",
+                     "tools/watch-media-lab/build.sh", "tools/watch-media-lab/native-state.py",
+                     "tools/watch-media-lab/calibrate.py", "tools/watch-media-lab/analyze-calibration.py",
+                     "tools/physical-media/HubControl.swift", "tools/physical-media/build.sh",
+                     "tools/physical-media/self-test.py",
                      "tools/simulator-regression/ScreenText.swift", "scripts/information-qr.swift"]:
             with self.subTest(path=path):
                 result = change_impact.classify_paths([path])
                 self.assertTrue(result["tooling_changed"])
                 self.assertTrue(result["mac_verify"])
                 self.assertFalse(result["publish"])
+
+    def test_safari_probe_uses_lightweight_tool_checks_without_release(self):
+        for path in ["tools/safari-media-probe/media-server.cjs", "Tests/test_safari_media_probe.py"]:
+            with self.subTest(path=path):
+                result = change_impact.classify_paths([path])
+                self.assertTrue(result["tooling_changed"])
+                for key in ["app_changed", "unknown_changed", "mac_verify", "publish", "release_verify"]:
+                    self.assertFalse(result[key])
 
     def test_outline_helper_fixture_and_wrapper_require_mac_without_release(self):
         for path in ('tools/simulator-regression/ControlOutline.swift',
@@ -123,10 +142,14 @@ class ChangeImpactChecks(unittest.TestCase):
                 self.assertFalse(result['publish'])
 
     def test_probe_readme_still_skips_mac_build(self):
-        result = change_impact.classify_paths(["tools/native-volume-probe/README.md"])
-        self.assertTrue(result["docs_changed"])
-        self.assertFalse(result["mac_verify"])
-        self.assertFalse(result["publish"])
+        for path in ["tools/native-volume-probe/README.md", "tools/crown-event-probe/README.md",
+                     "tools/watch-audio-probe/README.md", "tools/watch-local-volume-probe/README.md",
+                     "tools/watch-media-lab/README.md", "tools/safari-media-probe/README.md"]:
+            with self.subTest(path=path):
+                result = change_impact.classify_paths([path])
+                self.assertTrue(result["docs_changed"])
+                self.assertFalse(result["mac_verify"])
+                self.assertFalse(result["publish"])
 
     def test_unknown_path_fails_safe(self):
         result = change_impact.classify_paths(["new-build-input/settings.json"])

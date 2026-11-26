@@ -9,7 +9,7 @@ import WatchKit
 enum ClockFaceLayer { case complete, dial, secondsHand }
 
 struct SharedClockPage: View {
-    let date: Date
+    let clockTimelineAnchor: Date
     @ObservedObject var session: ExtendedRuntimeController
     @ObservedObject var classStore: ClassStore
     @ObservedObject var landmarks: LandmarkController
@@ -24,13 +24,13 @@ struct SharedClockPage: View {
     @ScaledMetric(relativeTo: .caption) private var labelSize = 13.0
 
     var body: some View {
-        let frame = landmarks.frame(at: date)
         GeometryReader { geometry in
             let layout = TimerFaceLayout(size: geometry.size)
             ZStack {
                 // Ticks sit behind the translucent settings backing and native time.
                 // Drawing must not intercept the button's touches or Crown focus.
-                clockFace(layer: .dial).allowsHitTesting(false)
+                // Dial geometry is independent of the sampled clock date.
+                clockFace(at: clockTimelineAnchor, layer: .dial).allowsHitTesting(false)
                 Button { classSheet = ClassSheetRequest() } label: {
                     Image(systemName: "gearshape")
                         .font(.system(size: min(labelSize + 3, 19), weight: .semibold))
@@ -43,11 +43,8 @@ struct SharedClockPage: View {
                     .accessibilityLabel("Class options and settings")
                     .accessibilityHint("Opens class timing, session controls, and settings.")
                     .accessibilityIdentifier("class-options")
-                ClockAdditions(date: date, context: classStore.context,
-                    showsClassProgress: showsClassProgress,
-                    landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,
-                    landmarkProgress: frame.progress)
-                    .allowsHitTesting(false)
+                // Native volume stays in the stable page host, outside timeline
+                // rendering. Its retained identity and focus inputs are unchanged.
                 RefreshableCompanionVolumeControl(
                     layout: layout,
                     isFocused: crownIsActive && classSheet == nil && !classStore.needsRecoveryNotice,
@@ -58,9 +55,33 @@ struct SharedClockPage: View {
                     }
                 )
                     .position(layout.volumeCenter)
-                actions(layout: layout).position(x: geometry.size.width / 2, y: layout.actionY)
-                WallClockMinuteHand(date: date).allowsHitTesting(false)
-                clockFace(layer: .secondsHand).allowsHitTesting(false)
+                TimelineView(.periodic(from: clockTimelineAnchor, by: 1)) { context in
+                    let date = context.date
+                    let frame = landmarks.frame(at: date)
+                    ZStack {
+                        // These perimeter markings stay clear of the volume
+                        // target. One sampled date drives all changing graphics.
+                        ClockAdditions(date: date, context: classStore.context,
+                            showsClassProgress: showsClassProgress,
+                            landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,
+                            landmarkProgress: frame.progress)
+                            .allowsHitTesting(false)
+                        actions(layout: layout, at: date)
+                            .position(x: geometry.size.width / 2, y: layout.actionY)
+                        // Preserve both hands above controls, including volume.
+                        WallClockMinuteHand(date: date).allowsHitTesting(false)
+                        clockFace(at: date, layer: .secondsHand).allowsHitTesting(false)
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
+                        context.invalidateTimelineContent()
+                    }
+                    .onChange(of: landmarks.isActive) { _, _ in
+                        context.invalidateTimelineContent()
+                    }
+                    .onChange(of: classStore.context) { _, _ in
+                        context.invalidateTimelineContent()
+                    }
+                }
             }
         }
         .ignoresSafeArea()
@@ -98,7 +119,7 @@ struct SharedClockPage: View {
          "lastViewLuminanceReduced": String(dimmed)]
     }
 
-    private var faceStatus: String {
+    private func faceStatus(at date: Date) -> String {
         if session.phase == .starting { return "Starting…" }
         if session.phase == .expiring { return session.statusText }
         if landmarks.isActive && !landmarks.configuration.hapticsEnabled { return "Visual count" }
@@ -110,7 +131,8 @@ struct SharedClockPage: View {
         return ""
     }
 
-    @ViewBuilder private func actions(layout: TimerFaceLayout) -> some View {
+    @ViewBuilder private func actions(layout: TimerFaceLayout, at date: Date) -> some View {
+        let faceStatus = faceStatus(at: date)
         if classStore.context == nil {
             Button { _ = retireOldClass(); classSheet = ClassSheetRequest() } label: {
                 ViewThatFits(in: .horizontal) {
@@ -184,7 +206,7 @@ struct SharedClockPage: View {
         }
     }
 
-    @ViewBuilder private func clockFace(layer: ClockFaceLayer) -> some View {
+    @ViewBuilder private func clockFace(at date: Date, layer: ClockFaceLayer) -> some View {
         SquircleIntersectionClockView(date: date, dimmed: dimmed, layer: layer)
     }
 }

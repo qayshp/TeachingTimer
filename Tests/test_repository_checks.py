@@ -112,6 +112,16 @@ class RepositoryChecks(unittest.TestCase):
         self.write('script.sh', '# SPDX-License-Identifier: MPL-2.0\nif true; then')
         self.assertIn('shell syntax', checker.check_files(self.root, [name])[0])
 
+    def test_diagnostic_objective_c_and_node_sources_receive_hygiene_checks(self):
+        for suffix in ('.m', '.cjs'):
+            with self.subTest(suffix=suffix):
+                name = self.write('probe' + suffix, '// fixture source  ')
+                errors = checker.check_files(self.root, [name])
+                self.assertTrue(any('trailing whitespace' in error for error in errors))
+                self.assertTrue(any('missing MPL source notice' in error for error in errors))
+                self.write(name, '// SPDX-License-Identifier: MPL-2.0\n')
+                self.assertEqual(checker.check_files(self.root, [name]), [])
+
     def test_source_hygiene_does_not_change_markdown_hard_breaks(self):
         name = self.write('README.md', 'A line  \nAnother line\n')
         self.assertEqual(checker.check_files(self.root, [name]), [])

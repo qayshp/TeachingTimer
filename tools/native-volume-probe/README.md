@@ -25,6 +25,10 @@ refresh. Media-to-timer return requests focus without that delay. Options:
 - `--replace`: refresh replaces the native control instance.
 - `--staged`: wait one second before startup/background-return setup.
 - `--immediate`: remove the refresh delay for comparison.
+- `--single-page`: show the same volume/Refresh controls without a `TabView` or
+  native Now Playing page. The default remains the two-page layout. Startup,
+  background-return setup, replacement mode and focus/refresh timing use the
+  same code in both layouts; page remains zero in the single-page arm.
 
 Restart only this probe to change options:
 
@@ -45,6 +49,15 @@ Writes run serially off the main queue. Events include control identity, page,
 scene, refresh request, requested delay, focus call/return and superseded work.
 Actual focus and phone volume are explicitly unobserved. Copy private journals
 from the app data container before terminating/relaunching the probe.
+Each event includes `singlePage` to identify the selected layout. Use a new
+build output directory when preserving a comparison artifact, for example:
+
+```sh
+sh tools/native-volume-probe/build.sh work/native-volume-probe-single-page-new
+xcrun simctl install SIMULATOR_UUID \
+  work/native-volume-probe-single-page-new/NativeVolumeProbe.app
+xcrun simctl launch SIMULATOR_UUID net.qays.TeachingTimer.VolumeProbe --single-page
+```
 
 ## October 26, 2026 smoke test
 

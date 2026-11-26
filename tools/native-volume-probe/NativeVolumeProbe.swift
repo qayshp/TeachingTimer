@@ -14,6 +14,7 @@ import OSLog
     @Published var requestRevision = 0
     let replaces = ProcessInfo.processInfo.arguments.contains("--replace")
     let staged = ProcessInfo.processInfo.arguments.contains("--staged")
+    let singlePage = ProcessInfo.processInfo.arguments.contains("--single-page")
     let delay: TimeInterval = ProcessInfo.processInfo.arguments.contains("--immediate") ? 0 : 0.25
     private var pending: Task<Void, Never>?
     private var seenBackground = false
@@ -27,7 +28,7 @@ import OSLog
     private let logger = Logger(subsystem: "net.qays.TeachingTimer.VolumeProbe", category: "Lifecycle")
     var mode: String { replaces ? "Replace" : "Retain" }
     func record(_ event: String, _ details: [String: String] = [:]) {
-        let fields = details.merging(["mode": mode, "page": String(page), "generation": String(generation),
+        let fields = details.merging(["mode": mode, "page": String(page), "generation": String(generation), "singlePage": String(singlePage),
                                      "actualFocus": "unobserved", "phoneVolume": "unobserved"]) { a, _ in a }
         events.append(Event(timestamp: Date(), event: event, details: fields))
         events = Array(events.suffix(1000))
@@ -109,19 +110,28 @@ struct NativeVolume: WKInterfaceObjectRepresentable {
 struct ProbeView: View {
     @StateObject private var probe = Probe()
     @Environment(\.scenePhase) private var scene
+    private var controls: some View {
+        VStack(spacing: 8) {
+            Text(probe.mode + (probe.staged ? " · staged" : " · direct")).font(.caption2)
+            if probe.ready {
+                NativeVolume(probe: probe, focused: probe.page == 0)
+                    .id(probe.generation).frame(height: 65)
+            } else { Text("Preparing…").frame(height: 65) }
+            Button("Refresh") { probe.refresh("tap") }.frame(minHeight: 44)
+            Text("iPhone · \(probe.delay, specifier: "%.2f")s").font(.caption2)
+        }
+    }
     var body: some View {
-        TabView(selection: $probe.page) {
-            VStack(spacing: 8) {
-                Text(probe.mode + (probe.staged ? " · staged" : " · direct")).font(.caption2)
-                if probe.ready {
-                    NativeVolume(probe: probe, focused: probe.page == 0)
-                        .id(probe.generation).frame(height: 65)
-                } else { Text("Preparing…").frame(height: 65) }
-                Button("Refresh") { probe.refresh("tap") }.frame(minHeight: 44)
-                Text("iPhone · \(probe.delay, specifier: "%.2f")s").font(.caption2)
-            }.tag(0)
-            NowPlayingView().tag(1)
-        }.tabViewStyle(.page)
+        Group {
+            if probe.singlePage {
+                controls
+            } else {
+                TabView(selection: $probe.page) {
+                    controls.tag(0)
+                    NowPlayingView().tag(1)
+                }.tabViewStyle(.page)
+            }
+        }
         .onAppear { probe.record("launched"); probe.prepare("startup") }
         .onChange(of: scene) { _, value in probe.scene(value) }
         .onChange(of: probe.page) { old, new in probe.record("page_changed", ["previous": String(old), "selected": String(new)]) }
