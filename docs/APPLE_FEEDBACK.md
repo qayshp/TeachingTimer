@@ -1,8 +1,31 @@
 # Apple feedback status
 
-The November 21, 2026 read-only inspection covers FB25329139. The November 5
-table is a dated snapshot of the other reports. Raw device logs, identifiers
-and private evidence packages stay outside Git.
+This page records the November 26, 2026 volume submission and the November 21
+read-only inspection of FB25329139. The November 5 table is a dated snapshot of
+the other reports. Raw device logs, identifiers and private evidence packages
+stay outside Git.
+
+## November 26 volume drop on the 1.0 candidate
+
+**FB25747428** was filed for intermittent timer-volume drops and recovery in
+Now Playing. The submitted text and both attachments were verified in Feedback
+Assistant. Apple received a selected Watch/iPhone event excerpt and the Watch
+sysdiagnose. The matching iPhone sysdiagnose was retained locally.
+
+The recurrence was on Watch build **1.0 (261120.0102.67)** during wired USB-C
+playback in Apple Music. The same Watch process and recorded timer control
+identity had served an earlier class with AirPlay. After Now Playing raised the
+phone to approximately 61%, the first timer request on returning to the timer
+put it back at about 23%, close to the timer's previous 22% setting. The paired
+captures support a stale timer volume value. The lowest retained timer request
+that afternoon was about 17.5%. The [November 13 capture](VOLUME_INCIDENT_2026-11-13.md)
+separately establishes a literal zero request and hardware mute.
+
+The report asks how the native timer control retains a volume value across page
+changes and which logging might identify the cause. The source of the stale
+value remains unverified. The [volume-host experiment](https://github.com/qayshp/TeachingTimer/pull/33)
+responded immediately on the iPhone speaker in one supervised trial. Its A/B
+comparison on the original USB-C adapter is pending. See [issue #3](https://github.com/qayshp/TeachingTimer/issues/3).
 
 ## November 21: Watch developer connection follow-up
 
@@ -22,7 +45,7 @@ and reference FB25329139 in a new report if needed. The November 13 developer
 image metadata error is a separate symptom. The November 21 inspection made no
 submission or device capture. [Project issue](https://github.com/qayshp/TeachingTimer/issues/5)
 
-## November 13: silencing evidence is ready for submission
+## November 13 silencing evidence
 
 The [new physical incident](VOLUME_INCIDENT_2026-11-13.md) now has matched,
 validated Watch and phone sysdiagnoses. Crown-associated input and a native
@@ -37,11 +60,10 @@ of a particular framework defect. Crown direction/delta, ring appearance and a
 deterministic trigger remain missing and must be explicit. Apple specifically
 recommends [diagnostic logs for bugs without reliable reproduction](https://developer.apple.com/news/?id=vvrgkboh).
 
-A concise new draft and focused source/log package are prepared privately beside
-the original captures. **No new silencing report has been submitted and no FB ID
-is assigned.** FB25329167 remains the separate focus-regression report; shared
-causation is not established. This readiness assessment does not constitute a
-new inspection of Apple's inbox or replies.
+A concise draft and focused source/log package were prepared privately beside
+the original captures. Submission followed on November 26 as FB25747428.
+FB25329167 remains the separate focus-regression report. Shared causation is
+unverified.
 
 **November 6 project resolution:** GitHub [issue #4](https://github.com/qayshp/TeachingTimer/issues/4)
 is closed as fixed by builds 33–34, supported by the reproduced mechanisms,
@@ -116,7 +138,7 @@ project resolution above. The evidence and follow-up draft are local and have
 | **FB25329167** | Native companion volume control loses Crown response after widget replacement | Filed with build-12/build-13 source comparisons, Simulator captures, and focused physical logs. |
 | **FB25305069** | Embedded native Now Playing remains black after service loss | Updated with view-only recovery trials, automatic refresh, physical observations, and the separate zero-volume event's ordering. |
 | **FB25294079** | Paired Simulator cannot discover/control iPhone media | Updated with the bounded Watch-local experiment and the outstanding Simulator-support question. |
-| **Draft only; no submitted FB ID** | Unexpected silencing during native volume adjustment | Saved in Feedback Assistant with the October 23 timeline and focused Watch/iPhone excerpts. |
+| **FB25747428**, then a draft | Unexpected silencing during native volume adjustment | Saved in Feedback Assistant with the October 23 timeline and focused Watch/iPhone excerpts. Filed on November 26 with updated evidence. |
 
 Project follow-up is tracked in [public GitHub issues](ISSUE_TRACKER.md).
 No new Apple submission is implied by creating those issues.

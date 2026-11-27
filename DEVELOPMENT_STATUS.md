@@ -1,7 +1,8 @@
 # Teaching Timer — current status
 
-Source/CI status updated November 21, 2026. Physical companion reports for
-November 12 and 13 were received and parsed; public-invitation status was last checked November 5. External
+Source/CI status updated November 21, 2026. Physical volume evidence updated
+November 26. Physical companion reports for November 12 and 13 were received
+and parsed; public-invitation status was last checked November 5. External
 App Store Connect review/build membership was last checked November 2. This page
 owns current build and validation status.
 See the [changelog](CHANGELOG.md) for user-visible changes and the
@@ -11,7 +12,8 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
 | --- | --- |
 | External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
 | Public invitation, checked November 5 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae) now offers **View in TestFlight** and joining instructions. Initial configured limit: 100. The public page does not expose the eligible build/version; a new external tester's installation remains unverified. |
-| App Store 1.0 candidate | **1.0 (261120.0102.67)**, source [`f06755f3b2f9`](https://github.com/qayshp/TeachingTimer/commit/f06755f3b2f9ea1c3df8645fa36114b0d87b4dfa). [Watch verification](https://github.com/qayshp/TeachingTimer/actions/runs/44707327389), [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/44707327287) and the [signed Store release](https://github.com/qayshp/TeachingTimer/actions/runs/44707358307) passed. Apple confirmed Store eligibility and private Maintainer pilot availability on November 20 at 01:26 PST. The same build was saved on the 1.0 draft with manual release. The owner reports two successful physical classes on this build using AirPlay. Dedicated USB-C and recovery checks remain open, along with App Review. See the [acceptance checklist](docs/PUBLISHING_READINESS.md#physical-acceptance-for-the-10-candidate). |
+| App Store 1.0 candidate | **1.0 (261120.0102.67)**, source [`f06755f3b2f9`](https://github.com/qayshp/TeachingTimer/commit/f06755f3b2f9ea1c3df8645fa36114b0d87b4dfa). [Watch verification](https://github.com/qayshp/TeachingTimer/actions/runs/44707327389), [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/44707327287) and the [signed Store release](https://github.com/qayshp/TeachingTimer/actions/runs/44707358307) passed. Apple confirmed Store eligibility and private Maintainer pilot availability on November 20 at 01:26 PST. The same build was saved on the 1.0 draft with manual release. Two physical AirPlay classes went well. A volume drop recurred on USB-C on November 26 and blocks physical acceptance under the [existing release criteria](docs/PUBLISHING_READINESS.md#physical-acceptance-for-the-10-candidate). |
+| November 26 USB-C recurrence | Same candidate `.67`. Paired system logs show the timer writing a value near its own previous setting after a Now Playing increase. The retained timer requests stayed above zero. **FB25747428** submission and its two attachments were verified. The original-adapter A/B of [PR #33](https://github.com/qayshp/TeachingTimer/pull/33) remains pending. [Evidence and limits](docs/APPLE_FEEDBACK.md#november-26-volume-drop-on-the-10-candidate). |
 | November 13 owner report | The evening class had unexpected silencing on Amazon Music/USB-C while playback continued. The emailed report identifies Watch build **261113.1031.57**. The 20:02 phone and 20:17 combined captures are now retrieved and validated, including Watch logs: TeachingTimer issues volume zero at 19:04:27 PST; native Now Playing restores volume at 19:04:32–34. The initiating gesture/framework cause remains unknown. A separate 22:16 GUI Watch diagnostic request passed the earlier DDI-failure stage; that does not resolve the intermittent collection bug. [Evidence and next steps](docs/VOLUME_INCIDENT_2026-11-13.md). |
 | First hosted internal release | **1.0 (42)**, source `190e0738b82d`, passed the first complete GitHub-hosted signed release, processing, test-note readback and sole Maintainer pilot assignment. It predates the later merged dial and media-timeline changes. [Exact provenance and timings](docs/TESTFLIGHT_PREPARATION.md#november-4-2026--hosted-release-validation). Subsequent app-affecting main pushes publish through the same gated workflow. |
 | Media timeline experiment | PR 18 isolates Now Playing from the teaching clock timeline. TestFlight `1.0 (261104.1939.6)` includes the change; the owner reports song progress still freezes. Isolation alone did not fix the issue. |
@@ -37,7 +39,7 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
   after refresh/media return and needed phone buttons. Journals confirm focus
   requests on the retained native object, not command delivery or actual focus.
   The later phone capture lacks detailed media records for those class windows.
-- **Latest supervised test, November 2 (Beta 35):** initial timer volume,
+- **November 2 supervised test (Beta 35):** initial timer volume,
   media-return volume, Home/reopen and tap-refresh all worked audibly on the
   paired iPhone speaker. Embedded progress updated on entry then stalled;
   standalone Now Playing appeared to advance. Seeking updated the embedded
@@ -52,9 +54,9 @@ See the [changelog](CHANGELOG.md) for user-visible changes and the
   establish the initiating gesture or framework cause.
 - **Blank media (#1) remains resolved. Crown volume (#2) is reopened** for the
   later physical unresponsiveness; whether it shares the earlier corrected
-  refocus mechanism is unknown. Unexpected silencing (#3) recurred November 13;
-  preserve the correlated captures before changing the native control;
-  frozen progress (#8) and developer connections (#5) remain open.
+  refocus mechanism is unknown. Unexpected silencing (#3) recurred November 13
+  and November 26 on USB-C. Frozen progress (#8) and developer connections (#5)
+  remain open.
 - **Dimmed runtime recovery fixed in builds 31–32:** readiness gating prevents
   the reproduced premature Start. The matched Simulator recovery and eight
   added persisted-intent cases pass; [issue #7](https://github.com/qayshp/TeachingTimer/issues/7)

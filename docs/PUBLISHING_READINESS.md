@@ -38,7 +38,7 @@ notes to learn installation or support procedures.
 | Private tester support | [Private email support](../SUPPORT.md) is configured; incoming and outgoing plain email were verified November 2. The public pilot accepts descriptions and optional cropped screenshots without requiring journals. Phone-requested and Watch-initiated companion reports have reached support; startup, retry and upgrade reliability remain under validation. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
 | Journal export/access | All three TestFlight Beta journals copied and parsed in the owner’s developer-enabled SE 3/trusted-Mac setup. A filtered in-app report and optional iPhone email/export route are implemented, with two verified physical deliveries. General tester access and retry, interruption and upgrade reliability remain open; see [companion validation](OPTIONAL_COMPANION.md). |
 | Install/update pilot | TestFlight installation/update, saved class/settings, intentional Stop and running-intent relaunch passed on one physical SE 3. Cleanup and development-app preservation were checked; the original stale class retired normally and pre-install preference bytes were unavailable. See [dated results](TESTFLIGHT_PILOT_RESULTS.md). |
-| Teaching reliability | The November 2 [Beta 35 supervised test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md) passed timer Crown checks on iPhone-speaker playback. The embedded progress display can still freeze. The [November 13 incident](VOLUME_INCIDENT_2026-11-13.md) captured unexpected silencing with USB-C output. Complete the exact-candidate checks below. |
+| Teaching reliability | The November 2 [Beta 35 supervised test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md) passed timer Crown checks on iPhone-speaker playback. The embedded progress display can still freeze. The [November 13 incident](VOLUME_INCIDENT_2026-11-13.md) captured a zero-volume request with USB-C output. A [sharp volume drop recurred November 26](APPLE_FEEDBACK.md#november-26-volume-drop-on-the-10-candidate) on the exact candidate. |
 | Accessibility/form factors | Build 35 has a reviewed [five-size static matrix](V1_READINESS_REVIEW.md#build-35-static-layout-matrix), small/large maximum-text Settings and bounded state-confirmed dim/wake controls checks. Physical VoiceOver, touch while teaching and Always-On remain separate gates. |
 | Store materials | On November 20 the 1.0 draft had unbadged production artwork, Watch and iPhone screenshots, a published privacy disclosure, a 4+ age rating, reviewer contact and notes, and free U.S.-only availability. Content Rights, account-level EU trader status and the final public name/subtitle remain pending. |
 
@@ -56,8 +56,13 @@ devices. None is scheduled by this document.
 ### Physical acceptance for the 1.0 candidate
 
 The owner used **1.0 (261120.0102.67)** in two classes with AirPlay and reported
-that both went well. This records the classroom outcome and playback route.
-The dedicated USB-C and relaunch/intentional Stop checks remain open.
+that both went well. On November 26, the exact build had a timer-page volume drop
+on USB-C and recovered through Now Playing. The paired logs support a stale
+timer volume value and the evidence was filed as **FB25747428**. That recurrence
+blocks physical acceptance under the criteria below. The [original-adapter
+A/B](https://github.com/qayshp/TeachingTimer/pull/33) and relaunch/intentional
+Stop checks remain open. The A/B uses separate development apps, so any
+mitigation still needs confirmation on the exact release candidate.
 
 Use the private **1.0 (261120.0102.67)** candidate. Apple may display the
 middle component as `102` in the draft. Preserve the development installation
