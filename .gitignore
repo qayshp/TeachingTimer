@@ -17,7 +17,6 @@ DerivedData*/
 *.ipa
 *.xcarchive
 *.dSYM
-*.dSYM.zip
 *.xcresult
 
 # Local simulator captures, build logs, and scratch outputs
@@ -47,6 +46,7 @@ __pycache__/
 *.logarchive/
 *.tar
 *.tar.gz
+*.[zZ][iI][pP]
 RuntimeDiagnostics.json
 InterfaceDiagnostics.json
 LandmarkDiagnostics.json
