@@ -1,9 +1,22 @@
 # Apple feedback status
 
-This page records the November 26, 2026 volume submission and the November 21
-read-only inspection of FB25329139. The November 5 table is a dated snapshot of
-the other reports. Raw device logs, identifiers and private evidence packages
-stay outside Git.
+This page records submitted reports and dated status checks. Raw device logs,
+identifiers and private evidence packages stay outside Git.
+
+## November 27: Watch developer connection reply
+
+A verified text-only reply to **FB25329139** records a November 26 remote
+installation disconnect on Xcode 27.2 (27B52) and watchOS 27.2.1. The first
+install failed with CoreDevice 3002 / IXRemoteErrorDomain 6 and the same signed
+app installed on the same Watch 26 seconds later. This occurred during
+installation. The original 4000/1001 failure occurred during tunnel negotiation.
+Whether the failures share a cause is unknown.
+
+Feedback Assistant still displayed **Investigation complete - Unable to
+diagnose with current information** after the reply. CoreDevice logging was
+verified on the Mac, iPhone and Watch, and the separate WatchOS Logging Profile
+was verified on the Watch. A timestamp-matched Mac/Watch/iPhone capture is
+pending. [Capture procedure](WATCH_LOG_COLLECTION.md#capture-another-developer-tunnel-failure-for-apple)
 
 ## November 26 volume drop on the 1.0 candidate
 
@@ -77,7 +90,7 @@ follow-up evidence. FB25305069 and FB25329167 retain their separate last-inspect
 statuses below. No Apple messages were sent. A new hosted awake-runtime rejection
 is tracked as GitHub #27, without a new Apple report or established root cause.
 
-## November 5 current status
+## November 5 status snapshot
 
 | Report | Scope | Displayed resolution |
 | --- | --- | --- |
@@ -164,9 +177,9 @@ be disregarded. Physical incidents remain reported and unresolved.
   laptop during the October 26 failure. The same build 16 installed on retry,
   with no restart, re-pairing, trust prompt, or settings change. The command
   timeout changed from 120 to 90 seconds; that is not a diagnosed remedy.
-  Coordinated Mac/Watch diagnostics with CoreDevice profiles around failure
-  and recovery are missing. The report states that gap and was submitted
-  without the requested fresh sysdiagnose. See [collection history](WATCH_LOG_COLLECTION.md).
+  A capture matched to the next failure is still needed. The November 27
+  reply and verified logging setup are recorded above.
+  See [collection history](WATCH_LOG_COLLECTION.md).
 - **Volume focus:** retaining the widget avoided the controlled Simulator
   regression. A smaller volume-only sample and physical mitigation validation
   are still needed. Ring feedback does not prove paired-iPhone audio response,

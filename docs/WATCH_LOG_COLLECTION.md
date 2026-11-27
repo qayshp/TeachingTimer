@@ -15,7 +15,10 @@ of the separate direct-collector error below.
 For a supervised reproduction, install the requested profile in advance using
 [Apple's CoreDevice instructions](https://developer.apple.com/feedback-assistant/profiles-and-logs/).
 Find CoreDevice Framework for the relevant platforms and record which profiles
-were actually installed. A profile only affects subsequent logging.
+were actually installed. A profile only affects subsequent logging. On
+November 27, CoreDevice profiles were verified on all three devices and the
+separate WatchOS Logging Profile on the Watch. Check that the temporary profiles
+are still present when preparing a later reproduction.
 
 At the first failure, save the exact operation and full error chain with a
 timestamp and time zone. Record the Xcode, macOS, iOS and watchOS builds and the

@@ -20,8 +20,8 @@ Apple Mail with recipient, subject, body and JSON attachment prefilled. No serve
 or account is added. Phone Report options → Export received report supports alternative mail apps.
 Received reports and Email support appear before new-request controls. Contact
 support can open an email without a report; About & privacy is a secondary page.
-Deletion requires confirmation and refuses to delete a newer report that arrived
-while the confirmation was open. On Watch, Report details holds the full summary
+Deletion requires confirmation and checks the saved report summary again before
+proceeding. On Watch, Report details holds the full summary
 and event previews; Connection details is a separate page.
 The receipt message names **Saved report** rather than relying on above/below.
 Connection activity is shown newest first on both devices, retaining the latest
@@ -43,6 +43,17 @@ from Watch build `261113.1031.57`, covering all three reported classes. Receipt
 and JSON parsing are verified; no fresh raw journal copies were attempted.
 See the [evening incident](VOLUME_INCIDENT_2026-11-13.md). The phone's installed
 build and the precise preparation path were not independently read.
+
+## November 26 physical Mail and file export check
+
+A separate development build on the physical Watch and iPhone received a
+14-event report requested from the phone with **Last 2 hours** selected.
+On the first attempt, **Email support** opened with the recipient, subject
+and JSON attachment prefilled. The composer was canceled after verification.
+**Export received report** staged a byte-identical copy, and the JSON appeared
+in Files under **On My iPhone** after saving. This run covered the physical
+companion flow on a development build. TestFlight upgrade and interruption
+cases remain tracked in [#26](https://github.com/qayshp/TeachingTimer/issues/26).
 
 ## Validation gates
 

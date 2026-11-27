@@ -77,10 +77,13 @@ new sysdiagnose merely because a download failed: first inventory existing
 captures, check their incident coverage, and use the phone-forwarded archive
 when appropriate. This tool intentionally cannot start a large system capture.
 
-Xcode 27.1's local `device info apps --help` documents container access as requiring
-an Xcode-installed, profile-validated, third-party, non-enterprise app. Therefore
-we must not assume this journal-copy path works with TestFlight distribution.
-TestFlight journal access/export is still a separate pilot gate, not verified here.
+The three journal copies passed on the developer-enabled Watch in the
+[TestFlight owner pilot](TESTFLIGHT_PILOT_RESULTS.md) and again during the
+[November 13 collection](WATCH_LOG_COLLECTION.md#november-13-device-services-and-retention).
+For a TestFlight Watch build, pass `--bundle net.qays.TeachingTimer.watchkitapp`
+to the journal command. These results cover the tested developer setup.
+Other testers can use the [optional companion](OPTIONAL_COMPANION.md) to send
+a filtered report without developer access.
 
 ## Validation
 

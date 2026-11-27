@@ -1,4 +1,4 @@
-# Journal retention audit — build 17
+# Journal retention and writer measurements
 
 October 26, 2026. This changes storage bounds only: no new per-frame events,
 focus requests, runtime actions, haptic scheduling or UI changes.
@@ -54,3 +54,22 @@ invocations and returns and remain useful for the current focus investigation.
 Summaries can condense them without destroying the underlying evidence.
 
 Build 17 has not been installed on the physical Watch as part of this batch.
+
+## November 26 physical writer benchmark
+
+A standalone probe ran the unchanged journal writer on an Apple Watch SE 3
+with watchOS 27.2.1. It seeded synthetic journals, verified all 16 flush
+results and exercised the 20,000-event cap.
+
+| Seeded events | Final file size | First flush with a fresh writer | Median of three subsequent flushes |
+| ---: | ---: | ---: | ---: |
+| 1,000 | 0.76 MB | 305 ms | 76 ms |
+| 5,000 | 3.80 MB | 763 ms | 367 ms |
+| 10,000 | 7.61 MB | 1,502 ms | 730 ms |
+| 20,000 | 15.23 MB | 3,043 ms | 1,489 ms |
+
+The first flush included loading an existing seed file. The timings include
+writer queue scheduling and the atomic write, with the normal batching delay
+excluded. Subsequent flush time scaled roughly with file size in this run.
+Classroom event frequency, main-thread responsiveness and battery effects
+remain unmeasured. [Performance issue #15](https://github.com/qayshp/TeachingTimer/issues/15)
