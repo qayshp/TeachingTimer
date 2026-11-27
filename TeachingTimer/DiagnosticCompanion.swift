@@ -34,21 +34,24 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
         connection = "Activation \(transport.activationState.rawValue) · installed \(installed.map(String.init) ?? "unknown") · reachable \(transport.isReachable) · queued \(transport.outstandingFileTransfers.count)"
     }
     private var preparing = false
-    @Published var received: URL?
-    @Published private(set) var receivedSummary: DiagnosticInbox.Summary?
+#if os(iOS)
+    nonisolated private let inbox = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+        .first.map(DiagnosticInbox.Store.init(applicationSupport:))
+    @Published private(set) var received: DiagnosticInbox.Receipt?
+
+    func deleteReport(_ id: UUID) throws -> Bool {
+        guard let inbox else { return false }
+        defer { received = inbox.current }
+        return try inbox.delete(id)
+    }
+#endif
     private var transport: WCSession?
     var pendingFiles: Set<URL> { Set(transport?.outstandingFileTransfers.map { $0.file.fileURL } ?? []) }
 
     override private init() {
         super.init()
 #if os(iOS)
-        if let folder = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
-            let url = folder.appendingPathComponent("TeachingTimer-diagnostics.json")
-            if let data = try? DiagnosticInbox.read(url) {
-                received = url
-                receivedSummary = try? DiagnosticInbox.summary(data)
-            }
-        }
+        received = inbox?.current
 #endif
         guard WCSession.isSupported() else { status = "Companion connection unavailable."; return }
         let session = WCSession.default
@@ -196,28 +199,26 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 
+#if os(iOS)
     nonisolated func session(_ session: WCSession, didReceive file: WCSessionFile) {
         let requestID = (file.metadata?["requestID"] as? String).flatMap(UUID.init(uuidString:))
         // Copy before returning: Watch Connectivity removes its temporary file.
         guard file.metadata?["kind"] as? String == "diagnostics-v1" else { return }
         do {
-            let data = try DiagnosticInbox.read(file.fileURL)
-            let summary = try DiagnosticInbox.summary(data)
-            let folder = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-            let destination = folder.appendingPathComponent("TeachingTimer-diagnostics.json")
-            try data.write(to: destination, options: [.atomic, .completeFileProtection])
-            var excluded = destination
-            var resource = URLResourceValues(); resource.isExcludedFromBackup = true
-            try excluded.setResourceValues(resource)
-            Task { @MainActor in
-                self.received = destination
-                self.receivedSummary = summary
+            guard let inbox else { throw CocoaError(.fileNoSuchFile) }
+            let report = try DiagnosticInbox.read(file.fileURL)
+            try inbox.install(report)
+            DispatchQueue.main.async {
+                // Another transfer or delete may have finished before this update.
+                self.received = inbox.current
                 let matched = self.request.finish(requestID)
                 self.record("Report saved; matches pending request: \(matched)")
-                if !self.requesting { self.status = "Report received. Review it in Saved report before emailing support." }
+                if !self.requesting, self.received != nil {
+                    self.status = "Report received. Review it in Saved report before emailing support."
+                }
             }
         } catch {
-            Task { @MainActor in
+            DispatchQueue.main.async {
                 if self.request.finish(requestID) || !self.requesting {
                     self.status = "Couldn’t save the report. Request it again."
                 }
@@ -225,6 +226,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
             }
         }
     }
+#endif
 }
 
 /// WCSession owns the callback until handed to this box. A lock consumes it once;

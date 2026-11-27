@@ -114,10 +114,69 @@ import Foundation
         }
         let temporary = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try! data.write(to: temporary)
-        precondition(try! DiagnosticInbox.read(temporary) == data)
+        precondition(try! DiagnosticInbox.read(temporary).data == data)
         try! Data("broken".utf8).write(to: temporary)
         do { _ = try DiagnosticInbox.read(temporary); preconditionFailure("Accepted corrupt restored report") } catch {}
         try! FileManager.default.removeItem(at: temporary)
-        print("Diagnostic request, newest-first bounded history, retry isolation and inbox validation checks passed")
+
+        try! FileManager.default.createDirectory(at: temporary, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: temporary) }
+        var older = valid
+        older["window"] = DiagnosticRequest.Window.lastTwoHours.rawValue
+        let olderData = try! JSONSerialization.data(withJSONObject: older)
+        let legacy = temporary.appendingPathComponent(DiagnosticInbox.fileName)
+        try! olderData.write(to: legacy)
+        let store = DiagnosticInbox.Store(applicationSupport: temporary)
+        let reviewed = store.current!
+        precondition(reviewed.data == olderData && reviewed.summary.window == .lastTwoHours)
+        precondition(!FileManager.default.fileExists(atPath: legacy.path), "Migration must remove the legacy report")
+
+        let exports = DiagnosticInbox.Exports(temporaryDirectory: temporary)
+        let now = Date()
+        let staged = try! exports.stage(reviewed, now: now.addingTimeInterval(-48 * 60 * 60))
+        let incoming = temporary.appendingPathComponent("incoming.json")
+        try! data.write(to: incoming)
+        let replacement = try! DiagnosticInbox.read(incoming)
+        try! store.install(replacement)
+        precondition(reviewed.data == olderData, "An in-flight export must keep its reviewed report bytes")
+        let stagedReplacement = try! exports.stage(replacement, now: now)
+        precondition(staged.url != stagedReplacement.url && staged.url.lastPathComponent == DiagnosticInbox.fileName)
+        precondition(try! Data(contentsOf: staged.url) == olderData, "An aged but active share must keep the selected file")
+        precondition(try! Data(contentsOf: stagedReplacement.url) == data)
+        exports.finish(staged)
+        precondition(!FileManager.default.fileExists(atPath: staged.url.path))
+        precondition(FileManager.default.fileExists(atPath: stagedReplacement.url.path))
+        precondition(store.current?.id == replacement.id && store.current?.summary.window == .lastDay)
+        precondition(try! !store.delete(reviewed.id), "Stale confirmation must preserve a newer report")
+        precondition(DiagnosticInbox.Store(applicationSupport: temporary).current?.data == data)
+
+        let duplicate = try! DiagnosticInbox.read(incoming)
+        precondition(duplicate.summary == replacement.summary && duplicate.id != replacement.id)
+        try! store.install(duplicate)
+        precondition(try! !store.delete(replacement.id), "Identical summaries must not stand in for receipt identity")
+        precondition(try! store.delete(duplicate.id))
+        precondition(store.current == nil && DiagnosticInbox.Store(applicationSupport: temporary).current == nil)
+        precondition(try! Data(contentsOf: stagedReplacement.url) == data, "Deleting an inbox report must leave its active share readable")
+        let concurrentExports = (0..<7).map { _ in try! exports.stage(replacement, now: now) }
+        do { _ = try exports.stage(replacement, now: now); preconditionFailure("Export cache must enforce its cap") } catch {}
+        for export in concurrentExports { exports.finish(export) }
+        exports.finish(stagedReplacement)
+        let abandoned = try! DiagnosticInbox.Exports(temporaryDirectory: temporary)
+            .stage(reviewed, now: now.addingTimeInterval(-48 * 60 * 60))
+        _ = DiagnosticInbox.Exports(temporaryDirectory: temporary)
+        precondition(!FileManager.default.fileExists(atPath: abandoned.url.path), "An expired orphan must be cleaned after restart")
+
+        // A blocked migration/save leaves the existing report available.
+        let blockedSupport = temporary.appendingPathComponent("blocked-support", isDirectory: true)
+        try! FileManager.default.createDirectory(at: blockedSupport, withIntermediateDirectories: true)
+        try! olderData.write(to: blockedSupport.appendingPathComponent(DiagnosticInbox.fileName))
+        try! Data().write(to: blockedSupport.appendingPathComponent("ReceivedDiagnostics"))
+        let blockedStore = DiagnosticInbox.Store(applicationSupport: blockedSupport)
+        let preserved = blockedStore.current!
+        precondition(preserved.data == olderData)
+        do { try blockedStore.install(replacement); preconditionFailure("Storage should fail at the blocked path") } catch {}
+        precondition(blockedStore.current?.id == preserved.id)
+        precondition(DiagnosticInbox.Store(applicationSupport: blockedSupport).current?.data == olderData)
+        print("Diagnostic requests, bounded history, retry isolation, inbox snapshots, file exports, migration and stale deletion checks passed")
     }
 }
