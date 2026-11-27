@@ -29,6 +29,7 @@ class Service:
         self.invalid_copy = False
         self.install_ok = True
         self.query_ok = True
+        self.query_result = None
         self.installed_build = "17"
         self.launch_ok = True
         self.timeout = False
@@ -49,7 +50,9 @@ class Service:
             ok = self.install_ok
         elif args[2:5] == ["device", "info", "apps"]:
             ok = self.query_ok
-            result = {"apps": [{**EXPECTED, "bundleVersion": self.installed_build}]}
+            result = self.query_result
+            if result is None:
+                result = {"apps": [{**EXPECTED, "bundleVersion": self.installed_build}]}
         elif args[2:5] == ["device", "process", "launch"]:
             ok = self.launch_ok
             result = {"process": {"processIdentifier": 123}} if ok else {}
@@ -151,6 +154,34 @@ class WatchDeviceTests(unittest.TestCase):
         session = self.session()
         self.assertEqual(wd.install(session, Path("fixture.app"), EXPECTED, 2, False), 2)
         self.assertEqual(len(self.operations(["device", "install", "app"])), 1)
+
+    def test_successful_query_with_unusable_inventory_does_not_retry(self):
+        self.service.install_ok = False
+        malformed_results = (
+            {},
+            {"apps": {}},
+            {"apps": ["unrecognized app record"]},
+            {"apps": [{"bundleVersion": "16", "version": "1.0"}]},
+            {"apps": [{"bundleIdentifier": EXPECTED["bundleIdentifier"], "version": "1.0"}]},
+            {"apps": [{**EXPECTED, "version": ""}]},
+        )
+        for index, result in enumerate(malformed_results):
+            with self.subTest(result=result):
+                self.service.calls.clear()
+                self.service.query_result = result
+                session = wd.Session(self.output / str(index), "explicit-watch", timeout=30)
+                self.assertEqual(wd.install(session, Path("fixture.app"), EXPECTED, 2, True), 2)
+                self.assertEqual(session.manifest["status"], "install_verification_unconfirmed")
+                self.assertEqual(len(self.operations(["device", "install", "app"])), 1)
+                self.assertFalse(self.operations(["device", "process", "launch"]))
+
+    def test_retry_install_after_query_confirms_no_app(self):
+        self.service.install_ok = False
+        self.service.query_result = {"apps": []}
+        session = self.session()
+        self.assertEqual(wd.install(session, Path("fixture.app"), EXPECTED, 2, False), 2)
+        self.assertEqual(len(self.operations(["device", "install", "app"])), 2)
+        self.assertEqual(session.manifest["status"], "install_failed")
 
     def test_retry_install_only_after_query_shows_wrong_version(self):
         self.service.install_ok = False

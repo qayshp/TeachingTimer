@@ -181,11 +181,29 @@ def app_metadata(path, bundle):
 
 
 def installed_match(result, expected):
+    """Return None when the inventory cannot establish presence or absence."""
     if not result["ok"]:
-        return False
-    apps = result["data"].get("result", {}).get("apps", [])
-    return isinstance(apps, list) and any(isinstance(app, dict) and
-        all(str(app.get(key, "")) == value for key, value in expected.items()) for app in apps)
+        return None
+    apps = result["data"].get("result", {}).get("apps")
+    if not isinstance(apps, list):
+        return None
+
+    matches = False
+    for app in apps:
+        bundle = app.get("bundleIdentifier") if isinstance(app, dict) else None
+        if not isinstance(bundle, str) or not bundle.strip():
+            return None
+        if bundle != expected["bundleIdentifier"]:
+            continue
+
+        build = app.get("bundleVersion")
+        version = app.get("version")
+        if any(type(value) not in (str, int) or not str(value).strip()
+               for value in (build, version)):
+            return None
+        if str(build) == expected["bundleVersion"] and str(version) == expected["version"]:
+            matches = True
+    return matches
 
 
 def install(session, app, expected, attempts, launch):
@@ -198,12 +216,12 @@ def install(session, app, expected, attempts, launch):
         query = session.command(f"verify-install-{attempt}", ["device", "info", "apps",
                                 "--bundle-id", expected["bundleIdentifier"], "--include-default-apps"])
         matching = installed_match(query, expected)
-        if matching and not result["ok"]:
+        if matching is True and not result["ok"]:
             session.finish("version_present_install_unconfirmed",
                            "The requested version/build is present, but this install was not "
                            "acknowledged. No reinstall or launch attempted; inspect the saved result.")
             return 2
-        if matching and result["ok"]:
+        if matching is True and result["ok"]:
             if launch:
                 started = session.command("launch", ["device", "process", "launch"],
                                           trailing=[expected["bundleIdentifier"]])
@@ -216,7 +234,7 @@ def install(session, app, expected, attempts, launch):
                            f"Build {expected['bundleVersion']} installation and version verified. " +
                            ("Launch acknowledged by the device." if launch else "App was not launched."))
             return 0
-        if result["ok"] or not query["ok"]:
+        if result["ok"] or matching is None:
             # Avoid another installation when success was acknowledged but the
             # query failed, or when the device cannot resolve an unknown outcome.
             session.finish("install_verification_unconfirmed",
