@@ -1,19 +1,11 @@
 # TestFlight pilot
 
-Current build/install status lives in [current verification](../DEVELOPMENT_STATUS.md).
-The owner reports a later TestFlight update and a class where everything used
-worked; live song progress was not specifically compared. The latest independently
-parsed Watch report identifies build **261112.0232.39**. Earlier frozen progress
-on **261104.1939.6** remains relevant evidence, not the current installation
-inventory. The [build-42 update](#november-4-2026--hosted-release-validation)
-established TestFlight delivery without a developer connection; unattended-update
-timing remains unverified.
-
-The [public invitation](https://testflight.apple.com/join/YA2WSmae) now offers
-**View in TestFlight** (checked November 5, 2026). Its page does not identify the
-eligible build; exact external membership and a first external installation
-remain separate checks. The November 2 submission history below retains its
-original status rather than describing current availability.
+Start with [current build and installation status](../DEVELOPMENT_STATUS.md)
+and the [public beta guide](TESTER_GUIDE.md). This page records the release
+procedure and dated upload milestones. The
+[build-42 update](#november-4-2026--hosted-release-validation) confirmed TestFlight
+delivery without a developer connection. The timing of automatic updates on
+the Watch remains unverified.
 
 ## November 2 external submission checkpoint
 
@@ -60,25 +52,18 @@ its Watch app is named **Teaching Timer Beta** to distinguish it on the Watch.
 It has separate saved classes, settings and journals. Installing it does not
 migrate the development app's data. Do not remove the development app to test it.
 
-Apple's installed Xcode 27.2 Watch-only template includes an empty
-`com.apple.product-type.application.watchapp2-container` target. Build 28 follows
-that packaging: an iOS distribution stub embeds the single-target Watch app.
-That description applies to the original watch-only package. Since PR #29, the
-same parent bundle is a real optional iPhone support app. The embedded Watch
-declares independent execution; the companion handles diagnostics only. See
-[companion packaging and validation](OPTIONAL_COMPANION.md).
-The Watch retains `WKWatchOnly = YES`, its mindfulness mode, and no
-`WKCompanionAppBundleIdentifier`. The outer identifier is the Watch identifier's
-prefix. This refines the earlier proposed bare `net.qays.TeachingTimer` Watch ID;
-no TestFlight installation previously used that ID.
+Current TestFlight and App Store archives embed the Watch app in the optional
+iPhone support app. [`CompanionInfo.plist`](../TeachingTimer/CompanionInfo.plist)
+declares `WKRunsIndependentlyOfCompanionApp` and names the iPhone app as the
+companion. Teaching stays on the Watch. The local development target uses
+[`Info.plist`](../TeachingTimer/Info.plist) with `WKWatchOnly`.
+See [companion packaging and validation](OPTIONAL_COMPANION.md).
 
-Why this was needed: exporting the old bare Watch archive with
-`method=app-store-connect` failed because Xcode offered only release-testing,
-enterprise and debugging. The packaged archive reaches distribution provisioning.
-Apple documents [watch-only distribution](https://help.apple.com/xcode/mac/current/en.lproj/devaba4602fd.html);
-see also the [related Apple Developer Forums report](https://developer.apple.com/forums/thread/817223).
-The implementation follows the installed template, not a conversion to a
-companion app.
+Builds 28–37 used an empty iOS distribution container and a Watch-only payload.
+The earlier bare Watch archive offered only release-testing, enterprise, and
+debugging export methods. The container enabled App Store Connect export.
+The optional iPhone app replaced the stub in PR #29 and kept its bundle ID.
+[Apple's Watch-only distribution guide](https://help.apple.com/xcode/mac/current/en.lproj/devaba4602fd.html).
 
 ## Rehearsal and signed preparation
 
@@ -154,9 +139,9 @@ The account holder subsequently accepted the agreement. Export of the clean
 signatures and signed entitlements passed local verification. The IPA is marked
 internal-only; that build-28 artifact was not uploaded or installed.
 
-The App Store Connect **iOS** app record has now been created as **Teaching Timer
-Beta** for `net.qays.TeachingTimer` (the watch-only packaging identity).
-**Teaching Timer** was unavailable. The following upload record establishes
+On November 2 the App Store Connect **iOS** record was created as **Teaching Timer
+Beta** for `net.qays.TeachingTimer`, then a Watch-only container. The public
+invitation now uses **Session Clock**. The following upload record establishes
 build-29 processing; final review metadata and the physical pilot are separate
 checks. Use **TestFlight Internal Only** and the maintainer alone for this first
 pilot; do not enable automatic distribution to additional testers. Leave the existing physical teaching installation
@@ -323,9 +308,8 @@ external submission requires TestFlight App Review. Keep these stages separate:
 3. Create an external group and add the eligible build with clear What to Test.
 4. Complete real review-contact information, beta description and feedback
    email, then submit for review. No app sign-in or demo credentials are needed.
-5. After approval, verify distribution and that the public invitation offers the
-   intended build. The README currently includes the real link with a clear
-   awaiting-approval label; it must not be described as installable before that check.
+5. After approval, verify which build the public group offers. Check the
+   invitation page and document a new external install separately.
 
 The configured 100-tester public-link cap is a pilot choice, not an Apple
 requirement. The internal group and its owner assignment remain separate.

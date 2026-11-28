@@ -1,17 +1,14 @@
 # Teaching Timer — current status
 
-Source/CI status updated November 21, 2026. Physical volume evidence updated
-November 26. Physical companion reports for November 12 and 13 were received
-and parsed; public-invitation status was last checked November 5. External
-App Store Connect review/build membership was last checked November 2. This page
-owns current build and validation status.
+The table records the build, environment, and limits of each check. Current
+source, the public beta, and the App Store candidate have separate evidence.
 See the [changelog](CHANGELOG.md) for user-visible changes and the
 [roadmap](docs/ROADMAP.md) for prioritized work.
 
 | Artifact | Current evidence |
 | --- | --- |
-| External submission, last checked November 2 | **1.0 (37)**, signed source `a36f3be587825`. App behavior is unchanged from 36; packaging adds external eligibility. Signed export, upload, Apple processing, 13 Swift suites / 130 Python tests, Watch CI and CodeQL pass. |
-| Public invitation, checked November 5 | [Join TestFlight](https://testflight.apple.com/join/YA2WSmae) now offers **View in TestFlight** and joining instructions. Initial configured limit: 100. The public page does not expose the eligible build/version; a new external tester's installation remains unverified. |
+| First external submission, November 2 | **1.0 (37)**, signed source `a36f3be587825`, retains build 36's app behavior. Signed export, upload, Apple processing, Watch CI, CodeQL, 13 Swift suites, and 130 Python tests passed. |
+| Public beta | The Public beta group offered **1.0 (37)** when checked November 26. On November 28, the [invitation](https://testflight.apple.com/join/YA2WSmae) was titled **Session Clock** and offered **View in TestFlight**. Initial configured limit: 100. The public page omits build numbers. A new external tester's installation remains unverified. |
 | App Store 1.0 candidate | **1.0 (261120.0102.67)**, source [`f06755f3b2f9`](https://github.com/qayshp/TeachingTimer/commit/f06755f3b2f9ea1c3df8645fa36114b0d87b4dfa). [Watch verification](https://github.com/qayshp/TeachingTimer/actions/runs/44707327389), [CodeQL](https://github.com/qayshp/TeachingTimer/actions/runs/44707327287) and the [signed Store release](https://github.com/qayshp/TeachingTimer/actions/runs/44707358307) passed. Apple confirmed Store eligibility and private Maintainer pilot availability on November 20 at 01:26 PST. The same build was saved on the 1.0 draft with manual release. Two physical AirPlay classes went well. A volume drop recurred on USB-C on November 26 and blocks physical acceptance under the [existing release criteria](docs/PUBLISHING_READINESS.md#physical-acceptance-for-the-10-candidate). |
 | November 26 USB-C recurrence | Same candidate `.67`. Paired system logs show the timer writing a value near its own previous setting after a Now Playing increase. The retained timer requests stayed above zero. **FB25747428** submission and its two attachments were verified. The original-adapter A/B of [PR #33](https://github.com/qayshp/TeachingTimer/pull/33) remains pending. [Evidence and limits](docs/APPLE_FEEDBACK.md#november-26-volume-drop-on-the-10-candidate). |
 | November 13 owner report | The evening class had unexpected silencing on Amazon Music/USB-C while playback continued. The emailed report identifies Watch build **261113.1031.57**. The 20:02 phone and 20:17 combined captures are now retrieved and validated, including Watch logs: TeachingTimer issues volume zero at 19:04:27 PST; native Now Playing restores volume at 19:04:32–34. The initiating gesture/framework cause remains unknown. A separate 22:16 GUI Watch diagnostic request passed the earlier DDI-failure stage; that does not resolve the intermittent collection bug. [Evidence and next steps](docs/VOLUME_INCIDENT_2026-11-13.md). |
@@ -213,16 +210,15 @@ See [companion validation](docs/OPTIONAL_COMPANION.md) and the
 
 ## Next validation
 
-1. Investigate frozen progress on the timeline-isolated build with matched
-   phone/Watch playback; the latest owner-reported TestFlight build still showed
-   the issue.
-2. Obtain runtime guidance and finish teaching-length, route, battery and
-   accessibility checks before a general release.
-3. Verify the exact public build and first external install; the invitation page
-   is now open. Private email accepts descriptions and optional cropped
-   screenshots. [Tester journal export](docs/DIAGNOSTIC_EXPORT_PLAN.md) now has
-   an approved owner-pilot validation path in #26; repeat delivery, TestFlight
-   delivery and interruption/offline checks remain open before general support.
+1. Recheck stalled song progress on new watchOS versions using the bare view
+   and Apple's sample. The physical comparison for [#8](https://github.com/qayshp/TeachingTimer/issues/8)
+   already reproduced the stall outside Teaching Timer.
+2. Compare the native volume hosts on the affected USB-C route. Finish runtime
+   guidance and physical teaching-length, battery and accessibility checks.
+3. Verify a first external install. On companion-enabled builds, check report
+   transfer after an update and after a connection interruption. The
+   [companion record](docs/OPTIONAL_COMPANION.md) covers the existing successful
+   physical transfers and the remaining [#26](https://github.com/qayshp/TeachingTimer/issues/26) checks.
 
 The [issue-linked roadmap](docs/ROADMAP.md) records acceptance criteria.
 No supervised device session or unattended playback run is scheduled here.

@@ -1,96 +1,76 @@
-# First class with Teaching Timer
+# First class with public beta build 37
 
-Teaching Timer is a Watch-first teaching clock, not a pose guide or workout tracker.
-It needs watchOS 26 or later. The core clock works without phone music; iPhone
-volume requires a paired iPhone and an available media connection. Always-On
-needs a Watch that supports it. Screen-size simulations are not hardware certification.
+Teaching Timer needs watchOS 26 or later. The clock works without music.
+Crown volume requires a media connection to your paired iPhone. Try wrist-down
+updates on a Watch that supports Always-On.
 
 ## Get the beta
 
 [Join the public beta](https://testflight.apple.com/join/YA2WSmae).
-On November 5 the invitation shows joining instructions and **View in TestFlight**.
-The initial public limit is 100 testers. The public page does not identify the
-eligible build; a first external tester's install/update is still to be verified.
+On November 26, 2026, the invitation showed **Session Clock** and the public
+TestFlight group offered **1.0 (37)**. The instructions below are for that build.
 
-Open the invitation on your paired iPhone with
-Apple's TestFlight app, accept the invitation, and install **Teaching Timer Beta**
-on your Watch through TestFlight. The target is watchOS 26 or later; the latest
-parsed physical report identifies watchOS 27.2.1. This is a beta, not an App Store release.
-You can also [build from source](../README.md#build-and-contribute).
+Open the invitation on your paired iPhone in TestFlight, accept it, and install
+**Teaching Timer Beta** on your Watch. Open the Watch app and confirm **Version
+1.0 (37)** in **Class → Settings → About**. If you have the development
+installation of **Teaching Timer**, keep it installed. Each app has its own
+classes, settings and journals. For newer builds, see the
+[current instructions](../README.md#current-source-and-newer-builds).
 
-Open **Teaching Timer Beta** on the Watch. If you already have
-**Teaching Timer**, keep it installed: the two apps have separate classes,
-settings and journals, and Beta does not import the other app's data. Check the
-name and build in **Gear → Settings → About** before reporting a problem.
-The gear at the upper left opens both class controls and Settings.
-Teaching Timer has no app account. Its optional iPhone interface helps send
-diagnostics; it is not needed for teaching. Phone music still requires the paired
-iPhone. Song progress and timer volume have open reliability issues, and session
-recovery depends on watchOS. Try the checks below outside class first.
+The **Class** button at the upper left opens class controls and Settings. The
+Watch app needs no account. Try the checks below outside class first.
 
 ## Try it before teaching
 
-Use the [teaching-face visual key](TEACHING_FACE_GUIDE.md) to identify the hands,
-finish marker, class-progress perimeter, count arc and audio controls.
-
 1. Open **Start class**. Check the suggested start and end, then press the large
    **Start class** button for the usual 60 minutes. **Custom schedule** changes
-   only this class; Cancel discards the draft. For an early start, check carefully:
-   opening at 1:10 suggests 1:00, not 1:15. Use +15 minutes if needed.
+   only this class. **Cancel** discards the draft. Opening at 1:10 suggests
+   1:00. Use **+15 min** if the class is scheduled for 1:15.
    Starting also requests a mindfulness session to help keep the app available
-   and support wrist-down updates. If **Start session** or **Resume session**
-   appears, tap it to request that session; your saved class schedule is unchanged.
-2. Read the hands as real time: the long thin hand is seconds, the shorter thick
-   hand is minutes. The outer wedge marks scheduled finish. For 60 minutes, the
-   stronger perimeter segment is time ahead; 75 minutes has the wedge without
-   a misleading single-revolution progress line.
+   and support wrist-down updates. When the face says **Session off**, tap
+   **Resume** to request the session. Your saved class schedule is preserved.
+2. The long, thin hand shows wall-clock seconds. The short, thick hand shows
+   wall-clock minutes. The outer wedge marks the scheduled finish. A 60-minute
+   class also shows time remaining along the dial perimeter.
 3. Tap **1-min count** to try the inner arc. It starts from the tap and takes one
    minute to fill. Groups of 1–6 vibrations begin at 10–60 seconds. The full arc
    remains briefly while the final group finishes; the count normally ends at
-   about 64.8 seconds. This brief hold also occurs with vibrations off. Tap again
-   to stop. **Gear → Settings → Count vibrations**
-   turns vibrations off for the next run. Delivery can be late or skipped by the
-   system, so do not depend on it as an exact pacing signal.
-4. With phone music already playing, try the Crown and both pages before class.
-   The timer control targets the iPhone. Native Now Playing may instead show
-   Watch playback, so the two pages are not guaranteed to control the same source.
+   about 65 seconds. The full arc also holds briefly with vibrations off. Tap
+   **Stop count** to cancel. Change **Count vibrations** in **Class → Settings**
+   before the next count. Use the arc for timing when vibrations arrive late or
+   are skipped.
+4. With phone music playing, try the Crown on both pages at a comfortable volume.
+   The timer controls the iPhone. The media page can show Watch playback, so
+   check its source.
 
-For quick access to both Teaching Timer and the standalone Now Playing app,
-[Utility supports two direct launchers](TEACHING_FACE_GUIDE.md#teaching-timer-and-native-now-playing-together).
-This is optional; the native app provides a useful comparison if embedded media
-misbehaves.
+If the ring stalls, try Apple's standalone **Now Playing** app on the Watch
+for song timing.
 
 ## During a class
 
-- Swipe left for media and right for the clock. Each entry recreates the native
-  media view. If song progress is wrong or the page is blank, swipe away and back.
-  This may refresh the position without restoring live progress. Pause and volume
-  can still work while progress is stale. Build 25 also refreshes
-  after eligible longer dimmed intervals; this is not a proven fix.
+- Swipe left for media and right for the clock. If song progress is wrong or
+  the page is blank, swipe away and back. This may update the displayed
+  position once. Pause and volume can still work while progress is stale.
 - Tap the timer's volume display if Crown volume stops responding. A brief ring
-  acknowledges the refresh request; it does **not** confirm sound recovered.
-  If playback continues silently, phone volume controls have recovered it in
-  reports. Neither workaround is guaranteed. Avoid repeated blind adjustments.
-- **Gear → Stop session** keeps class timing. **Start session** or **Resume
-  session** on the face requests a mindfulness session for wrist-down updates.
-  Reopening can recover a session that was meant to run; intentional Stop remains
-  stopped. A failed recovery also offers that session action. Without a session,
-  wrist-down updates may slow.
-- A count is separate from the class and runtime. Force-closing the app can
-  recover a blank media page, but interrupts a count. Saved class timing should
-  restore; check the displayed session state when practical.
+  acknowledges the refresh request. Check whether the sound changes. If
+  playback continues silently, try the iPhone's volume controls.
+- **Class → Stop session** keeps class timing. **Resume** on the face or
+  **Class → Resume session** requests a mindfulness session for wrist-down updates.
+  Reopening can recover a session that was meant to run. An intentional Stop
+  stays stopped. With the session off, wrist-down updates may slow.
+- If swiping fails to recover blank media, try force-closing and reopening when
+  you can. This ends any running count. The saved class should reopen. Check the
+  session state when practical.
 
 ## Between classes
 
-Use **Gear → New class**, then confirm, for another class. **End class** clears
-its timing and stops the session/count. Neither is the same as Stop session.
-An old class also retires 30 minutes after its scheduled end; no new class starts
-silently. Editing the schedule preserves the original Start timestamp.
+Use **Class → New class**, then confirm, for another class. **End class** clears
+its timing and stops the session and count. A class clears 30 minutes after its
+scheduled end. Start the next class when you're ready. Editing the schedule
+preserves the original Start timestamp.
 
-If saved timing cannot be read, **Class not restored** offers **Start class**
-for a fresh draft or **Later**. Dismissing it preserves the stored recovery data;
-starting a new class replaces current timing while retaining the recovery copy.
-A normal first launch or a successfully restored class does not show this notice.
+If **Class not restored** appears, choose **Start class** for a fresh schedule
+or **Later** to dismiss. The app keeps a recovery copy of unreadable timing.
 
 ## Report something useful
 
@@ -101,10 +81,9 @@ an empty native media view from a black page. Do not interrupt teaching merely
 to gather evidence. [Email support](../SUPPORT.md) with a short description, or
 use the [issue tracker](ISSUE_TRACKER.md) for a sanitized public report. Never
 post raw journals or system logs publicly. See [privacy and diagnostics](PRIVACY.md).
-A description or cropped screenshot is enough. Builds with the optional iPhone
-companion also support private report transfer and pre-addressed email; see the
-[reporting steps](../SUPPORT.md#optional-iphone-diagnostics-companion). Older public
-builds may lack that feature. No developer tools are needed.
+A description or cropped screenshot is enough. Build 37 keeps its journals on
+the Watch. Send feedback through TestFlight or email support from your usual
+mail app.
 
 The [current limitations](../DEVELOPMENT_STATUS.md) remain part of the beta.
 The [distribution record](TESTFLIGHT_PREPARATION.md) separates owner-pilot results
@@ -112,14 +91,8 @@ from external review and public availability.
 
 ## Help on the Watch
 
-Open **Gear → Settings** before or during a class. **Help** explains the clock,
-class timing, counts, sessions and media recovery in separate short topics.
-**Help → Contact support** shows a QR code for your phone; **Send diagnostics to
-iPhone** is separate. **Privacy** summarizes local data and sharing, with the
-full policy bundled offline. **About** shows the running version/build, source
-code and complete MPL 2.0 license. Website addresses are secondary to their scan
-codes. On iPhone, direct links and **Contact support** avoid scanning or typing
-on the Watch. Public
-GitHub issues are for sanitized reports, not raw journals or system logs.
-**Help → Send diagnostics to iPhone** offers report preparation and transfer on
-companion-enabled builds. A support link or QR code itself sends no diagnostics.
+Open **Class → Settings** before or during a class. **Help** explains the clock,
+class timing, counts, sessions and media recovery. **Privacy** summarizes local
+data and includes the policy for offline reading. **About** shows the app
+version, source code and license. Tap **About → Contact support** to find the
+support link and QR code for your phone.
