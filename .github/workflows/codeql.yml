@@ -76,14 +76,23 @@ jobs:
     needs: changes
     # Only an explicit, successful false may skip Swift. Errors scan in full.
     if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.swift_changed != 'false') }}
-    runs-on: macos-latest
+    # Weekly full scans use a different pool after hosted arm64 capacity failures.
+    # Manual runs exercise that same pool on demand. Keep change-triggered scans on arm64.
+    runs-on: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'macos-26-intel' || 'macos-26' }}
     timeout-minutes: 45
+    env:
+      # Keep traced Swift analysis on Xcode 26. Xcode 27 cannot trace builds.
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     permissions:
       contents: read
       actions: read
       security-events: write
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Check Swift analysis toolchain
+        run: |
+          xcodebuild -version
+          xcrun --sdk watchos --show-sdk-version
       - name: Initialize CodeQL
         uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4
         with:

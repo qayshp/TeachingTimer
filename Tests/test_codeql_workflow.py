@@ -114,6 +114,12 @@ class CodeQLWorkflowChecks(unittest.TestCase):
         self.assertIn('language: [actions, python]', interpreted)
         swift = WORKFLOW.split('  swift:\n', 1)[1].split('  required-result:\n', 1)[0]
         self.assertIn("needs.changes.result != 'success' || needs.changes.outputs.swift_changed != 'false'", swift)
+        self.assertIn(
+            "runs-on: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') "
+            "&& 'macos-26-intel' || 'macos-26' }}",
+            swift,
+        )
+        self.assertIn('DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer', swift)
         self.assertIn('build-mode: autobuild', swift)
         self.assertIn('github/codeql-action/autobuild@', swift)
         self.assertIn('category: /language:swift', swift)
