@@ -59,8 +59,7 @@ struct ContentView: View {
                     landmarks: landmarks,
                     retireOldClass: { retireOldClass() },
                     crownIsActive: page == .classProgress,
-                    volumeBackgroundRevision: volumeBackgroundRevision,
-                    showsClassProgress: true
+                    volumeBackgroundRevision: volumeBackgroundRevision
                 )
                 .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
                     // Invalidate pre-rendered clock/count frames after a clock change.
@@ -108,7 +107,9 @@ struct ContentView: View {
         }
         .onAppear { [session] in
             DiagnosticCompanion.shared.prepareReport = { window in
-                try await DiagnosticReportPreparation.prepare(session: session, landmarks: landmarks, window: DiagnosticReport.Window(rawValue: window.rawValue) ?? .lastTwoHours, preserving: DiagnosticCompanion.shared.pendingFiles).file.url
+                try await DiagnosticReportPreparation.prepare(
+                    session: session, landmarks: landmarks, window: window,
+                    preserving: DiagnosticCompanion.shared.pendingFiles).file.url
             }
             // Native applicationState can already report active while SwiftUI
             // is still inactive during a dimmed process relaunch. Supply scene

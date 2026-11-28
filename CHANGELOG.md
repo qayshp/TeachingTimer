@@ -4,6 +4,15 @@ User-facing beta milestones. Build availability and last confirmed installation
 live in [current status](DEVELOPMENT_STATUS.md); these notes do not imply every
 build was installed or passed hardware validation.
 
+## November 20, 2026 — App Store candidate packaging
+
+- The signed **1.0 (261120.0102.67)** candidate uses the unbadged app icon and
+  displays **Teaching Timer**. The public beta has its own build.
+- The optional iPhone app explains what a user-requested diagnostic report can
+  contain. Teaching still works directly on the Watch.
+- The candidate is in the private Maintainer pilot. Follow
+  [publishing readiness](docs/PUBLISHING_READINESS.md) for the outstanding checks.
+
 ## November 13, 2026 — clearer report and connection status
 
 - Received-report status points to **Saved report** by name. Connection details

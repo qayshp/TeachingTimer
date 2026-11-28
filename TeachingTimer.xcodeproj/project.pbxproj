@@ -12,6 +12,8 @@
         B00000000000000000000007 /* Complications in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B00000000000000000000002; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
         A10000000000000000000006 = {isa = PBXBuildFile; fileRef = A20000000000000000000004; };
         A10000000000000000000007 = {isa = PBXBuildFile; fileRef = A20000000000000000000004; };
+        A10000000000000000000008 /* DiagnosticReportFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006; };
+        A10000000000000000000009 /* DiagnosticReportFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006; };
         A10000000000000000000004 = {isa = PBXBuildFile; fileRef = A20000000000000000000003; };
         A10000000000000000000005 /* iPhone PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005; };
 
@@ -59,6 +61,7 @@
         B00000000000000000000003 /* TeachingTimerComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeachingTimerComplication.swift; sourceTree = "<group>"; };
         B00000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
         A20000000000000000000004 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticRequest.swift; sourceTree = "<group>"; };
+        A20000000000000000000006 /* DiagnosticReportFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticReportFormat.swift; sourceTree = "<group>"; };
         A20000000000000000000003 = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PhoneSupport/Assets.xcassets; sourceTree = SOURCE_ROOT; };
         A20000000000000000000005 /* iPhone PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PhoneSupport/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
 
@@ -136,6 +139,7 @@
 				200000000000000000000008 /* SquircleClockViews.swift */,
                 200000000000000000000028 /* DiagnosticReport.swift */,
                 200000000000000000000029 /* DiagnosticReportFile.swift */,
+                A20000000000000000000006 /* DiagnosticReportFormat.swift */,
                 200000000000000000000030 /* DiagnosticSharingView.swift */,
                 A20000000000000000000004, A20000000000000000000001, A20000000000000000000002, A20000000000000000000003,
                 A20000000000000000000005 /* iPhone PrivacyInfo.xcprivacy */,
@@ -328,7 +332,7 @@
 
 /* Begin PBXSourcesBuildPhase section */
         B00000000000000000000009 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B00000000000000000000006, ); runOnlyForDeploymentPostprocessing = 0; };
-        A30000000000000000000001 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000007, A10000000000000000000002, A10000000000000000000003, ); runOnlyForDeploymentPostprocessing = 0; };
+        A30000000000000000000001 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000007, A10000000000000000000008 /* DiagnosticReportFormat.swift in Sources */, A10000000000000000000002, A10000000000000000000003, ); runOnlyForDeploymentPostprocessing = 0; };
 
 		700000000000000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -358,6 +362,7 @@
 				100000000000000000000008 /* SquircleClockViews.swift in Sources */,
                 100000000000000000000028 /* DiagnosticReport.swift in Sources */,
                 100000000000000000000029 /* DiagnosticReportFile.swift in Sources */,
+                A10000000000000000000009 /* DiagnosticReportFormat.swift in Sources */,
                 100000000000000000000030 /* DiagnosticSharingView.swift in Sources */,
                 A10000000000000000000006,
                 A10000000000000000000001,

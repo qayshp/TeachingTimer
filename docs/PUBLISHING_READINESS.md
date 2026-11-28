@@ -1,177 +1,69 @@
 # Publishing readiness
 
-Updated November 21, 2026. The public invitation was last checked November 5. The
-[public invitation](https://testflight.apple.com/join/YA2WSmae) now offers
-**View in TestFlight** and joining instructions. The public group was initially
-configured with a 100-tester cap. Exact eligible-build membership and a new
-external tester's installation remain to be verified; the public page does not
-identify its build number. Automatic internal releases now use GitHub Actions.
-[Current verification](../DEVELOPMENT_STATUS.md) owns the latest uploaded and
-owner-reported installed builds, separately from this release checklist.
-
-Physical installation/update/relaunch and limited Beta
-journal access passed in the [owner pilot](TESTFLIGHT_PILOT_RESULTS.md). Cleanup
-and development-app preservation checks are documented with their limits.
-Wider teaching tests and App Store release remain pending. The
-[artifact ledger](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds)
-records exact revisions and checks.
-
-## New user entry points
-
-- [README](../README.md): what the app does, how to obtain/build it, known limits.
-- [First-class guide](TESTER_GUIDE.md): setup, controls, recovery, between classes.
-- [Privacy](PRIVACY.md): local data and optional companion sharing.
-- [Issues](ISSUE_TRACKER.md): distinct symptoms, workarounds and Apple reports.
-- [Contributing](../CONTRIBUTING.md): code layout, checks and device boundaries.
-
-The public link is in README and the tester guide with current availability
-and installation instructions. A new user should not need historical engineering
-notes to learn installation or support procedures.
+On November 20, **1.0 (261120.0102.67)** was selected on the 1.0 draft for manual
+release. A USB-C volume drop recurred on that build, so physical acceptance remains open.
+The [current status](../DEVELOPMENT_STATUS.md) records the public beta,
+the signed candidate, and their verification evidence.
 
 ## Release gates
 
-| Gate | Evidence / next action |
+| Gate | Evidence and remaining work |
 | --- | --- |
-| Names and identifiers | The public listing name and subtitle are separate release decisions. The distribution app is `net.qays.TeachingTimer` and its Watch payload is `net.qays.TeachingTimer.watchkitapp`. The development app uses `com.qayshp.TeachingTimer`. |
-| Build integrity | **1.0 (261120.0102.67)** is the signed App Store candidate from `f06755f3b2f9ea1c3df8645fa36114b0d87b4dfa`. Exact-source Watch checks, CodeQL, production archive/export and Apple processing passed. See [current verification](../DEVELOPMENT_STATUS.md). |
-| Paid-team signing / App Store Connect | Apple confirmed the candidate available to the private Maintainer pilot on November 20. The exact build was attached to the App Store 1.0 draft with manual release. The public TestFlight group and its build are separate. |
-| Private tester support | [Private email support](../SUPPORT.md) is configured; incoming and outgoing plain email were verified November 2. The public pilot accepts descriptions and optional cropped screenshots without requiring journals. Phone-requested and Watch-initiated companion reports have reached support; startup, retry and upgrade reliability remain under validation. See the [intake plan](PRIVATE_SUPPORT_PLAN.md); public issues must not receive raw logs. |
-| Journal export/access | All three TestFlight Beta journals copied and parsed in the owner’s developer-enabled SE 3/trusted-Mac setup. A filtered in-app report and optional iPhone email/export route are implemented, with two verified physical deliveries. General tester access and retry, interruption and upgrade reliability remain open; see [companion validation](OPTIONAL_COMPANION.md). |
-| Install/update pilot | TestFlight installation/update, saved class/settings, intentional Stop and running-intent relaunch passed on one physical SE 3. Cleanup and development-app preservation were checked; the original stale class retired normally and pre-install preference bytes were unavailable. See [dated results](TESTFLIGHT_PILOT_RESULTS.md). |
-| Teaching reliability | The November 2 [Beta 35 supervised test](MEDIA_PROGRESS_INCIDENT_2026-11-02.md) passed timer Crown checks on iPhone-speaker playback. The embedded progress display can still freeze. The [November 13 incident](VOLUME_INCIDENT_2026-11-13.md) captured a zero-volume request with USB-C output. A [sharp volume drop recurred November 26](APPLE_FEEDBACK.md#november-26-volume-drop-on-the-10-candidate) on the exact candidate. |
-| Accessibility/form factors | Build 35 has a reviewed [five-size static matrix](V1_READINESS_REVIEW.md#build-35-static-layout-matrix), small/large maximum-text Settings and bounded state-confirmed dim/wake controls checks. Physical VoiceOver, touch while teaching and Always-On remain separate gates. |
-| Store materials | On November 20 the 1.0 draft had unbadged production artwork, Watch and iPhone screenshots, a published privacy disclosure, a 4+ age rating, reviewer contact and notes, and free U.S.-only availability. Content Rights, account-level EU trader status and the final public name/subtitle remain pending. |
+| Build integrity | Store candidate `f06755f3b2f9ea1c3df8645fa36114b0d87b4dfa` passed Watch checks, CodeQL, signed export, and Apple processing. If release inputs change, repeat verification and attach the replacement build to the 1.0 draft. |
+| Store materials | The November 20 draft included production artwork, Watch and iPhone screenshots, privacy disclosure, 4+ rating, reviewer contact and notes, and free U.S.-only availability. Finish the name, subtitle, and Content Rights declaration. Check EU trader status before adding EU territories. Confirm screenshots and notes match the final build. [Metadata](DISTRIBUTION_METADATA.md). |
+| Runtime policy | Ask Apple about the mindfulness extended-runtime category for guided yoga instruction and the renewal policy. Document the answer or adopt a supported alternative. [Runtime-use briefing](DISTRIBUTION_METADATA.md#runtime-use-briefing-for-apple--not-submitted) · [#9](https://github.com/qayshp/TeachingTimer/issues/9). |
+| Teaching reliability | Finish the physical checks below. The embedded song-progress stall already reproduces in Apple's own sample. Explain it and the standalone Now Playing workaround in reviewer notes. |
+| Watch size and accessibility | Review the current candidate on small and large Watches and check VoiceOver on hardware. The [earlier five-size layout matrix](V1_READINESS_REVIEW.md#build-35-static-layout-matrix) documents build 35. Verify the watchOS 26 minimum separately from newer runtime checks. [#10](https://github.com/qayshp/TeachingTimer/issues/10). |
+| Install, update and support | The [owner installation/update pilot](TESTFLIGHT_PILOT_RESULTS.md) passed with separate app containers. Private email and both companion report directions have worked on hardware. Verify the first external install and remaining companion upgrade/interruption cases. [#11](https://github.com/qayshp/TeachingTimer/issues/11) · [#26](https://github.com/qayshp/TeachingTimer/issues/26). |
 
-[Metadata draft](DISTRIBUTION_METADATA.md) and [TestFlight procedure](TESTFLIGHT_PREPARATION.md)
-contain details. Keep the validated teaching installation available during the
-pilot. Shipping and asking for a coordinated hardware session are separate decisions.
+New testers can use the [first-class guide](TESTER_GUIDE.md), [privacy policy](PRIVACY.md),
+and [support guide](../SUPPORT.md). A short support description is enough. The
+[TestFlight procedure](TESTFLIGHT_PREPARATION.md) records signing, group assignment,
+and upload milestones.
 
-## Testing priorities
+## Physical acceptance for the 1.0 candidate
 
-Start with the [supervised media plan](PHYSICAL_MEDIA_TEST_PLAN.md). Seek a small
-repeatable failure and useful Apple evidence before adding more recovery policy.
-An overnight run is conditional on that rehearsal, a bounded script and available
-devices. None is scheduled by this document.
+The owner used **1.0 (261120.0102.67)** successfully in two AirPlay classes.
+On November 26 a timer-page volume drop on USB-C recovered through Now Playing.
+The paired logs suggest an earlier volume value was reused. The cause remains
+unknown. [Incident and Apple report](APPLE_FEEDBACK.md#november-26-volume-drop-on-the-10-candidate).
 
-### Physical acceptance for the 1.0 candidate
+Use the [Control A / Isolated B comparison](https://github.com/qayshp/TeachingTimer/pull/33)
+to investigate the affected adapter. The experimental apps can identify a
+mitigation. Confirm any mitigation on the exact signed release candidate.
 
-The owner used **1.0 (261120.0102.67)** in two classes with AirPlay and reported
-that both went well. On November 26, the exact build had a timer-page volume drop
-on USB-C and recovered through Now Playing. The paired logs support a stale
-timer volume value and the evidence was filed as **FB25747428**. That recurrence
-blocks physical acceptance under the criteria below. The [original-adapter
-A/B](https://github.com/qayshp/TeachingTimer/pull/33) and relaunch/intentional
-Stop checks remain open. The A/B uses separate development apps, so any
-mitigation still needs confirmation on the exact release candidate.
+Read the Watch app's build in **Settings → About** before starting. Preserve the
+development installation and its data through candidate testing.
 
-Use the private **1.0 (261120.0102.67)** candidate. Apple may display the
-middle component as `102` in the draft. Preserve the development installation
-and read the actual build in **Watch Settings → About** within the app before
-recording results. The iPhone TestFlight listing alone does not establish what
-the Watch installed.
+1. **Recover after reopening.** Start a test class and note its scheduled end.
+   Force-close and reopen with the Watch awake. Check that the schedule survives
+   and the session resumes. Stop the session intentionally, reopen again, and
+   verify that it stays stopped.
+2. **Exercise the affected volume route.** With USB-C playback audible at a
+   comfortable level, make one small Crown adjustment on the timer. Repeat after
+   returning from media and after Home and reopen. If volume drops, stop turning.
+   Note the time, output, ring response, and Crown direction, then restore sound
+   from Now Playing or the iPhone.
+3. **Teach a full class.** Record battery at start and end, wrist-down readability,
+   scheduled finish, and any runtime interruption. Try a count with the preferred
+   vibration setting. Check whether the session reached the renewal boundary.
+4. **Check support and accessibility.** Try one companion report with the
+   smallest useful time window. Check the key controls with VoiceOver and
+   confirm that you can reach Apple's standalone Now Playing quickly.
 
-1. **Recover outside class.** Start a test class, note its scheduled end, force
-   close and reopen the app with the Watch awake. Verify that the schedule survives
-   and the runtime resumes. Stop the session intentionally, then reopen again
-   and confirm it stays stopped. Record any need to use the recovery button.
-2. **Check USB-C volume at a comfortable level.** While phone playback is audible,
-   make a small Crown adjustment from the timer. Repeat after returning from media
-   and after Home and reopen. If output drops to zero, stop turning, note the
-   time, playback app, output and Crown direction, then restore it using native
-   media controls or the iPhone. Log whether the ring moved and sound changed.
-3. **Teach one full class with normal wrist use.** Record start/end battery,
-   wrist-down clock readability, the scheduled end and any runtime interruption.
-   Try a count with the preferred vibration setting. Record whether the OS reaches
-   the renewal boundary during the run before judging renewal behavior.
-4. **Verify support and recovery surfaces.** Test one optional companion report
-   handoff, using the smallest useful interval. Check key controls with VoiceOver
-   and confirm standalone Watch Now Playing is easy to reach if the embedded
-   progress ring stalls.
+Record the actual build, Watch OS, playback route, expected and observed
+results, and recovery. A crash, lost class schedule, unrecoverable runtime or
+volume control, or unexpected silencing blocks the candidate. A progress
+stall can remain a known limitation if the maintainer accepts its effect and
+the recovery is documented.
 
-Record the Watch build and OS, playback route, expected and observed results,
-and any recovery used. A crash, lost class schedule, unrecoverable runtime or
-volume control, or reproduced unexpected silencing blocks the candidate. Keep
-the known song-progress limitation and the standalone Now Playing workaround
-visible in the reviewer notes. See [the physical reliability issue](https://github.com/qayshp/TeachingTimer/issues/10).
+## Submit and release
 
-## Path to a true v1
+After the gates pass, confirm the exact build, listing fields, owner
+declarations, reviewer notes, and manual release setting. Submit for review
+and record Apple's decision or requested changes. Keep the development
+installation available while checking the published build.
 
-The October 31 class report supports freezing the current product scope as a
-release candidate. Settings, visual-only counting/time remaining and volume
-worked for the maintainer; song progress remains an unresolved defect. The
-November 2 Beta 35 test shows that swiping can refresh a position snapshot without
-restoring live progress, so recovery must not be assumed.
-This is firsthand feedback, not proof that the earlier silencing/focus bugs are
-fixed or that automatic wake refresh prevented every recurrence.
-
-1. **Freeze scope and acceptance criteria.** Keep the current clock, schedule,
-   counts, Settings and native media. Block release on crashes, lost class state,
-   unrecoverable runtime/volume failure, or reproduced unexpected silencing in the
-   candidate. Treat progress stalling as a candidate limitation only with the
-   maintainer's acceptance of its observed recovery limits and beta feedback.
-   Do not require Apple to fix every reported defect or add unrelated teaching
-   features.
-2. **Resolve extended-runtime intended use early.** Apple's mindfulness category
-   describes silent meditation and a one-hour time limit; category choice must
-   follow intended use. Explain the actual yoga-instruction workflow and renewal
-   policy accurately in a developer support/review inquiry. Acceptance is not
-   established. Do not silently switch to HealthKit, use artificial background
-   audio or disguise the purpose. A runtime-policy decision may be necessary.
-3. **Help/About/Privacy added in build 27.** Settings contains offline explanations
-   of hands/marker, class versus session, counts, media recovery and local data,
-   plus the running version/build, complete bundled policy/license and website
-   addresses/QR codes. Verify camera scanning from the physical display during
-   the pilot; image decoding in Simulator is not a physical camera test. The private
-   support inbox now receives reports. The Store draft's support disclosure was
-   checked against the iPhone companion privacy manifest.
-4. **Run the release matrix.** Confirm physical fresh launch, Home/return,
-   intentional Stop, force-close class recovery, settings persistence and class
-   replacement. Exercise normal phone playback and relevant wired/AirPlay routes
-   at modest volume. Complete one teaching-length runtime/renewal/battery run.
-   The current five-size Simulator matrix is complete; physical accessibility
-   remains open. The deployment target is watchOS 26; validate that declared minimum in a deliberate
-   compatibility test or adjust the support claim rather than assuming only
-   watchOS 27.2 results cover it.
-5. **Pilot the real distribution build.** Use `net.qays.TeachingTimer`, preserve
-   the development install and install via TestFlight when the Watch is available
-   and installation is authorized. The current candidate has passed signed archive/export,
-   upload and processing. Use the Maintainer pilot for the exact candidate.
-   Check install/update, separate-container state and journal/support access.
-   The owner pilot has completed its recorded checks and public-beta invitations
-   are authorized. The first external installation remains to be checked. External beta
-   review is an opportunity to expose runtime-use questions, not a guarantee of
-   final store acceptance.
-6. **Complete submission and release.** Finalize the public name/subtitle and
-   owner declarations. After physical acceptance, confirm the build and manual
-   release on the 1.0 draft, then submit for App Review. Record the decision and
-   any runtime guidance before publishing release notes and releasing the app.
-
-A successful self-pilot plus several real classes by a few new users is a useful
-release criterion, not an Apple requirement or a substitute for the matrix.
-The separately authorized installation/update owner pilot is complete within
-its stated limits. Preserve the development teaching installation. Public-beta
-invitations are authorized and available; broader teaching tests
-remain necessary and no App Store release is implied.
-
-References: [runtime categories](https://developer.apple.com/documentation/WatchKit/using-extended-runtime-sessions),
-[review guidelines](https://developer.apple.com/app-store/review/guidelines/),
-[TestFlight](https://developer.apple.com/testflight/).
-
-## November 2 pilot preparation
-
-Build 28 adds Apple's Watch-only distribution container, a separate TestFlight
-scheme/configuration, and checks for the signed internal-only export. Packaging
-resolved the bare Watch archive's export-method rejection. The account holder
-then accepted the updated developer agreement, resolving Apple's **PLA Update
-available** provisioning gate. The internal-only build-28 IPA exported
-successfully and passed local package, profile, signature and entitlement checks.
-That build-28 export was not uploaded. Subsequent clean candidates were uploaded
-and processed successfully; the [artifact ledger](TESTFLIGHT_PREPARATION.md#subsequent-pilot-builds)
-records each checkpoint. At that earlier stage the pilot was manual and owner-only. No TestFlight installation
-or physical update occurred during the initial preparation; the subsequently
-authorized [owner pilot](TESTFLIGHT_PILOT_RESULTS.md) records physical results. See [the pilot procedure and remaining gates](TESTFLIGHT_PREPARATION.md).
-The [private intake procedure](PRIVATE_SUPPORT_PLAN.md) now has a configured
-alias and verified incoming/outgoing plain email as of November 2. One physical
-companion diagnostic email was verified November 11. Startup, first-composer,
-update and interruption reliability remain under validation; see the
-[companion record](OPTIONAL_COMPANION.md).
+Apple references: [runtime categories](https://developer.apple.com/documentation/WatchKit/using-extended-runtime-sessions),
+[App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/),
+and [TestFlight](https://developer.apple.com/testflight/).

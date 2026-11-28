@@ -60,10 +60,29 @@ struct ClassContextChecks {
                                      for: date(10, 23), at: beforeRejectedEdit.retirementDate))
         assert(store.context == beforeRejectedEdit)
         assert(ClassStore(defaults: defaults).context == beforeRejectedEdit)
+        // Recheck the proposed schedule at confirmation. An expired draft must
+        // leave the current class and stored bytes intact on both save paths.
+        let confirmation = date(20)
+        let savedBytes = defaults.data(forKey: "teachingClassContext.v1")
+        _ = store.takePersistenceEvents()
+        for duration in [60, 75] {
+            let start = confirmation.addingTimeInterval(-Double(duration + ClassContext.retirementGraceMinutes) * 60)
+            assert(!store.begin(at: confirmation, scheduledStart: start, durationMinutes: duration))
+            assert(!store.updateSchedule(start: start, durationMinutes: duration,
+                                         for: beforeRejectedEdit.initialStartPressedAt, at: confirmation))
+        }
+        assert(store.context == beforeRejectedEdit)
+        assert(defaults.data(forKey: "teachingClassContext.v1") == savedBytes)
+        assert(store.takePersistenceEvents().isEmpty)
         // Explicit New class before the old grace period expires gets a fresh anchor.
         store.begin(at: date(40), scheduledStart: date(45), durationMinutes: 60)
         assert(store.context?.initialStartPressedAt == date(40))
         assert(store.context?.scheduledStart == date(45))
+        store.reset()
+        let heldDraftStart = confirmation.addingTimeInterval(-90 * 60)
+        assert(!store.begin(at: confirmation, scheduledStart: heldDraftStart, durationMinutes: 60))
+        assert(store.context == nil && defaults.data(forKey: "teachingClassContext.v1") == nil)
+        assert(store.begin(at: confirmation.addingTimeInterval(-0.001), scheduledStart: heldDraftStart, durationMinutes: 60))
         store.reset()
         // Decoding must enforce the same invariants as fresh construction.
         let validData = try! JSONEncoder().encode(context)
@@ -163,5 +182,6 @@ struct ClassContextChecks {
         print("PASS: exact retirement boundary, overrun grace, idempotence, persistence, fresh Start and 75-minute protection")
         print("PASS: invalid persisted durations/dates rejected without overwriting data; explicit Start recovers")
         print("PASS: stale schedule saves reject missing, replaced, and overdue classes without mutation or resurrection")
+        print("PASS: expired new and edited drafts reject at confirmation without changing stored class; overrun grace remains valid")
     }
 }

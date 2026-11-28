@@ -26,16 +26,13 @@ struct ClassControlsView: View {
     @AppStorage("countVibrationsEnabled") private var countVibrationsEnabled = true
     @AppStorage("showRemainingMinutes") private var showRemainingMinutes = false
 
-    private func prepareDiagnostics(window: DiagnosticReport.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
+    private func prepareDiagnostics(window: DiagnosticReportFormat.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
         try await DiagnosticReportPreparation.prepare(session: session, landmarks: landmarks, window: window, preserving: preserving)
     }
 
     var body: some View {
         NavigationStack {
             Form {
-                if let draftNotice, mode != .settings {
-                    Section { Text(draftNotice).font(.caption) }
-                }
                 if mode == .settings {
                     Section {
                         Toggle("Count vibrations", isOn: $countVibrationsEnabled)
@@ -94,6 +91,7 @@ struct ClassControlsView: View {
                             .accessibilityIdentifier("end-class")
                     }
                 } else if mode == .create {
+                    draftFeedback
                     Button(action: confirmStart) {
                         VStack(spacing: 6) {
                             ViewThatFits(in: .horizontal) {
@@ -149,6 +147,7 @@ struct ClassControlsView: View {
                         Text("75 min").tag(75)
                     }
                     Text("Ends " + start.addingTimeInterval(Double(duration) * 60).formatted(date: .omitted, time: .shortened))
+                    draftFeedback
                     classAction(mode == .edit ? "Save schedule" : "Start class",
                                 icon: mode == .edit ? "checkmark" : "play.fill", prominent: true,
                                 action: confirmStart)
@@ -249,6 +248,12 @@ struct ClassControlsView: View {
         }
     }
 
+    @ViewBuilder private var draftFeedback: some View {
+        if let draftNotice {
+            Section { Text(draftNotice).font(.caption) }
+        }
+    }
+
     private func classAction(_ title: String, icon: String, prominent: Bool = false,
                              role: ButtonRole? = nil, action: @escaping () -> Void) -> some View {
         Button(role: role, action: action) {
@@ -284,27 +289,44 @@ struct ClassControlsView: View {
     }
 
     private func confirmStart() {
-        if mode != .edit && classStore.context != nil { confirmReplacement = true }
-        else { save() }
+        if mode != .edit && classStore.context != nil {
+            guard proposedSchedule(at: Date()) != nil else { return }
+            confirmReplacement = true
+        } else { save() }
+    }
+
+    private func proposedSchedule(at date: Date) -> ClassContext? {
+        let draft = ClassContext(pressedAt: date, durationMinutes: mode == .create ? 60 : duration,
+                                 scheduledStart: mode == .create ? defaultStart : start)
+        guard !draft.shouldRetire(at: date) else {
+            start = ClassContext.inferredStart(for: date)
+            defaultStart = start
+            draftNotice = "Schedule expired. Review the suggested start."
+            return nil
+        }
+        return draft
     }
 
     private func save() {
+        let now = Date()
+        guard let draft = proposedSchedule(at: now) else { return }
         if mode == .edit {
             // Save can beat the retirement task/onChange callback. Retire through
             // the shared path, then reject a stale draft before dismissing.
             _ = retireOldClass()
             guard let editingClassID,
-                  classStore.updateSchedule(start: start, durationMinutes: duration, for: editingClassID) else {
+                  classStore.updateSchedule(start: draft.scheduledStart, durationMinutes: draft.durationMinutes,
+                                            for: editingClassID, at: now) else {
                 prepareNew()
                 draftNotice = classStore.context == nil ? "Previous class cleared." : "Class changed. Review before starting."
                 return
             }
         } else {
-            landmarks.cancel(reason: "new_class_reset")
             // The confirmation is the actual Start action; opening the draft
             // earlier must not claim that the class was already running.
-            classStore.begin(at: Date(), scheduledStart: mode == .create ? defaultStart : start,
-                             durationMinutes: mode == .create ? 60 : duration)
+            guard classStore.begin(at: now, scheduledStart: draft.scheduledStart,
+                                   durationMinutes: draft.durationMinutes) else { return }
+            landmarks.cancel(reason: "new_class_reset")
             session.synchronizeClass(classStore.context)
             session.start()
         }
@@ -315,7 +337,7 @@ struct ClassControlsView: View {
 
 @MainActor
 enum DiagnosticReportPreparation {
-    static func prepare(session: ExtendedRuntimeController, landmarks: LandmarkController, window: DiagnosticReport.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
+    static func prepare(session: ExtendedRuntimeController, landmarks: LandmarkController, window: DiagnosticReportFormat.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
         // One time boundary for all stores. Snapshot and encode without forcing
         // a write, stopping the session, or delaying the MainActor's haptics.
         let preserving = preserving.union(DiagnosticCompanion.shared.pendingFiles)

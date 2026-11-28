@@ -9,7 +9,6 @@ import SwiftUI
 struct ClockAdditions: View {
     let date: Date
     let context: ClassContext?
-    var showsClassProgress = false
     var landmarkStartAngle: Double?
     var landmarkProgress: Double = 0
 
@@ -31,7 +30,7 @@ struct ClockAdditions: View {
                 graphics.fill(Path(ellipseIn: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6)),
                               with: .color(.white))
             }
-            if showsClassProgress, let context, context.durationMinutes == 60 {
+            if let context, context.durationMinutes == 60 {
                 // Sample at the hands' whole-second cadence; clamp at either end
                 // so an overdue class never wraps into another full hour.
                 let sampledDate = WallClockDisplay.wholeSecondDate(date)

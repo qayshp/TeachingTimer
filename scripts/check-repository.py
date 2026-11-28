@@ -22,7 +22,7 @@ LINK = re.compile(r'!?\[[^\]\n]*\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+"[^"\n]*")?\s*\)')
 HTML_LINK = re.compile(r'<(?:img|a)\b[^>]*?\b(?:src|href)=["\']([^"\']+)["\']', re.I)
 PRIVATE_NAMES = {'RuntimeDiagnostics.json', 'InterfaceDiagnostics.json', 'LandmarkDiagnostics.json', 'BuildInfo.plist'}
 PRIVATE_SUFFIXES = ('.p12', '.p8', '.mobileprovision', '.provisionprofile', '.keychain', '.keychain-db',
-                    '.ipa', '.dSYM.zip', '.tar', '.tar.gz', '.log', '.xcuserstate', '.xccheckout', '.xcscmblueprint')
+                    '.ipa', '.zip', '.tar', '.tar.gz', '.log', '.xcuserstate', '.xccheckout', '.xcscmblueprint')
 GENERATED_DIRECTORIES = {'build', '.build', 'xcuserdata', '__pycache__'}
 GENERATED_BUNDLES = ('.app', '.appex', '.xcarchive', '.logarchive', '.dSYM', '.xcresult')
 SOURCE_SUFFIXES = {'.swift', '.py', '.sh', '.yml', '.yaml', '.xcconfig'}
@@ -79,7 +79,7 @@ def private_artifact(name):
     path = Path(name)
     environment = path.name == '.env' or (path.name.startswith('.env.') and path.name != '.env.example')
     return (name.startswith(('work/', 'outputs/')) or environment or path.name in PRIVATE_NAMES
-            or name.endswith(PRIVATE_SUFFIXES)
+            or name.lower().endswith(PRIVATE_SUFFIXES)
             or any(part in GENERATED_DIRECTORIES or part.startswith('DerivedData')
                    or part.endswith(GENERATED_BUNDLES) for part in path.parts[:-1])
             or path.suffix in {'.pyc', '.pyo', '.pyd'})

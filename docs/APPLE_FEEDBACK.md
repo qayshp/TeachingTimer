@@ -40,6 +40,25 @@ value remains unverified. The [volume-host experiment](https://github.com/qayshp
 responded immediately on the iPhone speaker in one supervised trial. Its A/B
 comparison on the original USB-C adapter is pending. See [issue #3](https://github.com/qayshp/TeachingTimer/issues/3).
 
+Two text-only follow-ups were verified in Feedback Assistant:
+
+- On November 26 the iPhone reported 17.2% on speaker before switching to
+  USB-C, where it reported 65.0%. The Watch timer then read the earlier 17.2%
+  and its first recorded request changed the active USB-C output to 17.5%.
+  When the phone returned to its speaker, it reported 17.2% again. This
+  supports the hypothesis that the native control reused an earlier route's
+  volume. The logs leave the source of that value open.
+- The November 13 and 26 incidents involved different physical adapters with
+  the same Core Audio identifier. Public Linux records show the same serial
+  for the AB13X model. Apple documents volume and mute restoration by device
+  identifier, so the adapters could share saved settings. Whether that
+  contributed to the drops remains unknown. [Linux driver commit](https://github.com/torvalds/linux/commit/ac656d7d7c70f7c352c7652bc2bb0c1c8c2dde08) · [Public boot log](https://github.com/raspberrypi/linux/issues/6953) · [Apple TN3190](https://developer.apple.com/documentation/technotes/tn3190-usb-audio-device-design-considerations#Device-Naming).
+
+Three later classes with Apple Music and USB-C were trouble-free according to
+the owner. The third included normal Crown adjustments after intervening
+YouTube Music playback on the phone speaker and AirPods. The controlled A/B on
+the affected adapter remains open.
+
 ## November 21: Watch developer connection follow-up
 
 **FB25329139** displays **Investigation complete - Unable to diagnose with

@@ -3,7 +3,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import CryptoKit
 import Foundation
 
 /// Immutable share files only. This utility never opens or changes a journal.
@@ -13,8 +12,7 @@ import Foundation
 /// overlaps a new view. The recursive lock permits prepare's cleanup step.
 enum DiagnosticReportFile {
     static let directoryName = "TeachingTimerDiagnosticReports"
-    static let maximumBytes = 2 * 1024 * 1024
-    static let maximumFiles = 8 // At most 16 MiB of prepared report content.
+    static let maximumFiles = 8
     static let retention: TimeInterval = 24 * 60 * 60
     private static let prefix = "TeachingTimer-report-"
     private static let lock = NSRecursiveLock()
@@ -22,8 +20,6 @@ enum DiagnosticReportFile {
     struct Prepared: Sendable {
         let url: URL
         let byteCount: Int
-        let sha256: String
-        let createdAt: Date
     }
 
     enum Failure: Error, Equatable {
@@ -43,7 +39,7 @@ enum DiagnosticReportFile {
         lock.lock()
         defer { lock.unlock() }
         guard !data.isEmpty else { throw Failure.emptyReport }
-        guard data.count <= maximumBytes else { throw Failure.tooLarge }
+        guard data.count <= DiagnosticReportFormat.maximumBytes else { throw Failure.tooLarge }
         let epoch = try creationEpoch(now)
         let directory = try cacheDirectory(root: cachesDirectory, create: true)!
         try purgeExpired(cachesDirectory: cachesDirectory, now: now, preserving: preserving)
@@ -68,9 +64,7 @@ enum DiagnosticReportFile {
             }
             do {
                 try data.write(to: url, options: .atomic)
-                return Prepared(url: url, byteCount: data.count,
-                                sha256: SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined(),
-                                createdAt: now)
+                return Prepared(url: url, byteCount: data.count)
             } catch {
                 try? FileManager.default.removeItem(at: url)
                 throw error

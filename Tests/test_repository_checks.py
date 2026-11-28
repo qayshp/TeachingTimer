@@ -74,9 +74,11 @@ class RepositoryChecks(unittest.TestCase):
     def test_raw_captures_and_journals_cannot_escape_work_exclusion(self):
         names = [self.write('RuntimeDiagnostics.json', '[]'),
                  self.write('capture.tar.gz', 'private'),
+                 self.write('CoreDevice.zip', 'private'),
+                 self.write('docs/connection-evidence.ZIP', 'private'),
                  self.write('system_logs.logarchive/metadata', 'private')]
         errors = checker.check_files(self.root, names)
-        self.assertEqual(len(errors), 3)
+        self.assertEqual(len(errors), len(names))
         self.assertTrue(all('must not be published' in error for error in errors))
 
     def test_force_added_credentials_and_generated_products_are_rejected(self):

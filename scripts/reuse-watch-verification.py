@@ -23,7 +23,7 @@ STEPS = (
     'xcode', 'developer-directory', 'sdks', 'swift', 'repository',
     'control-outline-smoke', 'models', 'tools', 'information-qr', 'simulator',
     'prepare-watch-runtime', 'simulator-smoke', 'companion-simulator',
-    'simulator-tools', 'screen-text-smoke', 'archive', 'distribution-rehearsal',
+    'simulator-tools', 'screen-text-smoke', 'archive', 'distribution-rehearsal', 'store-rehearsal',
 )
 REQUIRED_JOBS = ('changes', 'Repository and Python checks',
                  'Watch Simulator and archive verification', 'Required result')

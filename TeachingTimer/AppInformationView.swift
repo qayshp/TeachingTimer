@@ -24,7 +24,7 @@ enum AppInformationPage: String, CaseIterable, Identifiable {
 /// They do not own or change class, runtime, count, or volume state.
 struct AppInformationView: View {
     let page: AppInformationPage
-    let prepareDiagnostics: @MainActor (DiagnosticReport.Window, Set<URL>) async throws -> DiagnosticSharingView.Prepared
+    let prepareDiagnostics: @MainActor (DiagnosticReportFormat.Window, Set<URL>) async throws -> DiagnosticSharingView.Prepared
 
     var body: some View {
         Form {

@@ -24,7 +24,7 @@ struct DiagnosticReportChecks {
         return try encoder.encode(rows)
     }
 
-    static func prepare(_ rows: [Export.Event], window: Export.Window = .lastTwoHours) throws -> Export.Prepared {
+    static func prepare(_ rows: [Export.Event], window: DiagnosticReportFormat.Window = .lastTwoHours) throws -> Export.Prepared {
         try Export.build(snapshots: [.runtime: .init(data: bytes(rows), status: .available)],
             metadata: metadata, window: window, cutoff: now)
     }

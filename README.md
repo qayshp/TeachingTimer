@@ -1,184 +1,96 @@
 # Teaching Timer
 
-A Watch-first clock for teaching yoga: prominent wall-clock hands, scheduled
-class progress, one-minute visual counts with optional vibrations, and native
-media controls. An optional iPhone support app helps email diagnostic reports;
-teaching works independently on the Watch. No workout tracking, heart-rate
-collection, account, advertising, or analytics.
+A clock for teaching yoga on Apple Watch. Glance at the wall-clock hands,
+track the scheduled class finish, or start a one-minute visual count with
+optional vibrations. Use the Digital Crown for paired-iPhone volume and swipe
+to Apple's Now Playing controls.
 
-Built around real teaching on Apple Watch SE 3. This is still an experimental
-app with known media-progress and volume issues. Wrist-down updates and session
-recovery depend on watchOS. Test it before relying on it in class and keep another
-timing method available.
+Teaching works on the Watch without an app account. Newer builds include an
+optional iPhone app for emailing diagnostic reports. There is no workout
+tracking, heart-rate collection, advertising, or analytics.
 
-<img src="docs/images/polish-2026-11-05/se3-count.png" alt="SE 3 Simulator teaching face with a gear button, foreground clock hands and an active count" width="240">
+<img src="docs/images/polish-2026-11-05/se3-count.png" alt="SE 3 Simulator showing the outer class perimeter, foreground clock hands and active count" width="240">
 
-*November 5 interface refinement, SE 3 40 mm Simulator. The gear opens class
-controls and Settings. The disconnected-phone symbol is Simulator state.
-The installed build and current source candidate are listed in
-[current verification](DEVELOPMENT_STATUS.md).*
+*November 5 SE 3 40 mm Simulator capture. The public beta uses a **Class**
+button in place of the gear shown here. The red icon indicates the simulator's
+disconnected phone.*
 
-## Try it
-
-See the [changelog](CHANGELOG.md) for recent beta changes.
-
-New to the dial? The [teaching-face visual key](docs/TEACHING_FACE_GUIDE.md)
-explains the hands, perimeter, count arc and controls using a current screenshot.
+## Try the public beta
 
 [**Join the public TestFlight beta**](https://testflight.apple.com/join/YA2WSmae)
 
-The invitation page was checked November 5, 2026 and now offers **View in
-TestFlight**. The public group was configured with a 100-tester limit. Public
-availability can change; the invitation shows whether places are available.
-An installation by a new external tester has not yet been verified.
+Open the invitation on your paired iPhone and follow TestFlight's instructions
+to install **Teaching Timer Beta** on your Watch. The invitation is titled
+**Session Clock**. The public group offered **1.0 (37)** when last checked on
+November 26, 2026. Check the installed build in **Class → Settings → About**.
+The app targets watchOS 26 or later.
 
-Open the link on your paired iPhone with Apple's TestFlight app,
-then install **Teaching Timer Beta** on your Watch. The app targets watchOS 26
-or later; the latest parsed physical report identifies watchOS 27.2.1. Teaching Timer requires
-no app account; the optional iPhone interface is only for diagnostics. Read the
-[first-class guide](docs/TESTER_GUIDE.md) and [privacy notes](docs/PRIVACY.md).
-Initial feedback can be a description or cropped screenshot; journal attachments
-are optional. To build from source, use the instructions below.
+Start with the [first-class guide for build 37](docs/TESTER_GUIDE.md). It covers
+class setup, the one-minute count, volume, and recovery steps. Use the
+[visual guide](docs/TEACHING_FACE_GUIDE.md) to read the dial. Try the beta
+outside class first. Song progress can stall, volume can drop or stop
+responding, and wrist-down updates depend on watchOS. Keep another timing
+method available while getting to know the app.
 
-**Optional diagnostic support:** builds with the iPhone companion can request a
-report on the phone or send one from Watch **Settings → Help → Send diagnostics
-to iPhone**. The phone's **Email support** prefills the recipient and attachment.
-Phone-requested and Watch-initiated deliveries to support are verified; startup,
-update and first-composer reliability remain under validation in [#26](https://github.com/qayshp/TeachingTimer/issues/26).
-Check [current build status](DEVELOPMENT_STATUS.md) for availability; a description
-or screenshot is enough for ordinary support. [Companion guide](docs/OPTIONAL_COMPANION.md).
+## Current source and newer builds
 
-1. Tap **Start class**, check **Suggested time**, then confirm the 60-minute class.
-   **Custom schedule** changes only this class: adjust its start and choose 60 or
-   75 minutes. When starting early, check the suggested quarter-hour carefully.
-2. Read the long thin hand for wall-clock seconds and the shorter thick hand for
-   minutes. The inward wedge marks scheduled end. A 60-minute class also shows
-   the remaining interval around the perimeter; 75 minutes uses the end wedge only.
-3. Turn the **Digital Crown** for paired-iPhone volume. Swipe left for Apple's
-   **Now Playing** page; swipe right for the clock. Native media can select Watch
-   playback, so check the source before class.
-4. Tap **1-min count** for an inner arc timed from your tap. Groups of 1–6 pulses
-   mark 10–60 seconds. The arc fills at 60 seconds; the count normally ends at
-   about 64.8 seconds, allowing time for the final group. Tap again to stop.
-   Haptics may be late or skipped by watchOS.
-5. Tap the **gear** at the upper left, then **Settings**. Turn **Count vibrations**
-   off for the next count or enable **Minutes left**. Both preferences persist.
-   **Help**, **Privacy**, and **About** are also in Settings, including the app
-   version, recovery guidance, source/license, and private support contact.
+- **Gear → Settings** opens **Count vibrations**, **Minutes left**, and offline
+  **Help**, **Privacy**, and **About**. **Start session** and **Resume session**
+  name the action that requests wrist-down updates. **Stop session** keeps
+  class timing. **End class** clears it.
+- The optional iPhone app can request a diagnostic report from the Watch, or
+  receive one from **Settings → Help → Send diagnostics to iPhone**. On the
+  phone, **Email support** prepares a message with the report attached.
+  [Sharing steps](SUPPORT.md#optional-iphone-diagnostics-companion).
+- The **Teaching Timer** complication opens the app from your watch face.
+  The [Utility setup](docs/TEACHING_FACE_GUIDE.md#teaching-timer-and-native-now-playing-together)
+  pairs it with a second launcher for Apple's standalone Now Playing app.
 
-**Start class** also requests a mindfulness session to help keep the app available
-during class. **Stop session**, **Start session**, and **Resume session** affect
-that runtime while retaining class timing. **End class** clears timing and stops session/count. **New class**
-creates another schedule with confirmation. An old class retires 30 minutes after
-scheduled end; a new class never starts silently.
-
-### Open from your watch face
-
-A **Teaching Timer** complication is available for quick launch in Maintainer
-TestFlight build **261113.0211.55** and later; see [current verification](DEVELOPMENT_STATUS.md)
-for distribution and physical-test limits. Open the updated Watch app once, then
-press and hold your watch face, tap **Edit**,
-choose **Complications**, and select **Teaching Timer** for a supported slot.
-Circular, corner, inline and rectangular layouts are supported; available slots
-depend on the watch face. Tap the complication to open the app without starting
-or resetting a class. It is a launcher, not a live class-progress display.
-For a direct native Now Playing launcher too, use **Utility** with Teaching Timer
-at **Top Left** and Now Playing at **Bottom**; see the
-[verified setup](docs/TEACHING_FACE_GUIDE.md#teaching-timer-and-native-now-playing-together).
+See [current build and verification status](DEVELOPMENT_STATUS.md) for feature
+availability and the [changelog](CHANGELOG.md) for changes by milestone.
 
 ## When something goes wrong
 
-- Frozen song progress or blank media: swipe to the timer and back to recreate
-  the native media view. This may update the displayed position without restoring
-  continuously advancing progress; a freeze can also recur after recovery. Eligible
-  long-dimmed wakes also refresh automatically; this does not detect a failure.
-- Timer Crown volume: tap the native volume display to request refresh; returning
-  from media is another recovery path. A visual acknowledgement does not prove
-  focus or sound recovered. If playback is silent, the iPhone's volume controls
-  have restored it in reported cases.
-- **Start session** or **Resume session** appears when the wrist-down session is
-  not running. Tap it to request a session without changing class timing.
-  Intentional Stop stays stopped across reopening; automatic recovery is bounded
-  and watchOS may reject it.
+- **Frozen song progress or blank media**. Swipe to the timer and back. This can
+  update the displayed position. For live progress, try Apple's standalone
+  **Now Playing** app on the Watch.
+- **Crown volume does not respond**. Tap the timer's volume display once or
+  swipe to media and back. If playback continues silently, try the iPhone's
+  volume controls.
+- **Wrist-down updates slow or stop**. **Resume**, **Start session**, or
+  **Resume session** requests a session without changing class timing.
 
-The [known-issue map](docs/ISSUE_TRACKER.md) keeps symptoms and mitigations
-separate. [Contact support](SUPPORT.md)
-with build/OS, what happened, approximate time and recovery. Do not interrupt a
-class to gather evidence or post raw diagnostics publicly.
+[Email support](SUPPORT.md) with the build, approximate time, symptom, and what
+helped. A short description or cropped screenshot is enough. The
+[known-issue guide](docs/ISSUE_TRACKER.md) tracks workarounds and open bugs.
 
 ## Build and contribute
 
-Requires Xcode with watchOS 26 SDK or later. Deployment target is watchOS 26;
-the [current verification record](DEVELOPMENT_STATUS.md) lists the tested toolchain
-and OS versions. Follow the [Simulator runtime policy](AGENTS.md) when choosing
-a runtime. Open `TeachingTimer.xcodeproj`, choose the TeachingTimer scheme and
-a Watch simulator, and Run. For your own physical Watch,
-select your development team and a unique bundle identifier under Signing &
-Capabilities. Credentials, profiles and user-specific Xcode state stay out of Git.
+Use Xcode with the watchOS 26 SDK or newer. Open `TeachingTimer.xcodeproj`,
+choose **TeachingTimer** and a Watch simulator, and run. Select the newest
+compatible runtime under the [Simulator policy](AGENTS.md). If building for
+your own physical Watch, configure your development team and bundle identifier
+before signing.
+
+For clean, committed source, run the checks, Simulator builds, and unsigned
+archive rehearsals together:
 
 ```sh
-python3 scripts/check-repository.py
-sh scripts/check-tools.sh
-sh scripts/check.sh
 python3 scripts/verify-build.py work/verification-new
 ```
 
-The final command repeats the offline checks, builds for Simulator and rehearses
-unsigned development/distribution archives. It does not install or upload.
-Interactive Simulator checks need Device Hub and are run separately.
+The [contributor guide](CONTRIBUTING.md) lists narrower checks and setup. The
+[automation map](docs/AUTOMATION.md) distinguishes CI, interactive Simulator,
+and physical tests. Browse the [documentation index](docs/README.md),
+[roadmap](docs/ROADMAP.md), and [publishing gates](docs/PUBLISHING_READINESS.md)
+for ongoing work.
 
-Start with [contributor setup](CONTRIBUTING.md), the
-[documentation map](docs/README.md), [automation coverage](docs/AUTOMATION.md),
-and [publishing readiness](docs/PUBLISHING_READINESS.md).
-The [Settings review](docs/SETTINGS_PASS_25.md) and
-[form-factor checks](docs/FORM_FACTOR_VALIDATION.md) include labeled Simulator
-screenshots. They do not certify physical audio, haptics or Always-On cadence.
+## Privacy and license
 
-In Xcode 27 Device Hub, **Controls → Lock (⌘L)** exercises reduced-luminance
-Always-On in Simulator. Haptic requests can sound as Mac speaker chimes.
-[Testing boundaries](docs/DEVICE_HUB_TESTING.md) explain the limits.
+Preferences, class timing, and bounded diagnostic journals stay in the app's
+container unless you choose to share a report. Review the
+[privacy policy](docs/PRIVACY.md) before sharing. Keep raw diagnostics out of
+[public GitHub issues](https://github.com/qayshp/TeachingTimer/issues).
 
-## Privacy
-
-Preferences, class context and bounded diagnostic journals stay in the app's
-container. There is no automatic upload. App journals contain lifecycle/timing
-and error information; system diagnostics can contain much more private data.
-Review and minimize any diagnostic sharing. See [privacy](docs/PRIVACY.md).
-
-## License
-
-Teaching Timer is licensed under the [Mozilla Public License 2.0](LICENSE)
-(`MPL-2.0`). Unless otherwise noted, this covers the project's source, tests,
-build configuration, documentation, and original assets.
-
-MPL is file-level copyleft: when distributing modified versions, changes to
-covered files must remain available under MPL. See the license for the full
-terms and [Mozilla's FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) for guidance.
-
-## Reliability and distribution tooling
-
-- [Bounded Simulator lifecycle and media-failure captures](tools/simulator-regression/README.md)
-- [Isolated native companion-volume probe](tools/native-volume-probe/README.md)
-- [Persistence failure diagnostics](docs/PERSISTENCE_DIAGNOSTICS.md)
-- [TestFlight identity preparation and diagnostic-access gates](docs/TESTFLIGHT_PREPARATION.md)
-
-Distribution packaging uses `net.qays.TeachingTimer` (qays.net), with Watch payload
-`net.qays.TeachingTimer.watchkitapp`. The current
-Xcode development installation keeps `com.qayshp.TeachingTimer`; no existing
-class or journal is migrated simply by building the distribution identity.
-
-Known bugs and evidence gaps are tracked in [GitHub issues](https://github.com/qayshp/TeachingTimer/issues)
-and the [issue/Apple-feedback index](docs/ISSUE_TRACKER.md). Please use the bug
-form and keep raw device logs and personal diagnostics out of public reports.
-
-Current remaining work and physical/TestFlight gates: [active roadmap](docs/ROADMAP.md).
-
-### Optional iPhone support companion
-
-Teaching remains independent on the Watch. The optional iPhone app can request a
-report while the Watch app is open, or the Watch can send one from
-**Settings → Help → Send diagnostics to iPhone**. On iPhone, **Email support** prefills the support address and attaches
-the received report. The Watch share sheet has been replaced by this phone route.
-Physical phone-requested and Watch-initiated support-email deliveries are verified.
-Startup, mail presentation, and upgrade reliability remain under validation.
-See [companion validation](docs/OPTIONAL_COMPANION.md).
+Source, tests, build configuration, documentation, and original assets are
+licensed under the [Mozilla Public License 2.0](LICENSE) unless otherwise noted.

@@ -1,7 +1,7 @@
 # Documentation map
 
 This index separates current guidance from dated evidence. Start with
-[Teaching Timer's quick start](../README.md),
+[Teaching Timer's overview](../README.md),
 [current build and verification status](../DEVELOPMENT_STATUS.md), and the
 [active roadmap](ROADMAP.md). The physical teaching checkpoint and the newest
 Simulator candidate are different artifacts; a successful build is not an
@@ -11,8 +11,8 @@ installation or a physical-device test.
 
 | Document | Purpose |
 | --- | --- |
-| [Tester guide](TESTER_GUIDE.md) | Before-class checks, everyday controls and recovery choices. |
-| [Teaching-face visual key](TEACHING_FACE_GUIDE.md) | Current screenshot annotated by location; hands, schedule, session, count and audio meanings. |
+| [Tester guide](TESTER_GUIDE.md) | Public build 37 installation, class controls, and recovery. |
+| [Teaching-face visual key](TEACHING_FACE_GUIDE.md) | Dated dial examples, control locations, and watch-face shortcuts. |
 | [Support](../SUPPORT.md) | Private email for a short report; public issues are optional and journals are not attached automatically. |
 | [Optional iPhone support companion](OPTIONAL_COMPANION.md) | Watch/phone report requests, private transfer and email; teaching stays independent on Watch. |
 | [Privacy](PRIVACY.md) | Local storage, retention and diagnostic sharing boundaries. |

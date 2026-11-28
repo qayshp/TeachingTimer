@@ -78,10 +78,14 @@ final class ClassStore: ObservableObject {
     }
     /// Explicit user confirmation may replace a class before the retirement grace ends.
     /// The UI must stop the old count and handle runtime intent separately.
-    func begin(at date: Date = Date(), scheduledStart: Date, durationMinutes: Int) {
-        context = ClassContext(pressedAt: date, durationMinutes: durationMinutes, scheduledStart: scheduledStart)
+    @discardableResult
+    func begin(at date: Date = Date(), scheduledStart: Date, durationMinutes: Int) -> Bool {
+        let draft = ClassContext(pressedAt: date, durationMinutes: durationMinutes, scheduledStart: scheduledStart)
+        guard !draft.shouldRetire(at: date) else { return false }
+        context = draft
         needsRecoveryNotice = false
         persist()
+        return true
     }
 
     /// Correct only the class whose draft was opened. Retirement or replacement
@@ -91,8 +95,10 @@ final class ClassStore: ObservableObject {
                         at date: Date = Date()) -> Bool {
         guard let existing = context, existing.initialStartPressedAt == classID,
               !existing.shouldRetire(at: date) else { return false }
-        context = ClassContext(pressedAt: existing.initialStartPressedAt,
+        let draft = ClassContext(pressedAt: existing.initialStartPressedAt,
             durationMinutes: durationMinutes, scheduledStart: start)
+        guard !draft.shouldRetire(at: date) else { return false }
+        context = draft
         persist()
         return true
     }

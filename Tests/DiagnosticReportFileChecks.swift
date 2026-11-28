@@ -14,8 +14,6 @@ import Foundation
         let bytes = Data("{\"fixture\":true}".utf8)
         let first = try DiagnosticReportFile.prepare(data: bytes, cachesDirectory: root, now: now)
         assert(first.byteCount == bytes.count)
-        assert(first.sha256 == "ffbc2dfc402782325da71132100e74ff511d1585dd80e4ea196ed4bcace3fef2")
-        assert(first.createdAt == now)
         assert(first.url.deletingLastPathComponent().lastPathComponent == DiagnosticReportFile.directoryName)
         let firstBytes = try Data(contentsOf: first.url)
         assert(firstBytes == bytes)
@@ -75,10 +73,10 @@ import Foundation
             _ = try DiagnosticReportFile.prepare(data: Data(), cachesDirectory: root)
         }
         let maximum = try DiagnosticReportFile.prepare(
-            data: Data(repeating: 0, count: DiagnosticReportFile.maximumBytes), cachesDirectory: root)
-        assert(maximum.byteCount == DiagnosticReportFile.maximumBytes)
+            data: Data(repeating: 0, count: DiagnosticReportFormat.maximumBytes), cachesDirectory: root)
+        assert(maximum.byteCount == DiagnosticReportFormat.maximumBytes)
         expect(DiagnosticReportFile.Failure.tooLarge) {
-            _ = try DiagnosticReportFile.prepare(data: Data(repeating: 0, count: DiagnosticReportFile.maximumBytes + 1),
+            _ = try DiagnosticReportFile.prepare(data: Data(repeating: 0, count: DiagnosticReportFormat.maximumBytes + 1),
                                                   cachesDirectory: root)
         }
         expect(DiagnosticReportFile.Failure.invalidDate) {

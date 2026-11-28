@@ -13,7 +13,6 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = DiagnosticCompanion()
     @Published var status = "Checking companion…"
     @Published var installed: Bool?
-    typealias Window = DiagnosticRequest.Window
     nonisolated static var build: String {
         let info = Bundle.main.infoDictionary ?? [:]
         return "\(info["CFBundleShortVersionString"] as? String ?? "?") (\(info["CFBundleVersion"] as? String ?? "?"))"
@@ -24,7 +23,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
     @Published private var request = DiagnosticRequest.Pending()
     var requesting: Bool { request.id != nil }
     @Published private(set) var peerBuild: String?
-    var prepareReport: (@MainActor (Window) async throws -> URL)?
+    var prepareReport: (@MainActor (DiagnosticReportFormat.Window) async throws -> URL)?
     private let logger = Logger(subsystem: "net.qays.TeachingTimer", category: "DiagnosticCompanion")
 
     private func record(_ event: String) {
@@ -34,21 +33,24 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
         connection = "Activation \(transport.activationState.rawValue) · installed \(installed.map(String.init) ?? "unknown") · reachable \(transport.isReachable) · queued \(transport.outstandingFileTransfers.count)"
     }
     private var preparing = false
-    @Published var received: URL?
-    @Published private(set) var receivedSummary: DiagnosticInbox.Summary?
+#if os(iOS)
+    nonisolated private let inbox = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+        .first.map(DiagnosticInbox.Store.init(applicationSupport:))
+    @Published private(set) var received: DiagnosticInbox.Receipt?
+
+    func deleteReport(_ id: UUID) throws -> Bool {
+        guard let inbox else { return false }
+        defer { received = inbox.current }
+        return try inbox.delete(id)
+    }
+#endif
     private var transport: WCSession?
     var pendingFiles: Set<URL> { Set(transport?.outstandingFileTransfers.map { $0.file.fileURL } ?? []) }
 
     override private init() {
         super.init()
 #if os(iOS)
-        if let folder = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
-            let url = folder.appendingPathComponent("TeachingTimer-diagnostics.json")
-            if let data = try? DiagnosticInbox.read(url) {
-                received = url
-                receivedSummary = try? DiagnosticInbox.summary(data)
-            }
-        }
+        received = inbox?.current
 #endif
         guard WCSession.isSupported() else { status = "Companion connection unavailable."; return }
         let session = WCSession.default
@@ -79,7 +81,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
 #endif
     }
 
-    func requestReport(window: Window = .lastTwoHours) {
+    func requestReport(window: DiagnosticReportFormat.Window) {
         guard !requesting else { return }
         guard let transport, transport.activationState == .activated, installed == true else {
             status = "Companion is not ready. Try again after opening both apps."; return
@@ -163,10 +165,10 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
         guard protocolName != "diagnostics-v2" || requestID != nil else {
             replyHandler(["received": false, "reason": "invalid-request", "build": Self.build]); return
         }
-        let windowValue = message["window"] as? String ?? Window.lastTwoHours.rawValue
+        let windowValue = message["window"] as? String ?? DiagnosticReportFormat.Window.lastTwoHours.rawValue
         let reply = CompanionReply(replyHandler)
         Task { @MainActor in
-            guard let window = Window(rawValue: windowValue) else {
+            guard let window = DiagnosticReportFormat.Window(rawValue: windowValue) else {
                 reply.finish(accepted: false, reason: "invalid-window", build: Self.build); return
             }
             guard !self.preparing, self.pendingFiles.isEmpty, let prepare = self.prepareReport else {
@@ -196,28 +198,26 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 
+#if os(iOS)
     nonisolated func session(_ session: WCSession, didReceive file: WCSessionFile) {
         let requestID = (file.metadata?["requestID"] as? String).flatMap(UUID.init(uuidString:))
         // Copy before returning: Watch Connectivity removes its temporary file.
         guard file.metadata?["kind"] as? String == "diagnostics-v1" else { return }
         do {
-            let data = try DiagnosticInbox.read(file.fileURL)
-            let summary = try DiagnosticInbox.summary(data)
-            let folder = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-            let destination = folder.appendingPathComponent("TeachingTimer-diagnostics.json")
-            try data.write(to: destination, options: [.atomic, .completeFileProtection])
-            var excluded = destination
-            var resource = URLResourceValues(); resource.isExcludedFromBackup = true
-            try excluded.setResourceValues(resource)
-            Task { @MainActor in
-                self.received = destination
-                self.receivedSummary = summary
+            guard let inbox else { throw CocoaError(.fileNoSuchFile) }
+            let report = try DiagnosticInbox.read(file.fileURL)
+            try inbox.install(report)
+            DispatchQueue.main.async {
+                // Another transfer or delete may have finished before this update.
+                self.received = inbox.current
                 let matched = self.request.finish(requestID)
                 self.record("Report saved; matches pending request: \(matched)")
-                if !self.requesting { self.status = "Report received. Review it in Saved report before emailing support." }
+                if !self.requesting, self.received != nil {
+                    self.status = "Report received. Review it in Saved report before emailing support."
+                }
             }
         } catch {
-            Task { @MainActor in
+            DispatchQueue.main.async {
                 if self.request.finish(requestID) || !self.requesting {
                     self.status = "Couldn’t save the report. Request it again."
                 }
@@ -225,6 +225,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
             }
         }
     }
+#endif
 }
 
 /// WCSession owns the callback until handed to this box. A lock consumes it once;

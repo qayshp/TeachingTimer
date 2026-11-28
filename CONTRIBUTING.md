@@ -1,20 +1,18 @@
 # Working on Teaching Timer
 
-Keep changes small and run the checks appropriate to the affected files. For
-documentation-only edits, run `python3 scripts/check-repository.py`; tooling
-changes also need `sh scripts/check-tools.sh`. App, Swift-test or build-input
-changes need `sh scripts/check.sh` plus the affected Simulator build. Companion
-changes also need the `TeachingTimerTestFlight` iPhone Simulator build, which
-compiles its embedded Watch target; avoid forcing a global iPhone SDK. The
-[automation map](docs/AUTOMATION.md) explains how CI selects those checks.
-The bundled `docs/PRIVACY.md` and `LICENSE` are app inputs, even though they are
-documents; changes to them need app verification.
-The project has no external package dependencies. Xcode's scheme does not
-contain an XCTest target; the script compiles and runs standalone Swift suites.
-Do not claim hardware validation from a simulator or WatchKit test double.
-See the [automation map](docs/AUTOMATION.md) for coverage and the combined
-interactive Simulator runner. `python3 scripts/check-repository.py` checks
-published local links, source notices and structured files without device access.
+## Which checks to run
+
+| Change | Checks |
+| --- | --- |
+| Docs | `python3 scripts/check-repository.py` verifies local links, source notices, and structured files. |
+| Tooling | Also run `sh scripts/check-tools.sh`. |
+| App, Swift tests, or build inputs | Run `sh scripts/check.sh` and build the affected Simulator target. `docs/PRIVACY.md` and `LICENSE` are bundled app inputs. |
+| iPhone companion | Also build `TeachingTimerTestFlight` for iPhone Simulator. It builds the embedded Watch target with the Watch SDK. |
+| Candidate verification | With clean, committed source, run `python3 scripts/verify-build.py work/verification-new` for the combined checks, builds, and unsigned archives. |
+
+The model checks compile standalone Swift test suites. The
+[automation map](docs/AUTOMATION.md) explains CI routing, the interactive
+Simulator runner, and how to record physical evidence separately.
 
 ## Source style and compiler diagnostics
 
@@ -58,13 +56,11 @@ suppress unrelated warnings just to remove it.
 
 ## Documentation maintenance
 
-Keep current behavior in the README/tester guide, current verification in
-`DEVELOPMENT_STATUS.md`, and remaining work in `docs/ROADMAP.md`. Add new guides
-to the documentation index. Dated investigations describe the source and tools
-used then; do not silently rewrite their counts, versions or observations to
-match a later build. Put corrections prominently in the affected record and
-link the supporting audit. Use relative links within the repository, and never
-publish private capture paths as downloadable evidence or commit raw journals.
+Use the README for current behavior, the tester guide for the public beta,
+`DEVELOPMENT_STATUS.md` for verification and `docs/ROADMAP.md` for remaining work.
+List each top-level guide in the [documentation index](docs/README.md). Use
+relative links within the repository. Record corrections with supporting
+evidence and preserve dated build, tool, and observation records.
 
 ## Preserve these boundaries
 
@@ -121,7 +117,7 @@ changes; a functioning website is not proof that a Watch can launch a browser.
 
 Use a pull request for outside contributions. Before merging, require successful
 Watch checks and CodeQL for the proposed revision, review the diff, and record
-any interactive or physical checks separately. As of November 2, main has no
+any interactive or physical checks separately. As of November 28, main has no
 enforced branch rule; this procedure is a maintainer obligation until
 [the safeguard follow-up](https://github.com/qayshp/TeachingTimer/issues/14)
 establishes required checks with a tested maintainer recovery path.
@@ -137,12 +133,12 @@ materials, private archives or raw diagnostics. The
 is the first such milestone.
 
 Every distributed build needs a unique `CURRENT_PROJECT_VERSION`. The automatic
-release workflow supplies `YYMMDD.HHmm.sequence` in Pacific local time (including
-daylight-saving changes); manual release tooling accepts the same format or a
-positive integer. Do not
-change the checked-in project version merely to allocate an automatic release.
-A build phase
-also records Git revision (including a dirty suffix) and UTC build time in
+release workflow supplies `YYMMDD.HHmm.sequence` from the original run creation
+time in Pacific Standard Time (UTC−08:00 year-round) and the GitHub run number.
+Manual release tooling accepts the same format or a positive integer. Automatic
+releases keep the checked-in project version and reuse the same build number
+when rerun.
+A build phase records Git revision (including a dirty suffix) and UTC build time in
 `BuildInfo.plist`; launch journals include both. Source exports can supply
 `SOURCE_REVISION` to that phase. `scripts/check-archive.sh` verifies the app is
 present, but is not signed export, TestFlight, App Store privacy, or review approval.
@@ -169,11 +165,6 @@ Before including third-party material, verify license compatibility and retain
 its required notices; do not relabel someone else's work as MPL.
 
 ## Maintaining public and private records
-
-Every top-level guide belongs in the documentation index. Label dated evidence
-with build, environment and limitations; update current status when deployment
-changes instead of rewriting historical results. Repository checks validate local
-Markdown/HTML image links and guide coverage.
 
 Private artifacts use ignored `work/` folders. Follow
 [local artifact organization](docs/LOCAL_ARTIFACTS.md); inventory before removing

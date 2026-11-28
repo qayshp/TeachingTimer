@@ -72,7 +72,8 @@ def verification_steps(output):
         ('tools', ['sh', 'scripts/check-tools.sh']),
         ('information-qr', ['swift', 'scripts/information-qr.swift', '--check', 'TeachingTimer/Information']),
         ('simulator', ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimer',
-                       '-configuration', 'Debug', '-sdk', 'watchsimulator', '-derivedDataPath', str(output / 'DerivedData'),
+                       '-configuration', 'Debug', '-destination', 'generic/platform=watchOS Simulator',
+                       '-derivedDataPath', str(output / 'DerivedData'),
                        '-resultBundlePath', str(output / 'Simulator.xcresult'), 'CODE_SIGN_IDENTITY=-', 'DEVELOPMENT_TEAM=', 'build']),
         ('companion-simulator', ['xcodebuild', '-project', 'TeachingTimer.xcodeproj', '-scheme', 'TeachingTimerTestFlight',
                                  '-configuration', 'TestFlight', '-destination', 'generic/platform=iOS Simulator',
@@ -82,6 +83,8 @@ def verification_steps(output):
                                str(output / 'simulator-tools/ScreenText'), str(output / 'screen-text-smoke')]),
         ('archive', ['sh', 'scripts/check-archive.sh', str(output / 'development-archive')]),
         ('distribution-rehearsal', ['sh', 'scripts/prepare-testflight.sh', str(output / 'distribution-archive')]),
+        ('store-rehearsal', ['sh', 'scripts/prepare-testflight.sh', str(output / 'store-archive'),
+                             '--app-store-candidate', '--source', '.']),
     ]
     return steps
 

@@ -5,7 +5,8 @@ to report a problem. A short description is enough to start; no logs are require
 
 Useful details, when convenient:
 
-- App version/build from the **gear → Settings → About**, and Watch/watchOS version.
+- App version/build from **Settings → About**, and Watch/watchOS version. Open
+  Settings from **Class** on public beta build 37 or the gear on newer builds.
 - What you were doing, the approximate time and time zone, and what helped.
 - For media issues: phone or Watch playback, the audio output, and whether
   sound, volume, controls or song progress stopped working.
@@ -15,14 +16,11 @@ information or other personal details. Never send passwords or verification code
 
 ## Sending from your phone or computer
 
-In current builds, open **gear → Settings → Help → Contact support** on
-the Watch and scan the QR code with your phone. Earlier builds put this under
-About. You can also use the email address above directly, or the phone app’s
-Contact support action, to send a description without a report.
-No GitHub account is required to email support.
-
-Scanning the support QR code does not attach journals. No developer connection
-is needed to send a description.
+Scan the support QR code on the Watch with your phone. On public beta build 37,
+use **Class → Settings → About → Contact support**. On newer builds, use
+**gear → Settings → Help → Contact support**. You can also email the address
+above directly or use **Contact support** in the optional iPhone app. The QR
+code opens this guide. Attachments are optional.
 
 ## Optional iPhone diagnostics companion
 
@@ -43,12 +41,8 @@ About**. **Connection details** helps distinguish installation, reachability,
 queueing and receipt. Keep the Watch app open for a phone request. A delayed
 report can still arrive after the wait expires; check its preparation time.
 
-Physical support-email deliveries were verified for a phone-requested report
-on November 11 and a later Watch-prepared report received November 13. Initial
-linking and first Mail presentation needed recovery in the earlier test; repeated
-startup, Mail presentation and upgrade reliability remain under validation. See [build availability](DEVELOPMENT_STATUS.md)
-and [companion validation](docs/OPTIONAL_COMPANION.md). Older public builds may
-lack these controls; ordinary support never requires a journal attachment.
+The companion is absent from build 37. See [build availability](DEVELOPMENT_STATUS.md)
+and [recorded companion tests](docs/OPTIONAL_COMPANION.md).
 
 ## Public reports and known issues
 
@@ -57,5 +51,4 @@ for a sanitized public description; GitHub sign-in is required. Do not post raw
 journals or system logs there. Review screenshots for private information first.
 The [known-issue guide](docs/ISSUE_TRACKER.md) lists current problems and mitigations.
 
-Teaching Timer does not send diagnostics automatically. See the
-[privacy policy](docs/PRIVACY.md) for local data and voluntary support sharing.
+See the [privacy policy](docs/PRIVACY.md) for local data and voluntary sharing.

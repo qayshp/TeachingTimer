@@ -111,25 +111,29 @@ jobs:
       - name: Resolve source and validate inputs
         id: source
         env:
+          GH_TOKEN: ${{ github.event_name == 'push' && github.token || '' }}
           BUILD_NUMBER: ${{ inputs.build_number }}
           WORKFLOW_RUN_NUMBER: ${{ github.run_number }}
           EVENT_NAME: ${{ github.event_name }}
           TESTING_NOTES: ${{ inputs.testing_notes }}
         run: |
           python3 - <<'PY'
-          import os, runpy, subprocess, sys
-          sys.path.insert(0, 'source/scripts')
-          from testflight_build_number import automatic_build_number
+          import json, os, runpy, subprocess, sys
+          sys.path.insert(0, 'automation/scripts')
+          from testflight_build_number import automatic_build_number_for_run
+          sha = subprocess.check_output(['git', '-C', 'source', 'rev-parse', 'HEAD'], text=True).strip()
+          if sha != os.environ['GITHUB_SHA']:
+              raise SystemExit('Application source differs from the selected workflow commit')
           if os.environ['EVENT_NAME'] == 'push':
-              number = automatic_build_number(int(os.environ['WORKFLOW_RUN_NUMBER']))
+              run_id = int(os.environ['GITHUB_RUN_ID'])
+              repo = os.environ['GITHUB_REPOSITORY']
+              run = json.loads(subprocess.check_output(['gh', 'api', f'repos/{repo}/actions/runs/{run_id}'], timeout=30))
+              number = automatic_build_number_for_run(run, run_id, int(os.environ['WORKFLOW_RUN_NUMBER']), sha)
           else:
               validate_number = runpy.run_path('automation/scripts/testflight-release.py')['build_number']
               number = validate_number(os.environ['BUILD_NUMBER'])
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('build_number=' + str(number) + '\n')
-          sha = subprocess.check_output(['git', '-C', 'source', 'rev-parse', 'HEAD'], text=True).strip()
-          if sha != os.environ['GITHUB_SHA']:
-              raise SystemExit('Application source differs from the selected workflow commit')
           subprocess.run([sys.executable, 'automation/scripts/testflight-notes.py',
               '--source', 'source', '--expected-sha', sha, '--override-env', 'TESTING_NOTES',
               '--output', os.environ['RUNNER_TEMP'] + '/testflight-notes',
@@ -222,10 +226,6 @@ jobs:
       - name: Verify application models, Simulator and unsigned archives
         working-directory: source
         run: python3 scripts/verify-build.py "$RUNNER_TEMP/application-verification" --simulator-smoke --prepare-ci-runtime
-      - name: Verify the production archive without signing
-        if: inputs.mode == 'store-candidate' && github.ref == 'refs/heads/main'
-        working-directory: source
-        run: python3 scripts/prepare-testflight.py "$RUNNER_TEMP/store-candidate-verification" --app-store-candidate --source .
       - name: Retain non-secret verification report
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
@@ -238,6 +238,9 @@ jobs:
             ${{ runner.temp }}/application-verification/runtime-preparation/
             ${{ runner.temp }}/application-verification/screen-text-smoke/
             ${{ runner.temp }}/application-verification/control-outline-smoke/fixtures/
+            ${{ runner.temp }}/application-verification/*-archive/build.log
+            ${{ runner.temp }}/application-verification/*-archive/readiness.json
+            ${{ runner.temp }}/application-verification/*-archive/artifact-inspection.json
           retention-days: 14
           if-no-files-found: ignore
 

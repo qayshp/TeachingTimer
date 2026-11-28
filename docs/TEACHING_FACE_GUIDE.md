@@ -2,12 +2,15 @@
 
 Start a class, check the suggested schedule, and try phone volume before teaching.
 The clock hands always show real time; a class does not reset them.
+This guide pictures newer builds. Public beta build 37 labels the upper-left
+button **Class** and its on-face session action **Resume**. See the
+[build-37 first-class guide](TESTER_GUIDE.md) for that version's steps.
 
 ## Quick launch from a watch face
 
-Maintainer TestFlight build **261113.0211.55** adds **Teaching Timer** as a
-complication. Check [current status](../DEVELOPMENT_STATUS.md) for distribution
-and physical-test limits. For the TestFlight version, choose the
+The **Teaching Timer** complication first appeared in Maintainer TestFlight
+build **261113.0211.55**. It requires a newer build than the public build 37.
+For the TestFlight version, choose the
 **Teaching Timer Beta** group in the Watch's complication picker.
 
 1. Open Teaching Timer on the Watch once after installing the updated build.
@@ -34,9 +37,9 @@ glyphs render in awake and dimmed states. The [rectangular slot](images/complica
 also renders correctly. The smaller [inline glyph](images/complication-2026-11-13/se3-mat-clock-inline.png)
 is a compact brand cue beside the app name, including [under Lock](images/complication-2026-11-13/se3-mat-clock-inline-dim.png);
 the mat curl and hands are clearer in corner/circular slots. Tap-to-open keeps
-class timing intact. Simulator inspection does not establish physical-Watch
-readability. See
+class timing intact. See
 [artwork and reproduction notes](design/complication-glyph/README.md).
+
 ### Teaching Timer and native Now Playing together
 
 For direct launchers to both apps, use the **Utility** watch face:

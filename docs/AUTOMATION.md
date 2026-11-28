@@ -223,7 +223,15 @@ CodeQL workflow/configuration and either routing-script changes also force Swift
 Ordinary docs, tests and standalone diagnostic helpers alone may skip Swift;
 their existing app/tool verification gates are independent.
 
-Tuesday 09:23 UTC schedules and **Run workflow** always scan all three languages.
+The Tuesday 09:23 UTC schedule and **Run workflow** scan all three languages.
+They use the standard macOS 26 Intel pool for Swift after the
+[November 17](https://github.com/qayshp/TeachingTimer/actions/runs/44150328047/job/134276631805)
+and [November 24](https://github.com/qayshp/TeachingTimer/actions/runs/45478692109/job/138745780659)
+scheduled runs failed to acquire a hosted arm64 runner. App-changing pushes and
+pull requests keep the macOS 26 arm64 pool. **Run workflow** can retry the scheduled
+scan or check the Intel route on a branch with workflow changes.
+Both jobs select Xcode 26.6, which includes the watchOS 26.5 SDK and supports
+[CodeQL traced builds](https://codeql.github.com/docs/codeql-overview/system-requirements/).
 When Swift runs it keeps full-target Autobuild, default queries and the remote
 threat model, without source filters or cached build products. Analysis jobs have
 read access plus `security-events: write`; they do not receive release credentials.

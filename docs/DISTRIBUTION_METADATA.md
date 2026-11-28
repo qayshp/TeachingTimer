@@ -1,19 +1,14 @@
 # Distribution metadata draft
 
-Source wording reviewed November 13, 2026; public invitation last checked
-November 5. The
-[public invitation](https://testflight.apple.com/join/YA2WSmae) now offers
-**View in TestFlight**. Exact eligible-build membership and a new external
-tester's installation remain unverified. The first external submission was
-Teaching Timer Beta 1.0 (37); the initial public group limit was 100.
-See [current verification](../DEVELOPMENT_STATUS.md) for build/install status and
-the [submission history](TESTFLIGHT_PREPARATION.md#build-37-public-beta-preparation)
-for the dated review evidence. This is not an App Store release.
+Use this page for draft store fields and reviewer notes. See
+[publishing readiness](PUBLISHING_READINESS.md) for the selected candidate and
+[current verification](../DEVELOPMENT_STATUS.md) for public TestFlight status.
 
 | Field | Draft |
 | --- | --- |
-| App Store Connect name | Teaching Timer Beta; Teaching Timer was unavailable |
-| Subtitle | A clock for teaching yoga |
+| Listing name | **Session Clock** on the public TestFlight invitation. Confirm the final App Store name before submission. |
+| Working subtitle | A clock for teaching yoga |
+| Installed names | **Teaching Timer** for the App Store candidate and **Teaching Timer Beta** for TestFlight beta builds. See the [distribution identity](TESTFLIGHT_PREPARATION.md#identities-and-packaging). |
 | First external submission | 1.0 (37), clean source `a36f3be587825e27b424cf54355ea13afdfded83`, signed/exported, uploaded and processed as external-eligible. See current status for invitation availability. |
 | Internal owner pilot | App-affecting main pushes use the automated signed release and existing Maintainer pilot; this does not submit external review or change public-group membership. |
 | Physical Beta | [Current verification](../DEVELOPMENT_STATUS.md) owns the latest owner-reported installation and its validation limits. |
@@ -105,19 +100,16 @@ media/volume defects and recovery limits are listed in the [issue map](ISSUE_TRA
   [Apple's privacy-detail guidance](https://developer.apple.com/app-store/app-privacy-details/).
 - The existing privacy manifest is a starting point, not proof of store acceptance.
   Confirm required-reason declarations against [Apple's API guidance](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype).
-- The comparison screenshots are genuine Simulator evidence, including
-  disconnected media icons and variable capture times. They are tester/review
-  assets, not a finalized App Store screenshot set. Prepare final screenshots
-  only after the beta behavior and supported-device claims are validated.
+- The 1.0 draft had Watch and iPhone screenshots on November 20. Before
+  submitting, check that the final set matches the selected build, supported
+  devices, and final listing name. Repository comparison screenshots record
+  individual Simulator runs with their original system indicators.
 - The [owner installation/update/relaunch pilot](TESTFLIGHT_PILOT_RESULTS.md)
   completed, including developer-tool Beta journal retrieval in one
-  developer-enabled Watch/trusted-Mac setup. General tester access and teaching
-  validation remain open. Build 36 passed clean signed
-  archive/export, upload and processing and is assigned to the owner pilot.
-  Its Watch CI passes 13 Swift suites / 128 Python tests, and CodeQL also passes;
-  its targeted Privacy rendering check and the earlier build-35 layout matrix
-  and bounded controls checks are reviewed.
-  The physical result is separate evidence from those source and processing checks.
+  developer-enabled Watch/trusted-Mac setup. The
+  [companion guide](OPTIONAL_COMPANION.md) records user-initiated email delivery.
+  Check the [remaining gates](PUBLISHING_READINESS.md#release-gates) for the final
+  candidate.
 
 ### Bounded source-to-declaration inventory
 
@@ -133,7 +125,7 @@ manifest is present in the archive and IPA.
 | Monotonic media-refresh intervals | [MediaReloadPolicy](../TeachingTimer/MediaReloadPolicy.swift) compares `ProcessInfo.systemUptime` samples for dim duration and refresh cooldown. Those absolute samples remain private policy state. | The manifest declares system-boot-time reason `35F9.1`, covering elapsed intervals/timers. [Apple's rule](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype) distinguishes shareable in-app elapsed intervals from raw uptime and other derived data. Related [count](../TeachingTimer/LandmarkController.swift), [runtime](../TeachingTimer/ExtendedRuntimeController.swift) and [focus](../TeachingTimer/VolumeControlDiagnostics.swift) diagnostics use elapsed `ContinuousClock` durations; do not treat this declaration as permission to export raw boot-time values. |
 | Local operational journals and recovery files | [RuntimeDiagnostics](../TeachingTimer/RuntimeDiagnostics.swift) and [LandmarkDiagnostics](../TeachingTimer/LandmarkDiagnostics.swift) store timestamps, lifecycle/errors and count submissions on the Watch. Valid journals trim on writes at seven days and caps of 10,000/10,000/20,000 events. | There is no automatic developer upload. Corrupt-journal copies are separate files and can accumulate without a count/time cap; they are not covered by the valid journals' rolling limits. Preference recovery is separately one value per store. Exported copies need their own handling/retention assessment. |
 | Filtered diagnostics and optional companion | [Report builder](../TeachingTimer/DiagnosticReport.swift), [Watch report UI](../TeachingTimer/DiagnosticSharingView.swift), [prepared-file cache](../TeachingTimer/DiagnosticReportFile.swift), [Watch Connectivity](../TeachingTimer/DiagnosticCompanion.swift) and [phone support](../PhoneSupport/SupportApp.swift) prepare and explicitly transfer filtered JSON, then offer user-reviewed email or export. | Reports can disclose usage times and approved configuration summaries, but omit raw preference files. They are capped at 2 MiB; Watch cache keeps at most eight files with later-preparation cleanup after 24 hours while protecting current/outstanding files. The phone retains only the latest received report until replaced/deleted. Physical receipt is verified; general reliability and final distribution declarations remain open. |
-| Optional support intake | [Support](../SUPPORT.md) asks for a description first. Email received outside the app includes the sender, message and any chosen attachments; [the intake procedure](PRIVATE_SUPPORT_PLAN.md) separates private reports from public issues. | The owner chose descriptions and optional cropped screenshots for the public pilot, without requiring journals. This still involves contact/message data; final App Store privacy answers remain incomplete. Companion attachments were verified for November 11 and November 12 reports; general tester reliability remains unverified. |
+| Optional support intake | [Support](../SUPPORT.md) asks for a description first. Email can include the sender, message and any chosen attachments. The [intake procedure](PRIVATE_SUPPORT_PLAN.md) keeps that exchange private. | Public build 37 uses descriptions and optional cropped screenshots. The 1.0 draft has a published privacy disclosure for its optional companion workflow. Recheck it against the final candidate. |
 
 Apple excludes data processed solely on-device from its collection answers, but
 off-device support intake needs separate assessment. Optional disclosure requires
@@ -162,10 +154,9 @@ all applicable criteria; voluntary email alone does not establish an exemption.
 - [x] **Initial intake scope chosen:** descriptions and optional cropped
   screenshots, without requiring journal export. This still involves
   email/contact information; it does not establish “no data collected.”
-- [ ] **Before requesting optional diagnostics:** assess the actual fields,
-  purposes, identity links and retention. Voluntary submission alone does not meet
-  Apple's [optional-disclosure criteria](https://developer.apple.com/app-store/app-privacy-details/#optional-disclosure),
-  including its in-app identified-submitter and per-submission requirements.
+- [ ] **Before changing the report or intake workflow:** revisit the fields,
+  purposes, identity links and retention. Apple lists multiple conditions for
+  [optional disclosure](https://developer.apple.com/app-store/app-privacy-details/#optional-disclosure).
 - [x] **External beta review submitted:** the owner saved review-contact details;
   concise runtime-use and limitation notes accompanied the first build-37
   submission. The public invitation now offers joining instructions; neither that

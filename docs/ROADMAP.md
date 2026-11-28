@@ -1,7 +1,7 @@
 # Active roadmap
 
-Updated November 27, 2026 after the physical volume, companion and journal
-checks. GitHub issues own the task
+Updated November 28, 2026 after the volume and public-beta documentation review.
+GitHub issues own the task
 checklists; this page owns their order. [Current status](../DEVELOPMENT_STATUS.md)
 owns build, installation and distribution facts.
 
@@ -9,18 +9,19 @@ owns build, installation and distribution facts.
 
 | Priority | Work | Completion gate |
 | --- | --- | --- |
-| P0 — [#3](https://github.com/qayshp/TeachingTimer/issues/3) | Diagnose timer-volume drops on the 1.0 candidate | Repeat the original USB-C route with Control A and Isolated B, noting the first Crown response and the prior volume. The iPhone-speaker checks passed; the studio-adapter comparison remains pending. [Incident and Apple report](APPLE_FEEDBACK.md#november-26-volume-drop-on-the-10-candidate). |
+| P0 — [#3](https://github.com/qayshp/TeachingTimer/issues/3) | Diagnose timer-volume drops on the 1.0 candidate | Compare Control A and Isolated B on the adapter involved in the November 26 event. Set speaker volume to zero, then connect USB-C and confirm audible volume before the first Crown turn. Compare trials with and without using the timer while the phone was on speaker. [Incident and Apple follow-ups](APPLE_FEEDBACK.md#november-26-volume-drop-on-the-10-candidate). |
 | P0 — [#2](https://github.com/qayshp/TeachingTimer/issues/2) | Recurrent timer-volume unresponsiveness | Build-39 Apple Music/USB class needed phone buttons; refresh/media return did not recover. Capture a short matched reproduction promptly; late phone logs lack the relevant detail. Preserve normal Crown responsiveness. [Evidence](VOLUME_INCIDENT_2026-11-12.md). |
 | P0 — [#8](https://github.com/qayshp/TeachingTimer/issues/8) | Diagnose frozen native song progress | Physical comparisons reproduced the stall in Apple's workout sample and a bare native view. A Watch sysdiagnose and the comparison reached Apple. Keep the [minimal probe](https://github.com/qayshp/TeachingTimer/pull/37) available for a targeted follow-up or watchOS regression check. |
 | P0 — [#9](https://github.com/qayshp/TeachingTimer/issues/9) | Establish supported runtime policy | Documented Apple guidance on actual yoga teaching and renewal, or a supported alternative. Beta review approval alone does not complete this. |
 | P1 — [#27](https://github.com/qayshp/TeachingTimer/issues/27) | Awake-relaunch runtime rejection | Compare cold/running-process relaunch timing against the captured hosted failure; verify a bounded correction without weakening the runtime assertion. |
 | P1 — [#10](https://github.com/qayshp/TeachingTimer/issues/10) | Release-critical hardware validation | Supervised media/route/count checks, teaching-length renewal and battery results, readable controls and accessibility. Requires coordinated physical use. |
-| P1 — [#11](https://github.com/qayshp/TeachingTimer/issues/11) | External beta installation | The public invitation now offers joining instructions. Verify exact eligible build and one new tester's install/update/support experience; internal-owner success is separate. |
+| P1 — [#11](https://github.com/qayshp/TeachingTimer/issues/11) | External beta installation | Build 37 was the eligible public build on November 26. Verify a new tester's install, update and support experience. |
 | P1 — [#26](https://github.com/qayshp/TeachingTimer/issues/26) | Private tester journal sharing | Optional companion and filtered export implemented; two deliveries verified, including later-build Watch-initiated export. A physical development build passed phone request, first Mail composition and local file export. Retest interruptions and upgrade preservation. [Validation](OPTIONAL_COMPANION.md). |
 | P1 — [#14](https://github.com/qayshp/TeachingTimer/issues/14) | Contribution and release safeguards | Main still has no required-check enforcement. Define a practical recovery/bypass policy; retain durable source tags/notes after workflow artifacts expire. |
-| P2 — [#24](https://github.com/qayshp/TeachingTimer/issues/24) | Release ordering | Exact-source Watch verification reuse is implemented. Serialize publishers and handle decreasing Pacific-local numbers at daylight-saving fall-back. Synthetic numbering failure is confirmed; no rejected upload is claimed. |
+| P2 — [#24](https://github.com/qayshp/TeachingTimer/issues/24) | Release ordering | Exact-source Watch verification reuse and fixed PST build timestamps stable across reruns are implemented. Define source ordering and serialize publishers across automatic and manual releases. |
 | P2 — [#17](https://github.com/qayshp/TeachingTimer/issues/17) | Transient missing Simulator controls | Keep original early/delayed captures and separate capture timing, dim state and actual missing pixels. The Ultra outline checker is calibrated with regression coverage; older early-rendering observations still merit follow-up. |
 | P3 — [#15](https://github.com/qayshp/TeachingTimer/issues/15) | Performance baseline | Runtime invariant table and 1,280 seeded mixed events are implemented. A synthetic Watch run measured background writer latency. Measure render cost and realistic workload separately; physical battery work remains in #10. |
+| Later — [#40](https://github.com/qayshp/TeachingTimer/issues/40) | Preset countdowns for timed circuits | Review the Watch sketches and validate quick repeat starts alongside the existing one-minute count-up. Keep this separate from the 1.0 validation work. |
 
 Within a priority tier, work top to bottom. Physical-device and Apple-dependent
 items can proceed alongside the laptop-only release/test work. There is no

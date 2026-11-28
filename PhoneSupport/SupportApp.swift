@@ -8,18 +8,21 @@ import MessageUI
 
 @main
 struct SupportApp: App {
-    var body: some Scene { WindowGroup { SupportView() } }
+    private static let exports = DiagnosticInbox.Exports(temporaryDirectory: FileManager.default.temporaryDirectory)
+    var body: some Scene { WindowGroup { SupportView(exports: Self.exports) } }
 }
 
 struct SupportView: View {
+    let exports: DiagnosticInbox.Exports
     @ObservedObject private var companion = DiagnosticCompanion.shared
     @State private var draft: MailDraft?
-    @State private var window: DiagnosticCompanion.Window = .lastTwoHours
+    @State private var export: DiagnosticInbox.Exports.Staged?
+    @State private var window: DiagnosticReportFormat.Window = .lastTwoHours
     @Environment(\.scenePhase) private var scenePhase
     private struct MailDraft: Identifiable { let id = UUID(); let data: Data? }
     @State private var notice = ""
     @State private var confirmDelete = false
-    @State private var deletingReport: DiagnosticInbox.Summary?
+    @State private var deletingReportID: UUID?
     var body: some View {
         NavigationStack {
             Form {
@@ -31,27 +34,26 @@ struct SupportView: View {
                             .font(.subheadline)
                     }
                 }
-                if let url = companion.received {
+                if let report = companion.received {
                     Section("Saved report") {
-                        if let summary = companion.receivedSummary {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Prepared \(summary.generatedAt.formatted(date: .abbreviated, time: .shortened))")
-                                Text("\(summary.window.title) · \(summary.events) events")
-                                Text("Watch build \(summary.build)")
-                            }.font(.caption)
-                        }
+                        let summary = report.summary
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Prepared \(summary.generatedAt.formatted(date: .abbreviated, time: .shortened))")
+                            Text("\(summary.window.title) · \(summary.events) events")
+                            Text("Watch build \(summary.build)")
+                        }.font(.caption)
                         Button("Email support") {
                             notice = ""
-                            do {
-                                let data = try DiagnosticInbox.read(url)
-                                if MFMailComposeViewController.canSendMail() { draft = MailDraft(data: data) }
-                                else { notice = "Set up an account in Apple Mail to compose support email, or share the saved report with another mail app." }
-                            } catch { notice = "Couldn’t read the report. Request it again." }
+                            if MFMailComposeViewController.canSendMail() { draft = MailDraft(data: report.data) }
+                            else { notice = "Set up an account in Apple Mail to compose support email, or share the saved report with another mail app." }
                         }
                         Menu("Report options", systemImage: "ellipsis.circle") {
-                            ShareLink("Export received report…", item: url)
+                            Button("Export received report…") {
+                                do { export = try exports.stage(report) }
+                                catch { notice = "Couldn’t prepare an export. Try again." }
+                            }
                             Button("Delete received report", role: .destructive) {
-                                deletingReport = companion.receivedSummary
+                                deletingReportID = report.id
                                 confirmDelete = true
                             }
                         }
@@ -63,7 +65,7 @@ struct SupportView: View {
                         Button("Check connection") { companion.checkConnection() }
                     }
                     Picker("Include", selection: $window) {
-                        ForEach(DiagnosticCompanion.Window.allCases) { Text($0.title).tag($0) }
+                        ForEach(DiagnosticReportFormat.Window.allCases) { Text($0.title).tag($0) }
                     }.disabled(companion.requesting)
                     Button(companion.requesting ? "Waiting for Watch…" : "Get diagnostics from Watch") { companion.requestReport(window: window) }
                         .disabled(companion.installed != true || companion.requesting)
@@ -93,18 +95,22 @@ struct SupportView: View {
             }
             .navigationTitle("Watch support")
             .sheet(item: $draft) { draft in SupportMail(data: draft.data) }
+            .sheet(item: $export) { staged in
+                DiagnosticShareSheet(file: staged.url) {
+                    exports.finish(staged)
+                    export = nil
+                }
+                .interactiveDismissDisabled()
+            }
             .alert("Support", isPresented: Binding(get: { !notice.isEmpty }, set: { if !$0 { notice = "" } })) {
                 Button("OK") { notice = "" }
             } message: { Text(notice) }
             .confirmationDialog("Delete the saved report from this iPhone?", isPresented: $confirmDelete, titleVisibility: .visible) {
                 Button("Delete report", role: .destructive) {
-                    guard let url = companion.received else { return }
-                    guard deletingReport == companion.receivedSummary else {
-                        notice = "A newer report arrived. Review it before deleting."
-                        return
-                    }
-                    do { try FileManager.default.removeItem(at: url); companion.received = nil }
-                    catch { notice = "Couldn’t delete the report. Try again." }
+                    guard let id = deletingReportID else { return }
+                    do {
+                        if try !companion.deleteReport(id) { notice = "The saved report changed. Review it before deleting." }
+                    } catch { notice = "Couldn’t delete the report. Try again." }
                 }
             } message: { Text("Copies already emailed or exported are separate.") }
             .onChange(of: scenePhase) { _, phase in
@@ -112,6 +118,18 @@ struct SupportView: View {
             }
         }
     }
+}
+
+private struct DiagnosticShareSheet: UIViewControllerRepresentable {
+    let file: URL
+    let finish: () -> Void
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(activityItems: [file], applicationActivities: nil)
+        controller.completionWithItemsHandler = { _, _, _, _ in finish() }
+        return controller
+    }
+    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
 }
 
 private struct PhoneInformationView: View {
@@ -147,7 +165,7 @@ struct SupportMail: UIViewControllerRepresentable {
         controller.setSubject(data == nil ? "Teaching Timer support" : "Teaching Timer diagnostic report")
         controller.setMessageBody("Please describe what happened and approximately when:\n\n", isHTML: false)
         if let data {
-            controller.addAttachmentData(data, mimeType: "application/json", fileName: "TeachingTimer-diagnostics.json")
+            controller.addAttachmentData(data, mimeType: "application/json", fileName: DiagnosticInbox.fileName)
         }
         return controller
     }

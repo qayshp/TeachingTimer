@@ -52,7 +52,7 @@ class BuildEvidenceChecks(unittest.TestCase):
         self.assertIs(report['sourceDirty'], False)
         self.assertIs(report['sourceDirtyAfter'], False)
         self.assertIs(report['complete'], True)
-        self.assertEqual(count, 17)
+        self.assertEqual(count, 18)
         self.assertNotIn('ci', report)
 
     def test_dirty_start_cannot_produce_success_even_if_final_source_is_clean(self):
@@ -66,7 +66,7 @@ class BuildEvidenceChecks(unittest.TestCase):
     def test_dirty_end_rejects_all_otherwise_successful_steps(self):
         report, error, count = self.run_verification(after=('a' * 40, True))
         self.assertIn('clean and unchanged', error)
-        self.assertEqual(count, 17)
+        self.assertEqual(count, 18)
         self.assertTrue(all(step['status'] == 'passed' for step in report['steps']))
         self.assertIs(report['sourceDirtyAfter'], True)
         self.assertIs(report['complete'], False)
@@ -74,7 +74,7 @@ class BuildEvidenceChecks(unittest.TestCase):
     def test_changed_head_rejects_a_clean_checkout_at_the_wrong_revision(self):
         report, error, count = self.run_verification(after=('b' * 40, False))
         self.assertIn('clean and unchanged', error)
-        self.assertEqual(count, 17)
+        self.assertEqual(count, 18)
         self.assertEqual(report['sourceRevisionAfter'], 'b' * 40)
         self.assertIs(report['sourceDirtyAfter'], False)
         self.assertIs(report['complete'], False)
@@ -82,7 +82,7 @@ class BuildEvidenceChecks(unittest.TestCase):
     def test_final_git_failure_is_not_success(self):
         report, error, count = self.run_verification(after=OSError('Git unavailable'))
         self.assertIn('clean and unchanged', error)
-        self.assertEqual(count, 17)
+        self.assertEqual(count, 18)
         self.assertIsNone(report['sourceRevisionAfter'])
         self.assertIsNone(report['sourceDirtyAfter'])
         self.assertEqual(report['sourceVerificationError'], 'OSError')
@@ -144,6 +144,7 @@ class BuildEvidenceChecks(unittest.TestCase):
 
     def test_companion_simulator_build_uses_per_target_sdk_selection(self):
         steps = dict(build.verification_steps(Path('/synthetic/evidence')))
+        self.assertIn('generic/platform=watchOS Simulator', steps['simulator'])
         command = steps['companion-simulator']
         self.assertIn('TeachingTimerTestFlight', command)
         self.assertIn('generic/platform=iOS Simulator', command)
@@ -151,6 +152,12 @@ class BuildEvidenceChecks(unittest.TestCase):
         self.assertIn('CODE_SIGNING_ALLOWED=NO', command)
         self.assertIn('simulator', steps)
         self.assertIn('distribution-rehearsal', steps)
+
+    def test_production_configuration_is_rehearsed_without_signing_or_upload(self):
+        steps = dict(build.verification_steps(Path('/synthetic/evidence')))
+        self.assertEqual(steps['store-rehearsal'], [
+            'sh', 'scripts/prepare-testflight.sh', '/synthetic/evidence/store-archive',
+            '--app-store-candidate', '--source', '.'])
 
     def test_failure_preserves_diagnostic_and_exit_code(self):
         with tempfile.TemporaryDirectory() as folder:
