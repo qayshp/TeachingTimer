@@ -144,6 +144,7 @@ class BuildEvidenceChecks(unittest.TestCase):
 
     def test_companion_simulator_build_uses_per_target_sdk_selection(self):
         steps = dict(build.verification_steps(Path('/synthetic/evidence')))
+        self.assertIn('generic/platform=watchOS Simulator', steps['simulator'])
         command = steps['companion-simulator']
         self.assertIn('TeachingTimerTestFlight', command)
         self.assertIn('generic/platform=iOS Simulator', command)
