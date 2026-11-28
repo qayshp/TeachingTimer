@@ -222,10 +222,6 @@ jobs:
       - name: Verify application models, Simulator and unsigned archives
         working-directory: source
         run: python3 scripts/verify-build.py "$RUNNER_TEMP/application-verification" --simulator-smoke --prepare-ci-runtime
-      - name: Verify the production archive without signing
-        if: inputs.mode == 'store-candidate' && github.ref == 'refs/heads/main'
-        working-directory: source
-        run: python3 scripts/prepare-testflight.py "$RUNNER_TEMP/store-candidate-verification" --app-store-candidate --source .
       - name: Retain non-secret verification report
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
@@ -238,6 +234,9 @@ jobs:
             ${{ runner.temp }}/application-verification/runtime-preparation/
             ${{ runner.temp }}/application-verification/screen-text-smoke/
             ${{ runner.temp }}/application-verification/control-outline-smoke/fixtures/
+            ${{ runner.temp }}/application-verification/*-archive/build.log
+            ${{ runner.temp }}/application-verification/*-archive/readiness.json
+            ${{ runner.temp }}/application-verification/*-archive/artifact-inspection.json
           retention-days: 14
           if-no-files-found: ignore
 

@@ -82,6 +82,8 @@ def verification_steps(output):
                                str(output / 'simulator-tools/ScreenText'), str(output / 'screen-text-smoke')]),
         ('archive', ['sh', 'scripts/check-archive.sh', str(output / 'development-archive')]),
         ('distribution-rehearsal', ['sh', 'scripts/prepare-testflight.sh', str(output / 'distribution-archive')]),
+        ('store-rehearsal', ['sh', 'scripts/prepare-testflight.sh', str(output / 'store-archive'),
+                             '--app-store-candidate', '--source', '.']),
     ]
     return steps
 

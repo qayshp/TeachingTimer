@@ -9,13 +9,15 @@ before starting, and leave the source unchanged while verification runs.
 
 This command does not install to physical devices or upload an app. The optional
 Simulator smoke check installs and launches only in its disposable Simulators.
-The Watch Simulator build uses
-local ad-hoc signing; both device archives remain unsigned. Verification records
+The Watch Simulator build uses local ad-hoc signing. The three device archives
+are unsigned. Verification records
 the exact commit, selected Xcode path, Xcode/Swift versions and installed SDKs.
 It runs repository and model/tool checks, decodes the website QR assets, builds
 the Watch app and the combined iPhone/Watch Simulator target, compiles diagnostic
-fixtures/helpers, executes native OCR/outline checks, and creates development
-and distribution-identity archives. Audio fixtures generate their own test
+fixtures/helpers, executes native OCR/outline checks, and rehearses the
+development, TestFlight and App Store archives. The last check verifies the
+production icons and display names, embedded Watch targets and both apps'
+privacy manifests. Audio fixtures generate their own test
 audio; verification never starts playback.
 
 Add `--simulator-smoke` to create disposable small/large Watches and exercise
