@@ -35,11 +35,9 @@ separately from app disappearance. It is now corrected with 18 synthetic
 regression cases covering both sizes and invalid dimensions; the older startup
 rendering question remains open. [Calibration evidence](REVIEW_2026-11-12.md#outline-checker-calibration-follow-up).
 
-The [roadmap](ROADMAP.md) orders these review follow-ups; each issue has its own
-completion checklist:
-
-The [November 6 review](ISSUE_REVIEW_2026-11-06.md) records current closures,
-new automated coverage, the hosted failure and a next action for every open issue.
+The [roadmap](ROADMAP.md) orders current follow-ups. The
+[November 6 review](ISSUE_REVIEW_2026-11-06.md) records the closure decisions and
+hosted results from that review.
 
 - [#9 Runtime intended use](https://github.com/qayshp/TeachingTimer/issues/9)
 - [#10 Physical reliability/battery/accessibility](https://github.com/qayshp/TeachingTimer/issues/10)
@@ -49,6 +47,7 @@ new automated coverage, the hosted failure and a next action for every open issu
 - [#15 Runtime invariants and performance baseline](https://github.com/qayshp/TeachingTimer/issues/15): invariant table and seeded tests implemented; [synthetic Watch writer baseline](JOURNAL_RETENTION.md#november-26-physical-writer-benchmark) recorded. Render cost, classroom workload and battery remain open.
 - [#30 Screenshot OCR stability](https://github.com/qayshp/TeachingTimer/issues/30): fixed by bounded CPU-backed fast recognition, exact multi-scale corroboration and observed icon/label pairs. Full SE/Ultra actions pass; CI executes real recognition on nine synthetic labels. [Evidence](REVIEW_2026-11-12.md#screenshot-ocr-follow-up).
 - [#24 Release ordering](https://github.com/qayshp/TeachingTimer/issues/24): exact-source verification reuse and selective Swift CodeQL are implemented. Publisher serialization and a confirmed synthetic Pacific daylight-saving build-number reversal remain; main checks retain per-commit cancellation groups.
+- [#40 Countdown presets](https://github.com/qayshp/TeachingTimer/issues/40): design discussion for quick circuit countdowns and continued access to the one-minute count-up. [Watch sketches](https://github.com/qayshp/TeachingTimer/issues/40#issuecomment-7237035259).
 
 Completed: [#12 documentation and changelog](https://github.com/qayshp/TeachingTimer/issues/12),
 [#13 teaching-face visual key](https://github.com/qayshp/TeachingTimer/issues/13),
