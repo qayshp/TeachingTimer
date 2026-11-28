@@ -59,8 +59,7 @@ struct ContentView: View {
                     landmarks: landmarks,
                     retireOldClass: { retireOldClass() },
                     crownIsActive: page == .classProgress,
-                    volumeBackgroundRevision: volumeBackgroundRevision,
-                    showsClassProgress: true
+                    volumeBackgroundRevision: volumeBackgroundRevision
                 )
                 .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
                     // Invalidate pre-rendered clock/count frames after a clock change.

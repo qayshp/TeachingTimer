@@ -14,9 +14,11 @@ enum SquircleClockTuning {
 }
 
 struct SquircleIntersectionClockView: View {
+    enum Layer { case dial, secondsHand }
+
     let date: Date
     let dimmed: Bool
-    var layer: ClockFaceLayer = .complete
+    let layer: Layer
 
     private var second: Int { WallClockDisplay.components(at: date).second ?? 0 }
 
@@ -25,7 +27,7 @@ struct SquircleIntersectionClockView: View {
             let layout = TimerFaceLayout(size: geometry.size)
             let boundary = outline(layout: layout, inset: 0)
             ZStack {
-                if layer != .secondsHand {
+                if layer == .dial {
                     outline(layout: layout, inset: SquircleClockTuning.edgeInset)
                         .stroke(.white.opacity(dimmed ? 0.35 : 0.45), lineWidth: 0.75)
                     Canvas { graphics, _ in
@@ -48,8 +50,7 @@ struct SquircleIntersectionClockView: View {
                                 with: .color(.white.opacity(1 - SquircleClockTuning.obscuredTickOpacity)))
                         }
                     }
-                }
-                if layer != .dial {
+                } else {
                     Canvas { graphics, _ in
                         let angle = Double(second) * .pi / 30
                         let point = layout.dialPoint(angle: angle, inset: SquircleClockTuning.edgeInset)

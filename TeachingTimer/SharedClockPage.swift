@@ -6,8 +6,6 @@
 import SwiftUI
 import WatchKit
 
-enum ClockFaceLayer { case complete, dial, secondsHand }
-
 struct SharedClockPage: View {
     let date: Date
     @ObservedObject var session: ExtendedRuntimeController
@@ -16,7 +14,6 @@ struct SharedClockPage: View {
     let retireOldClass: () -> Bool
     let crownIsActive: Bool
     let volumeBackgroundRevision: Int
-    var showsClassProgress = false
     @State private var classSheet: ClassSheetRequest?
     @AppStorage("countVibrationsEnabled") private var countVibrationsEnabled = true
     @AppStorage("showRemainingMinutes") private var showRemainingMinutes = false
@@ -30,7 +27,8 @@ struct SharedClockPage: View {
             ZStack {
                 // Ticks sit behind the translucent settings backing and native time.
                 // Drawing must not intercept the button's touches or Crown focus.
-                clockFace(layer: .dial).allowsHitTesting(false)
+                SquircleIntersectionClockView(date: date, dimmed: dimmed, layer: .dial)
+                    .allowsHitTesting(false)
                 Button { classSheet = ClassSheetRequest() } label: {
                     Image(systemName: "gearshape")
                         .font(.system(size: min(labelSize + 3, 19), weight: .semibold))
@@ -44,7 +42,6 @@ struct SharedClockPage: View {
                     .accessibilityHint("Opens class timing, session controls, and settings.")
                     .accessibilityIdentifier("class-options")
                 ClockAdditions(date: date, context: classStore.context,
-                    showsClassProgress: showsClassProgress,
                     landmarkStartAngle: frame.isVisible ? landmarks.startAngle : nil,
                     landmarkProgress: frame.progress)
                     .allowsHitTesting(false)
@@ -60,7 +57,8 @@ struct SharedClockPage: View {
                     .position(layout.volumeCenter)
                 actions(layout: layout).position(x: geometry.size.width / 2, y: layout.actionY)
                 WallClockMinuteHand(date: date).allowsHitTesting(false)
-                clockFace(layer: .secondsHand).allowsHitTesting(false)
+                SquircleIntersectionClockView(date: date, dimmed: dimmed, layer: .secondsHand)
+                    .allowsHitTesting(false)
             }
         }
         .ignoresSafeArea()
@@ -105,7 +103,7 @@ struct SharedClockPage: View {
         if showRemainingMinutes, let context = classStore.context {
             if date < context.scheduledStart { return "Starts " + context.scheduledStart.formatted(date: .omitted, time: .shortened) }
             let minutes = max(0, Int(ceil(context.scheduledEnd.timeIntervalSince(date) / 60)))
-            return minutes > 0 ? "\(minutes) min left" : "Class time reached"
+            return minutes > 0 ? "\(minutes) min left" : "Class time up"
         }
         return ""
     }
@@ -184,9 +182,6 @@ struct SharedClockPage: View {
         }
     }
 
-    @ViewBuilder private func clockFace(layer: ClockFaceLayer) -> some View {
-        SquircleIntersectionClockView(date: date, dimmed: dimmed, layer: layer)
-    }
 }
 
 private struct ClassSheetRequest: Identifiable {
