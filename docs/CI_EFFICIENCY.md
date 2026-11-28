@@ -83,16 +83,20 @@ manifests, Xcode project/configuration, bundled documents and build metadata,
 CodeQL configuration and routing edits, and unknown inputs. Known non-bundled
 documentation, tests and standalone diagnostic helpers skip that Mac job.
 
-Weekly Tuesday 09:23 UTC and manual runs force a full scan. Unavailable Git
-history selects full analysis; a failed classifier or missing output also runs
-Swift and fails the final workflow result. The complete push/PR range retains
-deleted and renamed app paths. A later docs-only main push cannot cancel an
-earlier app scan.
+The Tuesday 09:23 UTC schedule and manual runs force a full scan using the
+Intel pool for Swift. App-changing pushes and pull requests use arm64. Both use
+Xcode 26.6 for traced builds. See [the scheduling and retry
+guide](AUTOMATION.md#selective-swift-codeql-scheduling).
+Unavailable Git history selects full analysis. A failed classifier or missing
+output also runs Swift and fails the final workflow result. The complete push/PR
+range retains deleted and renamed app paths. A later docs-only main push cannot
+cancel an earlier app scan.
 
 This selects job execution, not Swift source files or queries. Full-target
 Autobuild, default security queries, the default remote threat model and the
-three language categories remain. No build cache, source exclusion or
-architecture reduction was added. Repository default setup must stay disabled:
+three language categories remain. The scan still builds every production
+target, with no cached build products or source exclusions. Repository default
+setup must stay disabled:
 GitHub otherwise blocks advanced-workflow uploads. The
 [migration guide](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/configure-code-scanning/configuring-advanced-setup-for-code-scanning)
 explains that prerequisite.
