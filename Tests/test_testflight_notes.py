@@ -118,20 +118,29 @@ class TestFlightNotesChecks(unittest.TestCase):
     def test_actual_workflow_source_to_release_handoff_for_auto_and_manual(self):
         automation = self.root / 'automation/scripts'
         automation.mkdir(parents=True)
-        for name in ('testflight-notes.py', 'testflight-release.py'):
+        for name in ('testflight-notes.py', 'testflight-release.py', 'testflight_build_number.py'):
             shutil.copy(ROOT / 'scripts' / name, automation / name)
-        (self.source / 'scripts').mkdir()
-        shutil.copy(ROOT / 'scripts/testflight_build_number.py', self.source / 'scripts/testflight_build_number.py')
+        binaries = self.root / 'bin'
+        binaries.mkdir()
+        github = binaries / 'gh'
+        github.write_text('#!/bin/sh\n[ "$*" = "api repos/owner/repo/actions/runs/123" ] || exit 2\n'
+                          'printf "%s\\n" "$FIXTURE_RUN"\n')
+        github.chmod(0o755)
         source_code = shell(step(job(RELEASE, 'source'), 'Resolve source and validate inputs'))
         release_code = shell(step(job(RELEASE, 'release'), 'Materialize reviewed TestFlight notes'))
-        for event, override in (('push', ''), ('workflow_dispatch', ''),
-                                ('workflow_dispatch', 'Specific fix\n$(touch SHOULD_NOT_EXIST) `echo literal`\n')):
-            with self.subTest(event=event, override=bool(override)):
+        common_env = dict(os.environ, GITHUB_SHA=self.sha, BUILD_NUMBER='42', WORKFLOW_RUN_NUMBER='90',
+                          GITHUB_REPOSITORY='owner/repo', PATH=str(binaries) + os.pathsep + os.environ['PATH'])
+        for event, attempt, override in (('push', 1, ''), ('push', 2, ''), ('workflow_dispatch', 1, ''),
+                                         ('workflow_dispatch', 1, 'Specific fix\n$(touch SHOULD_NOT_EXIST) `echo literal`\n')):
+            with self.subTest(event=event, attempt=attempt, override=bool(override)):
                 run = Path(tempfile.mkdtemp(dir=self.root))
                 output = run / 'github-output'
-                env = dict(os.environ, RUNNER_TEMP=str(run), GITHUB_OUTPUT=str(output),
-                           GITHUB_SHA=self.sha, BUILD_NUMBER='42', WORKFLOW_RUN_NUMBER='90',
-                           EVENT_NAME=event, TESTING_NOTES=override)
+                run_metadata = dict(id=123, run_number=90, head_sha=self.sha, event=event, head_branch='main',
+                                    created_at='2026-11-26T21:18:00Z', run_attempt=attempt,
+                                    run_started_at=f'2026-11-{25 + attempt}T21:18:25Z')
+                env = dict(common_env, RUNNER_TEMP=str(run), GITHUB_OUTPUT=str(output),
+                           EVENT_NAME=event, TESTING_NOTES=override, GITHUB_RUN_ID='123',
+                           FIXTURE_RUN=json.dumps(run_metadata))
                 subprocess.run(['/bin/bash', '-e', '-c', source_code], cwd=self.root, env=env,
                                capture_output=True, text=True, timeout=15, check=True)
                 values = dict(line.split('=', 1) for line in output.read_text().splitlines())
@@ -145,7 +154,22 @@ class TestFlightNotesChecks(unittest.TestCase):
                 self.assertEqual(original.read_bytes(), final.read_bytes())
                 self.assertEqual(final.read_text(), override or self.text)
                 self.assertEqual(values['sha'], self.sha)
+                self.assertEqual(values['build_number'], '261126.1318.90' if event == 'push' else '42')
                 self.assertFalse((self.root / 'SHOULD_NOT_EXIST').exists())
+
+        for run_id, returned_sha in (('124', self.sha), ('123', 'a' * 40)):
+            with self.subTest(run_api_failure=run_id != '123'):
+                run = Path(tempfile.mkdtemp(dir=self.root))
+                run_metadata = dict(id=123, run_number=90, head_sha=returned_sha, event='push',
+                                    head_branch='main', created_at='2026-11-26T21:18:00Z')
+                env = dict(common_env, RUNNER_TEMP=str(run), GITHUB_OUTPUT=str(run / 'github-output'),
+                           EVENT_NAME='push', TESTING_NOTES='', GITHUB_RUN_ID=run_id,
+                           FIXTURE_RUN=json.dumps(run_metadata))
+                result = subprocess.run(['/bin/bash', '-e', '-c', source_code], cwd=self.root, env=env,
+                                        capture_output=True, text=True, timeout=15)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse((run / 'github-output').exists())
+                self.assertFalse((run / 'testflight-notes').exists())
 
     def test_workflow_materializes_before_signing_and_never_overwrites_notes(self):
         release = job(RELEASE, 'release')

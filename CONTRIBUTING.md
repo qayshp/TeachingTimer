@@ -133,12 +133,12 @@ materials, private archives or raw diagnostics. The
 is the first such milestone.
 
 Every distributed build needs a unique `CURRENT_PROJECT_VERSION`. The automatic
-release workflow supplies `YYMMDD.HHmm.sequence` in Pacific Standard Time
-(UTC−08:00 year-round). Manual release tooling accepts the same format or a
-positive integer. Leave the checked-in project version in place when allocating
-an automatic release.
-A build phase
-also records Git revision (including a dirty suffix) and UTC build time in
+release workflow supplies `YYMMDD.HHmm.sequence` from the original run creation
+time in Pacific Standard Time (UTC−08:00 year-round) and the GitHub run number.
+Manual release tooling accepts the same format or a positive integer. Automatic
+releases keep the checked-in project version and reuse the same build number
+when rerun.
+A build phase records Git revision (including a dirty suffix) and UTC build time in
 `BuildInfo.plist`; launch journals include both. Source exports can supply
 `SOURCE_REVISION` to that phase. `scripts/check-archive.sh` verifies the app is
 present, but is not signed export, TestFlight, App Store privacy, or review approval.

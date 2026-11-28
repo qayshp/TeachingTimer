@@ -491,14 +491,20 @@ See the [verification contract](CI_EFFICIENCY.md#implemented-exact-source-verifi
 After app verification passes, the workflow automatically signs, uploads, waits
 for Apple processing and assigns that build to the internal Maintainer pilot.
 Failed verification never reaches the publishing job. Each automatic build
-gets `YYMMDD.HHmm.sequence` in Pacific Standard Time (UTC−08:00 year-round).
-For example, `261104.1602.17` means November 4, 2026, at 4:02 p.m. PST,
-workflow run 17. The final component is the workflow's increasing run number,
-so builds generated in the same minute remain distinct. The fixed offset keeps
-the timestamp advancing when Pacific local time repeats an hour in November.
-Manual releases may still use an explicit positive integer.
-App Store Connect's duplicate-build check remains an additional safeguard.
-There is no concurrency policy that silently replaces queued `main` builds.
+gets `YYMMDD.HHmm.sequence` from the workflow run's original creation time in
+Pacific Standard Time (UTC−08:00 year-round). For example, `261104.1602.17`
+means GitHub created workflow run 17 on November 4, 2026, at 4:02 p.m. PST.
+The run number distinguishes same-minute runs, and GitHub reruns retain that
+build number. Missing or mismatched run metadata stops automatic release.
+The fixed offset keeps the timestamp advancing when Pacific local time repeats
+an hour in November. Manual releases can still use an explicit positive
+integer, and publishing still checks whether Apple has used the number.
+
+Build numbering leaves publisher serialization and source ordering open. The
+same November 20 source produced overlapping [automatic .66](https://github.com/qayshp/TeachingTimer/actions/runs/44707327328)
+and [manual .67](https://github.com/qayshp/TeachingTimer/actions/runs/44707358307)
+releases, with the manual job finishing first. [Issue #24](https://github.com/qayshp/TeachingTimer/issues/24)
+tracks a single publisher queue and admission checks before automatic upload.
 
 The workflow also retains a manual `workflow_dispatch` trigger. Choose **Use
 workflow from: main**, then provide an unused build number, optional testing notes,
