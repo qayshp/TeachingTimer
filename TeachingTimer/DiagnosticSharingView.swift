@@ -13,9 +13,9 @@ struct DiagnosticSharingView: View {
         let file: DiagnosticReportFile.Prepared
     }
 
-    let prepare: @MainActor (DiagnosticReport.Window, Set<URL>) async throws -> Prepared
+    let prepare: @MainActor (DiagnosticReportFormat.Window, Set<URL>) async throws -> Prepared
     @ObservedObject private var companion = DiagnosticCompanion.shared
-    @State private var window: DiagnosticReport.Window = .lastTwoHours
+    @State private var window: DiagnosticReportFormat.Window = .lastTwoHours
     @State private var prepared: Prepared?
     @State private var preparing = false
     @State private var failure: String?
@@ -37,13 +37,13 @@ struct DiagnosticSharingView: View {
                     .buttonStyle(.borderedProminent)
                     .disabled(companion.installed != true)
                     .accessibilityLabel("Send report to iPhone")
-                    .accessibilityValue("\(prepared.report.eventCount) events, " + windowTitle)
+                    .accessibilityValue("\(prepared.report.eventCount) events, \(prepared.report.window.title)")
                     connectionSummary
                 } footer: {
                     Text("Review and email it from the iPhone app. Nothing is emailed automatically.")
                 }
                 Section {
-                    Text(windowTitle).font(.caption)
+                    Text(prepared.report.window.title).font(.caption)
                     NavigationLink("Report details") {
                         Form {
                             summary(prepared)
@@ -55,9 +55,7 @@ struct DiagnosticSharingView: View {
             } else {
                 Section {
                     Picker("Include", selection: $window) {
-                        Text("Last 2 hours").tag(DiagnosticReport.Window.lastTwoHours)
-                        Text("Last 24 hours").tag(DiagnosticReport.Window.lastDay)
-                        Text("All retained events").tag(DiagnosticReport.Window.allRetained)
+                        ForEach(DiagnosticReportFormat.Window.allCases) { Text($0.title).tag($0) }
                     }
                     .disabled(preparing)
                     Button {
@@ -130,10 +128,6 @@ struct DiagnosticSharingView: View {
                 .font(.caption)
             Button("Check connection") { companion.checkConnection() }
         }
-    }
-
-    private var windowTitle: String {
-        DiagnosticRequest.Window(rawValue: window.rawValue)?.title ?? "Selected history"
     }
 
     @ViewBuilder

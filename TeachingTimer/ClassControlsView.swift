@@ -26,7 +26,7 @@ struct ClassControlsView: View {
     @AppStorage("countVibrationsEnabled") private var countVibrationsEnabled = true
     @AppStorage("showRemainingMinutes") private var showRemainingMinutes = false
 
-    private func prepareDiagnostics(window: DiagnosticReport.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
+    private func prepareDiagnostics(window: DiagnosticReportFormat.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
         try await DiagnosticReportPreparation.prepare(session: session, landmarks: landmarks, window: window, preserving: preserving)
     }
 
@@ -337,7 +337,7 @@ struct ClassControlsView: View {
 
 @MainActor
 enum DiagnosticReportPreparation {
-    static func prepare(session: ExtendedRuntimeController, landmarks: LandmarkController, window: DiagnosticReport.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
+    static func prepare(session: ExtendedRuntimeController, landmarks: LandmarkController, window: DiagnosticReportFormat.Window, preserving: Set<URL>) async throws -> DiagnosticSharingView.Prepared {
         // One time boundary for all stores. Snapshot and encode without forcing
         // a write, stopping the session, or delaying the MainActor's haptics.
         let preserving = preserving.union(DiagnosticCompanion.shared.pendingFiles)

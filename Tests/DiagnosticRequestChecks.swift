@@ -7,14 +7,6 @@ import Foundation
 
 @main struct DiagnosticRequestChecks {
     @MainActor static func main() async {
-        // The phone's request values must describe exactly the Watch builder's
-        // windows. Otherwise a new selection could silently fall back to two
-        // hours in the transport adapter rather than honor the user's choice.
-        precondition(Set(DiagnosticRequest.Window.allCases.map(\.rawValue)) ==
-                     Set(DiagnosticReport.Window.allCases.map(\.rawValue)),
-                     "Phone requests and Watch reports must support the same time windows")
-        precondition(DiagnosticInbox.maximumBytes == DiagnosticReport.maximumBytes,
-                     "The phone must accept every report size the Watch can prepare")
         // New activity must appear next to Check connection even if the wall
         // clock moves backward. Rows retain their identity as newer ones arrive.
         var history = DiagnosticConnectionHistory()
@@ -60,7 +52,7 @@ import Foundation
         precondition(!pending.finish(second), "Completion must be idempotent")
         let file = URL(fileURLWithPath: "/synthetic-report.json")
         var events: [String] = []
-        for window in DiagnosticRequest.Window.allCases {
+        for window in DiagnosticReportFormat.Window.allCases {
             let result = await DiagnosticRequest.enqueue(window: window, prepare: { requested in
                 precondition(requested == window)
                 events.append("prepare")
@@ -83,13 +75,28 @@ import Foundation
         precondition(failed == .preparationFailed)
         let unavailable = await DiagnosticRequest.enqueue(window: .allRetained, prepare: { _ in file }, send: { _ in false })
         precondition(unavailable == .transportNotReady)
-        precondition(DiagnosticRequest.Window(rawValue: "invalid") == nil)
-        for window in DiagnosticReport.Window.allCases {
-            let cutoff = Date()
-            let event = DiagnosticReport.Event(timestamp: cutoff, event: "runtime_started", details: [:])
-            let report = try! DiagnosticReport.build(snapshots: [.runtime: .init(events: [event], status: .available)], metadata: .init(version: "1", build: "42", revision: "abcdef0", osVersion: "27.2"), window: window, cutoff: cutoff)
+        precondition(DiagnosticReportFormat.Window(rawValue: "invalid") == nil)
+        let cutoff = Date(timeIntervalSince1970: 1_800_000_000)
+        let eventsByAge = [0, 7_201, 86_401].map { age in
+            DiagnosticReport.Event(timestamp: cutoff.addingTimeInterval(-Double(age)),
+                                   event: "runtime_started", details: [:])
+        }
+        let requests: [(String, DiagnosticReportFormat.Window, Int)] = [
+            ("lastTwoHours", .lastTwoHours, 1),
+            ("lastDay", .lastDay, 2),
+            ("allRetained", .allRetained, 3),
+        ]
+        for (wireValue, expectedWindow, count) in requests {
+            let window = DiagnosticReportFormat.Window(rawValue: wireValue)!
+            precondition(window == expectedWindow)
+            let report = try! DiagnosticReport.build(
+                snapshots: [.runtime: .init(events: eventsByAge, status: .available)],
+                metadata: .init(version: "1", build: "42", revision: "abcdef0", osVersion: "27.2"),
+                window: window, cutoff: cutoff)
+            let serialized = try! JSONSerialization.jsonObject(with: report.data) as! [String: Any]
+            precondition(serialized["window"] as? String == wireValue, "Keep prior builds and saved reports compatible")
             let summary = try! DiagnosticInbox.summary(report.data)
-            precondition(summary.window.rawValue == window.rawValue && summary.events == 1)
+            precondition(summary.window == window && summary.events == count)
             precondition(summary.build == "42" && abs(summary.generatedAt.timeIntervalSince(cutoff)) < 0.001)
         }
         let journals: [[String: Any]] = ["runtime", "interface", "landmarks"].map { ["source": $0, "events": []] }
@@ -109,7 +116,7 @@ import Foundation
             invalid["journals"] = sources.map { ["source": $0, "events": []] as [String: Any] }
             do { _ = try DiagnosticInbox.summary(JSONSerialization.data(withJSONObject: invalid)); preconditionFailure("Accepted incorrect journal sources") } catch {}
         }
-        for invalid in [Data(), Data("broken".utf8), Data(repeating: 32, count: DiagnosticInbox.maximumBytes + 1)] {
+        for invalid in [Data(), Data("broken".utf8), Data(repeating: 32, count: DiagnosticReportFormat.maximumBytes + 1)] {
             do { _ = try DiagnosticInbox.summary(invalid); preconditionFailure("Accepted invalid report") } catch {}
         }
         let temporary = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -122,7 +129,7 @@ import Foundation
         try! FileManager.default.createDirectory(at: temporary, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: temporary) }
         var older = valid
-        older["window"] = DiagnosticRequest.Window.lastTwoHours.rawValue
+        older["window"] = "lastTwoHours"
         let olderData = try! JSONSerialization.data(withJSONObject: older)
         let legacy = temporary.appendingPathComponent(DiagnosticInbox.fileName)
         try! olderData.write(to: legacy)

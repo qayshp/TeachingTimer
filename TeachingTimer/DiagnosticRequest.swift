@@ -8,18 +8,6 @@ import CoreFoundation
 
 /// Typed request values and queue outcomes shared by phone and Watch.
 enum DiagnosticRequest {
-    enum Window: String, CaseIterable, Identifiable, Sendable {
-        case lastTwoHours, lastDay, allRetained
-        var id: String { rawValue }
-        var title: String {
-            switch self {
-            case .lastTwoHours: "Last 2 hours"
-            case .lastDay: "Last 24 hours"
-            case .allRetained: "All retained events"
-            }
-        }
-    }
-
     /// Correlate replies, timeout and file receipt across retries. Old callbacks
     /// must never finish a newer request, including unsolicited Watch exports.
     struct Pending {
@@ -59,8 +47,8 @@ enum DiagnosticRequest {
     }
 
     @MainActor
-    static func enqueue(window: Window,
-                        prepare: @MainActor (Window) async throws -> URL,
+    static func enqueue(window: DiagnosticReportFormat.Window,
+                        prepare: @MainActor (DiagnosticReportFormat.Window) async throws -> URL,
                         send: @MainActor (URL) -> Bool) async -> Outcome {
         do {
             let file = try await prepare(window)
@@ -95,7 +83,6 @@ enum DiagnosticInbox {
         .atomic
         #endif
     }()
-    static let maximumBytes = 2 * 1024 * 1024
     static let fileName = "TeachingTimer-diagnostics.json"
 
     struct Receipt: Identifiable, Sendable {
@@ -111,12 +98,12 @@ enum DiagnosticInbox {
 
     struct Summary: Equatable, Sendable {
         let build: String
-        let window: DiagnosticRequest.Window
+        let window: DiagnosticReportFormat.Window
         let events: Int
         let generatedAt: Date
     }
     static func summary(_ data: Data) throws -> Summary {
-        guard !data.isEmpty, data.count <= maximumBytes,
+        guard !data.isEmpty, data.count <= DiagnosticReportFormat.maximumBytes,
               let report = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let schema = report["schemaVersion"] as? NSNumber,
               CFGetTypeID(schema) != CFBooleanGetTypeID(), schema == 1,
@@ -125,7 +112,7 @@ enum DiagnosticInbox {
               let metadata = report["metadata"] as? [String: String],
               let build = metadata["build"], !build.isEmpty,
               let raw = report["window"] as? String,
-              let window = DiagnosticRequest.Window(rawValue: raw),
+              let window = DiagnosticReportFormat.Window(rawValue: raw),
               let count = report["eventCount"] as? NSNumber,
               CFGetTypeID(count) != CFBooleanGetTypeID(), count.doubleValue == Double(count.intValue), count.intValue >= 0,
               let journals = report["journals"] as? [[String: Any]],
@@ -143,7 +130,7 @@ enum DiagnosticInbox {
     }
     static func read(_ url: URL) throws -> Receipt {
         let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
-        guard size > 0, size <= maximumBytes else { throw CocoaError(.fileReadCorruptFile) }
+        guard size > 0, size <= DiagnosticReportFormat.maximumBytes else { throw CocoaError(.fileReadCorruptFile) }
         let data = try Data(contentsOf: url)
         return try Receipt(data: data, summary: summary(data))
     }

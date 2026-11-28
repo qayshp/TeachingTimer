@@ -13,7 +13,6 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = DiagnosticCompanion()
     @Published var status = "Checking companion…"
     @Published var installed: Bool?
-    typealias Window = DiagnosticRequest.Window
     nonisolated static var build: String {
         let info = Bundle.main.infoDictionary ?? [:]
         return "\(info["CFBundleShortVersionString"] as? String ?? "?") (\(info["CFBundleVersion"] as? String ?? "?"))"
@@ -24,7 +23,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
     @Published private var request = DiagnosticRequest.Pending()
     var requesting: Bool { request.id != nil }
     @Published private(set) var peerBuild: String?
-    var prepareReport: (@MainActor (Window) async throws -> URL)?
+    var prepareReport: (@MainActor (DiagnosticReportFormat.Window) async throws -> URL)?
     private let logger = Logger(subsystem: "net.qays.TeachingTimer", category: "DiagnosticCompanion")
 
     private func record(_ event: String) {
@@ -82,7 +81,7 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
 #endif
     }
 
-    func requestReport(window: Window = .lastTwoHours) {
+    func requestReport(window: DiagnosticReportFormat.Window) {
         guard !requesting else { return }
         guard let transport, transport.activationState == .activated, installed == true else {
             status = "Companion is not ready. Try again after opening both apps."; return
@@ -166,10 +165,10 @@ final class DiagnosticCompanion: NSObject, ObservableObject, WCSessionDelegate {
         guard protocolName != "diagnostics-v2" || requestID != nil else {
             replyHandler(["received": false, "reason": "invalid-request", "build": Self.build]); return
         }
-        let windowValue = message["window"] as? String ?? Window.lastTwoHours.rawValue
+        let windowValue = message["window"] as? String ?? DiagnosticReportFormat.Window.lastTwoHours.rawValue
         let reply = CompanionReply(replyHandler)
         Task { @MainActor in
-            guard let window = Window(rawValue: windowValue) else {
+            guard let window = DiagnosticReportFormat.Window(rawValue: windowValue) else {
                 reply.finish(accepted: false, reason: "invalid-window", build: Self.build); return
             }
             guard !self.preparing, self.pendingFiles.isEmpty, let prepare = self.prepareReport else {

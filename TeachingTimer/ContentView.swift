@@ -107,7 +107,9 @@ struct ContentView: View {
         }
         .onAppear { [session] in
             DiagnosticCompanion.shared.prepareReport = { window in
-                try await DiagnosticReportPreparation.prepare(session: session, landmarks: landmarks, window: DiagnosticReport.Window(rawValue: window.rawValue) ?? .lastTwoHours, preserving: DiagnosticCompanion.shared.pendingFiles).file.url
+                try await DiagnosticReportPreparation.prepare(
+                    session: session, landmarks: landmarks, window: window,
+                    preserving: DiagnosticCompanion.shared.pendingFiles).file.url
             }
             // Native applicationState can already report active while SwiftUI
             // is still inactive during a dimmed process relaunch. Supply scene

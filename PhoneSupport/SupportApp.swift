@@ -17,7 +17,7 @@ struct SupportView: View {
     @ObservedObject private var companion = DiagnosticCompanion.shared
     @State private var draft: MailDraft?
     @State private var export: DiagnosticInbox.Exports.Staged?
-    @State private var window: DiagnosticCompanion.Window = .lastTwoHours
+    @State private var window: DiagnosticReportFormat.Window = .lastTwoHours
     @Environment(\.scenePhase) private var scenePhase
     private struct MailDraft: Identifiable { let id = UUID(); let data: Data? }
     @State private var notice = ""
@@ -65,7 +65,7 @@ struct SupportView: View {
                         Button("Check connection") { companion.checkConnection() }
                     }
                     Picker("Include", selection: $window) {
-                        ForEach(DiagnosticCompanion.Window.allCases) { Text($0.title).tag($0) }
+                        ForEach(DiagnosticReportFormat.Window.allCases) { Text($0.title).tag($0) }
                     }.disabled(companion.requesting)
                     Button(companion.requesting ? "Waiting for Watch…" : "Get diagnostics from Watch") { companion.requestReport(window: window) }
                         .disabled(companion.installed != true || companion.requesting)

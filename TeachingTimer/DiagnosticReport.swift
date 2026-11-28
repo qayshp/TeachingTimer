@@ -9,22 +9,10 @@ import Foundation
 /// Call off the main actor with snapshots from the three known journal writers.
 /// Timestamps intentionally remain exact diagnostic data, not anonymous data.
 enum DiagnosticReport {
-    static let maximumBytes = 2 * 1024 * 1024
     private static let maximumSourceBytes = 32 * 1024 * 1024
 
     enum Source: String, CaseIterable, Codable, Sendable {
         case runtime, interface, landmarks
-    }
-
-    enum Window: String, CaseIterable, Codable, Sendable {
-        case lastTwoHours, lastDay, allRetained
-        func start(before cutoff: Date) -> Date? {
-            switch self {
-            case .lastTwoHours: cutoff.addingTimeInterval(-7200)
-            case .lastDay: cutoff.addingTimeInterval(-86400)
-            case .allRetained: nil
-            }
-        }
     }
 
     enum SnapshotStatus: String, Codable, Sendable {
@@ -97,7 +85,7 @@ enum DiagnosticReport {
     struct Report: Codable, Sendable {
         let schemaVersion: Int
         let generatedAt: Date
-        let window: Window
+        let window: DiagnosticReportFormat.Window
         let requestedStart: Date?
         let metadata: Metadata
         let journals: [Journal]
@@ -122,7 +110,7 @@ enum DiagnosticReport {
     /// Bounds are inclusive. A backward clock correction may leave future-dated
     /// entries on disk; count and exclude them rather than re-anchoring their dates.
     static func build(snapshots: [Source: Snapshot], metadata: Metadata,
-                      window: Window = .lastTwoHours, cutoff: Date) throws -> Prepared {
+                      window: DiagnosticReportFormat.Window = .lastTwoHours, cutoff: Date) throws -> Prepared {
         guard validDate(cutoff) else { throw Failure.invalidCutoff }
         guard numericVersion(metadata.version), numericVersion(metadata.build),
               numericVersion(metadata.osVersion), validRevision(metadata.revision)
@@ -182,7 +170,8 @@ enum DiagnosticReport {
         }
         encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
         let data = try encoder.encode(report)
-        guard data.count <= maximumBytes else { throw Failure.tooLarge(bytes: data.count, limit: maximumBytes) }
+        let limit = DiagnosticReportFormat.maximumBytes
+        guard data.count <= limit else { throw Failure.tooLarge(bytes: data.count, limit: limit) }
         return Prepared(data: data, report: report)
     }
 
